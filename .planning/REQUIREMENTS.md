@@ -37,11 +37,11 @@ Requirements for initial release. Each maps to a roadmap phase.
 
 ### Profile & Goals
 
-- [ ] **PROF-01**: User can configure profile: age, gender, height, weight, activity level (Low/Medium/High), dietary preference (No preference/Vegetarian/Vegan/Flexitarian/Low meat/Other)
-- [ ] **PROF-02**: User can select metric or imperial units; default is auto-detected from device locale; overrideable in settings
-- [ ] **PROF-03**: User can select a goal: Reduce CO₂ / Lose weight / Maintain weight / Gain muscle / Improve health / Balanced lifestyle / Learn & explore
-- [ ] **PROF-04**: System auto-calculates daily targets from profile: calories (Mifflin-St Jéor formula + activity factor), protein, carbs, fat, estimated daily CO₂ target
-- [ ] **PROF-05**: User can manually edit any auto-calculated target
+- [x] **PROF-01**: User can configure profile: age, gender, height, weight, activity level (Low/Medium/High), dietary preference (No preference/Vegetarian/Vegan/Flexitarian/Low meat/Other)
+- [x] **PROF-02**: User can select metric or imperial units; default is auto-detected from device locale; overrideable in settings
+- [x] **PROF-03**: User can select a goal: Reduce CO₂ / Lose weight / Maintain weight / Gain muscle / Improve health / Balanced lifestyle / Learn & explore
+- [x] **PROF-04**: System auto-calculates daily targets from profile: calories (Mifflin-St Jéor formula + activity factor), protein, carbs, fat, estimated daily CO₂ target
+- [x] **PROF-05**: User can manually edit any auto-calculated target
 - [ ] **PROF-06**: CO₂ profile factors (location/country, food purchasing source, shopping transport method, cooking method, food storage type, household size, estimated food waste level) live in CO₂ Calculation Settings — not Profile Setup; all fields optional; regional averages used as fallback
 
 ### Food Logging *(the heart of the app)*
@@ -232,11 +232,11 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | AUTH-08 | Phase 7 | Pending |
 | AUTH-09 | Phase 7 | Pending |
 | AUTH-10 | Phase 7 | Pending |
-| PROF-01 | Phase 1 | Pending |
-| PROF-02 | Phase 1 | Pending |
-| PROF-03 | Phase 1 | Pending |
-| PROF-04 | Phase 1 | Pending |
-| PROF-05 | Phase 1 | Pending |
+| PROF-01 | Phase 1 | Complete |
+| PROF-02 | Phase 1 | Complete |
+| PROF-03 | Phase 1 | Complete |
+| PROF-04 | Phase 1 | Complete |
+| PROF-05 | Phase 1 | Complete |
 | PROF-06 | Phase 5 | Pending |
 | LOG-01 | Phase 2 | Pending |
 | LOG-02 | Phase 2 | Pending |

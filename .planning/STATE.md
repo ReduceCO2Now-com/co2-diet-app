@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: planning
-stopped_at: Phase 1 context gathered
-last_updated: "2026-07-16T15:58:28.435Z"
+last_updated: "2026-07-16T21:14:56.504Z"
 progress:
-  total_phases: 9
+  total_phases: 1
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
+  percent: 0
 ---
 
 # STATE: CO₂ Diet
@@ -35,23 +35,25 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** Pre-Phase 1 (not yet started)
-- **Plan:** None yet
-- **Status:** Roadmap created; awaiting Phase 1 planning kickoff
-- **Progress:** 0 / 9 phases complete
-- **v1 requirements:** 0 / 75 delivered
+- **Phase:** 01-foundations-sync-safe-schema (in progress)
+- **Plan:** 01-01 complete (Flutter scaffold + theme)
+- **Status:** Phase 1 execution started; 1 of 7 plans complete
+- **Progress:** [░░░░░░░░░░] 0%
+- **v1 requirements:** 5 / 75 delivered (PROF-01 through PROF-05)
 
 ```
-[                    ] 0%
+[░░░░░░░░░░░░░░░░░░░░] 1%
 ```
 
 ### Initialization Progress
+
 - [x] PROJECT.md created and committed
 - [x] config.json created and committed (mode: interactive, granularity: fine, model: quality)
 - [x] Research completed (STACK, FEATURES, ARCHITECTURE, PITFALLS, SUMMARY — all committed)
 - [x] REQUIREMENTS.md — defined (75 v1 requirements)
 - [x] ROADMAP.md — 9 phases, 100% requirement coverage
-- [ ] Phase 1 planning — not yet started
+- [x] Phase 1 planning — complete (7 plans created)
+- [x] Plan 01-01 — Flutter scaffold + pubspec + theme module — COMPLETE
 
 ---
 
@@ -60,15 +62,16 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - Requirements defined: 75 v1 (+ 15 deferred to v2)
 - Requirements mapped to phases: 75 / 75 (100% coverage)
 - Phases planned: 9 (target: fine granularity 8–12) ✓
-- Plans executed: 0
-- Verifications passed: 0
-- Total sessions: 1 (initialization)
+- Plans executed: 1 (01-01 complete)
+- Verifications passed: 1
+- Total sessions: 2
 
 ---
 
 ## Accumulated Context
 
 ### Key Decisions Locked
+
 - **Local DB:** Drift (SQLite) — Hive rejected (unmaintained, no FTS5, brittle migrations). Sync-safe schema mandatory from v1.
 - **Auth:** Keycloak OIDC + PKCE via `flutter_appauth` — no Firebase/Supabase.
 - **Barcode scanning:** P0 — must be verified on real iOS + Android devices before launch.
@@ -79,12 +82,18 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - **Admin profile:** out of scope for the mobile app (web/backoffice only).
 - **Recent = individual items** (not combo entries) — confirmed via live build.
 - **CO₂ profile factors** live in CO₂ Calculation Settings, not Profile Setup.
+- **freezed 3.2.6-dev.1 (not stable 3.2.5):** 3.2.5 requires analyzer >=9 <11 which conflicts with riverpod_lint 3.1.4 (^12); dev.1 aligns with ^12 [01-01]
+- **custom_lint removed from stack:** riverpod_lint 3.1.4 migrated to analysis_server_plugin; custom_lint 0.8.1 analyzer ^8 is incompatible with riverpod_lint 3.1.4 analyzer ^12 [01-01]
+- **Dark theme:** Material 3 inverse-surface convention — inverseSurface as dark canvas, inversePrimary as accent; DESIGN.md has no dark token set; flagged for Phase 6 accessibility audit [01-01]
+- **Font loading:** TTFs bundled as local assets via fonts.gstatic.com static download + committed to git; no google_fonts runtime network calls (privacy constraint) [01-01]
 
 ### Open Decisions to Resolve During Execution
+
 - **Mode Choice visual weighting** — design intent is equal-weight cards; live build shows bias. Audit and fix in Phase 6.
 - **Weight Tracking placement** — Settings-only vs. also Insights tab. To be resolved during Phase 5 planning.
 
 ### Cross-Cutting Invariants (all phases must respect)
+
 - No third-party analytics / ad / behavioral tracking SDKs — CI blocklist enforced from Phase 1.
 - Offline-first: core flows must work with zero network.
 - Non-judgmental copy; no streak-shame, no false-precision CO₂ numbers, no dark-pattern account nudging.
@@ -92,13 +101,16 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - All personal data on-device by default; Local Mode never contacts backend without explicit user action.
 
 ### Backend Coordination (Tomris)
+
 - Backend readiness is a **Phase 7 dependency, not earlier**. Phases 1–6 ship without any backend contact.
 - Coordinate before Phase 7: Keycloak realm + Apple/Google IdPs; `offline_access` scope defaults; GDPR endpoints (`/me/export`, `DELETE /me/account`); sync endpoints (outbox push, delta pull with HLC).
 
 ### Blockers
+
 - None.
 
 ### Todos (Pre-Phase 1)
+
 - Confirm Flutter 3.27+ / Dart 3.6+ versions against `flutter pub outdated` before scaffolding.
 - Verify Open Food Facts export current size and license before designing seed pack (Phase 2 concern, but useful early).
 - Line up external Fachanwalt IT-Recht (€1–3k) and LCA methodology peer reviewer (€2–5k) — engagement needed before Phase 6 closes.
@@ -107,10 +119,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-16T15:58:28.427Z
-**Stopped at:** Phase 1 context gathered
-**Next action:** Start Phase 1 discussion / planning.
-**Suggested next command:** `/gsd-plan-phase 1`
+**Last session:** 2026-07-16T21:13:00Z
+**Stopped at:** Completed 01-01-PLAN.md (Flutter scaffold + theme)
+**Next action:** Execute Plan 01-02 (Sync-safe Drift schema + SyncSafeTable mixin).
+**Suggested next command:** `/gsd-execute-phase 1 --plan 02`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
@@ -118,4 +130,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ---
 
-*State updated: 2026-07-16 after roadmap creation*
+*State updated: 2026-07-16 after Plan 01-01 execution*
