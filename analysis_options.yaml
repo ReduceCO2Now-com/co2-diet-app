@@ -1,0 +1,10 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+
+custom_lint:
+  rules:
+    - avoid_public_notifier_properties
