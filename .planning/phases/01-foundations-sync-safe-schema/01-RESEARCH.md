@@ -1205,19 +1205,19 @@ No package in the Phase 1 stack pulls in Firebase, analytics, or behavioral trac
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Dark mode token definitions**
+1. **Dark mode token definitions** — RESOLVED: Plan 01-01 Task 2 implements `ThemeData.dark()` using Material 3 inverse-surface convention (`inverse-surface` as dark background, `surface-dim` as container variants). Flagged for Phase 6 accessibility audit review.
    - What we know: DESIGN.md defines a single set of color roles without an explicit dark-mode palette.
    - What's unclear: Whether the `inverse-*` tokens are intended as the primary dark-mode surface/on-surface, or whether a separate dark palette should be derived.
    - Recommendation: Implement `ThemeData.dark()` using Material 3 convention (inverse-surface as dark background, surface-dim as container variants). Flag for review in Phase 6 accessibility audit.
 
-2. **`flutter create` in existing directory**
+2. **`flutter create` in existing directory** — RESOLVED: Plan 01-01 Task 1 uses the `--overwrite` flag when running `flutter create` in the existing repo directory to handle existing files safely.
    - What we know: The repo already has `.claude/`, `.planning/`, `docs/` but no Flutter project yet.
    - What's unclear: Whether `flutter create .` in a non-empty directory skips or overwrites existing files.
    - Recommendation: Run `flutter create` in a temp directory first, then copy generated files into the repo; or use `flutter create --no-overwrite` if available. The planner should include an explicit step for this.
 
-3. **Font weight variants for Plus Jakarta Sans**
+3. **Font weight variants for Plus Jakarta Sans** — RESOLVED: Plan 01-01 Task 1 explicitly downloads the full Google Fonts zip, inspects actual filenames, and aligns pubspec.yaml font declarations to match the extracted TTF filenames.
    - What we know: DESIGN.md uses weights 400, 600, 700. Font file name conventions vary by download source.
    - What's unclear: Whether `PlusJakartaSans-SemiBold.ttf` is the correct filename for weight 600 from the Google Fonts download.
    - Recommendation: Verify filenames after downloading from fonts.google.com and match pubspec.yaml declarations accordingly.
