@@ -209,32 +209,114 @@ Deferred to post-v1. Not in current roadmap.
 
 ## Traceability
 
-Which phases cover which requirements. Updated during roadmap creation.
+Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROADMAP.md` for phase details.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ONBD-01–05, LEGAL-01–04 | Phase 4 | Pending |
-| AUTH-01–10 | Phase 1 (Local Mode), Phase 5 (Account/Sync) | Pending |
-| PROF-01–06 | Phase 1 | Pending |
-| LOG-01–13 | Phase 1 (manual), Phase 2 (search + barcode), Phase 3 (recent/favorites) | Pending |
-| NUTR-01–04 | Phase 1 (core), Phase 3 (full) | Pending |
-| CO2-01–06 | Phase 1 (estimator scaffold), Phase 2 (factor table), Phase 3 (full UI) | Pending |
-| CO2-07 | Phase 5 | Pending |
-| DASH-01–08 | Phase 1 (scaffold), Phase 3 (full) | Pending |
-| INS-01–04 | Phase 3 | Pending |
-| WT-01–05 | Phase 3 | Pending |
-| PRIV-01–09 | Phase 3 (export/backup), Phase 4 (consent/legal), Phase 5 (GDPR endpoints) | Pending |
-| NOTIF-01–03 | Phase 3 | Pending |
-| LEG-01–05 | Phase 4 | Pending |
-| NFR-01–07 | All phases (ongoing); validated pre-launch (Phase 4) | Pending |
-| ACC-01–05 | Phase 4 | Pending |
+| ONBD-01 | Phase 6 | Pending |
+| ONBD-02 | Phase 6 | Pending |
+| ONBD-03 | Phase 6 | Pending |
+| ONBD-04 | Phase 6 | Pending |
+| ONBD-05 | Phase 6 | Pending |
+| LEGAL-01 | Phase 6 | Pending |
+| LEGAL-02 | Phase 6 | Pending |
+| LEGAL-03 | Phase 6 | Pending |
+| LEGAL-04 | Phase 1 | Pending |
+| AUTH-01 | Phase 7 | Pending |
+| AUTH-02 | Phase 7 | Pending |
+| AUTH-03 | Phase 7 | Pending |
+| AUTH-04 | Phase 7 | Pending |
+| AUTH-05 | Phase 7 | Pending |
+| AUTH-06 | Phase 7 | Pending |
+| AUTH-07 | Phase 5 | Pending |
+| AUTH-08 | Phase 7 | Pending |
+| AUTH-09 | Phase 7 | Pending |
+| AUTH-10 | Phase 7 | Pending |
+| PROF-01 | Phase 1 | Pending |
+| PROF-02 | Phase 1 | Pending |
+| PROF-03 | Phase 1 | Pending |
+| PROF-04 | Phase 1 | Pending |
+| PROF-05 | Phase 1 | Pending |
+| PROF-06 | Phase 5 | Pending |
+| LOG-01 | Phase 2 | Pending |
+| LOG-02 | Phase 2 | Pending |
+| LOG-03 | Phase 3 | Pending |
+| LOG-04 | Phase 3 | Pending |
+| LOG-05 | Phase 4 | Pending |
+| LOG-06 | Phase 4 | Pending |
+| LOG-07 | Phase 4 | Pending |
+| LOG-08 | Phase 4 | Pending |
+| LOG-09 | Phase 4 | Pending |
+| LOG-10 | Phase 4 | Pending |
+| LOG-11 | Phase 4 | Pending |
+| LOG-12 | Phase 4 | Pending |
+| LOG-13 | Phase 4 | Pending |
+| NUTR-01 | Phase 5 | Pending |
+| NUTR-02 | Phase 5 | Pending |
+| NUTR-03 | Phase 5 | Pending |
+| NUTR-04 | Phase 5 | Pending |
+| CO2-01 | Phase 3 | Pending |
+| CO2-02 | Phase 5 | Pending |
+| CO2-03 | Phase 5 | Pending |
+| CO2-04 | Phase 1 | Pending |
+| CO2-05 | Phase 5 | Pending |
+| CO2-06 | Phase 5 | Pending |
+| DASH-01 | Phase 5 | Pending |
+| DASH-02 | Phase 5 | Pending |
+| DASH-03 | Phase 5 | Pending |
+| DASH-04 | Phase 5 | Pending |
+| DASH-05 | Phase 5 | Pending |
+| DASH-06 | Phase 5 | Pending |
+| DASH-07 | Phase 5 | Pending |
+| DASH-08 | Phase 5 | Pending |
+| INS-01 | Phase 5 | Pending |
+| INS-02 | Phase 5 | Pending |
+| INS-03 | Phase 5 | Pending |
+| INS-04 | Phase 5 | Pending |
+| WT-01 | Phase 5 | Pending |
+| WT-02 | Phase 5 | Pending |
+| WT-03 | Phase 5 | Pending |
+| WT-04 | Phase 5 | Pending |
+| WT-05 | Phase 5 | Pending |
+| PRIV-01 | Phase 5 | Pending |
+| PRIV-02 | Phase 5 | Pending |
+| PRIV-03 | Phase 5 | Pending |
+| PRIV-04 | Phase 5 | Pending |
+| PRIV-05 | Phase 7 | Pending |
+| PRIV-06 | Phase 6 | Pending |
+| PRIV-07 | Phase 1 | Pending |
+| PRIV-08 | Phase 5 | Pending |
+| PRIV-09 | Phase 5 | Pending |
+| NOTIF-01 | Phase 5 | Pending |
+| NOTIF-02 | Phase 5 | Pending |
+| NOTIF-03 | Phase 5 | Pending |
+| LEG-01 | Phase 6 | Pending |
+| LEG-02 | Phase 6 | Pending |
+| LEG-03 | Phase 6 | Pending |
+| LEG-04 | Phase 1 | Pending |
+| LEG-05 | Phase 3 | Pending |
+| NFR-01 | Phase 6 | Pending |
+| NFR-02 | Phase 6 | Pending |
+| NFR-03 | Phase 6 | Pending |
+| NFR-04 | Phase 6 | Pending |
+| NFR-05 | Phase 5 | Pending |
+| NFR-06 | Phase 2 | Pending |
+| NFR-07 | Phase 6 | Pending |
+| ACC-01 | Phase 6 | Pending |
+| ACC-02 | Phase 6 | Pending |
+| ACC-03 | Phase 6 | Pending |
+| ACC-04 | Phase 6 | Pending |
+| ACC-05 | Phase 6 | Pending |
 
 **Coverage:**
-- v1 requirements: 75 total
-- Mapped to phases: 75
+- v1 requirements: 94 total
+- Mapped to phases: 94
 - Unmapped: 0 ✓
+- Duplicated (any requirement in >1 phase): 0 ✓
+
+**Note:** The previous traceability header claimed 75 total v1 requirements — corrected during roadmap creation. Actual v1 REQ-ID count is 94 (ONBD 5 + LEGAL 4 + AUTH 10 + PROF 6 + LOG 13 + NUTR 4 + CO2 6 + DASH 8 + INS 4 + WT 5 + PRIV 9 + NOTIF 3 + LEG 5 + NFR 7 + ACC 5). No CO2-07 requirement is defined in this document; the earlier reference to "CO2-07" in a draft traceability row was stale and has been removed.
 
 ---
 
 *Requirements defined: 2026-07-16*
-*Last updated: 2026-07-16 after initial definition*
+*Traceability rewritten: 2026-07-16 during ROADMAP.md creation*
