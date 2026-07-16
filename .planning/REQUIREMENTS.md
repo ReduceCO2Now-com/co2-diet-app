@@ -89,7 +89,7 @@ Requirements for initial release. Each maps to a roadmap phase.
 
 ### Insights
 
-- [ ] **INS-01**: Data Analysis screen accessible by tapping any Dashboard metric; shows: today's breakdown by meal (stacked bar), largest contributors (ranked list), goal comparison (progress bar + dynamic message), 7/30-day switchable trend, Improvement Opportunities, detailed food analysis (expandable, per-serving + per-100g), Estimate Transparency, Insights Timeline
+- [ ] **INS-01**: Data Analysis screen accessible by tapping any Dashboard metric; shows: today's breakdown by meal (stacked bar), largest contributors (ranked list), goal comparison (progress bar + dynamic message), 7-day and 30-day switchable rolling trend (30-day rolling trend is the v1 time-range maximum — no separate calendar-month aggregate view is required for v1), Improvement Opportunities, detailed food analysis (expandable, per-serving + per-100g), Estimate Transparency, Insights Timeline
 - [ ] **INS-02**: Data Analysis screen shows CO₂ estimate with methodology explanation and confidence band (honest uncertainty, not false precision)
 - [ ] **INS-03**: Insights Timeline: chronological feed of observed patterns (e.g., "High-CO₂ evenings noticed", "Low protein on weekdays")
 - [ ] **INS-04**: All Insights views work fully offline using locally stored data
@@ -135,7 +135,7 @@ Requirements for initial release. Each maps to a roadmap phase.
 - [ ] **NFR-03**: App tone is calm, supportive, trustworthy, and motivating — validated via Self-Assessment Manikin (SAM) test in user testing before launch; app must not feel stressful, judgmental, or pressuring
 - [ ] **NFR-04**: No manipulative gamification: no streak-shame, no loss-aversion notifications, no aggressive account-creation nudging in Local Mode
 - [ ] **NFR-05**: CO₂ data is presented with honest uncertainty — confidence bands and ranges, never false-precision numbers (e.g., display "~4.7 kg CO₂" or "4–5 kg CO₂", not "4.732 kg CO₂")
-- [ ] **NFR-06**: Food database reliability: users encounter meaningful search results for >90% of logged food items in the target markets before launch (verified via benchmark test)
+- [ ] **NFR-06**: Food database reliability — two testable acceptance criteria before launch: (a) **Search hit rate:** given a benchmark list of ~200 commonly logged foods in the EU/German market, >90% return a usable result from the local DB without requiring an API fallback; (b) **CO₂ coverage:** >90% of products in the bundled seed DB have at least a category-average CO₂e estimate (not necessarily a product-specific LCA value)
 - [ ] **NFR-07**: Eating disorder safety nets: the app refuses to accept daily calorie targets below 1,200 kcal or goals implying BMI below 17.5 without surfacing a warning and a relevant professional resource / helpline link
 
 ### Accessibility
@@ -203,6 +203,7 @@ Deferred to post-v1. Not in current roadmap.
 | AI meal photo recognition | v2+ (accuracy problems at current state of art) |
 | Carbon footprint forecasting beyond food | Long-term vision |
 | Restaurant menus / CO₂-optimized dining recommendations | Long-term vision |
+| Calendar-month aggregate view (monthly CO₂/nutrition summary) | Resolved: 30-day rolling trend on Data Analysis screen is sufficient for v1; true monthly view deferred to v2 |
 
 ---
 
