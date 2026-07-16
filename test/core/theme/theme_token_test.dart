@@ -47,7 +47,7 @@ void main() {
     );
 
     test('Test 8: buildLightTheme builds without throwing', () {
-      expect(() => buildLightTheme(), returnsNormally);
+      expect(buildLightTheme, returnsNormally);
     });
   });
 
@@ -69,7 +69,7 @@ void main() {
     );
 
     test('Test 8: buildDarkTheme builds without throwing', () {
-      expect(() => buildDarkTheme(), returnsNormally);
+      expect(buildDarkTheme, returnsNormally);
     });
   });
 }
