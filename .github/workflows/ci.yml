@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+
+  analyze-test-android:
+    name: Analyze, Test & Build (Android)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter 3.44.6
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+          channel: 'stable'
+          cache: true
+          cache-key: flutter-${{ hashFiles('pubspec.lock') }}
+
+      - name: Restore pub cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-cache-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            pub-cache-${{ runner.os }}-
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: SDK blocklist audit (PRIV-07)
+        run: dart run scripts/check_privacy_deps.dart pubspec.lock .privacy-blocklist.yaml
+
+      - name: Analyze
+        run: flutter analyze --no-fatal-warnings
+
+      - name: Run tests
+        run: dart test
+
+      - name: Restore build cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/
+            .dart_tool/
+          key: build-android-${{ runner.os }}-${{ hashFiles('pubspec.lock', 'lib/**') }}
+          restore-keys: |
+            build-android-${{ runner.os }}-
+
+      - name: Build APK (debug)
+        run: flutter build apk --debug
+
+  build-ios:
+    name: Build iOS (no codesign)
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter 3.44.6
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.6'
+          channel: 'stable'
+          cache: true
+          cache-key: flutter-${{ hashFiles('pubspec.lock') }}
+
+      - name: Restore pub cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.pub-cache
+          key: pub-cache-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            pub-cache-${{ runner.os }}-
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Remove extended attributes from Flutter (Xcode 26 workaround)
+        run: xattr -cr "$HOME/flutter" 2>/dev/null || true
+
+      - name: Build iOS (no codesign)
+        run: flutter build ios --no-codesign
