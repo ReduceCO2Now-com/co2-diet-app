@@ -29,6 +29,10 @@ dev_dependencies:
   build_runner: 2.15.1
   # custom_lint removed — riverpod_lint 3.1.4 migrated from custom_lint to
   # analysis_server_plugin; the two packages' analyzer constraints are mutually exclusive.
+  # drift_dev 2.34.0 — cannot upgrade to 2.34.4 because freezed 3.2.6-dev.1
+  # requires analyzer ^12 while drift_dev >=2.34.1+1 requires analyzer ^13.
+  # The 'dart run drift_dev schema dump' CLI is broken with drift 2.34.2
+  # (drift3_preview API mismatch). Use tool/generate_schema_v1.dart instead.
   drift_dev: 2.34.0
   flutter_test:
     sdk: flutter
