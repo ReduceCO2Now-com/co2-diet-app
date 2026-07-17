@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-07-17T08:56:49.223Z"
+last_updated: "2026-07-17T09:33:24.624Z"
 progress:
   total_phases: 1
   completed_phases: 0
@@ -128,7 +128,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-17T08:54:00Z
+**Last session:** 2026-07-17T09:32:11.795Z
 **Stopped at:** Completed 01-06-PLAN.md (CI privacy pipeline: blocklist + audit script + GitHub Actions)
 **Next action:** Execute Plan 01-03 (Mifflin-St Jéor domain layer + target calculator) or continue remaining Phase 1 plans.
 **Suggested next command:** `/gsd-execute-phase 1 --plan 03`
@@ -140,3 +140,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ---
 
 *State updated: 2026-07-17 after Plan 01-06 execution*
+
+## Decisions
+
+- [Phase ?]: Freezed 3.x abstract class pattern
+- [Phase ?]: Pure Dart domain test runner pattern
+- [Phase ?]: TDEE safety clamp for pathological inputs
