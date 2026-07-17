@@ -36,8 +36,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 - **Milestone:** v1 launch
 - **Phase:** 01-foundations-sync-safe-schema (in progress)
-- **Plan:** 01-04 complete (repository layer + DI providers + ProfileNotifier)
-- **Status:** Phase 1 execution in progress; 5 of 7 plans complete (01-01, 01-02, 01-03, 01-04, 01-06)
+- **Plan:** 01-05 in progress — awaiting checkpoint:human-verify (Tasks 1 + 2 done, checkpoint pending)
+- **Status:** Phase 1 execution in progress; 5 of 7 plans complete (01-01, 01-02, 01-03, 01-04, 01-06); 01-05 at checkpoint
 - **Progress:** [██░░░░░░░░] 8%
 - **v1 requirements:** 6 / 75 delivered (CO2-04, PROF-01 through PROF-05, PRIV-07)
 
@@ -133,10 +133,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-17T09:38:53Z
-**Stopped at:** Completed 01-04-PLAN.md (repository layer + DI providers + ProfileNotifier)
-**Next action:** Execute Plan 01-05 (Profile screen: real styled Flutter screen using DESIGN.md tokens).
-**Suggested next command:** `/gsd-execute-phase 1 --plan 05`
+**Last session:** 2026-07-17T09:42:45Z
+**Stopped at:** 01-05 checkpoint:human-verify — Tasks 1 (001da90) and 2 (c91ade2) done; awaiting visual verification
+**Next action:** Run `flutter run`, complete 10-point visual checklist, reply "approved" to resume.
+**Suggested next command:** `/gsd-execute-phase 1 --plan 05 --resume` (after checkpoint approval)
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
@@ -148,6 +148,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Decisions
 
+- [Phase 01-05]: Riverpod 3.x @riverpod class ProfileNotifier generates profileProvider (not profileNotifierProvider)
+- [Phase 01-05]: DropdownButtonFormField.initialValue replaces deprecated .value (Flutter 3.33+)
+- [Phase 01-05]: withValues(alpha:) over withOpacity() for Color (deprecated)
+- [Phase 01-05]: unawaited() for fire-and-forget Riverpod notifier calls in UI callbacks
 - [Phase ?]: Freezed 3.x abstract class pattern
 - [Phase ?]: Pure Dart domain test runner pattern
 - [Phase ?]: TDEE safety clamp for pathological inputs
