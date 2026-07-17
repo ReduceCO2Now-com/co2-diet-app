@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-07-17T09:40:04.364Z"
+last_updated: "2026-07-17T10:46:43.976Z"
 progress:
   total_phases: 1
   completed_phases: 0
@@ -35,11 +35,11 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 01-foundations-sync-safe-schema (in progress)
-- **Plan:** 01-06 complete; 01-07 is the final remaining Phase 1 plan
-- **Status:** Phase 1 execution in progress; 6 of 7 plans complete (01-01, 01-02, 01-03, 01-04, 01-05, 01-06); 01-07 remaining
-- **Progress:** [███░░░░░░░] 10%
-- **v1 requirements:** 12 / 75 delivered (CO2-04, PROF-01 through PROF-05, PRIV-07 — all closed by 01-05)
+- **Phase:** 01-foundations-sync-safe-schema — COMPLETE (all 7 plans done)
+- **Plan:** 01-07 complete — Phase 1 DONE
+- **Status:** Phase 1 execution complete; all 7 plans done (01-01 through 01-07); Phase 2 next
+- **Progress:** [█░░░░░░░░░] 11% (1 of 9 phases complete)
+- **v1 requirements:** 12 / 75 delivered (CO2-04, PROF-01 through PROF-05, PRIV-07)
 
 ```
 [░░░░░░░░░░░░░░░░░░░░] 1%
@@ -59,6 +59,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [x] Plan 01-04 — Repository layer + DI providers + ProfileNotifier AsyncNotifier — COMPLETE
 - [x] Plan 01-05 — go_router + ProfileScreen (7 fields, unit-aware, auto-save, targets, override) + SettingsScreen (PRIV-07) — COMPLETE
 - [x] Plan 01-06 — CI privacy pipeline (.privacy-blocklist.yaml + check_privacy_deps.dart + GitHub Actions ci.yml) — COMPLETE
+- [x] Plan 01-07 — Wave 0 test suite: 6 test files, 34 tests green (Mifflin TDEE, Drift DAOs, schema, blocklist subprocess, theme tokens) — COMPLETE
 
 ---
 
@@ -67,8 +68,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - Requirements defined: 75 v1 (+ 15 deferred to v2)
 - Requirements mapped to phases: 75 / 75 (100% coverage)
 - Phases planned: 9 (target: fine granularity 8–12) ✓
-- Plans executed: 6 (01-01 + 01-02 + 01-03 + 01-04 + 01-05 + 01-06 complete)
-- Verifications passed: 8
+- Plans executed: 7 (01-01 through 01-07 complete — Phase 1 DONE)
+- Verifications passed: 9
 - Total sessions: 4
 
 ---
@@ -134,10 +135,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-17T10:28:20Z
-**Stopped at:** 01-05 complete — all 3 tasks done, checkpoint approved, SUMMARY.md committed
-**Next action:** Execute plan 01-07 (final Phase 1 plan)
-**Suggested next command:** `/gsd-execute-phase 1 --plan 07`
+**Last session:** 2026-07-17T11:01:00Z
+**Stopped at:** 01-07 complete — all 3 tasks done, 34 tests green, SUMMARY.md committed
+**Next action:** Begin Phase 2 planning (food search + barcode scanning + meal logging)
+**Suggested next command:** `/gsd-plan-phase 2`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
@@ -145,7 +146,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ---
 
-*State updated: 2026-07-17 after Plan 01-04 execution*
+*State updated: 2026-07-17 after Plan 01-07 execution — Phase 1 COMPLETE*
 
 ## Decisions
 
@@ -153,6 +154,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 01-05]: DropdownButtonFormField.initialValue replaces deprecated .value (Flutter 3.33+)
 - [Phase 01-05]: withValues(alpha:) over withOpacity() for Color (deprecated)
 - [Phase 01-05]: unawaited() for fire-and-forget Riverpod notifier calls in UI callbacks
+- [Phase 01-07]: flutter test required for Drift DAO tests — app_database.dart imports drift_flutter which imports dart:ui; pure dart test cannot run Flutter-dependent test files
+- [Phase 01-07]: Drift table names include _table suffix (user_profile_table, consent_records_table) — Drift converts class name to snake_case verbatim including "Table" suffix
+- [Phase 01-07]: import 'package:drift/drift.dart' hide isNotNull — avoids matcher name collision when both drift and flutter_test are imported
 - [Phase ?]: Freezed 3.x abstract class pattern
-- [Phase ?]: Pure Dart domain test runner pattern
 - [Phase ?]: TDEE safety clamp for pathological inputs

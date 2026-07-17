@@ -15,7 +15,7 @@
 
 ## Phases
 
-- [ ] **Phase 1: Foundations & Sync-Safe Schema** — Drift v1 with HLC/tombstones/dirty flags/consent/CO₂ methodology version, DI, router, theme, CI dependency-audit pipeline, thinnest E2E vertical slice
+- [x] **Phase 1: Foundations & Sync-Safe Schema** — Drift v1 with HLC/tombstones/dirty flags/consent/CO₂ methodology version, DI, router, theme, CI dependency-audit pipeline, thinnest E2E vertical slice (completed 2026-07-17)
 - [ ] **Phase 2: Food Catalog Ingest & Search** — OFF seed DB ingest, FTS5 index, bundled starter pack, search UI + API fallback, benchmarked <1s on low-end Android
 - [ ] **Phase 3: Barcode Scanning & CO₂ Factor Table** — mobile_scanner integration, real-device barcode verification, product-to-CO₂ factor prototype, custom-food fallback
 - [ ] **Phase 4: Meal Logging Core** — Breakfast/Lunch/Dinner/Snack slots, portion units, Recent, Favorites, Custom foods, personal overrides, edit/delete/duplicate, offline-first, <10s meal-log verified
@@ -143,7 +143,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundations & Sync-Safe Schema | 6/7 | In Progress|  |
+| 1. Foundations & Sync-Safe Schema | 7/7 | Complete   | 2026-07-17 |
 | 2. Food Catalog Ingest & Search | 0/0 | Not started | - |
 | 3. Barcode Scanning & CO₂ Factor Table | 0/0 | Not started | - |
 | 4. Meal Logging Core | 0/0 | Not started | - |
