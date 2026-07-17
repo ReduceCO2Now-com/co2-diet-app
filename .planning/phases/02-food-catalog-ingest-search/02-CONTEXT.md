@@ -61,7 +61,6 @@ Ship a fast, offline, high-coverage food catalog: an OFF seed database ingested 
 - **Minimum chars:** 2 characters before query fires
 - **Matching:** FTS5 prefix matching (`*` suffix on query terms) — no substring, no umlaut/ASCII folding in Phase 2
 - **Indexed columns:** `product_name`, `product_name_en`, `brand` — all three searchable
-- **Column weighting:** `product_name_en` gets higher BM25 weight (English UI, English-named products rank above German-named equivalents when English name is available)
 - **Multi-word queries:** AND logic — all terms must match
 - **Result ranking:** exact `product_name`/`product_name_en` match boosted to top, then BM25 for the rest
 - **Result count:** 25 from local FTS5
@@ -104,7 +103,7 @@ Ship a fast, offline, high-coverage food catalog: an OFF seed database ingested 
 ### Claude's Discretion
 - Drift DAO design for food catalog tables (off_ref reads vs. user-catalog writes)
 - Riverpod provider / state management structure for the search screen
-- Exact FTS5 `CREATE VIRTUAL TABLE` syntax, tokenizer config, and column weight values
+- Exact FTS5 `CREATE VIRTUAL TABLE` syntax, tokenizer config, and per-column BM25 weight values (equal weight is the safe default; weighting between `product_name`, `product_name_en`, and `brand` is an open implementation detail)
 - zstd vs. lz4 compression algorithm choice
 - Error state widget visual design details
 - Bottom sheet animation / drag-to-dismiss specifics
