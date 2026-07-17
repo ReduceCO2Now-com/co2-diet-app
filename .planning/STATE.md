@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
-status: completed
-last_updated: "2026-07-17T08:50:07.548Z"
+status: executing
+last_updated: "2026-07-17T08:56:49.223Z"
 progress:
   total_phases: 1
   completed_phases: 0
@@ -36,10 +36,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 - **Milestone:** v1 launch
 - **Phase:** 01-foundations-sync-safe-schema (in progress)
-- **Plan:** 01-02 complete (Sync-safe Drift schema + HLC + DAOs)
-- **Status:** Phase 1 execution in progress; 2 of 7 plans complete
+- **Plan:** 01-06 complete (CI privacy pipeline: blocklist + audit script + GitHub Actions)
+- **Status:** Phase 1 execution in progress; 3 of 7 plans complete (01-01, 01-02, 01-06)
 - **Progress:** [░░░░░░░░░░] 0%
-- **v1 requirements:** 5 / 75 delivered (CO2-04, PROF-01 through PROF-05)
+- **v1 requirements:** 6 / 75 delivered (CO2-04, PROF-01 through PROF-05, PRIV-07)
 
 ```
 [░░░░░░░░░░░░░░░░░░░░] 1%
@@ -55,6 +55,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [x] Phase 1 planning — complete (7 plans created)
 - [x] Plan 01-01 — Flutter scaffold + pubspec + theme module — COMPLETE
 - [x] Plan 01-02 — Sync-safe Drift schema (HLC + SyncSafeTable + DAOs + codegen) — COMPLETE
+- [x] Plan 01-06 — CI privacy pipeline (.privacy-blocklist.yaml + check_privacy_deps.dart + GitHub Actions ci.yml) — COMPLETE
 
 ---
 
@@ -63,9 +64,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - Requirements defined: 75 v1 (+ 15 deferred to v2)
 - Requirements mapped to phases: 75 / 75 (100% coverage)
 - Phases planned: 9 (target: fine granularity 8–12) ✓
-- Plans executed: 2 (01-01 + 01-02 complete)
-- Verifications passed: 2
-- Total sessions: 3
+- Plans executed: 3 (01-01 + 01-02 + 01-06 complete)
+- Verifications passed: 3
+- Total sessions: 4
 
 ---
 
@@ -91,6 +92,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - **int64() → Column<BigInt>:** Drift's `int64()` column builder returns `Column<BigInt>`, not `Column<int>` — used for hlcMillis [01-02]
 - **AppDatabase.connect() named constructor:** Replaces static `openConnection()` factory per very_good_analysis `prefer_constructors_over_static_methods` rule [01-02]
 - **drift_dev schema dump CLI broken vs drift 2.34.2:** Use `tool/generate_schema_v1.dart` (flutter test + NativeDatabase.memory() + sqlite_master) to regenerate schema_v1.json after any schema change [01-02]
+- **CI blocklist prefix matching (not exact names):** catches all transitive firebase_* packages automatically; 14 prefixes committed for PRIV-07 [01-06]
+- **check_privacy_deps.dart manual YAML parsing (no yaml package):** script runs before pub get completes; 2-space indent for list items (not 4-space) [01-06]
+- **CI blocklist audit runs BEFORE flutter analyze:** blocked deps fail fast without wasting compile time [01-06]
 
 ### Open Decisions to Resolve During Execution
 
@@ -124,9 +128,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-17T09:15:00Z
-**Stopped at:** Completed 01-02-PLAN.md (Sync-safe Drift schema + HLC + DAOs)
-**Next action:** Execute Plan 01-03 (Mifflin-St Jéor domain layer + target calculator).
+**Last session:** 2026-07-17T08:54:00Z
+**Stopped at:** Completed 01-06-PLAN.md (CI privacy pipeline: blocklist + audit script + GitHub Actions)
+**Next action:** Execute Plan 01-03 (Mifflin-St Jéor domain layer + target calculator) or continue remaining Phase 1 plans.
 **Suggested next command:** `/gsd-execute-phase 1 --plan 03`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
@@ -135,4 +139,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ---
 
-*State updated: 2026-07-17 after Plan 01-02 execution*
+*State updated: 2026-07-17 after Plan 01-06 execution*

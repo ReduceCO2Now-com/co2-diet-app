@@ -143,7 +143,7 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundations & Sync-Safe Schema | 2/7 | In Progress|  |
+| 1. Foundations & Sync-Safe Schema | 3/7 | In Progress|  |
 | 2. Food Catalog Ingest & Search | 0/0 | Not started | - |
 | 3. Barcode Scanning & CO₂ Factor Table | 0/0 | Not started | - |
 | 4. Meal Logging Core | 0/0 | Not started | - |
