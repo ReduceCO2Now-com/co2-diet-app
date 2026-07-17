@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
-status: planning
-last_updated: "2026-07-16T21:14:56.504Z"
+status: completed
+last_updated: "2026-07-17T08:50:07.548Z"
 progress:
   total_phases: 1
   completed_phases: 0
@@ -36,10 +36,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 - **Milestone:** v1 launch
 - **Phase:** 01-foundations-sync-safe-schema (in progress)
-- **Plan:** 01-01 complete (Flutter scaffold + theme)
-- **Status:** Phase 1 execution started; 1 of 7 plans complete
+- **Plan:** 01-02 complete (Sync-safe Drift schema + HLC + DAOs)
+- **Status:** Phase 1 execution in progress; 2 of 7 plans complete
 - **Progress:** [░░░░░░░░░░] 0%
-- **v1 requirements:** 5 / 75 delivered (PROF-01 through PROF-05)
+- **v1 requirements:** 5 / 75 delivered (CO2-04, PROF-01 through PROF-05)
 
 ```
 [░░░░░░░░░░░░░░░░░░░░] 1%
@@ -54,6 +54,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [x] ROADMAP.md — 9 phases, 100% requirement coverage
 - [x] Phase 1 planning — complete (7 plans created)
 - [x] Plan 01-01 — Flutter scaffold + pubspec + theme module — COMPLETE
+- [x] Plan 01-02 — Sync-safe Drift schema (HLC + SyncSafeTable + DAOs + codegen) — COMPLETE
 
 ---
 
@@ -62,9 +63,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - Requirements defined: 75 v1 (+ 15 deferred to v2)
 - Requirements mapped to phases: 75 / 75 (100% coverage)
 - Phases planned: 9 (target: fine granularity 8–12) ✓
-- Plans executed: 1 (01-01 complete)
-- Verifications passed: 1
-- Total sessions: 2
+- Plans executed: 2 (01-01 + 01-02 complete)
+- Verifications passed: 2
+- Total sessions: 3
 
 ---
 
@@ -86,6 +87,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - **custom_lint removed from stack:** riverpod_lint 3.1.4 migrated to analysis_server_plugin; custom_lint 0.8.1 analyzer ^8 is incompatible with riverpod_lint 3.1.4 analyzer ^12 [01-01]
 - **Dark theme:** Material 3 inverse-surface convention — inverseSurface as dark canvas, inversePrimary as accent; DESIGN.md has no dark token set; flagged for Phase 6 accessibility audit [01-01]
 - **Font loading:** TTFs bundled as local assets via fonts.gstatic.com static download + committed to git; no google_fonts runtime network calls (privacy constraint) [01-01]
+- **SyncSafeTable mixin:** Uses getter syntax `Column<T> get field => ...` (not `late final`) to satisfy very_good_analysis `specify_nonobvious_property_types` rule [01-02]
+- **int64() → Column<BigInt>:** Drift's `int64()` column builder returns `Column<BigInt>`, not `Column<int>` — used for hlcMillis [01-02]
+- **AppDatabase.connect() named constructor:** Replaces static `openConnection()` factory per very_good_analysis `prefer_constructors_over_static_methods` rule [01-02]
+- **drift_dev schema dump CLI broken vs drift 2.34.2:** Use `tool/generate_schema_v1.dart` (flutter test + NativeDatabase.memory() + sqlite_master) to regenerate schema_v1.json after any schema change [01-02]
 
 ### Open Decisions to Resolve During Execution
 
@@ -119,10 +124,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-16T21:13:00Z
-**Stopped at:** Completed 01-01-PLAN.md (Flutter scaffold + theme)
-**Next action:** Execute Plan 01-02 (Sync-safe Drift schema + SyncSafeTable mixin).
-**Suggested next command:** `/gsd-execute-phase 1 --plan 02`
+**Last session:** 2026-07-17T09:15:00Z
+**Stopped at:** Completed 01-02-PLAN.md (Sync-safe Drift schema + HLC + DAOs)
+**Next action:** Execute Plan 01-03 (Mifflin-St Jéor domain layer + target calculator).
+**Suggested next command:** `/gsd-execute-phase 1 --plan 03`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
@@ -130,4 +135,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ---
 
-*State updated: 2026-07-16 after Plan 01-01 execution*
+*State updated: 2026-07-17 after Plan 01-02 execution*

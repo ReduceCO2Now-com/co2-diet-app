@@ -72,7 +72,7 @@ Requirements for initial release. Each maps to a roadmap phase.
 - [ ] **CO2-01**: Each food item has an associated CO₂e estimate (g CO₂e per kg); displayed with a confidence band (High / Medium / Low), never as a single false-precision number
 - [ ] **CO2-02**: System calculates CO₂e per meal, daily total, and weekly total entirely on-device — deterministic, offline, no network dependency
 - [ ] **CO2-03**: CO₂ Calculation Settings screen: user can optionally configure location (country + region), food purchasing source (supermarket / local farm / mix), shopping transport (car / public / walk/bike), cooking method (electric / gas / induction), food storage (fridge size / freezer), household size, food waste level; regional averages used as fallback for all unconfigured fields
-- [ ] **CO2-04**: CO₂ values are stored per row with a `co2_methodology_version` field; when methodology is updated, the app surfaces a non-intrusive "CO₂ estimates updated with methodology v2" announcement
+- [x] **CO2-04**: CO₂ values are stored per row with a `co2_methodology_version` field; when methodology is updated, the app surfaces a non-intrusive "CO₂ estimates updated with methodology v2" announcement
 - [ ] **CO2-05**: Estimate Transparency screen: for each food, user can see the CO₂e value, confidence level, contributing factors, data source, and a link to the full methodology documentation
 - [ ] **CO2-06**: Improvement Opportunities: the app suggests non-judgmental sustainable alternatives with a quantified CO₂ impact delta (e.g., "Replacing today's beef meal with chicken would save approximately 1.2 kg CO₂"); suggestions are optional and never shown unsolicited on every screen
 
@@ -258,7 +258,7 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | CO2-01 | Phase 3 | Pending |
 | CO2-02 | Phase 5 | Pending |
 | CO2-03 | Phase 5 | Pending |
-| CO2-04 | Phase 1 | Pending |
+| CO2-04 | Phase 1 | Complete |
 | CO2-05 | Phase 5 | Pending |
 | CO2-06 | Phase 5 | Pending |
 | DASH-01 | Phase 5 | Pending |
