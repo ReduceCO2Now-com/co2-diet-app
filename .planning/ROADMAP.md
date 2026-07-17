@@ -38,7 +38,7 @@
   2. Clean-layered project (UI → Riverpod Presentation → Application → Domain → Data) compiles on iOS and Android with go_router, theme tokens, Riverpod codegen DI wired up, and Plus Jakarta Sans + Inter fonts bundled as assets.
   3. CI pipeline runs a hardcoded third-party-SDK blocklist audit and fails the build on any Firebase / Sentry / analytics / ad-SDK transitive dependency; open-source license disclosure is generated and viewable in-app.
   4. A user can enter a profile (age/gender/height/weight/activity/dietary/units/goal), see auto-calculated calorie + macro + CO₂ targets (Mifflin-St Jéor + activity factor), and manually override any target — persisted locally.
-  5. Thinnest vertical slice works: developer can manually add a food row → attach it to a meal → placeholder dashboard reflects the change with a persisted CO₂ number and methodology-version tag.
+  5. Thinnest vertical slice works: a user can enter a complete profile → auto-calculated calorie/macro targets persist to the local Drift database → targets survive app restart and are visible on the Profile screen (food/meal tables and dashboard CO₂ are Phase 2–4 scope; this was reinterpreted in 01-CONTEXT.md before planning began).
 **Plans**: TBD
 
 ### Phase 2: Food Catalog Ingest & Search
