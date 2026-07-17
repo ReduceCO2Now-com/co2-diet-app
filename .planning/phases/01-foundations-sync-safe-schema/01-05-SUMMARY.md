@@ -2,7 +2,8 @@
 phase: 01-foundations-sync-safe-schema
 plan: 05
 subsystem: profile-ui
-status: awaiting-checkpoint
+status: complete
+requirements-completed: [PROF-01, PROF-02, PROF-03, PROF-04, PROF-05, PRIV-07]
 tags:
   - go_router
   - profile-screen
@@ -54,9 +55,9 @@ decisions:
   - "CO2 target card completely absent from UI per D-08 (will be added Phase 3)"
   - "unawaited() used for fire-and-forget Riverpod saves from UI callbacks to satisfy discarded_futures lint"
 metrics:
-  duration: 8m
+  duration: 48m
   completed_date: "2026-07-17"
-  tasks_completed: 2
+  tasks_completed: 3
   tasks_total: 3
   files_created: 7
   files_modified: 1
@@ -68,7 +69,7 @@ metrics:
 
 ## Status
 
-**Awaiting human checkpoint verification.** Tasks 1 and 2 are complete and committed. Task 3 is a `checkpoint:human-verify` requiring visual verification on device/simulator.
+**COMPLETE.** All 3 tasks done. Human checkpoint (Task 3) approved — all 10 visual verification checks passed.
 
 ## Tasks Completed
 
@@ -92,9 +93,19 @@ metrics:
 
 **Commit:** c91ade2
 
-## Pending
+## Task 3: Visual verification checkpoint
 
-**Task 3 (checkpoint:human-verify):** Requires developer to run `flutter run` and complete 10 visual verification steps including filling profile data, confirming target calculations, testing override dialog, switching units to imperial, and verifying LicensePage accessibility.
+**Approved by user — all 10 checks passed:**
+1. App opens on /profile — confirmed
+2. All 7 form fields visible — confirmed
+3. Empty height/weight: targets show — dash and "Add height and weight" message — confirmed
+4. Filled profile (Age 30, Male, 175cm, 75kg, Low activity): Calories ~2336 kcal, protein/carbs/fat calculated — confirmed
+5. Override dialog: Calories tapped → enter 2000 → pencil icon shown; Reset to calculated reverts — confirmed
+6. Imperial switch: Height changes to Feet+Inches, Weight changes to lb; targets still calculate — confirmed
+7. Settings tab: "Open source licenses" ListTile present; LicensePage shows drift, flutter_riverpod, go_router — confirmed
+8. Profile tab: previously entered values persisted after tab switch (auto-save via Drift) — confirmed
+9. CO2 target: completely absent from Profile screen — confirmed
+10. No "coming soon" or empty placeholder where CO2 target would be — confirmed
 
 ## Deviations from Plan
 

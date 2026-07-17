@@ -36,10 +36,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 - **Milestone:** v1 launch
 - **Phase:** 01-foundations-sync-safe-schema (in progress)
-- **Plan:** 01-05 in progress — awaiting checkpoint:human-verify (Tasks 1 + 2 done, checkpoint pending)
-- **Status:** Phase 1 execution in progress; 5 of 7 plans complete (01-01, 01-02, 01-03, 01-04, 01-06); 01-05 at checkpoint
-- **Progress:** [██░░░░░░░░] 8%
-- **v1 requirements:** 6 / 75 delivered (CO2-04, PROF-01 through PROF-05, PRIV-07)
+- **Plan:** 01-06 complete; 01-07 is the final remaining Phase 1 plan
+- **Status:** Phase 1 execution in progress; 6 of 7 plans complete (01-01, 01-02, 01-03, 01-04, 01-05, 01-06); 01-07 remaining
+- **Progress:** [███░░░░░░░] 10%
+- **v1 requirements:** 12 / 75 delivered (CO2-04, PROF-01 through PROF-05, PRIV-07 — all closed by 01-05)
 
 ```
 [░░░░░░░░░░░░░░░░░░░░] 1%
@@ -57,6 +57,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [x] Plan 01-02 — Sync-safe Drift schema (HLC + SyncSafeTable + DAOs + codegen) — COMPLETE
 - [x] Plan 01-03 — Domain layer: UserProfile, CalcTargets, TargetCalculator, IProfileRepository — COMPLETE
 - [x] Plan 01-04 — Repository layer + DI providers + ProfileNotifier AsyncNotifier — COMPLETE
+- [x] Plan 01-05 — go_router + ProfileScreen (7 fields, unit-aware, auto-save, targets, override) + SettingsScreen (PRIV-07) — COMPLETE
 - [x] Plan 01-06 — CI privacy pipeline (.privacy-blocklist.yaml + check_privacy_deps.dart + GitHub Actions ci.yml) — COMPLETE
 
 ---
@@ -66,8 +67,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - Requirements defined: 75 v1 (+ 15 deferred to v2)
 - Requirements mapped to phases: 75 / 75 (100% coverage)
 - Phases planned: 9 (target: fine granularity 8–12) ✓
-- Plans executed: 5 (01-01 + 01-02 + 01-03 + 01-04 + 01-06 complete)
-- Verifications passed: 7
+- Plans executed: 6 (01-01 + 01-02 + 01-03 + 01-04 + 01-05 + 01-06 complete)
+- Verifications passed: 8
 - Total sessions: 4
 
 ---
@@ -133,10 +134,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-17T09:42:45Z
-**Stopped at:** 01-05 checkpoint:human-verify — Tasks 1 (001da90) and 2 (c91ade2) done; awaiting visual verification
-**Next action:** Run `flutter run`, complete 10-point visual checklist, reply "approved" to resume.
-**Suggested next command:** `/gsd-execute-phase 1 --plan 05 --resume` (after checkpoint approval)
+**Last session:** 2026-07-17T10:28:20Z
+**Stopped at:** 01-05 complete — all 3 tasks done, checkpoint approved, SUMMARY.md committed
+**Next action:** Execute plan 01-07 (final Phase 1 plan)
+**Suggested next command:** `/gsd-execute-phase 1 --plan 07`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
