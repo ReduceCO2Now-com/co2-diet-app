@@ -88,7 +88,6 @@ Ship a fast, offline, high-coverage food catalog: an OFF seed database ingested 
   - `product_name_en` (English name, nullable)
   - `brand`
   - `calories_100g`, `protein_100g`, `carbs_100g`, `fat_100g`
-  - `fiber_100g`, `salt_100g`, `sugar_100g` (included now — confirmed Phase 4/5 consumers)
   - `categories_tags` (comma-separated or JSON string — Phase 4+ filter consumer)
   - **Excluded:** `nutriscore_grade` (no confirmed UI consumer; add via migration when needed)
 - **Compression:** `off_reference.sqlite` is bundled compressed (zstd or lz4) as a Flutter asset; decompressed on first launch to the app documents directory
@@ -142,7 +141,7 @@ Ship a fast, offline, high-coverage food catalog: an OFF seed database ingested 
 - "No shimmer for local FTS5 — showing it would misrepresent the app's actual speed. Reserve shimmer for the API fallback path only." (explicit user decision)
 - "No Nutri-Score badge in Phase 2 UI — no confirmed consumer. Column excluded from seed DB until a phase actually needs it." (reversed an earlier momentary choice; this is the confirmed decision)
 - "No-results states must be distinct: genuine no-match vs. offline vs. network-failure each get a different message." (user's honesty principle — same as '—' for missing data, no fake CO₂)
-- "Fiber/salt/sugar/categories_tags included in seed DB now — confirmed Phase 4/5 consumers. Rebuilding the DB later is costlier than including them now." (ingest-once strategy)
+- `categories_tags` included in seed DB now — confirmed Phase 4+ filter consumer. Rebuilding the DB later is costlier than including it now.
 - `product_name_en` alongside `product_name` — EU products with German primary names still findable via English search terms
 
 </specifics>
@@ -155,6 +154,7 @@ Ship a fast, offline, high-coverage food catalog: an OFF seed database ingested 
 - **Nutri-Score badge on result rows** — no confirmed phase; add when a phase explicitly requires it
 - **Data-saver / metered connection check for API** — Phase 8 (where large OFF pack downloads are the concern)
 - **"Add custom food" link on no-results state** — Phase 4 (once My Foods / custom food creation exists)
+- **fiber_100g, salt_100g, sugar_100g columns in seed DB** — no confirmed Phase 2 consumer; Phase 4 extends the ingest schema when full nutrition display is built
 - **Food thumbnails from OFF CDN** — Phase 4–5 at earliest; requires cached_network_image and CDN dependency
 
 </deferred>
