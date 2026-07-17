@@ -1,0 +1,18 @@
+# Privacy SDK blocklist — package name prefixes that are BANNED from pubspec.lock.
+# Any transitive dependency matching a prefix causes CI to fail.
+# To add/remove entries: open a PR; the change is auditable via git history.
+blocked_prefixes:
+  - firebase_
+  - crashlytics
+  - amplitude_
+  - mixpanel_
+  - sentry_
+  - segment_
+  - datadog_
+  - onesignal_
+  - appsflyer_
+  - adjust_
+  - braze_
+  - clevertap
+  - leanplum
+  - moengage
