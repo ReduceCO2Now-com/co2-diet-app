@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-07-17T09:33:24.624Z"
+last_updated: "2026-07-17T09:40:04.364Z"
 progress:
   total_phases: 1
   completed_phases: 0
@@ -36,9 +36,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 - **Milestone:** v1 launch
 - **Phase:** 01-foundations-sync-safe-schema (in progress)
-- **Plan:** 01-06 complete (CI privacy pipeline: blocklist + audit script + GitHub Actions)
-- **Status:** Phase 1 execution in progress; 3 of 7 plans complete (01-01, 01-02, 01-06)
-- **Progress:** [░░░░░░░░░░] 0%
+- **Plan:** 01-04 complete (repository layer + DI providers + ProfileNotifier)
+- **Status:** Phase 1 execution in progress; 5 of 7 plans complete (01-01, 01-02, 01-03, 01-04, 01-06)
+- **Progress:** [██░░░░░░░░] 8%
 - **v1 requirements:** 6 / 75 delivered (CO2-04, PROF-01 through PROF-05, PRIV-07)
 
 ```
@@ -55,6 +55,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [x] Phase 1 planning — complete (7 plans created)
 - [x] Plan 01-01 — Flutter scaffold + pubspec + theme module — COMPLETE
 - [x] Plan 01-02 — Sync-safe Drift schema (HLC + SyncSafeTable + DAOs + codegen) — COMPLETE
+- [x] Plan 01-03 — Domain layer: UserProfile, CalcTargets, TargetCalculator, IProfileRepository — COMPLETE
+- [x] Plan 01-04 — Repository layer + DI providers + ProfileNotifier AsyncNotifier — COMPLETE
 - [x] Plan 01-06 — CI privacy pipeline (.privacy-blocklist.yaml + check_privacy_deps.dart + GitHub Actions ci.yml) — COMPLETE
 
 ---
@@ -64,8 +66,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - Requirements defined: 75 v1 (+ 15 deferred to v2)
 - Requirements mapped to phases: 75 / 75 (100% coverage)
 - Phases planned: 9 (target: fine granularity 8–12) ✓
-- Plans executed: 3 (01-01 + 01-02 + 01-06 complete)
-- Verifications passed: 3
+- Plans executed: 5 (01-01 + 01-02 + 01-03 + 01-04 + 01-06 complete)
+- Verifications passed: 7
 - Total sessions: 4
 
 ---
@@ -95,6 +97,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - **CI blocklist prefix matching (not exact names):** catches all transitive firebase_* packages automatically; 14 prefixes committed for PRIV-07 [01-06]
 - **check_privacy_deps.dart manual YAML parsing (no yaml package):** script runs before pub get completes; 2-space indent for list items (not 4-space) [01-06]
 - **CI blocklist audit runs BEFORE flutter analyze:** blocked deps fail fast without wasting compile time [01-06]
+- **DriftProfileRepository imports app_database.dart:** UserProfileTableCompanion and UserProfileRow live in the generated app_database.g.dart part file — the DAO file alone does not re-export them [01-04]
+- **AsyncValue.value not valueOrNull in Riverpod 3.3.2:** valueOrNull does not exist; use state.value which returns T? (null in loading/error states) [01-04]
+- **HLC Phase-1 placeholders:** hlcNodeId='local', hlcCounter=0 in DriftProfileRepository; Phase 7 replaces with full HLC clock using stable device UUID [01-04]
 
 ### Open Decisions to Resolve During Execution
 
@@ -128,10 +133,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-17T09:32:11.795Z
-**Stopped at:** Completed 01-06-PLAN.md (CI privacy pipeline: blocklist + audit script + GitHub Actions)
-**Next action:** Execute Plan 01-03 (Mifflin-St Jéor domain layer + target calculator) or continue remaining Phase 1 plans.
-**Suggested next command:** `/gsd-execute-phase 1 --plan 03`
+**Last session:** 2026-07-17T09:38:53Z
+**Stopped at:** Completed 01-04-PLAN.md (repository layer + DI providers + ProfileNotifier)
+**Next action:** Execute Plan 01-05 (Profile screen: real styled Flutter screen using DESIGN.md tokens).
+**Suggested next command:** `/gsd-execute-phase 1 --plan 05`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
@@ -139,7 +144,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ---
 
-*State updated: 2026-07-17 after Plan 01-06 execution*
+*State updated: 2026-07-17 after Plan 01-04 execution*
 
 ## Decisions
 
