@@ -2,14 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
-status: executing
-last_updated: "2026-07-17T10:46:43.976Z"
+status: planning
+stopped_at: 01-07 complete — all 3 tasks done, 34 tests green, SUMMARY.md committed
+last_updated: "2026-07-17T14:03:17.923Z"
 progress:
-  total_phases: 1
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_phases: 9
+  completed_phases: 1
+  total_plans: 7
+  completed_plans: 7
+  percent: 11
 ---
 
 # STATE: CO₂ Diet
@@ -37,7 +38,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - **Milestone:** v1 launch
 - **Phase:** 01-foundations-sync-safe-schema — COMPLETE (all 7 plans done)
 - **Plan:** 01-07 complete — Phase 1 DONE
-- **Status:** Phase 1 execution complete; all 7 plans done (01-01 through 01-07); Phase 2 next
+- **Status:** Ready to plan
 - **Progress:** [█░░░░░░░░░] 11% (1 of 9 phases complete)
 - **v1 requirements:** 12 / 75 delivered (CO2-04, PROF-01 through PROF-05, PRIV-07)
 
