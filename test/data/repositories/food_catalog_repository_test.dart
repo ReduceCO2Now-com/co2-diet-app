@@ -20,12 +20,15 @@ import 'package:mocktail/mocktail.dart';
 /// Minimal interface for FoodCatalogDao used by tests.
 ///
 /// We mock this interface rather than importing the real DAO to keep tests
-/// free of Drift/SQLite dependencies.
+/// free of Drift/SQLite dependencies. Single-member abstract class is
+/// intentional: mocktail requires a class to generate Mock instances.
+// ignore: one_member_abstracts
 abstract class _FoodCatalogDaoLike {
   Future<List<FoodItem>> searchLocalFoods(String query);
 }
 
 /// Minimal interface for OffApiClient used by tests.
+// ignore: one_member_abstracts
 abstract class _OffApiClientLike {
   Future<List<FoodItem>> searchOff(String query);
 }
@@ -149,7 +152,7 @@ void main() {
     });
 
     test('NetworkException implements Exception', () {
-      final e = const NetworkException('test error');
+      const e = NetworkException('test error');
       expect(e, isA<Exception>());
     });
   });
