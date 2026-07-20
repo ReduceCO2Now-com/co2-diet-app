@@ -3,8 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: planning
-stopped_at: Phase 2 context gathered
-last_updated: "2026-07-17T17:37:46.233Z"
+last_updated: "2026-07-20T16:04:51.267Z"
 progress:
   total_phases: 9
   completed_phases: 1
@@ -36,11 +35,11 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 01-foundations-sync-safe-schema — COMPLETE (all 7 plans done)
-- **Plan:** 01-07 complete — Phase 1 DONE
-- **Status:** Ready to plan
-- **Progress:** [█░░░░░░░░░] 11% (1 of 9 phases complete)
-- **v1 requirements:** 12 / 75 delivered (CO2-04, PROF-01 through PROF-05, PRIV-07)
+- **Phase:** 02-food-catalog-ingest-search — IN PROGRESS (1 of 7 plans done)
+- **Plan:** 02-01 complete — Wave 0 test scaffolds + FTS5 build config
+- **Status:** Executing
+- **Progress:** [█░░░░░░░░░] 11% (1 of 9 phases, Phase 2 in progress)
+- **v1 requirements:** 15 / 75 delivered (CO2-04, PROF-01 through PROF-05, PRIV-07, LOG-01, LOG-02, NFR-06)
 
 ```
 [░░░░░░░░░░░░░░░░░░░░] 1%
@@ -136,10 +135,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-17T17:37:46.225Z
-**Stopped at:** Phase 2 context gathered
-**Next action:** Begin Phase 2 planning (food search + barcode scanning + meal logging)
-**Suggested next command:** `/gsd-plan-phase 2`
+**Last session:** 2026-07-20T16:04:51.262Z
+**Stopped at:** Completed 02-01-PLAN.md (Wave 0 test scaffolds + FTS5 build config)
+**Next action:** Execute Plan 02-02 (FoodCatalogDao + FTS5 schema)
+**Suggested next command:** `/gsd-execute-phase 2` (plan 02-02)
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
@@ -160,3 +159,12 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 01-07]: import 'package:drift/drift.dart' hide isNotNull — avoids matcher name collision when both drift and flutter_test are imported
 - [Phase ?]: Freezed 3.x abstract class pattern
 - [Phase ?]: TDEE safety clamp for pathological inputs
+- [Phase 02-01]: build.yaml uses targets.$default so drift_dev FTS5 options apply globally without enumerating individual Dart files
+- [Phase 02-01]: Wave 0 unit stubs use group-level skip for atomic failure detection when production class is absent
+- [Phase 02-01]: Integration benchmark stubs use markTestSkipped() inside testWidgets body (not skip: arg) to exit cleanly without device
+
+## Performance Metrics
+
+| Phase | Plan | Duration | Notes |
+|-------|------|----------|-------|
+| Phase 02 P01 | 6 | 3 tasks | 5 files |

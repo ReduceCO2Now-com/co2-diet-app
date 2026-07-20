@@ -60,7 +60,7 @@ Plans:
   4. NFR-06(a) verified: given a benchmark list of ~200 commonly logged EU/German foods, >90% return a usable result from the local DB without triggering the API fallback.
 **Plans**: 7 plans
 Plans:
-- [ ] 02-01-PLAN.md — Wave 0 test stubs + build.yaml FTS5 config
+- [x] 02-01-PLAN.md — Wave 0 test stubs + build.yaml FTS5 config
 - [ ] 02-02-PLAN.md — Python OFF JSONL ingest pipeline (tools/ingest_off.py + tools/README.md)
 - [ ] 02-03-PLAN.md — Dart data layer: pubspec deps, UserFoodCacheTable, AppDatabase ATTACH, FoodCatalogDao, FoodItem, IFoodCatalogRepository, FirstLaunchExtractor
 - [ ] 02-04-PLAN.md — OffApiClient + FoodCatalogRepository + DI providers + main.dart startup wiring
@@ -160,7 +160,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundations & Sync-Safe Schema | 7/7 | Complete   | 2026-07-17 |
-| 2. Food Catalog Ingest & Search | 0/7 | Planned | - |
+| 2. Food Catalog Ingest & Search | 1/7 | In Progress|  |
 | 3. Barcode Scanning & CO₂ Factor Table | 0/0 | Not started | - |
 | 4. Meal Logging Core | 0/0 | Not started | - |
 | 5. Full Local App (Local Mode Shippable) | 0/0 | Not started | - |

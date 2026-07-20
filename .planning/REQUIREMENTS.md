@@ -46,8 +46,8 @@ Requirements for initial release. Each maps to a roadmap phase.
 
 ### Food Logging *(the heart of the app)*
 
-- [ ] **LOG-01**: User can search foods by name with <1 second response time against the local bundled food database (FTS5 index)
-- [ ] **LOG-02**: Food search falls back to the Open Food Facts API when online and local results are fewer than a threshold; API results are cached locally for future offline use
+- [x] **LOG-01**: User can search foods by name with <1 second response time against the local bundled food database (FTS5 index)
+- [x] **LOG-02**: Food search falls back to the Open Food Facts API when online and local results are fewer than a threshold; API results are cached locally for future offline use
 - [ ] **LOG-03**: User can scan a product barcode using the device camera; successful scan autofills food name, nutritional values, and CO₂e estimate; **P0 acceptance criterion: barcode scanning must be tested and verified on at least one real iOS device and one real Android device before launch** (simulator verification alone is not sufficient)
 - [ ] **LOG-04**: When barcode scan finds no match (online or offline), user is offered the "Add as custom food" fallback — no dead-end UX
 - [ ] **LOG-05**: User can add food to Breakfast, Lunch, Dinner, or Snack meal slots
@@ -135,7 +135,7 @@ Requirements for initial release. Each maps to a roadmap phase.
 - [ ] **NFR-03**: App tone is calm, supportive, trustworthy, and motivating — validated via Self-Assessment Manikin (SAM) test in user testing before launch; app must not feel stressful, judgmental, or pressuring
 - [ ] **NFR-04**: No manipulative gamification: no streak-shame, no loss-aversion notifications, no aggressive account-creation nudging in Local Mode
 - [ ] **NFR-05**: CO₂ data is presented with honest uncertainty — confidence bands and ranges, never false-precision numbers (e.g., display "~4.7 kg CO₂" or "4–5 kg CO₂", not "4.732 kg CO₂")
-- [ ] **NFR-06**: Food database reliability — two testable acceptance criteria before launch: (a) **Search hit rate:** given a benchmark list of ~200 commonly logged foods in the EU/German market, >90% return a usable result from the local DB without requiring an API fallback; (b) **CO₂ coverage:** >90% of products in the bundled seed DB have at least a category-average CO₂e estimate (not necessarily a product-specific LCA value)
+- [x] **NFR-06**: Food database reliability — two testable acceptance criteria before launch: (a) **Search hit rate:** given a benchmark list of ~200 commonly logged foods in the EU/German market, >90% return a usable result from the local DB without requiring an API fallback; (b) **CO₂ coverage:** >90% of products in the bundled seed DB have at least a category-average CO₂e estimate (not necessarily a product-specific LCA value)
 - [ ] **NFR-07**: Eating disorder safety nets: the app refuses to accept daily calorie targets below 1,200 kcal or goals implying BMI below 17.5 without surfacing a warning and a relevant professional resource / helpline link
 
 ### Accessibility
@@ -238,8 +238,8 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | PROF-04 | Phase 1 | Complete |
 | PROF-05 | Phase 1 | Complete |
 | PROF-06 | Phase 5 | Pending |
-| LOG-01 | Phase 2 | Pending |
-| LOG-02 | Phase 2 | Pending |
+| LOG-01 | Phase 2 | Complete |
+| LOG-02 | Phase 2 | Complete |
 | LOG-03 | Phase 3 | Pending |
 | LOG-04 | Phase 3 | Pending |
 | LOG-05 | Phase 4 | Pending |
@@ -300,7 +300,7 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | NFR-03 | Phase 6 | Pending |
 | NFR-04 | Phase 6 | Pending |
 | NFR-05 | Phase 5 | Pending |
-| NFR-06 | Phase 2 | Pending |
+| NFR-06 | Phase 2 | Complete |
 | NFR-07 | Phase 6 | Pending |
 | ACC-01 | Phase 6 | Pending |
 | ACC-02 | Phase 6 | Pending |
