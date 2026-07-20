@@ -205,10 +205,11 @@ def ingest(jsonl_gz_path: str, out_db_path: str, sample: int = 0) -> None:
         "INSERT INTO products_fts(rowid, product_name, product_name_en, brand) "
         "SELECT rowid, product_name, product_name_en, brand FROM products"
     )
+    conn.commit()
     # page_size pragma must be set before VACUUM to take effect.
+    # VACUUM cannot run inside a transaction, so we commit first.
     conn.execute("PRAGMA page_size = 4096")
     conn.execute("VACUUM")
-    conn.commit()
     conn.close()
 
     print("[ingest] Done.", file=sys.stderr)
