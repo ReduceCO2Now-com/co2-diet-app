@@ -28,6 +28,9 @@ dependencies:
   # openfoodfacts 3.30.2 — Official OFF Dart client for API fallback search.
   # [VERIFIED: pub.dev, openfoodfacts.org publisher]
   openfoodfacts: 3.30.2
+  # path is a transitive dep of path_provider; declared directly per
+  # very_good_analysis depend_on_referenced_packages rule.
+  path: ^1.9.1
   path_provider: ^2.1.6
   riverpod_annotation: 4.0.3
   # shimmer 3.0.0 — Skeleton loading rows during OFF API fallback (not for local FTS5).

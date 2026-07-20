@@ -3,6 +3,291 @@
 part of 'app_database.dart';
 
 // ignore_for_file: type=lint
+class UserFoodCacheFts extends Table
+    with
+        TableInfo<UserFoodCacheFts, UserFoodCacheFt>,
+        VirtualTableInfo<UserFoodCacheFts, UserFoodCacheFt> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  UserFoodCacheFts(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _productNameMeta = const VerificationMeta(
+    'productName',
+  );
+  late final GeneratedColumn<String> productName = GeneratedColumn<String>(
+    'product_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: '',
+  );
+  static const VerificationMeta _productNameEnMeta = const VerificationMeta(
+    'productNameEn',
+  );
+  late final GeneratedColumn<String> productNameEn = GeneratedColumn<String>(
+    'product_name_en',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: '',
+  );
+  static const VerificationMeta _brandMeta = const VerificationMeta('brand');
+  late final GeneratedColumn<String> brand = GeneratedColumn<String>(
+    'brand',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: '',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [productName, productNameEn, brand];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'user_food_cache_fts';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<UserFoodCacheFt> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('product_name')) {
+      context.handle(
+        _productNameMeta,
+        productName.isAcceptableOrUnknown(
+          data['product_name']!,
+          _productNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_productNameMeta);
+    }
+    if (data.containsKey('product_name_en')) {
+      context.handle(
+        _productNameEnMeta,
+        productNameEn.isAcceptableOrUnknown(
+          data['product_name_en']!,
+          _productNameEnMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_productNameEnMeta);
+    }
+    if (data.containsKey('brand')) {
+      context.handle(
+        _brandMeta,
+        brand.isAcceptableOrUnknown(data['brand']!, _brandMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_brandMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => const {};
+  @override
+  UserFoodCacheFt map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return UserFoodCacheFt(
+      productName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}product_name'],
+      )!,
+      productNameEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}product_name_en'],
+      )!,
+      brand: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}brand'],
+      )!,
+    );
+  }
+
+  @override
+  UserFoodCacheFts createAlias(String alias) {
+    return UserFoodCacheFts(attachedDatabase, alias);
+  }
+
+  @override
+  bool get dontWriteConstraints => true;
+  @override
+  String get moduleAndArgs =>
+      'fts5(product_name, product_name_en, brand, content=\'user_food_cache_table\', content_rowid=\'rowid\', tokenize=\'unicode61 remove_diacritics 2\', prefix=\'2 3 4\')';
+}
+
+class UserFoodCacheFt extends DataClass implements Insertable<UserFoodCacheFt> {
+  final String productName;
+  final String productNameEn;
+  final String brand;
+  const UserFoodCacheFt({
+    required this.productName,
+    required this.productNameEn,
+    required this.brand,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['product_name'] = Variable<String>(productName);
+    map['product_name_en'] = Variable<String>(productNameEn);
+    map['brand'] = Variable<String>(brand);
+    return map;
+  }
+
+  UserFoodCacheFtsCompanion toCompanion(bool nullToAbsent) {
+    return UserFoodCacheFtsCompanion(
+      productName: Value(productName),
+      productNameEn: Value(productNameEn),
+      brand: Value(brand),
+    );
+  }
+
+  factory UserFoodCacheFt.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return UserFoodCacheFt(
+      productName: serializer.fromJson<String>(json['product_name']),
+      productNameEn: serializer.fromJson<String>(json['product_name_en']),
+      brand: serializer.fromJson<String>(json['brand']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'product_name': serializer.toJson<String>(productName),
+      'product_name_en': serializer.toJson<String>(productNameEn),
+      'brand': serializer.toJson<String>(brand),
+    };
+  }
+
+  UserFoodCacheFt copyWith({
+    String? productName,
+    String? productNameEn,
+    String? brand,
+  }) => UserFoodCacheFt(
+    productName: productName ?? this.productName,
+    productNameEn: productNameEn ?? this.productNameEn,
+    brand: brand ?? this.brand,
+  );
+  UserFoodCacheFt copyWithCompanion(UserFoodCacheFtsCompanion data) {
+    return UserFoodCacheFt(
+      productName: data.productName.present
+          ? data.productName.value
+          : this.productName,
+      productNameEn: data.productNameEn.present
+          ? data.productNameEn.value
+          : this.productNameEn,
+      brand: data.brand.present ? data.brand.value : this.brand,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserFoodCacheFt(')
+          ..write('productName: $productName, ')
+          ..write('productNameEn: $productNameEn, ')
+          ..write('brand: $brand')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(productName, productNameEn, brand);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UserFoodCacheFt &&
+          other.productName == this.productName &&
+          other.productNameEn == this.productNameEn &&
+          other.brand == this.brand);
+}
+
+class UserFoodCacheFtsCompanion extends UpdateCompanion<UserFoodCacheFt> {
+  final Value<String> productName;
+  final Value<String> productNameEn;
+  final Value<String> brand;
+  final Value<int> rowid;
+  const UserFoodCacheFtsCompanion({
+    this.productName = const Value.absent(),
+    this.productNameEn = const Value.absent(),
+    this.brand = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  UserFoodCacheFtsCompanion.insert({
+    required String productName,
+    required String productNameEn,
+    required String brand,
+    this.rowid = const Value.absent(),
+  }) : productName = Value(productName),
+       productNameEn = Value(productNameEn),
+       brand = Value(brand);
+  static Insertable<UserFoodCacheFt> custom({
+    Expression<String>? productName,
+    Expression<String>? productNameEn,
+    Expression<String>? brand,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (productName != null) 'product_name': productName,
+      if (productNameEn != null) 'product_name_en': productNameEn,
+      if (brand != null) 'brand': brand,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  UserFoodCacheFtsCompanion copyWith({
+    Value<String>? productName,
+    Value<String>? productNameEn,
+    Value<String>? brand,
+    Value<int>? rowid,
+  }) {
+    return UserFoodCacheFtsCompanion(
+      productName: productName ?? this.productName,
+      productNameEn: productNameEn ?? this.productNameEn,
+      brand: brand ?? this.brand,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (productName.present) {
+      map['product_name'] = Variable<String>(productName.value);
+    }
+    if (productNameEn.present) {
+      map['product_name_en'] = Variable<String>(productNameEn.value);
+    }
+    if (brand.present) {
+      map['brand'] = Variable<String>(brand.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserFoodCacheFtsCompanion(')
+          ..write('productName: $productName, ')
+          ..write('productNameEn: $productNameEn, ')
+          ..write('brand: $brand, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $UserProfileTableTable extends UserProfileTable
     with TableInfo<$UserProfileTableTable, UserProfileRow> {
   @override
@@ -2029,18 +2314,947 @@ class ConsentRecordsTableCompanion extends UpdateCompanion<ConsentRecord> {
   }
 }
 
+class $UserFoodCacheTableTable extends UserFoodCacheTable
+    with TableInfo<$UserFoodCacheTableTable, UserFoodCacheRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UserFoodCacheTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hlcMillisMeta = const VerificationMeta(
+    'hlcMillis',
+  );
+  @override
+  late final GeneratedColumn<BigInt> hlcMillis = GeneratedColumn<BigInt>(
+    'hlc_millis',
+    aliasedName,
+    false,
+    type: DriftSqlType.bigInt,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hlcCounterMeta = const VerificationMeta(
+    'hlcCounter',
+  );
+  @override
+  late final GeneratedColumn<int> hlcCounter = GeneratedColumn<int>(
+    'hlc_counter',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hlcNodeIdMeta = const VerificationMeta(
+    'hlcNodeId',
+  );
+  @override
+  late final GeneratedColumn<String> hlcNodeId = GeneratedColumn<String>(
+    'hlc_node_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dirtyMeta = const VerificationMeta('dirty');
+  @override
+  late final GeneratedColumn<bool> dirty = GeneratedColumn<bool>(
+    'dirty',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("dirty" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _barcodeMeta = const VerificationMeta(
+    'barcode',
+  );
+  @override
+  late final GeneratedColumn<String> barcode = GeneratedColumn<String>(
+    'barcode',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _productNameMeta = const VerificationMeta(
+    'productName',
+  );
+  @override
+  late final GeneratedColumn<String> productName = GeneratedColumn<String>(
+    'product_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _productNameEnMeta = const VerificationMeta(
+    'productNameEn',
+  );
+  @override
+  late final GeneratedColumn<String> productNameEn = GeneratedColumn<String>(
+    'product_name_en',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _brandMeta = const VerificationMeta('brand');
+  @override
+  late final GeneratedColumn<String> brand = GeneratedColumn<String>(
+    'brand',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _calories100gMeta = const VerificationMeta(
+    'calories100g',
+  );
+  @override
+  late final GeneratedColumn<double> calories100g = GeneratedColumn<double>(
+    'calories100g',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _protein100gMeta = const VerificationMeta(
+    'protein100g',
+  );
+  @override
+  late final GeneratedColumn<double> protein100g = GeneratedColumn<double>(
+    'protein100g',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _carbs100gMeta = const VerificationMeta(
+    'carbs100g',
+  );
+  @override
+  late final GeneratedColumn<double> carbs100g = GeneratedColumn<double>(
+    'carbs100g',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _fat100gMeta = const VerificationMeta(
+    'fat100g',
+  );
+  @override
+  late final GeneratedColumn<double> fat100g = GeneratedColumn<double>(
+    'fat100g',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _categoriesTagsMeta = const VerificationMeta(
+    'categoriesTags',
+  );
+  @override
+  late final GeneratedColumn<String> categoriesTags = GeneratedColumn<String>(
+    'categories_tags',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    hlcMillis,
+    hlcCounter,
+    hlcNodeId,
+    dirty,
+    deletedAt,
+    barcode,
+    productName,
+    productNameEn,
+    brand,
+    calories100g,
+    protein100g,
+    carbs100g,
+    fat100g,
+    categoriesTags,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'user_food_cache_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<UserFoodCacheRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('hlc_millis')) {
+      context.handle(
+        _hlcMillisMeta,
+        hlcMillis.isAcceptableOrUnknown(data['hlc_millis']!, _hlcMillisMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcMillisMeta);
+    }
+    if (data.containsKey('hlc_counter')) {
+      context.handle(
+        _hlcCounterMeta,
+        hlcCounter.isAcceptableOrUnknown(data['hlc_counter']!, _hlcCounterMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcCounterMeta);
+    }
+    if (data.containsKey('hlc_node_id')) {
+      context.handle(
+        _hlcNodeIdMeta,
+        hlcNodeId.isAcceptableOrUnknown(data['hlc_node_id']!, _hlcNodeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcNodeIdMeta);
+    }
+    if (data.containsKey('dirty')) {
+      context.handle(
+        _dirtyMeta,
+        dirty.isAcceptableOrUnknown(data['dirty']!, _dirtyMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('barcode')) {
+      context.handle(
+        _barcodeMeta,
+        barcode.isAcceptableOrUnknown(data['barcode']!, _barcodeMeta),
+      );
+    }
+    if (data.containsKey('product_name')) {
+      context.handle(
+        _productNameMeta,
+        productName.isAcceptableOrUnknown(
+          data['product_name']!,
+          _productNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_productNameMeta);
+    }
+    if (data.containsKey('product_name_en')) {
+      context.handle(
+        _productNameEnMeta,
+        productNameEn.isAcceptableOrUnknown(
+          data['product_name_en']!,
+          _productNameEnMeta,
+        ),
+      );
+    }
+    if (data.containsKey('brand')) {
+      context.handle(
+        _brandMeta,
+        brand.isAcceptableOrUnknown(data['brand']!, _brandMeta),
+      );
+    }
+    if (data.containsKey('calories100g')) {
+      context.handle(
+        _calories100gMeta,
+        calories100g.isAcceptableOrUnknown(
+          data['calories100g']!,
+          _calories100gMeta,
+        ),
+      );
+    }
+    if (data.containsKey('protein100g')) {
+      context.handle(
+        _protein100gMeta,
+        protein100g.isAcceptableOrUnknown(
+          data['protein100g']!,
+          _protein100gMeta,
+        ),
+      );
+    }
+    if (data.containsKey('carbs100g')) {
+      context.handle(
+        _carbs100gMeta,
+        carbs100g.isAcceptableOrUnknown(data['carbs100g']!, _carbs100gMeta),
+      );
+    }
+    if (data.containsKey('fat100g')) {
+      context.handle(
+        _fat100gMeta,
+        fat100g.isAcceptableOrUnknown(data['fat100g']!, _fat100gMeta),
+      );
+    }
+    if (data.containsKey('categories_tags')) {
+      context.handle(
+        _categoriesTagsMeta,
+        categoriesTags.isAcceptableOrUnknown(
+          data['categories_tags']!,
+          _categoriesTagsMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  UserFoodCacheRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return UserFoodCacheRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      hlcMillis: attachedDatabase.typeMapping.read(
+        DriftSqlType.bigInt,
+        data['${effectivePrefix}hlc_millis'],
+      )!,
+      hlcCounter: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}hlc_counter'],
+      )!,
+      hlcNodeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}hlc_node_id'],
+      )!,
+      dirty: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}dirty'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      barcode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}barcode'],
+      ),
+      productName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}product_name'],
+      )!,
+      productNameEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}product_name_en'],
+      ),
+      brand: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}brand'],
+      ),
+      calories100g: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}calories100g'],
+      ),
+      protein100g: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}protein100g'],
+      ),
+      carbs100g: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}carbs100g'],
+      ),
+      fat100g: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}fat100g'],
+      ),
+      categoriesTags: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}categories_tags'],
+      ),
+    );
+  }
+
+  @override
+  $UserFoodCacheTableTable createAlias(String alias) {
+    return $UserFoodCacheTableTable(attachedDatabase, alias);
+  }
+}
+
+class UserFoodCacheRow extends DataClass
+    implements Insertable<UserFoodCacheRow> {
+  /// Primary key: UUID v7 stored as TEXT (time-ordered, globally unique).
+  final String id;
+
+  /// HLC wall-clock component: milliseconds since Unix epoch.
+  /// Stored as int64 (BigInt in Dart) to fit 64-bit epoch millis.
+  final BigInt hlcMillis;
+
+  /// HLC logical counter: tie-breaking for same-millisecond writes.
+  final int hlcCounter;
+
+  /// HLC node identifier: stable device installation UUID (UUID v4).
+  /// Generated once on first app install and persisted in secure storage.
+  final String hlcNodeId;
+
+  /// Dirty flag: true = row has local changes not yet synced to backend.
+  /// Defaults to true on insert — every new row starts dirty until
+  /// sync confirms receipt.
+  final bool dirty;
+
+  /// Tombstone: null = row is live; non-null = row was soft-deleted.
+  /// Soft-deleted rows are retained for 90 days to allow sync to
+  /// propagate the deletion.
+  final DateTime? deletedAt;
+
+  /// EAN barcode; nullable because some API results may lack a barcode.
+  final String? barcode;
+
+  /// Primary product name. Always present — rows with empty product_name
+  /// are rejected at the repository layer before insert.
+  final String productName;
+
+  /// English product name, nullable. Absent for non-English products.
+  final String? productNameEn;
+
+  /// Brand name, nullable.
+  final String? brand;
+
+  /// Energy in kcal per 100 g, nullable when not reported.
+  final double? calories100g;
+
+  /// Protein in g per 100 g, nullable when not reported.
+  final double? protein100g;
+
+  /// Carbohydrates in g per 100 g, nullable when not reported.
+  final double? carbs100g;
+
+  /// Fat in g per 100 g, nullable when not reported.
+  final double? fat100g;
+
+  /// Comma-separated OFF categories_tags, nullable.
+  /// Stored for Phase 4+ category filtering — consumer not yet wired.
+  final String? categoriesTags;
+  const UserFoodCacheRow({
+    required this.id,
+    required this.hlcMillis,
+    required this.hlcCounter,
+    required this.hlcNodeId,
+    required this.dirty,
+    this.deletedAt,
+    this.barcode,
+    required this.productName,
+    this.productNameEn,
+    this.brand,
+    this.calories100g,
+    this.protein100g,
+    this.carbs100g,
+    this.fat100g,
+    this.categoriesTags,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['hlc_millis'] = Variable<BigInt>(hlcMillis);
+    map['hlc_counter'] = Variable<int>(hlcCounter);
+    map['hlc_node_id'] = Variable<String>(hlcNodeId);
+    map['dirty'] = Variable<bool>(dirty);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    if (!nullToAbsent || barcode != null) {
+      map['barcode'] = Variable<String>(barcode);
+    }
+    map['product_name'] = Variable<String>(productName);
+    if (!nullToAbsent || productNameEn != null) {
+      map['product_name_en'] = Variable<String>(productNameEn);
+    }
+    if (!nullToAbsent || brand != null) {
+      map['brand'] = Variable<String>(brand);
+    }
+    if (!nullToAbsent || calories100g != null) {
+      map['calories100g'] = Variable<double>(calories100g);
+    }
+    if (!nullToAbsent || protein100g != null) {
+      map['protein100g'] = Variable<double>(protein100g);
+    }
+    if (!nullToAbsent || carbs100g != null) {
+      map['carbs100g'] = Variable<double>(carbs100g);
+    }
+    if (!nullToAbsent || fat100g != null) {
+      map['fat100g'] = Variable<double>(fat100g);
+    }
+    if (!nullToAbsent || categoriesTags != null) {
+      map['categories_tags'] = Variable<String>(categoriesTags);
+    }
+    return map;
+  }
+
+  UserFoodCacheTableCompanion toCompanion(bool nullToAbsent) {
+    return UserFoodCacheTableCompanion(
+      id: Value(id),
+      hlcMillis: Value(hlcMillis),
+      hlcCounter: Value(hlcCounter),
+      hlcNodeId: Value(hlcNodeId),
+      dirty: Value(dirty),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      barcode: barcode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(barcode),
+      productName: Value(productName),
+      productNameEn: productNameEn == null && nullToAbsent
+          ? const Value.absent()
+          : Value(productNameEn),
+      brand: brand == null && nullToAbsent
+          ? const Value.absent()
+          : Value(brand),
+      calories100g: calories100g == null && nullToAbsent
+          ? const Value.absent()
+          : Value(calories100g),
+      protein100g: protein100g == null && nullToAbsent
+          ? const Value.absent()
+          : Value(protein100g),
+      carbs100g: carbs100g == null && nullToAbsent
+          ? const Value.absent()
+          : Value(carbs100g),
+      fat100g: fat100g == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fat100g),
+      categoriesTags: categoriesTags == null && nullToAbsent
+          ? const Value.absent()
+          : Value(categoriesTags),
+    );
+  }
+
+  factory UserFoodCacheRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return UserFoodCacheRow(
+      id: serializer.fromJson<String>(json['id']),
+      hlcMillis: serializer.fromJson<BigInt>(json['hlcMillis']),
+      hlcCounter: serializer.fromJson<int>(json['hlcCounter']),
+      hlcNodeId: serializer.fromJson<String>(json['hlcNodeId']),
+      dirty: serializer.fromJson<bool>(json['dirty']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      barcode: serializer.fromJson<String?>(json['barcode']),
+      productName: serializer.fromJson<String>(json['productName']),
+      productNameEn: serializer.fromJson<String?>(json['productNameEn']),
+      brand: serializer.fromJson<String?>(json['brand']),
+      calories100g: serializer.fromJson<double?>(json['calories100g']),
+      protein100g: serializer.fromJson<double?>(json['protein100g']),
+      carbs100g: serializer.fromJson<double?>(json['carbs100g']),
+      fat100g: serializer.fromJson<double?>(json['fat100g']),
+      categoriesTags: serializer.fromJson<String?>(json['categoriesTags']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'hlcMillis': serializer.toJson<BigInt>(hlcMillis),
+      'hlcCounter': serializer.toJson<int>(hlcCounter),
+      'hlcNodeId': serializer.toJson<String>(hlcNodeId),
+      'dirty': serializer.toJson<bool>(dirty),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'barcode': serializer.toJson<String?>(barcode),
+      'productName': serializer.toJson<String>(productName),
+      'productNameEn': serializer.toJson<String?>(productNameEn),
+      'brand': serializer.toJson<String?>(brand),
+      'calories100g': serializer.toJson<double?>(calories100g),
+      'protein100g': serializer.toJson<double?>(protein100g),
+      'carbs100g': serializer.toJson<double?>(carbs100g),
+      'fat100g': serializer.toJson<double?>(fat100g),
+      'categoriesTags': serializer.toJson<String?>(categoriesTags),
+    };
+  }
+
+  UserFoodCacheRow copyWith({
+    String? id,
+    BigInt? hlcMillis,
+    int? hlcCounter,
+    String? hlcNodeId,
+    bool? dirty,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    Value<String?> barcode = const Value.absent(),
+    String? productName,
+    Value<String?> productNameEn = const Value.absent(),
+    Value<String?> brand = const Value.absent(),
+    Value<double?> calories100g = const Value.absent(),
+    Value<double?> protein100g = const Value.absent(),
+    Value<double?> carbs100g = const Value.absent(),
+    Value<double?> fat100g = const Value.absent(),
+    Value<String?> categoriesTags = const Value.absent(),
+  }) => UserFoodCacheRow(
+    id: id ?? this.id,
+    hlcMillis: hlcMillis ?? this.hlcMillis,
+    hlcCounter: hlcCounter ?? this.hlcCounter,
+    hlcNodeId: hlcNodeId ?? this.hlcNodeId,
+    dirty: dirty ?? this.dirty,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    barcode: barcode.present ? barcode.value : this.barcode,
+    productName: productName ?? this.productName,
+    productNameEn: productNameEn.present
+        ? productNameEn.value
+        : this.productNameEn,
+    brand: brand.present ? brand.value : this.brand,
+    calories100g: calories100g.present ? calories100g.value : this.calories100g,
+    protein100g: protein100g.present ? protein100g.value : this.protein100g,
+    carbs100g: carbs100g.present ? carbs100g.value : this.carbs100g,
+    fat100g: fat100g.present ? fat100g.value : this.fat100g,
+    categoriesTags: categoriesTags.present
+        ? categoriesTags.value
+        : this.categoriesTags,
+  );
+  UserFoodCacheRow copyWithCompanion(UserFoodCacheTableCompanion data) {
+    return UserFoodCacheRow(
+      id: data.id.present ? data.id.value : this.id,
+      hlcMillis: data.hlcMillis.present ? data.hlcMillis.value : this.hlcMillis,
+      hlcCounter: data.hlcCounter.present
+          ? data.hlcCounter.value
+          : this.hlcCounter,
+      hlcNodeId: data.hlcNodeId.present ? data.hlcNodeId.value : this.hlcNodeId,
+      dirty: data.dirty.present ? data.dirty.value : this.dirty,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      barcode: data.barcode.present ? data.barcode.value : this.barcode,
+      productName: data.productName.present
+          ? data.productName.value
+          : this.productName,
+      productNameEn: data.productNameEn.present
+          ? data.productNameEn.value
+          : this.productNameEn,
+      brand: data.brand.present ? data.brand.value : this.brand,
+      calories100g: data.calories100g.present
+          ? data.calories100g.value
+          : this.calories100g,
+      protein100g: data.protein100g.present
+          ? data.protein100g.value
+          : this.protein100g,
+      carbs100g: data.carbs100g.present ? data.carbs100g.value : this.carbs100g,
+      fat100g: data.fat100g.present ? data.fat100g.value : this.fat100g,
+      categoriesTags: data.categoriesTags.present
+          ? data.categoriesTags.value
+          : this.categoriesTags,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserFoodCacheRow(')
+          ..write('id: $id, ')
+          ..write('hlcMillis: $hlcMillis, ')
+          ..write('hlcCounter: $hlcCounter, ')
+          ..write('hlcNodeId: $hlcNodeId, ')
+          ..write('dirty: $dirty, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('barcode: $barcode, ')
+          ..write('productName: $productName, ')
+          ..write('productNameEn: $productNameEn, ')
+          ..write('brand: $brand, ')
+          ..write('calories100g: $calories100g, ')
+          ..write('protein100g: $protein100g, ')
+          ..write('carbs100g: $carbs100g, ')
+          ..write('fat100g: $fat100g, ')
+          ..write('categoriesTags: $categoriesTags')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    hlcMillis,
+    hlcCounter,
+    hlcNodeId,
+    dirty,
+    deletedAt,
+    barcode,
+    productName,
+    productNameEn,
+    brand,
+    calories100g,
+    protein100g,
+    carbs100g,
+    fat100g,
+    categoriesTags,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is UserFoodCacheRow &&
+          other.id == this.id &&
+          other.hlcMillis == this.hlcMillis &&
+          other.hlcCounter == this.hlcCounter &&
+          other.hlcNodeId == this.hlcNodeId &&
+          other.dirty == this.dirty &&
+          other.deletedAt == this.deletedAt &&
+          other.barcode == this.barcode &&
+          other.productName == this.productName &&
+          other.productNameEn == this.productNameEn &&
+          other.brand == this.brand &&
+          other.calories100g == this.calories100g &&
+          other.protein100g == this.protein100g &&
+          other.carbs100g == this.carbs100g &&
+          other.fat100g == this.fat100g &&
+          other.categoriesTags == this.categoriesTags);
+}
+
+class UserFoodCacheTableCompanion extends UpdateCompanion<UserFoodCacheRow> {
+  final Value<String> id;
+  final Value<BigInt> hlcMillis;
+  final Value<int> hlcCounter;
+  final Value<String> hlcNodeId;
+  final Value<bool> dirty;
+  final Value<DateTime?> deletedAt;
+  final Value<String?> barcode;
+  final Value<String> productName;
+  final Value<String?> productNameEn;
+  final Value<String?> brand;
+  final Value<double?> calories100g;
+  final Value<double?> protein100g;
+  final Value<double?> carbs100g;
+  final Value<double?> fat100g;
+  final Value<String?> categoriesTags;
+  final Value<int> rowid;
+  const UserFoodCacheTableCompanion({
+    this.id = const Value.absent(),
+    this.hlcMillis = const Value.absent(),
+    this.hlcCounter = const Value.absent(),
+    this.hlcNodeId = const Value.absent(),
+    this.dirty = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.barcode = const Value.absent(),
+    this.productName = const Value.absent(),
+    this.productNameEn = const Value.absent(),
+    this.brand = const Value.absent(),
+    this.calories100g = const Value.absent(),
+    this.protein100g = const Value.absent(),
+    this.carbs100g = const Value.absent(),
+    this.fat100g = const Value.absent(),
+    this.categoriesTags = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  UserFoodCacheTableCompanion.insert({
+    required String id,
+    required BigInt hlcMillis,
+    required int hlcCounter,
+    required String hlcNodeId,
+    this.dirty = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.barcode = const Value.absent(),
+    required String productName,
+    this.productNameEn = const Value.absent(),
+    this.brand = const Value.absent(),
+    this.calories100g = const Value.absent(),
+    this.protein100g = const Value.absent(),
+    this.carbs100g = const Value.absent(),
+    this.fat100g = const Value.absent(),
+    this.categoriesTags = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       hlcMillis = Value(hlcMillis),
+       hlcCounter = Value(hlcCounter),
+       hlcNodeId = Value(hlcNodeId),
+       productName = Value(productName);
+  static Insertable<UserFoodCacheRow> custom({
+    Expression<String>? id,
+    Expression<BigInt>? hlcMillis,
+    Expression<int>? hlcCounter,
+    Expression<String>? hlcNodeId,
+    Expression<bool>? dirty,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? barcode,
+    Expression<String>? productName,
+    Expression<String>? productNameEn,
+    Expression<String>? brand,
+    Expression<double>? calories100g,
+    Expression<double>? protein100g,
+    Expression<double>? carbs100g,
+    Expression<double>? fat100g,
+    Expression<String>? categoriesTags,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (hlcMillis != null) 'hlc_millis': hlcMillis,
+      if (hlcCounter != null) 'hlc_counter': hlcCounter,
+      if (hlcNodeId != null) 'hlc_node_id': hlcNodeId,
+      if (dirty != null) 'dirty': dirty,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (barcode != null) 'barcode': barcode,
+      if (productName != null) 'product_name': productName,
+      if (productNameEn != null) 'product_name_en': productNameEn,
+      if (brand != null) 'brand': brand,
+      if (calories100g != null) 'calories100g': calories100g,
+      if (protein100g != null) 'protein100g': protein100g,
+      if (carbs100g != null) 'carbs100g': carbs100g,
+      if (fat100g != null) 'fat100g': fat100g,
+      if (categoriesTags != null) 'categories_tags': categoriesTags,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  UserFoodCacheTableCompanion copyWith({
+    Value<String>? id,
+    Value<BigInt>? hlcMillis,
+    Value<int>? hlcCounter,
+    Value<String>? hlcNodeId,
+    Value<bool>? dirty,
+    Value<DateTime?>? deletedAt,
+    Value<String?>? barcode,
+    Value<String>? productName,
+    Value<String?>? productNameEn,
+    Value<String?>? brand,
+    Value<double?>? calories100g,
+    Value<double?>? protein100g,
+    Value<double?>? carbs100g,
+    Value<double?>? fat100g,
+    Value<String?>? categoriesTags,
+    Value<int>? rowid,
+  }) {
+    return UserFoodCacheTableCompanion(
+      id: id ?? this.id,
+      hlcMillis: hlcMillis ?? this.hlcMillis,
+      hlcCounter: hlcCounter ?? this.hlcCounter,
+      hlcNodeId: hlcNodeId ?? this.hlcNodeId,
+      dirty: dirty ?? this.dirty,
+      deletedAt: deletedAt ?? this.deletedAt,
+      barcode: barcode ?? this.barcode,
+      productName: productName ?? this.productName,
+      productNameEn: productNameEn ?? this.productNameEn,
+      brand: brand ?? this.brand,
+      calories100g: calories100g ?? this.calories100g,
+      protein100g: protein100g ?? this.protein100g,
+      carbs100g: carbs100g ?? this.carbs100g,
+      fat100g: fat100g ?? this.fat100g,
+      categoriesTags: categoriesTags ?? this.categoriesTags,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (hlcMillis.present) {
+      map['hlc_millis'] = Variable<BigInt>(hlcMillis.value);
+    }
+    if (hlcCounter.present) {
+      map['hlc_counter'] = Variable<int>(hlcCounter.value);
+    }
+    if (hlcNodeId.present) {
+      map['hlc_node_id'] = Variable<String>(hlcNodeId.value);
+    }
+    if (dirty.present) {
+      map['dirty'] = Variable<bool>(dirty.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (barcode.present) {
+      map['barcode'] = Variable<String>(barcode.value);
+    }
+    if (productName.present) {
+      map['product_name'] = Variable<String>(productName.value);
+    }
+    if (productNameEn.present) {
+      map['product_name_en'] = Variable<String>(productNameEn.value);
+    }
+    if (brand.present) {
+      map['brand'] = Variable<String>(brand.value);
+    }
+    if (calories100g.present) {
+      map['calories100g'] = Variable<double>(calories100g.value);
+    }
+    if (protein100g.present) {
+      map['protein100g'] = Variable<double>(protein100g.value);
+    }
+    if (carbs100g.present) {
+      map['carbs100g'] = Variable<double>(carbs100g.value);
+    }
+    if (fat100g.present) {
+      map['fat100g'] = Variable<double>(fat100g.value);
+    }
+    if (categoriesTags.present) {
+      map['categories_tags'] = Variable<String>(categoriesTags.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UserFoodCacheTableCompanion(')
+          ..write('id: $id, ')
+          ..write('hlcMillis: $hlcMillis, ')
+          ..write('hlcCounter: $hlcCounter, ')
+          ..write('hlcNodeId: $hlcNodeId, ')
+          ..write('dirty: $dirty, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('barcode: $barcode, ')
+          ..write('productName: $productName, ')
+          ..write('productNameEn: $productNameEn, ')
+          ..write('brand: $brand, ')
+          ..write('calories100g: $calories100g, ')
+          ..write('protein100g: $protein100g, ')
+          ..write('carbs100g: $carbs100g, ')
+          ..write('fat100g: $fat100g, ')
+          ..write('categoriesTags: $categoriesTags, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
+  late final UserFoodCacheFts userFoodCacheFts = UserFoodCacheFts(this);
   late final $UserProfileTableTable userProfileTable = $UserProfileTableTable(
     this,
   );
   late final $ConsentRecordsTableTable consentRecordsTable =
       $ConsentRecordsTableTable(this);
+  late final $UserFoodCacheTableTable userFoodCacheTable =
+      $UserFoodCacheTableTable(this);
   late final UserProfileDao userProfileDao = UserProfileDao(
     this as AppDatabase,
   );
   late final ConsentRecordsDao consentRecordsDao = ConsentRecordsDao(
+    this as AppDatabase,
+  );
+  late final FoodCatalogDao foodCatalogDao = FoodCatalogDao(
     this as AppDatabase,
   );
   @override
@@ -2048,11 +3262,179 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
+    userFoodCacheFts,
     userProfileTable,
     consentRecordsTable,
+    userFoodCacheTable,
   ];
 }
 
+typedef $UserFoodCacheFtsCreateCompanionBuilder =
+    UserFoodCacheFtsCompanion Function({
+      required String productName,
+      required String productNameEn,
+      required String brand,
+      Value<int> rowid,
+    });
+typedef $UserFoodCacheFtsUpdateCompanionBuilder =
+    UserFoodCacheFtsCompanion Function({
+      Value<String> productName,
+      Value<String> productNameEn,
+      Value<String> brand,
+      Value<int> rowid,
+    });
+
+class $UserFoodCacheFtsFilterComposer
+    extends Composer<_$AppDatabase, UserFoodCacheFts> {
+  $UserFoodCacheFtsFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get productName => $composableBuilder(
+    column: $table.productName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get productNameEn => $composableBuilder(
+    column: $table.productNameEn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get brand => $composableBuilder(
+    column: $table.brand,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $UserFoodCacheFtsOrderingComposer
+    extends Composer<_$AppDatabase, UserFoodCacheFts> {
+  $UserFoodCacheFtsOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get productName => $composableBuilder(
+    column: $table.productName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get productNameEn => $composableBuilder(
+    column: $table.productNameEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get brand => $composableBuilder(
+    column: $table.brand,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $UserFoodCacheFtsAnnotationComposer
+    extends Composer<_$AppDatabase, UserFoodCacheFts> {
+  $UserFoodCacheFtsAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get productName => $composableBuilder(
+    column: $table.productName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get productNameEn => $composableBuilder(
+    column: $table.productNameEn,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get brand =>
+      $composableBuilder(column: $table.brand, builder: (column) => column);
+}
+
+class $UserFoodCacheFtsTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          UserFoodCacheFts,
+          UserFoodCacheFt,
+          $UserFoodCacheFtsFilterComposer,
+          $UserFoodCacheFtsOrderingComposer,
+          $UserFoodCacheFtsAnnotationComposer,
+          $UserFoodCacheFtsCreateCompanionBuilder,
+          $UserFoodCacheFtsUpdateCompanionBuilder,
+          (
+            UserFoodCacheFt,
+            BaseReferences<_$AppDatabase, UserFoodCacheFts, UserFoodCacheFt>,
+          ),
+          UserFoodCacheFt,
+          PrefetchHooks Function()
+        > {
+  $UserFoodCacheFtsTableManager(_$AppDatabase db, UserFoodCacheFts table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $UserFoodCacheFtsFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $UserFoodCacheFtsOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $UserFoodCacheFtsAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> productName = const Value.absent(),
+                Value<String> productNameEn = const Value.absent(),
+                Value<String> brand = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => UserFoodCacheFtsCompanion(
+                productName: productName,
+                productNameEn: productNameEn,
+                brand: brand,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String productName,
+                required String productNameEn,
+                required String brand,
+                Value<int> rowid = const Value.absent(),
+              }) => UserFoodCacheFtsCompanion.insert(
+                productName: productName,
+                productNameEn: productNameEn,
+                brand: brand,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $UserFoodCacheFtsProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      UserFoodCacheFts,
+      UserFoodCacheFt,
+      $UserFoodCacheFtsFilterComposer,
+      $UserFoodCacheFtsOrderingComposer,
+      $UserFoodCacheFtsAnnotationComposer,
+      $UserFoodCacheFtsCreateCompanionBuilder,
+      $UserFoodCacheFtsUpdateCompanionBuilder,
+      (
+        UserFoodCacheFt,
+        BaseReferences<_$AppDatabase, UserFoodCacheFts, UserFoodCacheFt>,
+      ),
+      UserFoodCacheFt,
+      PrefetchHooks Function()
+    >;
 typedef $$UserProfileTableTableCreateCompanionBuilder =
     UserProfileTableCompanion Function({
       required String id,
@@ -2942,12 +4324,431 @@ typedef $$ConsentRecordsTableTableProcessedTableManager =
       ConsentRecord,
       PrefetchHooks Function()
     >;
+typedef $$UserFoodCacheTableTableCreateCompanionBuilder =
+    UserFoodCacheTableCompanion Function({
+      required String id,
+      required BigInt hlcMillis,
+      required int hlcCounter,
+      required String hlcNodeId,
+      Value<bool> dirty,
+      Value<DateTime?> deletedAt,
+      Value<String?> barcode,
+      required String productName,
+      Value<String?> productNameEn,
+      Value<String?> brand,
+      Value<double?> calories100g,
+      Value<double?> protein100g,
+      Value<double?> carbs100g,
+      Value<double?> fat100g,
+      Value<String?> categoriesTags,
+      Value<int> rowid,
+    });
+typedef $$UserFoodCacheTableTableUpdateCompanionBuilder =
+    UserFoodCacheTableCompanion Function({
+      Value<String> id,
+      Value<BigInt> hlcMillis,
+      Value<int> hlcCounter,
+      Value<String> hlcNodeId,
+      Value<bool> dirty,
+      Value<DateTime?> deletedAt,
+      Value<String?> barcode,
+      Value<String> productName,
+      Value<String?> productNameEn,
+      Value<String?> brand,
+      Value<double?> calories100g,
+      Value<double?> protein100g,
+      Value<double?> carbs100g,
+      Value<double?> fat100g,
+      Value<String?> categoriesTags,
+      Value<int> rowid,
+    });
+
+class $$UserFoodCacheTableTableFilterComposer
+    extends Composer<_$AppDatabase, $UserFoodCacheTableTable> {
+  $$UserFoodCacheTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<BigInt> get hlcMillis => $composableBuilder(
+    column: $table.hlcMillis,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get hlcCounter => $composableBuilder(
+    column: $table.hlcCounter,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get hlcNodeId => $composableBuilder(
+    column: $table.hlcNodeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get dirty => $composableBuilder(
+    column: $table.dirty,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get barcode => $composableBuilder(
+    column: $table.barcode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get productName => $composableBuilder(
+    column: $table.productName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get productNameEn => $composableBuilder(
+    column: $table.productNameEn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get brand => $composableBuilder(
+    column: $table.brand,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get calories100g => $composableBuilder(
+    column: $table.calories100g,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get protein100g => $composableBuilder(
+    column: $table.protein100g,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get carbs100g => $composableBuilder(
+    column: $table.carbs100g,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get fat100g => $composableBuilder(
+    column: $table.fat100g,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get categoriesTags => $composableBuilder(
+    column: $table.categoriesTags,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$UserFoodCacheTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $UserFoodCacheTableTable> {
+  $$UserFoodCacheTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<BigInt> get hlcMillis => $composableBuilder(
+    column: $table.hlcMillis,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get hlcCounter => $composableBuilder(
+    column: $table.hlcCounter,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get hlcNodeId => $composableBuilder(
+    column: $table.hlcNodeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get dirty => $composableBuilder(
+    column: $table.dirty,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get barcode => $composableBuilder(
+    column: $table.barcode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get productName => $composableBuilder(
+    column: $table.productName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get productNameEn => $composableBuilder(
+    column: $table.productNameEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get brand => $composableBuilder(
+    column: $table.brand,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get calories100g => $composableBuilder(
+    column: $table.calories100g,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get protein100g => $composableBuilder(
+    column: $table.protein100g,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get carbs100g => $composableBuilder(
+    column: $table.carbs100g,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get fat100g => $composableBuilder(
+    column: $table.fat100g,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get categoriesTags => $composableBuilder(
+    column: $table.categoriesTags,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$UserFoodCacheTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UserFoodCacheTableTable> {
+  $$UserFoodCacheTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<BigInt> get hlcMillis =>
+      $composableBuilder(column: $table.hlcMillis, builder: (column) => column);
+
+  GeneratedColumn<int> get hlcCounter => $composableBuilder(
+    column: $table.hlcCounter,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get hlcNodeId =>
+      $composableBuilder(column: $table.hlcNodeId, builder: (column) => column);
+
+  GeneratedColumn<bool> get dirty =>
+      $composableBuilder(column: $table.dirty, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get barcode =>
+      $composableBuilder(column: $table.barcode, builder: (column) => column);
+
+  GeneratedColumn<String> get productName => $composableBuilder(
+    column: $table.productName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get productNameEn => $composableBuilder(
+    column: $table.productNameEn,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get brand =>
+      $composableBuilder(column: $table.brand, builder: (column) => column);
+
+  GeneratedColumn<double> get calories100g => $composableBuilder(
+    column: $table.calories100g,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get protein100g => $composableBuilder(
+    column: $table.protein100g,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get carbs100g =>
+      $composableBuilder(column: $table.carbs100g, builder: (column) => column);
+
+  GeneratedColumn<double> get fat100g =>
+      $composableBuilder(column: $table.fat100g, builder: (column) => column);
+
+  GeneratedColumn<String> get categoriesTags => $composableBuilder(
+    column: $table.categoriesTags,
+    builder: (column) => column,
+  );
+}
+
+class $$UserFoodCacheTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $UserFoodCacheTableTable,
+          UserFoodCacheRow,
+          $$UserFoodCacheTableTableFilterComposer,
+          $$UserFoodCacheTableTableOrderingComposer,
+          $$UserFoodCacheTableTableAnnotationComposer,
+          $$UserFoodCacheTableTableCreateCompanionBuilder,
+          $$UserFoodCacheTableTableUpdateCompanionBuilder,
+          (
+            UserFoodCacheRow,
+            BaseReferences<
+              _$AppDatabase,
+              $UserFoodCacheTableTable,
+              UserFoodCacheRow
+            >,
+          ),
+          UserFoodCacheRow,
+          PrefetchHooks Function()
+        > {
+  $$UserFoodCacheTableTableTableManager(
+    _$AppDatabase db,
+    $UserFoodCacheTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$UserFoodCacheTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UserFoodCacheTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UserFoodCacheTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<BigInt> hlcMillis = const Value.absent(),
+                Value<int> hlcCounter = const Value.absent(),
+                Value<String> hlcNodeId = const Value.absent(),
+                Value<bool> dirty = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String?> barcode = const Value.absent(),
+                Value<String> productName = const Value.absent(),
+                Value<String?> productNameEn = const Value.absent(),
+                Value<String?> brand = const Value.absent(),
+                Value<double?> calories100g = const Value.absent(),
+                Value<double?> protein100g = const Value.absent(),
+                Value<double?> carbs100g = const Value.absent(),
+                Value<double?> fat100g = const Value.absent(),
+                Value<String?> categoriesTags = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => UserFoodCacheTableCompanion(
+                id: id,
+                hlcMillis: hlcMillis,
+                hlcCounter: hlcCounter,
+                hlcNodeId: hlcNodeId,
+                dirty: dirty,
+                deletedAt: deletedAt,
+                barcode: barcode,
+                productName: productName,
+                productNameEn: productNameEn,
+                brand: brand,
+                calories100g: calories100g,
+                protein100g: protein100g,
+                carbs100g: carbs100g,
+                fat100g: fat100g,
+                categoriesTags: categoriesTags,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required BigInt hlcMillis,
+                required int hlcCounter,
+                required String hlcNodeId,
+                Value<bool> dirty = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String?> barcode = const Value.absent(),
+                required String productName,
+                Value<String?> productNameEn = const Value.absent(),
+                Value<String?> brand = const Value.absent(),
+                Value<double?> calories100g = const Value.absent(),
+                Value<double?> protein100g = const Value.absent(),
+                Value<double?> carbs100g = const Value.absent(),
+                Value<double?> fat100g = const Value.absent(),
+                Value<String?> categoriesTags = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => UserFoodCacheTableCompanion.insert(
+                id: id,
+                hlcMillis: hlcMillis,
+                hlcCounter: hlcCounter,
+                hlcNodeId: hlcNodeId,
+                dirty: dirty,
+                deletedAt: deletedAt,
+                barcode: barcode,
+                productName: productName,
+                productNameEn: productNameEn,
+                brand: brand,
+                calories100g: calories100g,
+                protein100g: protein100g,
+                carbs100g: carbs100g,
+                fat100g: fat100g,
+                categoriesTags: categoriesTags,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$UserFoodCacheTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $UserFoodCacheTableTable,
+      UserFoodCacheRow,
+      $$UserFoodCacheTableTableFilterComposer,
+      $$UserFoodCacheTableTableOrderingComposer,
+      $$UserFoodCacheTableTableAnnotationComposer,
+      $$UserFoodCacheTableTableCreateCompanionBuilder,
+      $$UserFoodCacheTableTableUpdateCompanionBuilder,
+      (
+        UserFoodCacheRow,
+        BaseReferences<
+          _$AppDatabase,
+          $UserFoodCacheTableTable,
+          UserFoodCacheRow
+        >,
+      ),
+      UserFoodCacheRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
+  $UserFoodCacheFtsTableManager get userFoodCacheFts =>
+      $UserFoodCacheFtsTableManager(_db, _db.userFoodCacheFts);
   $$UserProfileTableTableTableManager get userProfileTable =>
       $$UserProfileTableTableTableManager(_db, _db.userProfileTable);
   $$ConsentRecordsTableTableTableManager get consentRecordsTable =>
       $$ConsentRecordsTableTableTableManager(_db, _db.consentRecordsTable);
+  $$UserFoodCacheTableTableTableManager get userFoodCacheTable =>
+      $$UserFoodCacheTableTableTableManager(_db, _db.userFoodCacheTable);
 }

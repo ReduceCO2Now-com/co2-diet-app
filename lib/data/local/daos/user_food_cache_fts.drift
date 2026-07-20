@@ -1,0 +1,28 @@
+-- FTS5 virtual table indexing user-cached API results in co2diet.sqlite.
+--
+-- Per D-API-FALLBACK (CONTEXT.md): "Cached results indexed: FTS5 table in
+-- co2diet.sqlite indexes cached items — they appear in future local searches
+-- without re-hitting the API."
+--
+-- Column layout matches off_ref.products_fts exactly so that FoodCatalogDao
+-- can execute a single UNION ALL query across both tables without aliasing.
+--
+-- content='user_food_cache_table' references the Drift-managed table by its
+-- SQLite name. Drift generates the table name as 'user_food_cache_table' from
+-- the Dart class UserFoodCacheTable (snake_case verbatim including "Table"
+-- suffix — confirmed in STATE.md: "Drift table names include _table suffix").
+--
+-- content_rowid='rowid' links FTS row IDs to the content table's rowid.
+-- tokenize='unicode61 remove_diacritics 2' folds accented Latin characters.
+-- prefix='2 3 4' adds prefix indexes for 2-, 3-, and 4-char prefixes —
+-- critical for the 2-char worst-case benchmark query.
+
+CREATE VIRTUAL TABLE IF NOT EXISTS user_food_cache_fts USING fts5(
+  product_name,
+  product_name_en,
+  brand,
+  content='user_food_cache_table',
+  content_rowid='rowid',
+  tokenize='unicode61 remove_diacritics 2',
+  prefix='2 3 4'
+);
