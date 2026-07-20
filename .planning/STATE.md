@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-07-20T16:27:10.885Z"
+last_updated: "2026-07-20T16:40:56.582Z"
 progress:
   total_phases: 9
   completed_phases: 1
@@ -35,10 +35,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 02-food-catalog-ingest-search — IN PROGRESS (3 of 7 plans done)
-- **Plan:** 02-03 complete — Dart data layer: FoodItem, FTS5 DAO, ATTACH DATABASE
+- **Phase:** 02-food-catalog-ingest-search — IN PROGRESS (4 of 7 plans done)
+- **Plan:** 02-04 complete — OffApiClient, FoodCatalogRepository, DI providers, main.dart wiring
 - **Status:** Executing
-- **Progress:** [██░░░░░░░░] 13%
+- **Progress:** [██░░░░░░░░] 20%
 - **v1 requirements:** 15 / 75 delivered (CO2-04, PROF-01 through PROF-05, PRIV-07, LOG-01, LOG-02, NFR-06)
 
 ```
@@ -135,10 +135,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-20T16:25:57Z
-**Stopped at:** Completed 02-03-PLAN.md (Dart data layer: FoodItem, FTS5 DAO, ATTACH DATABASE)
-**Next action:** Execute Plan 02-04 (wire FirstLaunchExtractor into app startup + pubspec assets)
-**Suggested next command:** `/gsd-execute-phase 2` (plan 02-04)
+**Last session:** 2026-07-20T17:00:00Z
+**Stopped at:** Completed 02-04-PLAN.md (OffApiClient, FoodCatalogRepository, DI providers, main.dart wiring)
+**Next action:** Execute Plan 02-05 (FoodSearchNotifier + search UI state management)
+**Suggested next command:** `/gsd-execute-phase 2` (plan 02-05)
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
@@ -170,6 +170,11 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 02-03]: AppDatabase schemaVersion bumped to 2 for UserFoodCacheTable addition
 - [Phase 02-03]: path: ^1.9.1 declared as direct dependency per very_good_analysis depend_on_referenced_packages rule
 - [Phase 02-03]: ATTACH DATABASE skipped when offRefPath == null — unit test isolation pattern
+- [Phase 02-04]: app_providers.dart created as separate file — food catalog providers cohesive unit, keeps providers.dart focused on core infrastructure
+- [Phase 02-04]: offRefPathProvider added to providers.dart (not app_providers.dart) — AppDatabase init needs the path, lives with the database provider
+- [Phase 02-04]: NetworkException defined in food_catalog_repository.dart (same file) — simpler for Phase 2, avoids premature file proliferation
+- [Phase 02-04]: UserFoodCacheTableCompanion.insert takes raw BigInt/int/String for hlcMillis/hlcCounter/hlcNodeId — not Value<>-wrapped (constructor wraps them internally)
+- [Phase 02-04]: on Exception catch (not bare catch) in main.dart — very_good_analysis avoid_catches_without_on_clauses rule
 
 ## Performance Metrics
 
@@ -178,3 +183,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 02 P01 | 6 | 3 tasks | 5 files |
 | Phase 02-food-catalog-ingest-search P02 | 3 | 2 tasks | 2 files |
 | Phase 02-food-catalog-ingest-search P03 | 11m 54s | 2 tasks | 12 files |
+| Phase 02-food-catalog-ingest-search P04 | ~15m | 2 tasks | 8 files |
