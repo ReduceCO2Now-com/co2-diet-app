@@ -44,6 +44,23 @@ void main() {
       expect(result, equals('banana*'));
     });
 
+    test('whitespace-only input returns empty string', () {
+      final result = dao.sanitizeFts5QueryForTest('   ');
+      expect(result, isEmpty);
+    });
+
+    test('existing * in input is stripped then re-added (not doubled)', () {
+      // _sanitizeFts5Query strips [^\w\s\-], so 'appl*' → 'appl' → 'appl*'.
+      final result = dao.sanitizeFts5QueryForTest('appl*');
+      expect(result, equals('appl*'));
+    });
+
+    test('double-quoted term returns unquoted term with * suffix', () {
+      // '"apple"' → (strip non-word chars) → 'apple' → 'apple*'
+      final result = dao.sanitizeFts5QueryForTest('"apple"');
+      expect(result, equals('apple*'));
+    });
+
     test('strips FTS5 operator keywords', () {
       // OR and AND are not stripped because they are alphabetic — only
       // the metacharacters are stripped; the user-facing minimum-2-char
