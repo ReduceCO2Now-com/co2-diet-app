@@ -8,6 +8,12 @@ environment:
   flutter: ">=3.44.6"
 
 dependencies:
+  # archive 4.0.9 — Pure Dart GZip decompression for first-launch off_reference.sqlite.gz
+  # extraction; no FFI, no native binaries. [VERIFIED: pub.dev, loki3d.com publisher]
+  archive: 4.0.9
+  # connectivity_plus 7.3.0 — Detect network state before OFF API fallback calls.
+  # [VERIFIED: pub.dev, flutter.dev ecosystem publisher]
+  connectivity_plus: 7.3.0
   drift: 2.34.2
   drift_flutter: 0.3.1
   flutter:
@@ -19,8 +25,14 @@ dependencies:
   go_router: 17.3.0
   # intl pinned to 0.20.2 — SDK flutter_localizations pins to this version.
   intl: 0.20.2
+  # openfoodfacts 3.30.2 — Official OFF Dart client for API fallback search.
+  # [VERIFIED: pub.dev, openfoodfacts.org publisher]
+  openfoodfacts: 3.30.2
   path_provider: ^2.1.6
   riverpod_annotation: 4.0.3
+  # shimmer 3.0.0 — Skeleton loading rows during OFF API fallback (not for local FTS5).
+  # [VERIFIED: pub.dev]
+  shimmer: 3.0.0
   uuid: 4.6.0
 
 dev_dependencies:
