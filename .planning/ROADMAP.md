@@ -65,7 +65,7 @@ Plans:
 - [x] 02-03-PLAN.md — Dart data layer: pubspec deps, UserFoodCacheTable, AppDatabase ATTACH, FoodCatalogDao, FoodItem, IFoodCatalogRepository, FirstLaunchExtractor
 - [x] 02-04-PLAN.md — OffApiClient + FoodCatalogRepository + DI providers + main.dart startup wiring
 - [x] 02-05-PLAN.md — FoodSearchState sealed class + FoodSearchNotifier (debounce, offline, fallback)
-- [ ] 02-06-PLAN.md — Search screen UI + all state widgets + bottom sheet + /food-search route
+- [x] 02-06-PLAN.md — Search screen UI + all state widgets + bottom sheet + /food-search route
 - [ ] 02-07-PLAN.md — Real unit/benchmark tests + human-verify physical device checkpoint
 **UI hint**: yes
 
@@ -160,7 +160,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundations & Sync-Safe Schema | 7/7 | Complete   | 2026-07-17 |
-| 2. Food Catalog Ingest & Search | 5/7 | In Progress|  |
+| 2. Food Catalog Ingest & Search | 6/7 | In Progress|  |
 | 3. Barcode Scanning & CO₂ Factor Table | 0/0 | Not started | - |
 | 4. Meal Logging Core | 0/0 | Not started | - |
 | 5. Full Local App (Local Mode Shippable) | 0/0 | Not started | - |

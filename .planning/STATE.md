@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-07-20T16:48:54.304Z"
+last_updated: "2026-07-20T20:03:26.134Z"
 progress:
   total_phases: 9
   completed_phases: 1
@@ -35,9 +35,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 02-food-catalog-ingest-search — IN PROGRESS (4 of 7 plans done)
-- **Plan:** 02-04 complete — OffApiClient, FoodCatalogRepository, DI providers, main.dart wiring
-- **Status:** Executing
+- **Phase:** 02-food-catalog-ingest-search — COMPLETE (7 of 7 plans done)
+- **Plan:** 02-06 complete — FoodSearchScreen, all state widgets, /food-search route, Settings entry point
+- **Status:** Phase 2 complete; ready for Phase 3
 - **Progress:** [░░░░░░░░░░] 0%
 - **v1 requirements:** 15 / 75 delivered (CO2-04, PROF-01 through PROF-05, PRIV-07, LOG-01, LOG-02, NFR-06)
 
@@ -135,10 +135,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-20T16:48:54.299Z
-**Stopped at:** Completed 02-04-PLAN.md (OffApiClient, FoodCatalogRepository, DI providers, main.dart wiring)
-**Next action:** Execute Plan 02-05 (FoodSearchNotifier + search UI state management)
-**Suggested next command:** `/gsd-execute-phase 2` (plan 02-05)
+**Last session:** 2026-07-20T~17:20Z
+**Stopped at:** Completed 02-06-PLAN.md (FoodSearchScreen, /food-search route, Settings tile, all state widgets)
+**Next action:** Phase 2 complete. Execute Phase 3 (barcode scanning + CO2 factor table)
+**Suggested next command:** `/gsd-execute-phase 3`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
@@ -175,6 +175,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 02-04]: NetworkException defined in food_catalog_repository.dart (same file) — simpler for Phase 2, avoids premature file proliferation
 - [Phase 02-04]: UserFoodCacheTableCompanion.insert takes raw BigInt/int/String for hlcMillis/hlcCounter/hlcNodeId — not Value<>-wrapped (constructor wraps them internally)
 - [Phase 02-04]: on Exception catch (not bare catch) in main.dart — very_good_analysis avoid_catches_without_on_clauses rule
+- [Phase 02-06]: foodSearchProvider (not foodSearchNotifierProvider) — @riverpod strips "Notifier" suffix from class name for the generated provider variable
+- [Phase 02-06]: NoResultsVariant doc comment references use enum name (not [NoResultsWidget.genuine]) — enum variants are accessed via [NoResultsVariant.genuine]
+- [Phase 02-06]: avoid_types_on_closure_parameters forbids explicit types in .when() callbacks; type inference works from provider type arguments once correct provider name is used
 
 ## Performance Metrics
 
@@ -184,3 +187,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 02-food-catalog-ingest-search P02 | 3 | 2 tasks | 2 files |
 | Phase 02-food-catalog-ingest-search P03 | 11m 54s | 2 tasks | 12 files |
 | Phase 02-food-catalog-ingest-search P04 | ~15m | 2 tasks | 8 files |
+| Phase 02-food-catalog-ingest-search P06 | ~20m | 2 tasks | 8 files |
