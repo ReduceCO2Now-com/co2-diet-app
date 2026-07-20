@@ -11,6 +11,17 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'providers.g.dart';
 
+/// Provides the path to the decompressed `off_reference.sqlite` file.
+///
+/// The default value is `null` (no reference DB path available). Overridden
+/// in `main()` via `ProviderScope(overrides: [offRefPathProvider
+/// .overrideWithValue(path)])` after `ensureOffReferenceDb()` completes.
+///
+/// Using a simple synchronous override avoids async providers at the root
+/// level while still allowing the path to flow into [appDatabaseProvider].
+@riverpod
+String? offRefPath(Ref ref) => null;
+
 /// Provides the singleton [AppDatabase] for the entire app lifetime.
 ///
 /// keepAlive: true — the database connection MUST persist for the full
@@ -21,7 +32,8 @@ part 'providers.g.dart';
 /// ProviderScope disposal (e.g., during widget tests).
 @Riverpod(keepAlive: true)
 AppDatabase appDatabase(Ref ref) {
-  final db = AppDatabase.connect();
+  final offRef = ref.watch(offRefPathProvider);
+  final db = AppDatabase.connect(offRefPath: offRef);
   ref.onDispose(db.close);
   return db;
 }

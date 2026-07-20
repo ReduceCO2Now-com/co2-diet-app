@@ -8,6 +8,73 @@ part of 'providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// Provides the path to the decompressed `off_reference.sqlite` file.
+///
+/// The default value is `null` (no reference DB path available). Overridden
+/// in `main()` via `ProviderScope(overrides: [offRefPathProvider
+/// .overrideWithValue(path)])` after `ensureOffReferenceDb()` completes.
+///
+/// Using a simple synchronous override avoids async providers at the root
+/// level while still allowing the path to flow into [appDatabaseProvider].
+
+@ProviderFor(offRefPath)
+final offRefPathProvider = OffRefPathProvider._();
+
+/// Provides the path to the decompressed `off_reference.sqlite` file.
+///
+/// The default value is `null` (no reference DB path available). Overridden
+/// in `main()` via `ProviderScope(overrides: [offRefPathProvider
+/// .overrideWithValue(path)])` after `ensureOffReferenceDb()` completes.
+///
+/// Using a simple synchronous override avoids async providers at the root
+/// level while still allowing the path to flow into [appDatabaseProvider].
+
+final class OffRefPathProvider
+    extends $FunctionalProvider<String?, String?, String?>
+    with $Provider<String?> {
+  /// Provides the path to the decompressed `off_reference.sqlite` file.
+  ///
+  /// The default value is `null` (no reference DB path available). Overridden
+  /// in `main()` via `ProviderScope(overrides: [offRefPathProvider
+  /// .overrideWithValue(path)])` after `ensureOffReferenceDb()` completes.
+  ///
+  /// Using a simple synchronous override avoids async providers at the root
+  /// level while still allowing the path to flow into [appDatabaseProvider].
+  OffRefPathProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'offRefPathProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$offRefPathHash();
+
+  @$internal
+  @override
+  $ProviderElement<String?> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  String? create(Ref ref) {
+    return offRefPath(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(String? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<String?>(value),
+    );
+  }
+}
+
+String _$offRefPathHash() => r'72f92416552325db1aca318d23dccfe209deff57';
+
 /// Provides the singleton [AppDatabase] for the entire app lifetime.
 ///
 /// keepAlive: true — the database connection MUST persist for the full
@@ -73,7 +140,7 @@ final class AppDatabaseProvider
   }
 }
 
-String _$appDatabaseHash() => r'7b764723bbcb89fc8495c0edf02613ef6f56ec21';
+String _$appDatabaseHash() => r'6d1b5009366a13da03a90406413b43d5abf96d3f';
 
 /// Provides an [IProfileRepository] backed by the live [AppDatabase].
 ///
