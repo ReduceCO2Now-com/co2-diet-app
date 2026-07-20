@@ -58,7 +58,6 @@ Plans:
   2. Food name search returns results in <1s on a low-end Android reference device (Pixel 6a or Samsung A54 class), verified by a repeatable benchmark script committed to the repo.
   3. When online and local results fall below threshold, the search falls back to the Open Food Facts API via `openfoodfacts` Dart client, and returned results are cached locally into user-catalog tables for future offline use.
   4. NFR-06(a) verified: given a benchmark list of ~200 commonly logged EU/German foods, >90% return a usable result from the local DB without triggering the API fallback.
-  5. NFR-06(b) verified: >90% of products in the bundled seed DB have at least a category-average CO₂e estimate.
 **Plans**: 7 plans
 Plans:
 - [ ] 02-01-PLAN.md — Wave 0 test stubs + build.yaml FTS5 config
@@ -79,6 +78,7 @@ Plans:
   2. When a barcode scan finds no match (online or offline), the user is offered an explicit "Add as custom food" fallback — no dead-end UX.
   3. Every food item surfaces a CO₂e value paired with a High / Medium / Low confidence band and rounded to 1–2 significant figures — never as a single false-precision number.
   4. A documented product→CO₂ factor table (per-category and per-product where available) is loaded from the reference DB, and the methodology + data sources are publicly documented and linked from within the app.
+  5. NFR-06(b) verified: >90% of products in the bundled seed DB have at least a category-average CO₂e estimate (measurable only once the CO₂ factor table exists; moved from Phase 2 success criteria since the CO₂ factor table is built in this phase).
 **Plans**: TBD
 **UI hint**: yes
 
@@ -177,7 +177,7 @@ Plans:
 
 **NFR-01, NFR-02, NFR-03, NFR-04, NFR-05, NFR-07 handling:** These UX-tone and safety-net non-functional requirements are validated in Phase 6 (SAM test, ED safety nets, non-judgmental copy audit). They are also considered *cross-cutting quality gates* — every phase's UI work must respect them, but Phase 6 owns the pre-launch verification. To satisfy the "exactly one phase" rule they are formally assigned to Phase 6, with NFR-05 (confidence bands / no false precision) additionally reinforced in Phase 5 where the CO₂ display components are built.
 
-**NFR-06 (food DB reliability):** Assigned to Phase 2 where the seed DB and search are built and where the two acceptance benchmarks (search hit-rate ≥90%, CO₂ coverage ≥90%) become measurable.
+**NFR-06 (food DB reliability):** Split across phases. NFR-06(a) (search hit-rate ≥90%) is assigned to Phase 2 where the seed DB, FTS5 search, and benchmark script are built. NFR-06(b) (CO₂ coverage ≥90%) is assigned to Phase 3 where the CO₂ factor table is built — it cannot be measured until that table exists.
 
 **AUTH-07 (Local Mode never contacts backend without explicit action):** Assigned to Phase 5 (Local Mode complete). The invariant is enforced from Phase 1 by not integrating any auth/backend code until Phase 7.
 

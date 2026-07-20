@@ -826,25 +826,32 @@ void main() {
 
 ## Open Questions
 
-1. **OFF JSONL field name for English product name**
+> Status key: **OPEN** = not yet answered; **RESOLVED** = decision made and implemented; **EXECUTION-GATED** = can only be answered by running something at a specific wave.
+
+1. **OFF JSONL field name for English product name** — **OPEN**
    - What we know: OFF has multilingual names; JSONL contains more fields than CSV
    - What's unclear: Exact key — `product_name_en` vs. `product_name_languages.en` vs. nested structure
-   - Recommendation: Download a small sample of the JSONL dump (`zcat en.openfoodfacts.org.products.jsonl.gz | head -100`) and inspect structure before writing the ingest script
+   - Why still open: The JSONL dump has not been downloaded and no sample has been inspected. Assumption A1 in the Assumptions Log marks this LOW confidence.
+   - How the plan handles it: `ingest_off.py` uses `.get('product_name_en')` with a `None` default — silent on missing key either way. The post-ingest gate in 02-02 Task 2 checks `SELECT count(*) FROM products WHERE product_name_en IS NOT NULL`; a zero result is a red flag that triggers a script fix before full ingest.
+   - Execution gate: **02-02 Task 2** — `tools/README.md` "Inspect a sample" step (`zcat ... | head -5 | python3 -m json.tool`) must be run by the developer before triggering the full ingest. Cannot be a Wave 0 task (requires the JSONL to be downloaded, which is a 5 GB pre-requisite outside the repo).
 
-2. **Actual filtered DB size**
+2. **Actual filtered DB size** — **OPEN**
    - What we know: Full OFF is ~9 GB uncompressed; EU subset is smaller; completeness ≥ 0.6 reduces further
    - What's unclear: Whether the filtered subset, with only the 9 specified columns, compresses to ≤50 MB
-   - Recommendation: Run the ingest script on a 10% sample and extrapolate; adjust filter thresholds before bundling
+   - Why still open: The ingest script does not yet exist (it is created by 02-02 Task 1) and no sample ingest has run.
+   - How the plan handles it: 02-02 Task 2 includes a "Size check" step — run `--sample` on 10% of records, extrapolate compressed size, adjust `--completeness-threshold` or country scope if projection exceeds 50 MB. `gzip -k assets/off_reference.sqlite` + `ls -lh` is the gate before the asset is committed.
+   - Execution gate: **02-02 Task 2** — cannot precede 02-02 Task 1 (the ingest script must be created first). Cannot be a Wave 0 task for that reason.
 
-3. **FTS5 query time on actual Pixel 6a hardware**
-   - What we know: FTS5 prefix indexes deliver sub-millisecond lookups for typical queries; prefix='2' handles worst-case
-   - What's unclear: Whether the 300 ms debounce timer plus SQLite round-trip through ATTACH fits within 1s on Android's single-threaded SQLite
-   - Recommendation: Run the benchmark in Step 5 (integration tests) on a physical device before declaring success
+3. **FTS5 query time on actual Pixel 6a hardware** — **EXECUTION-GATED**
+   - What we know: FTS5 prefix indexes deliver sub-millisecond lookups for typical queries; `prefix='2 3 4'` handles worst-case 2-char query
+   - What's unclear: Whether the 300 ms debounce timer plus SQLite round-trip through ATTACH fits within 1s on Android's single-threaded SQLite on the reference device class
+   - Why still open: Cannot be answered without physical hardware.
+   - Execution gate: **02-07 Task 3** — human-verify checkpoint on physical Pixel 6a or Samsung A54 class device. Benchmark `Stopwatch`-based assertions in `integration_test/food_search_benchmark_test.dart` are the automated signal; the human gate is the physical device confirmation. If the benchmark fails, 02-07 Task 3 blocks phase completion and requires investigation (likely: reduce dataset scope or adjust prefix indexes).
 
-4. **User-catalog FTS5 table schema**
-   - What we know: API-cached foods go into `co2diet.sqlite` user-catalog tables; they should appear in future local searches
-   - What's unclear: Whether to replicate `products_fts` schema exactly or use a simpler single-table approach for user-cached items
-   - Recommendation: Use a separate `user_food_cache_fts` in `co2diet.sqlite` with identical column structure; query both in a UNION in the search DAO
+4. **User-catalog FTS5 table schema** — **RESOLVED**
+   - Decision made: `user_food_cache_fts` uses the same column set as `off_ref.products_fts` — `(product_name, product_name_en, brand)` — for UNION query compatibility. A separate `.drift` file (`lib/data/local/daos/user_food_cache_fts.drift`) declares the virtual table with `content='user_food_cache_table'`.
+   - Implemented in: **02-03 Task 2** (`user_food_cache_fts.drift` + `FoodCatalogDao.searchLocalFoods` UNION query).
+   - Rationale: Identical column layout allows a single UNION ALL query without column aliasing. A simpler single-table approach was rejected because it would prevent UNION with `off_ref.products_fts` without schema adaptation overhead.
 
 ---
 
