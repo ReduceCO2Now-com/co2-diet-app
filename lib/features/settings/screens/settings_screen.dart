@@ -1,5 +1,6 @@
 import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 /// Settings screen with the open source license disclosure (PRIV-07).
 ///
@@ -19,6 +20,12 @@ class SettingsScreen extends StatelessWidget {
       ),
       body: ListView(
         children: [
+          ListTile(
+            leading: const Icon(Icons.search),
+            title: const Text('Search foods'),
+            subtitle: const Text('Browse the food catalog'),
+            onTap: () => context.push('/food-search'),
+          ),
           ListTile(
             leading: const Icon(Icons.info_outline),
             title: const Text('Open source licenses'),

@@ -1,4 +1,5 @@
 import 'package:co2diet/core/theme/color_tokens.dart';
+import 'package:co2diet/features/food_search/screens/food_search_screen.dart';
 import 'package:co2diet/features/profile/screens/profile_screen.dart';
 import 'package:co2diet/features/settings/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
@@ -79,6 +80,11 @@ GoRouter appRouter(Ref ref) {
   return GoRouter(
     initialLocation: '/profile',
     routes: [
+      // Top-level route — covers the bottom nav bar (not nested in the shell).
+      GoRoute(
+        path: '/food-search',
+        builder: (context, state) => const FoodSearchScreen(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, shell) => AppShell(shell: shell),
         branches: [
