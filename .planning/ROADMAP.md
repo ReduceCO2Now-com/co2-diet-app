@@ -39,7 +39,15 @@
   3. CI pipeline runs a hardcoded third-party-SDK blocklist audit and fails the build on any Firebase / Sentry / analytics / ad-SDK transitive dependency; open-source license disclosure is generated and viewable in-app.
   4. A user can enter a profile (age/gender/height/weight/activity/dietary/units/goal), see auto-calculated calorie + macro + CO₂ targets (Mifflin-St Jéor + activity factor), and manually override any target — persisted locally.
   5. Thinnest vertical slice works: a user can enter a complete profile → auto-calculated calorie/macro targets persist to the local Drift database → targets survive app restart and are visible on the Profile screen (food/meal tables and dashboard CO₂ are Phase 2–4 scope; this was reinterpreted in 01-CONTEXT.md before planning began).
-**Plans**: TBD
+**Plans**: 7 plans
+Plans:
+- [x] 01-01-PLAN.md — Flutter scaffold + pubspec + theme module
+- [x] 01-02-PLAN.md — Sync-safe Drift schema (HLC + SyncSafeTable + DAOs + codegen)
+- [x] 01-03-PLAN.md — Domain layer: UserProfile, CalcTargets, TargetCalculator, IProfileRepository
+- [x] 01-04-PLAN.md — Repository layer + DI providers + ProfileNotifier AsyncNotifier
+- [x] 01-05-PLAN.md — go_router + ProfileScreen (7 fields, unit-aware, auto-save, targets, override) + SettingsScreen
+- [x] 01-06-PLAN.md — CI privacy pipeline (.privacy-blocklist.yaml + check_privacy_deps.dart + GitHub Actions)
+- [x] 01-07-PLAN.md — Wave 0 test suite: 6 test files, 34 tests green
 
 ### Phase 2: Food Catalog Ingest & Search
 **Goal**: Ship a fast, offline, high-coverage food search on a bundled OFF seed database with FTS5, benchmarked to meet the <1s search-response and >90% hit-rate targets.
@@ -51,7 +59,15 @@
   3. When online and local results fall below threshold, the search falls back to the Open Food Facts API via `openfoodfacts` Dart client, and returned results are cached locally into user-catalog tables for future offline use.
   4. NFR-06(a) verified: given a benchmark list of ~200 commonly logged EU/German foods, >90% return a usable result from the local DB without triggering the API fallback.
   5. NFR-06(b) verified: >90% of products in the bundled seed DB have at least a category-average CO₂e estimate.
-**Plans**: TBD
+**Plans**: 7 plans
+Plans:
+- [ ] 02-01-PLAN.md — Wave 0 test stubs + build.yaml FTS5 config
+- [ ] 02-02-PLAN.md — Python OFF JSONL ingest pipeline (tools/ingest_off.py + tools/README.md)
+- [ ] 02-03-PLAN.md — Dart data layer: pubspec deps, UserFoodCacheTable, AppDatabase ATTACH, FoodCatalogDao, FoodItem, IFoodCatalogRepository, FirstLaunchExtractor
+- [ ] 02-04-PLAN.md — OffApiClient + FoodCatalogRepository + DI providers + main.dart startup wiring
+- [ ] 02-05-PLAN.md — FoodSearchState sealed class + FoodSearchNotifier (debounce, offline, fallback)
+- [ ] 02-06-PLAN.md — Search screen UI + all state widgets + bottom sheet + /food-search route
+- [ ] 02-07-PLAN.md — Real unit/benchmark tests + human-verify physical device checkpoint
 **UI hint**: yes
 
 ### Phase 3: Barcode Scanning & CO₂ Factor Table
@@ -144,7 +160,7 @@
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundations & Sync-Safe Schema | 7/7 | Complete   | 2026-07-17 |
-| 2. Food Catalog Ingest & Search | 0/0 | Not started | - |
+| 2. Food Catalog Ingest & Search | 0/7 | Planned | - |
 | 3. Barcode Scanning & CO₂ Factor Table | 0/0 | Not started | - |
 | 4. Meal Logging Core | 0/0 | Not started | - |
 | 5. Full Local App (Local Mode Shippable) | 0/0 | Not started | - |
@@ -176,3 +192,4 @@
 ---
 
 *Roadmap created: 2026-07-16*
+*Phase 2 planned: 2026-07-17 — 7 plans, 4 waves*
