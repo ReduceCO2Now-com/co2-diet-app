@@ -16,7 +16,7 @@
 ## Phases
 
 - [x] **Phase 1: Foundations & Sync-Safe Schema** — Drift v1 with HLC/tombstones/dirty flags/consent/CO₂ methodology version, DI, router, theme, CI dependency-audit pipeline, thinnest E2E vertical slice (completed 2026-07-17)
-- [ ] **Phase 2: Food Catalog Ingest & Search** — OFF seed DB ingest, FTS5 index, bundled starter pack, search UI + API fallback, benchmarked <1s on low-end Android
+- [x] **Phase 2: Food Catalog Ingest & Search** — OFF seed DB ingest, FTS5 index, bundled starter pack, search UI + API fallback, benchmarked <1s on low-end Android (completed 2026-07-20)
 - [ ] **Phase 3: Barcode Scanning & CO₂ Factor Table** — mobile_scanner integration, real-device barcode verification, product-to-CO₂ factor prototype, custom-food fallback
 - [ ] **Phase 4: Meal Logging Core** — Breakfast/Lunch/Dinner/Snack slots, portion units, Recent, Favorites, Custom foods, personal overrides, edit/delete/duplicate, offline-first, <10s meal-log verified
 - [ ] **Phase 5: Nutrition, CO₂ Estimator, Dashboard, Insights, Weight, Notifications, Export/Backup** — full local app; CO₂ Estimator + Transparency + Improvement Opportunities; Insights (7d/30d); Weight tracking; local notifications; Export (CSV/Excel/JSON); Backup/Restore. **Local Mode shippable here.**
@@ -66,7 +66,7 @@ Plans:
 - [x] 02-04-PLAN.md — OffApiClient + FoodCatalogRepository + DI providers + main.dart startup wiring
 - [x] 02-05-PLAN.md — FoodSearchState sealed class + FoodSearchNotifier (debounce, offline, fallback)
 - [x] 02-06-PLAN.md — Search screen UI + all state widgets + bottom sheet + /food-search route
-- [ ] 02-07-PLAN.md — Real unit/benchmark tests + human-verify physical device checkpoint
+- [x] 02-07-PLAN.md — Real unit/benchmark tests + human-verify physical device checkpoint
 **UI hint**: yes
 
 ### Phase 3: Barcode Scanning & CO₂ Factor Table
@@ -160,7 +160,7 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundations & Sync-Safe Schema | 7/7 | Complete   | 2026-07-17 |
-| 2. Food Catalog Ingest & Search | 6/7 | In Progress|  |
+| 2. Food Catalog Ingest & Search | 7/7 | Complete   | 2026-07-20 |
 | 3. Barcode Scanning & CO₂ Factor Table | 0/0 | Not started | - |
 | 4. Meal Logging Core | 0/0 | Not started | - |
 | 5. Full Local App (Local Mode Shippable) | 0/0 | Not started | - |

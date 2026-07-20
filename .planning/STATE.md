@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
-status: executing
-last_updated: "2026-07-20T20:03:26.134Z"
+status: completed
+last_updated: "2026-07-20T20:14:42.117Z"
 progress:
   total_phases: 9
   completed_phases: 1
@@ -135,10 +135,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-20T~17:20Z
-**Stopped at:** Completed 02-06-PLAN.md (FoodSearchScreen, /food-search route, Settings tile, all state widgets)
-**Next action:** Phase 2 complete. Execute Phase 3 (barcode scanning + CO2 factor table)
-**Suggested next command:** `/gsd-execute-phase 3`
+**Last session:** 2026-07-20T~18:00Z
+**Stopped at:** 02-07 checkpoint:human-verify — Tasks 1+2 complete (unit tests + benchmark integration tests); awaiting physical-device benchmark verification
+**Next action:** Run `flutter test integration_test/food_search_benchmark_test.dart --device-id <android-id>` on physical device; type "approved" to complete Phase 2; then execute Phase 3
+**Suggested next command:** Physical-device benchmark verification required (see checkpoint in 02-07-PLAN.md)
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
@@ -178,6 +178,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 02-06]: foodSearchProvider (not foodSearchNotifierProvider) — @riverpod strips "Notifier" suffix from class name for the generated provider variable
 - [Phase 02-06]: NoResultsVariant doc comment references use enum name (not [NoResultsWidget.genuine]) — enum variants are accessed via [NoResultsVariant.genuine]
 - [Phase 02-06]: avoid_types_on_closure_parameters forbids explicit types in .when() callbacks; type inference works from provider type arguments once correct provider name is used
+- [Phase 02-07]: ProviderContainer.listen + Completer preferred over pumpEventQueue for awaiting Riverpod AsyncNotifier build — pumpEventQueue does not flush Riverpod scheduler timers reliably in non-widget tests
+- [Phase 02-07]: TestDefaultBinaryMessengerBinding.setMockMethodCallHandler used to mock connectivity_plus channel (dev.fluttercommunity.plus/connectivity) so Connectivity().checkConnectivity() works in unit tests without MissingPluginException
+- [Phase 02-07]: bare catch (e) in buildTestRepo() catches StateError from ensureOffReferenceDb without triggering avoid_catching_errors lint (which targets explicit on Error type names)
 
 ## Performance Metrics
 
@@ -188,3 +191,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 02-food-catalog-ingest-search P03 | 11m 54s | 2 tasks | 12 files |
 | Phase 02-food-catalog-ingest-search P04 | ~15m | 2 tasks | 8 files |
 | Phase 02-food-catalog-ingest-search P06 | ~20m | 2 tasks | 8 files |
+| Phase 02-food-catalog-ingest-search P07 | ~25m | 2 tasks | 3 files |
