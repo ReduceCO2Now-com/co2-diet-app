@@ -62,7 +62,7 @@ Plans:
 Plans:
 - [x] 02-01-PLAN.md — Wave 0 test stubs + build.yaml FTS5 config
 - [x] 02-02-PLAN.md — Python OFF JSONL ingest pipeline (tools/ingest_off.py + tools/README.md)
-- [ ] 02-03-PLAN.md — Dart data layer: pubspec deps, UserFoodCacheTable, AppDatabase ATTACH, FoodCatalogDao, FoodItem, IFoodCatalogRepository, FirstLaunchExtractor
+- [x] 02-03-PLAN.md — Dart data layer: pubspec deps, UserFoodCacheTable, AppDatabase ATTACH, FoodCatalogDao, FoodItem, IFoodCatalogRepository, FirstLaunchExtractor
 - [ ] 02-04-PLAN.md — OffApiClient + FoodCatalogRepository + DI providers + main.dart startup wiring
 - [ ] 02-05-PLAN.md — FoodSearchState sealed class + FoodSearchNotifier (debounce, offline, fallback)
 - [ ] 02-06-PLAN.md — Search screen UI + all state widgets + bottom sheet + /food-search route

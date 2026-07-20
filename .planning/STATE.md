@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-07-20T16:11:39.482Z"
+last_updated: "2026-07-20T16:27:10.885Z"
 progress:
   total_phases: 9
   completed_phases: 1
@@ -35,10 +35,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 02-food-catalog-ingest-search — IN PROGRESS (2 of 7 plans done)
-- **Plan:** 02-02 complete — OFF JSONL ingest pipeline + tools/README.md
+- **Phase:** 02-food-catalog-ingest-search — IN PROGRESS (3 of 7 plans done)
+- **Plan:** 02-03 complete — Dart data layer: FoodItem, FTS5 DAO, ATTACH DATABASE
 - **Status:** Executing
-- **Progress:** [█░░░░░░░░░] 11%
+- **Progress:** [██░░░░░░░░] 13%
 - **v1 requirements:** 15 / 75 delivered (CO2-04, PROF-01 through PROF-05, PRIV-07, LOG-01, LOG-02, NFR-06)
 
 ```
@@ -135,10 +135,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-20T16:09:38Z
-**Stopped at:** Completed 02-02-PLAN.md (OFF JSONL ingest pipeline + tools/README.md)
-**Next action:** Execute Plan 02-03 (Bundle off_reference.sqlite as Flutter asset)
-**Suggested next command:** `/gsd-execute-phase 2` (plan 02-03)
+**Last session:** 2026-07-20T16:25:57Z
+**Stopped at:** Completed 02-03-PLAN.md (Dart data layer: FoodItem, FTS5 DAO, ATTACH DATABASE)
+**Next action:** Execute Plan 02-04 (wire FirstLaunchExtractor into app startup + pubspec assets)
+**Suggested next command:** `/gsd-execute-phase 2` (plan 02-04)
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
@@ -165,6 +165,11 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 02-02]: VACUUM requires explicit commit before call — cannot VACUUM inside open SQLite transaction (sqlite3.OperationalError)
 - [Phase 02-02]: product_name_en extracted as p.get('product_name_en') or None to coerce empty strings to NULL (Q1 resolution confirmed 2026-07-20)
 - [Phase 02-02]: EU_COUNTRY_TAGS includes Switzerland (not EU) alongside all 27 EU member states for DE/AT/CH German-speaking market
+- [Phase 02-03]: FoodItem uses @immutable + sentinel copyWith pattern for nullable fields (barcode, brand, macros all nullable)
+- [Phase 02-03]: Exception (not FlutterError) in first_launch_extractor catch clause — FlutterError is not catchable in Dart catch-on syntax
+- [Phase 02-03]: AppDatabase schemaVersion bumped to 2 for UserFoodCacheTable addition
+- [Phase 02-03]: path: ^1.9.1 declared as direct dependency per very_good_analysis depend_on_referenced_packages rule
+- [Phase 02-03]: ATTACH DATABASE skipped when offRefPath == null — unit test isolation pattern
 
 ## Performance Metrics
 
@@ -172,3 +177,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 |-------|------|----------|-------|
 | Phase 02 P01 | 6 | 3 tasks | 5 files |
 | Phase 02-food-catalog-ingest-search P02 | 3 | 2 tasks | 2 files |
+| Phase 02-food-catalog-ingest-search P03 | 11m 54s | 2 tasks | 12 files |
