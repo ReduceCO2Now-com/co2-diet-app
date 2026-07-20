@@ -828,12 +828,13 @@ void main() {
 
 > Status key: **OPEN** = not yet answered; **RESOLVED** = decision made and implemented; **EXECUTION-GATED** = can only be answered by running something at a specific wave.
 
-1. **OFF JSONL field name for English product name** — **OPEN**
-   - What we know: OFF has multilingual names; JSONL contains more fields than CSV
-   - What's unclear: Exact key — `product_name_en` vs. `product_name_languages.en` vs. nested structure
-   - Why still open: The JSONL dump has not been downloaded and no sample has been inspected. Assumption A1 in the Assumptions Log marks this LOW confidence.
-   - How the plan handles it: `ingest_off.py` uses `.get('product_name_en')` with a `None` default — silent on missing key either way. The post-ingest gate in 02-02 Task 2 checks `SELECT count(*) FROM products WHERE product_name_en IS NOT NULL`; a zero result is a red flag that triggers a script fix before full ingest.
-   - Execution gate: **02-02 Task 2** — `tools/README.md` "Inspect a sample" step (`zcat ... | head -5 | python3 -m json.tool`) must be run by the developer before triggering the full ingest. Cannot be a Wave 0 task (requires the JSONL to be downloaded, which is a 5 GB pre-requisite outside the repo).
+1. **OFF JSONL field name for English product name** — **RESOLVED**
+   - **Confirmed 2026-07-20** by inspecting 5,000 records from the actual downloaded JSONL dump (`tools/data/openfoodfacts-products.jsonl.gz`, 11.6 GB).
+   - `product_name_en` **is a flat top-level key** — no nesting under `product_name_languages`. Assumption A1 upgraded from LOW to HIGH confidence.
+   - Coverage in sample (n=5,000): 92.8% non-empty, 0.6% empty string `''`, 6.6% key absent.
+   - **Ingest script correction required:** `p.get('product_name_en')` returns `''` for empty-string records, which would be stored as an empty string rather than NULL and falsely pass the post-ingest count check. The extraction line must be `p.get('product_name_en') or None` to coerce empty strings to NULL.
+   - `product_name_en_imported` also exists but fills only 0.1% of gaps — not worth adding as a fallback.
+   - The 6.6% of records with no English name will have NULL stored; they remain searchable via `product_name` (primary name field, always non-empty after the `not name` filter).
 
 2. **Actual filtered DB size** — **OPEN**
    - What we know: Full OFF is ~9 GB uncompressed; EU subset is smaller; completeness ≥ 0.6 reduces further
