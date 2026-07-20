@@ -44,28 +44,35 @@ void main() {
         fail('not implemented — remove skip when FoodSearchNotifier exists');
       });
 
-      test('valid query with no local results and offline emits offlineNoResults', () {
-        // Intent: when the local search returns empty AND the device is
-        // offline (ConnectivityResult.none), the notifier must emit
-        // FoodSearchState.offlineNoResults().
-        //
-        // Wire-up: mock repository.searchLocal to return []; mock
-        // Connectivity to return none; call notifier.search('xyz'); elapse
-        // 300ms; assert state == FoodSearchState.offlineNoResults().
-        fail('not implemented — remove skip when FoodSearchNotifier exists');
-      });
+      test(
+        'valid query with no local results and offline emits offlineNoResults',
+        () {
+          // Intent: when the local search returns empty AND the device is
+          // offline (ConnectivityResult.none), the notifier must emit
+          // FoodSearchState.offlineNoResults().
+          //
+          // Wire-up: mock repository.searchLocal to return []; mock
+          // Connectivity to return none; call notifier.search('xyz'); elapse
+          // 300ms; assert state == FoodSearchState.offlineNoResults().
+          fail('not implemented — remove skip when FoodSearchNotifier exists');
+        },
+      );
 
-      test('valid query with no local results and online emits loading then results from API', () {
-        // Intent: when local search returns empty AND the device is online,
-        // the notifier should briefly emit FoodSearchState.loading() before
-        // settling on FoodSearchState.results(items) from the API.
-        //
-        // Wire-up: mock repository.searchLocal to return []; mock
-        // Connectivity to return wifi; mock repository.searchAndCache to
-        // return [FoodItem('Oat', ...)]; call notifier.search('oat'); elapse
-        // 300ms; collect state emissions; assert loading then results.
-        fail('not implemented — remove skip when FoodSearchNotifier exists');
-      });
+      test(
+        'valid query with no local results and online emits loading then'
+            ' results from API',
+        () {
+          // Intent: when local search returns empty AND the device is online,
+          // the notifier should briefly emit FoodSearchState.loading() before
+          // settling on FoodSearchState.results(items) from the API.
+          //
+          // Wire-up: mock repository.searchLocal to return []; mock
+          // Connectivity to return wifi; mock repository.searchAndCache to
+          // return [FoodItem('Oat', ...)]; call notifier.search('oat'); elapse
+          // 300ms; collect state emissions; assert loading then results.
+          fail('not implemented — remove skip when FoodSearchNotifier exists');
+        },
+      );
     },
   );
 }

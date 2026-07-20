@@ -29,20 +29,24 @@ void main() {
         // Intent: querying with a string that matches nothing (e.g.
         // 'xyzzy_noresult_42') should return an empty list, not throw.
         //
-        // Wire-up: same in-memory DB; call searchLocalFoods('xyzzy_noresult_42');
+        // Wire-up: same in-memory DB; call
+        // searchLocalFoods('xyzzy_noresult_42');
         // assert result.isEmpty.
         fail('not implemented — remove skip when FoodCatalogDao exists');
       });
 
-      test('searchLocalFoods returns results from off_ref ATTACH alias', () {
-        // Intent: FoodCatalogDao attaches off_reference.sqlite under the alias
-        // 'off_ref'. A query targeting that schema should return rows from the
-        // attached file, not only from the main co2diet.sqlite user-catalog.
-        //
-        // Wire-up: supply a real or mock path for off_reference.sqlite; verify
-        // that FoodCatalogDao.searchLocalFoods queries the off_ref schema.
-        fail('not implemented — remove skip when FoodCatalogDao exists');
-      });
+      test(
+        'searchLocalFoods returns results from off_ref ATTACH alias',
+        () {
+          // Intent: FoodCatalogDao attaches off_reference.sqlite under the
+          // alias 'off_ref'. A query targeting that schema should return rows
+          // from the attached file, not only from co2diet.sqlite user-catalog.
+          //
+          // Wire-up: supply a real or mock path for off_reference.sqlite;
+          // verify FoodCatalogDao.searchLocalFoods queries the off_ref schema.
+          fail('not implemented — remove skip when FoodCatalogDao exists');
+        },
+      );
     },
   );
 }

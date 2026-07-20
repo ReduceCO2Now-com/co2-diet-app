@@ -36,15 +36,21 @@ void main() {
         fail('not implemented — remove skip when FoodCatalogRepository exists');
       });
 
-      test('searchAndCache writes API results to co2diet.sqlite user-catalog tables', () {
-        // Intent: after a successful OFF API call the repository must persist
-        // each returned FoodItem into the user-catalog tables inside
-        // co2diet.sqlite (not the off_reference read-only DB).
-        //
-        // Wire-up: mock FoodCatalogDao write method; assert it was called
-        // with the items returned by the mocked OffApiClient.
-        fail('not implemented — remove skip when FoodCatalogRepository exists');
-      });
+      test(
+        'searchAndCache writes API results to co2diet.sqlite user-catalog'
+            ' tables',
+        () {
+          // Intent: after a successful OFF API call the repository must persist
+          // each returned FoodItem into the user-catalog tables inside
+          // co2diet.sqlite (not the off_reference read-only DB).
+          //
+          // Wire-up: mock FoodCatalogDao write method; assert it was called
+          // with the items returned by the mocked OffApiClient.
+          fail(
+            'not implemented — remove skip when FoodCatalogRepository exists',
+          );
+        },
+      );
 
       test('searchAndCache returns NetworkError state on API failure', () {
         // Intent: when OffApiClient.search() throws a network exception,
