@@ -135,10 +135,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-20T~18:00Z
-**Stopped at:** 02-07 checkpoint:human-verify — Tasks 1+2 complete (unit tests + benchmark integration tests); awaiting physical-device benchmark verification
-**Next action:** Run `flutter test integration_test/food_search_benchmark_test.dart --device-id <android-id>` on physical device; type "approved" to complete Phase 2; then execute Phase 3
-**Suggested next command:** Physical-device benchmark verification required (see checkpoint in 02-07-PLAN.md)
+**Last session:** 2026-07-21
+**Stopped at:** Phase 2 checkpoint approved — SM T733 physical device, all benchmarks pass, UI smoke test pass, reinstall/decompression pass. Phase 2 officially closed.
+**Next action:** Plan Phase 3 (Barcode Scanning & CO₂ Factor Table)
+**Suggested next command:** `/gsd:plan-phase 3`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 

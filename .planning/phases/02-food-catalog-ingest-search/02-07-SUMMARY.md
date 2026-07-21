@@ -136,15 +136,21 @@ None — test-only files created; no new network endpoints, auth paths, file acc
 - Commit `a02a970` — confirmed via `git log`
 - `flutter test test/` exits 0: 66 passed, 1 skipped, 0 failures
 
-## Next Phase Readiness
+## Checkpoint Approval — 2026-07-21
 
-**Checkpoint reached.** Physical-device verification is required before Phase 2 can be declared complete:
-1. Run `tools/ingest_off.py` to produce `assets/off_reference.sqlite.gz`
-2. Run `flutter test integration_test/food_search_benchmark_test.dart --device-id <physical-android-id>`
-3. Verify BM-01, BM-02, BM-03 all pass with <1000ms on real hardware
-4. Verify NFR-06a ≥90% hit rate on real hardware
-5. Smoke-test the search UI on device per the checkpoint checklist
+**APPROVED by Ali on SM T733 (Samsung Galaxy Tab, Android 14, device R52RB0FSSAX)**
+
+All verification items completed:
+- `flutter test test/` — 66 passed, 1 skipped, 0 failures
+- BM-01 ("mi" 2-char prefix) — PASS, <1s, non-empty results
+- BM-02 ("banana" full-word) — PASS, <1s, non-empty results
+- BM-03 ("xyzzy_noresult_42" no-match) — PASS, <1s, empty results
+- NFR-06a (20-food German/EU hit-rate) — PASS, ≥90% hit rate
+- UI smoke test — PASS: search opens, keyboard focuses, local results instant (no shimmer), result tap → bottom sheet, ✕ clears, airplane mode → offline message, network restored → API fallback with shimmer
+- Reinstall / first-launch decompression — PASS: fresh install decompressed off_reference.sqlite.gz on first launch, "milch" search returned results immediately
+
+**Phase 2 officially complete: 2026-07-21**
 
 ---
 *Phase: 02-food-catalog-ingest-search*
-*Completed (pending checkpoint): 2026-07-20*
+*Completed: 2026-07-21*
