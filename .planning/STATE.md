@@ -3,8 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: completed
-stopped_at: Phase 3 context gathered
-last_updated: "2026-07-21T16:18:38.914Z"
+last_updated: "2026-07-21T21:59:31.008Z"
 progress:
   total_phases: 9
   completed_phases: 2
@@ -36,9 +35,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 02-food-catalog-ingest-search — COMPLETE (7 of 7 plans done)
-- **Plan:** 02-06 complete — FoodSearchScreen, all state widgets, /food-search route, Settings entry point
-- **Status:** Phase 2 complete; ready for Phase 3
+- **Phase:** 03-barcode-scanning-co-factor-table — IN PROGRESS (1 of 5 plans done)
+- **Plan:** 03-01 complete — Wave 0 test stubs (6 stub files, all skip cleanly, flutter test exits 0)
+- **Status:** Phase 3 in progress; Wave 0 stubs done; ready for 03-02 (BarcodeScanNotifier + DAO barcode lookup)
 - **Progress:** [░░░░░░░░░░] 0%
 - **v1 requirements:** 15 / 75 delivered (CO2-04, PROF-01 through PROF-05, PRIV-07, LOG-01, LOG-02, NFR-06)
 
@@ -136,7 +135,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-21T16:18:38.905Z
+**Last session:** 2026-07-21T21:59:30.998Z
 **Stopped at:** Phase 3 context gathered
 **Next action:** Plan Phase 3 (Barcode Scanning & CO₂ Factor Table)
 **Suggested next command:** `/gsd:plan-phase 3`
@@ -182,6 +181,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 02-07]: ProviderContainer.listen + Completer preferred over pumpEventQueue for awaiting Riverpod AsyncNotifier build — pumpEventQueue does not flush Riverpod scheduler timers reliably in non-widget tests
 - [Phase 02-07]: TestDefaultBinaryMessengerBinding.setMockMethodCallHandler used to mock connectivity_plus channel (dev.fluttercommunity.plus/connectivity) so Connectivity().checkConnectivity() works in unit tests without MissingPluginException
 - [Phase 02-07]: bare catch (e) in buildTestRepo() catches StateError from ensureOffReferenceDb without triggering avoid_catching_errors lint (which targets explicit on Error type names)
+- [Phase 03-01]: Phase 3 Wave 0 unit stubs follow group-level skip pattern — group skip: arg on group(), not individual tests (same as Phase 2 Wave 0 stubs)
+- [Phase 03-01]: Integration stub co2_coverage_benchmark_test.dart uses markTestSkipped() inside testWidgets body — consistent with Phase 2 food_search_benchmark_test.dart Wave 0 stub pattern
 
 ## Performance Metrics
 
@@ -193,3 +194,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 02-food-catalog-ingest-search P04 | ~15m | 2 tasks | 8 files |
 | Phase 02-food-catalog-ingest-search P06 | ~20m | 2 tasks | 8 files |
 | Phase 02-food-catalog-ingest-search P07 | ~25m | 2 tasks | 3 files |
+| Phase 03-barcode-scanning-co-factor-table P01 | 2m 13s | 2 tasks | 6 files |

@@ -48,8 +48,8 @@ Requirements for initial release. Each maps to a roadmap phase.
 
 - [x] **LOG-01**: User can search foods by name with <1 second response time against the local bundled food database (FTS5 index)
 - [x] **LOG-02**: Food search falls back to the Open Food Facts API when online and local results are fewer than a threshold; API results are cached locally for future offline use
-- [ ] **LOG-03**: User can scan a product barcode using the device camera; successful scan autofills food name, nutritional values, and CO₂e estimate; **P0 acceptance criterion: barcode scanning must be tested and verified on at least one real iOS device and one real Android device before launch** (simulator verification alone is not sufficient)
-- [ ] **LOG-04**: When barcode scan finds no match (online or offline), user is offered the "Add as custom food" fallback — no dead-end UX
+- [x] **LOG-03**: User can scan a product barcode using the device camera; successful scan autofills food name, nutritional values, and CO₂e estimate; **P0 acceptance criterion: barcode scanning must be tested and verified on at least one real iOS device and one real Android device before launch** (simulator verification alone is not sufficient)
+- [x] **LOG-04**: When barcode scan finds no match (online or offline), user is offered the "Add as custom food" fallback — no dead-end UX
 - [ ] **LOG-05**: User can add food to Breakfast, Lunch, Dinner, or Snack meal slots
 - [ ] **LOG-06**: User can input portion in g, ml, cups, pieces, or portions; cup/slice/portion sizes are user-configurable via My Foods settings; metric default, imperial from locale
 - [ ] **LOG-07**: Recent section shows individually logged food items (not combo/meal entries); one-tap reuse with previously used quantity pre-filled
@@ -69,7 +69,7 @@ Requirements for initial release. Each maps to a roadmap phase.
 
 ### CO₂ Tracking
 
-- [ ] **CO2-01**: Each food item has an associated CO₂e estimate (g CO₂e per kg); displayed with a confidence band (High / Medium / Low), never as a single false-precision number
+- [x] **CO2-01**: Each food item has an associated CO₂e estimate (g CO₂e per kg); displayed with a confidence band (High / Medium / Low), never as a single false-precision number
 - [ ] **CO2-02**: System calculates CO₂e per meal, daily total, and weekly total entirely on-device — deterministic, offline, no network dependency
 - [ ] **CO2-03**: CO₂ Calculation Settings screen: user can optionally configure location (country + region), food purchasing source (supermarket / local farm / mix), shopping transport (car / public / walk/bike), cooking method (electric / gas / induction), food storage (fridge size / freezer), household size, food waste level; regional averages used as fallback for all unconfigured fields
 - [x] **CO2-04**: CO₂ values are stored per row with a `co2_methodology_version` field; when methodology is updated, the app surfaces a non-intrusive "CO₂ estimates updated with methodology v2" announcement
@@ -126,7 +126,7 @@ Requirements for initial release. Each maps to a roadmap phase.
 - [ ] **LEG-02**: Health Disclaimer is visible from the Legal Consent screen (before first use) and accessible from Legal Hub at any time; states the app does not provide medical advice and is not a substitute for professional dietary or medical guidance
 - [ ] **LEG-03**: Impressum contains: legal entity / operator, address, contact email, responsible person, required legal disclosures under German TMG §5 / MStV §18; accessible within 2 taps
 - [ ] **LEG-04**: Open source license disclosure: all third-party library licenses and copyright notices accessible in-app
-- [ ] **LEG-05**: CO₂ methodology and data sources are publicly documented; linked from the Estimate Transparency screen and Legal Hub
+- [x] **LEG-05**: CO₂ methodology and data sources are publicly documented; linked from the Estimate Transparency screen and Legal Hub
 
 ### Non-Functional Requirements (UX Tone & Behavior)
 
@@ -240,8 +240,8 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | PROF-06 | Phase 5 | Pending |
 | LOG-01 | Phase 2 | Complete |
 | LOG-02 | Phase 2 | Complete |
-| LOG-03 | Phase 3 | Pending |
-| LOG-04 | Phase 3 | Pending |
+| LOG-03 | Phase 3 | Complete |
+| LOG-04 | Phase 3 | Complete |
 | LOG-05 | Phase 4 | Pending |
 | LOG-06 | Phase 4 | Pending |
 | LOG-07 | Phase 4 | Pending |
@@ -255,7 +255,7 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | NUTR-02 | Phase 5 | Pending |
 | NUTR-03 | Phase 5 | Pending |
 | NUTR-04 | Phase 5 | Pending |
-| CO2-01 | Phase 3 | Pending |
+| CO2-01 | Phase 3 | Complete |
 | CO2-02 | Phase 5 | Pending |
 | CO2-03 | Phase 5 | Pending |
 | CO2-04 | Phase 1 | Complete |
@@ -294,7 +294,7 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | LEG-02 | Phase 6 | Pending |
 | LEG-03 | Phase 6 | Pending |
 | LEG-04 | Phase 1 | Pending |
-| LEG-05 | Phase 3 | Pending |
+| LEG-05 | Phase 3 | Complete |
 | NFR-01 | Phase 6 | Pending |
 | NFR-02 | Phase 6 | Pending |
 | NFR-03 | Phase 6 | Pending |
