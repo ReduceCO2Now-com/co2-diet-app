@@ -2,7 +2,7 @@
 phase: 3
 slug: barcode-scanning-co-factor-table
 status: draft
-nyquist_compliant: false
+nyquist_compliant: true
 wave_0_complete: false
 created: 2026-07-21
 ---
@@ -38,15 +38,12 @@ created: 2026-07-21
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 3-CO2-map | CO2 factor ingest | 1 | CO2-01 | unit | `flutter test test/co2/co2_factor_dao_test.dart` | ❌ W0 | ⬜ pending |
-| 3-CO2-lookup | CO2 lookup service | 1 | CO2-01 | unit | `flutter test test/co2/co2_lookup_service_test.dart` | ❌ W0 | ⬜ pending |
-| 3-CO2-band | Confidence band display | 1 | CO2-01 | widget | `flutter test test/co2/confidence_chip_test.dart` | ❌ W0 | ⬜ pending |
-| 3-scan-permission | Camera permission flow | 2 | LOG-03 | widget | `flutter test test/scanner/scanner_permission_test.dart` | ❌ W0 | ⬜ pending |
-| 3-scan-dedup | onDetect dedup guard | 2 | LOG-03 | unit | `flutter test test/scanner/scanner_dedup_test.dart` | ❌ W0 | ⬜ pending |
-| 3-scan-miss | No-match fallback UX | 2 | LOG-03 | widget | `flutter test test/scanner/scanner_no_match_test.dart` | ❌ W0 | ⬜ pending |
-| 3-scan-offline | Offline barcode lookup | 2 | LOG-03 | unit | `flutter test test/scanner/scanner_offline_test.dart` | ❌ W0 | ⬜ pending |
-| 3-nfr-coverage | >90% category coverage | 3 | LOG-04 | unit | `flutter test test/co2/co2_coverage_test.dart` | ❌ W0 | ⬜ pending |
-| 3-leg-link | Methodology link in app | 3 | LEG-05 | widget | `flutter test test/legal/methodology_link_test.dart` | ❌ W0 | ⬜ pending |
+| 3-scan-notifier | BarcodeScanNotifier lookup chain | 1 | LOG-03, LOG-04 | unit | `flutter test test/features/barcode_scan/barcode_scan_notifier_test.dart` | ❌ W0 (Plan 01) | ⬜ pending |
+| 3-CO2-band | Confidence chip rendering | 1 | CO2-01 | widget | `flutter test test/features/barcode_scan/confidence_chip_test.dart` | ❌ W0 (Plan 01) | ⬜ pending |
+| 3-CO2-format | CO₂ significant-figures formatting | 1 | CO2-01 | unit | `flutter test test/features/barcode_scan/co2_formatting_test.dart` | ❌ W0 (Plan 01) | ⬜ pending |
+| 3-leg-methodology | MethodologyScreen attribution display | 1 | LEG-05 | widget | `flutter test test/features/barcode_scan/methodology_screen_test.dart` | ❌ W0 (Plan 01) | ⬜ pending |
+| 3-dao-barcode | FoodCatalogDao.lookupByBarcodeWithCo2 | 1 | LOG-03 | unit | `flutter test test/data/local/food_catalog_dao_barcode_test.dart` | ❌ W0 (Plan 01) | ⬜ pending |
+| 3-nfr-coverage | ≥90% CO₂ coverage benchmark | 1 | CO2-01 | integration | `flutter test integration_test/co2_coverage_benchmark_test.dart` | ❌ W0 (Plan 01) | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -54,15 +51,12 @@ created: 2026-07-21
 
 ## Wave 0 Requirements
 
-- [ ] `test/co2/co2_factor_dao_test.dart` — stubs for CO2-01 factor table DAO
-- [ ] `test/co2/co2_lookup_service_test.dart` — stubs for CO2-01 lookup service
-- [ ] `test/co2/confidence_chip_test.dart` — stubs for CO2-01 confidence band widget
-- [ ] `test/scanner/scanner_permission_test.dart` — stubs for LOG-03 permission flow
-- [ ] `test/scanner/scanner_dedup_test.dart` — stubs for LOG-03 onDetect dedup guard
-- [ ] `test/scanner/scanner_no_match_test.dart` — stubs for LOG-03 no-match fallback
-- [ ] `test/scanner/scanner_offline_test.dart` — stubs for LOG-03 offline lookup
-- [ ] `test/co2/co2_coverage_test.dart` — stubs for LOG-04 >90% coverage check
-- [ ] `test/legal/methodology_link_test.dart` — stubs for LEG-05 methodology link
+- [ ] `test/features/barcode_scan/barcode_scan_notifier_test.dart` — stubs for LOG-03 lookup chain and LOG-04 no-match (Plan 01 Task 1)
+- [ ] `test/features/barcode_scan/confidence_chip_test.dart` — stubs for CO2-01 confidence chip rendering (Plan 01 Task 1)
+- [ ] `test/features/barcode_scan/co2_formatting_test.dart` — stubs for CO2-01 significant-figures rule (Plan 01 Task 1)
+- [ ] `test/features/barcode_scan/methodology_screen_test.dart` — stubs for LEG-05 attribution display (Plan 01 Task 2)
+- [ ] `test/data/local/food_catalog_dao_barcode_test.dart` — stubs for FoodCatalogDao barcode lookup with CO₂ fields (Plan 01 Task 2)
+- [ ] `integration_test/co2_coverage_benchmark_test.dart` — stub for NFR-06(b) ≥90% coverage benchmark (Plan 01 Task 2)
 
 ---
 

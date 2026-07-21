@@ -709,22 +709,25 @@ await AppSettings.openAppSettings(); // opens general app settings (shows camera
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Does `ciqual_off_match.csv` exist as a public downloadable file?**
    - What we know: CONTEXT.md references it (~900 direct matches) and it is the basis for the High confidence path
    - What's unclear: No verified public URL or repository was found during research. OFF's EcoScore implementation contains per-product AGRIBALYSE matching, but the exact file format and source is unclear
    - Recommendation: Planner should include a Wave 0 research task to locate or reconstruct this file before the ingest pipeline plan begins. Options: (a) query OFF API for products with `ecoscore_data.agribalyse.agribalyse_food_code` field populated; (b) check `openfoodfacts/openfoodfacts-server` GitHub for a committed CSV; (c) generate from the existing JSONL dump by extracting `code` + `ecoscore_data.agribalyse.ciqual_food_code` pairs.
+   - **Q1 RESOLVED:** Crosswalk derived from `agribalyse_food_code` column in the `products` table of `off_reference.sqlite` (populated during Phase 2 ingest). The `food_co2_overrides` table is built in Plan 02 Task 1 by joining `products.agribalyse_food_code` against AGRIBALYSE CIQUAL codes. No standalone `ciqual_off_match.csv` download required.
 
 2. **Which URL launcher approach for MethodologyScreen GitHub link?**
    - What we know: CONTEXT.md defers to Claude's discretion (`url_launcher` vs `webview_flutter`)
    - What's unclear: `url_launcher` opens GitHub in the system browser (simpler, privacy-consistent); `webview_flutter` keeps the user in-app but adds 3–5MB and a WebView dependency
    - Recommendation: Use `url_launcher` — privacy-first design principle prefers using the system browser over embedded WebViews, and `url_launcher` is likely already a transitive dependency. Verify with `flutter pub deps` before adding explicitly.
+   - **Q2 RESOLVED:** `url_launcher` selected (Plan 04, Task 1). Opens the GitHub `docs/CO2_METHODOLOGY.md` link in the system browser. No `webview_flutter` dependency added.
 
 3. **Android minSdkVersion compatibility with mobile_scanner 7.x**
    - What we know: mobile_scanner requires minSdkVersion >= 21; current `build.gradle.kts` uses `minSdk = flutter.minSdkVersion` (Flutter default is 21)
    - What's unclear: Whether Flutter 3.44.6's default `flutter.minSdkVersion` is exactly 21 or has been bumped
    - Recommendation: Planner should include a task to verify `flutter.minSdkVersion` value before running on Android; if below 21, set `minSdk = 21` explicitly.
+   - **Q3 RESOLVED:** `minSdk = 21` set explicitly in `android/app/build.gradle.kts` (Plan 03, Task 1) with comment explaining the CameraX constraint. Removes reliance on Flutter's default value.
 
 ---
 
