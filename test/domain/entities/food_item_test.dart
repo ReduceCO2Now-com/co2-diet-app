@@ -95,5 +95,60 @@ void main() {
       expect(item.carbs100g, isNull);
       expect(item.fat100g, isNull);
     });
+
+    // --- CO₂ fields (Plan 03-02) ---
+
+    test('stores co2e100g and confidenceBand when provided', () {
+      const item = FoodItem(
+        productName: 'Test',
+        co2e100g: 2.3,
+        confidenceBand: 'high',
+      );
+      expect(item.co2e100g, equals(2.3));
+      expect(item.confidenceBand, equals('high'));
+    });
+
+    test('co2e100g and confidenceBand are null by default', () {
+      const item = FoodItem(productName: 'Test');
+      expect(item.co2e100g, isNull);
+      expect(item.confidenceBand, isNull);
+    });
+
+    test('copyWith(co2e100g: null) explicitly sets field to null (sentinel)', () {
+      const item = FoodItem(
+        productName: 'Test',
+        co2e100g: 5.0,
+        confidenceBand: 'medium',
+      );
+      final updated = item.copyWith(co2e100g: null);
+      expect(updated.co2e100g, isNull);
+      // confidenceBand should be preserved (not touched)
+      expect(updated.confidenceBand, equals('medium'));
+    });
+
+    test('copyWith(confidenceBand: "medium") replaces while other fields preserved', () {
+      const item = FoodItem(
+        barcode: '1234567890123',
+        productName: 'Beef',
+        co2e100g: 27.0,
+        confidenceBand: 'high',
+      );
+      final updated = item.copyWith(confidenceBand: 'medium');
+      expect(updated.confidenceBand, equals('medium'));
+      expect(updated.co2e100g, equals(27.0));
+      expect(updated.barcode, equals('1234567890123'));
+      expect(updated.productName, equals('Beef'));
+    });
+
+    test('copyWith without co2e100g preserves existing value', () {
+      const item = FoodItem(
+        productName: 'Test',
+        co2e100g: 3.5,
+        confidenceBand: 'high',
+      );
+      final updated = item.copyWith(productName: 'Updated');
+      expect(updated.co2e100g, equals(3.5));
+      expect(updated.confidenceBand, equals('high'));
+    });
   });
 }
