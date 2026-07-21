@@ -8,7 +8,7 @@ part of 'app_providers.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Provides the [FoodCatalogDao] bound to the live [AppDatabase].
+/// Provides the [FoodCatalogDao] bound to the live `AppDatabase`.
 ///
 /// keepAlive: true — DAO must persist for the full ProviderScope lifetime
 /// because it is referenced by [foodCatalogRepositoryProvider] which is also
@@ -17,7 +17,7 @@ part of 'app_providers.dart';
 @ProviderFor(foodCatalogDao)
 final foodCatalogDaoProvider = FoodCatalogDaoProvider._();
 
-/// Provides the [FoodCatalogDao] bound to the live [AppDatabase].
+/// Provides the [FoodCatalogDao] bound to the live `AppDatabase`.
 ///
 /// keepAlive: true — DAO must persist for the full ProviderScope lifetime
 /// because it is referenced by [foodCatalogRepositoryProvider] which is also
@@ -26,7 +26,7 @@ final foodCatalogDaoProvider = FoodCatalogDaoProvider._();
 final class FoodCatalogDaoProvider
     extends $FunctionalProvider<FoodCatalogDao, FoodCatalogDao, FoodCatalogDao>
     with $Provider<FoodCatalogDao> {
-  /// Provides the [FoodCatalogDao] bound to the live [AppDatabase].
+  /// Provides the [FoodCatalogDao] bound to the live `AppDatabase`.
   ///
   /// keepAlive: true — DAO must persist for the full ProviderScope lifetime
   /// because it is referenced by [foodCatalogRepositoryProvider] which is also

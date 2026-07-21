@@ -24,12 +24,16 @@ class FoodItem {
     this.protein100g,
     this.carbs100g,
     this.fat100g,
+    this.co2e100g,
+    this.confidenceBand,
   });
 
   /// Creates a [FoodItem] from a Drift [QueryRow].
   ///
   /// Reads columns by name using [QueryRow.read] with nullable type parameters.
   /// Used by FoodCatalogDao to map both off_ref and user_food_cache results.
+  /// Reads `co2e_100g` and `confidence_band` columns (null-safe) — present
+  /// only in CO₂-enriched queries (lookupByBarcodeWithCo2).
   factory FoodItem.fromQueryRow(QueryRow row) {
     return FoodItem(
       barcode: row.read<String?>('barcode'),
@@ -40,6 +44,8 @@ class FoodItem {
       protein100g: row.read<double?>('protein_100g'),
       carbs100g: row.read<double?>('carbs_100g'),
       fat100g: row.read<double?>('fat_100g'),
+      co2e100g: row.read<double?>('co2e_100g'),
+      confidenceBand: row.read<String?>('confidence_band'),
     );
   }
 
@@ -68,6 +74,19 @@ class FoodItem {
   /// Fat in g per 100 g, nullable when not available.
   final double? fat100g;
 
+  /// CO₂e in kg per kg of product (from AGRIBALYSE v3.1.1), nullable.
+  ///
+  /// Null means no CO₂ estimate is available — the CO₂ row should be hidden
+  /// in the UI rather than showing a false-precision value.
+  final double? co2e100g;
+
+  /// Confidence band for the CO₂ estimate; one of 'high', 'medium', or null.
+  ///
+  /// - 'high': direct AGRIBALYSE barcode crosswalk match (product-specific LCA)
+  /// - 'medium': AGRIBALYSE category average (estimate based on food category)
+  /// - null: no CO₂ estimate available; [co2e100g] will also be null
+  final String? confidenceBand;
+
   /// Sentinel object used by [copyWith] to detect when a caller explicitly
   /// passes `null` for a nullable field vs. not providing the field at all.
   static const _sentinel = Object();
@@ -86,6 +105,8 @@ class FoodItem {
     Object? protein100g = _sentinel,
     Object? carbs100g = _sentinel,
     Object? fat100g = _sentinel,
+    Object? co2e100g = _sentinel,
+    Object? confidenceBand = _sentinel,
   }) {
     return FoodItem(
       barcode: barcode == _sentinel ? this.barcode : barcode as String?,
@@ -103,6 +124,11 @@ class FoodItem {
       carbs100g:
           carbs100g == _sentinel ? this.carbs100g : carbs100g as double?,
       fat100g: fat100g == _sentinel ? this.fat100g : fat100g as double?,
+      co2e100g:
+          co2e100g == _sentinel ? this.co2e100g : co2e100g as double?,
+      confidenceBand: confidenceBand == _sentinel
+          ? this.confidenceBand
+          : confidenceBand as String?,
     );
   }
 
@@ -121,5 +147,6 @@ class FoodItem {
   String toString() =>
       'FoodItem(barcode: $barcode, productName: $productName, '
       'productNameEn: $productNameEn, brand: $brand, '
-      'calories100g: $calories100g)';
+      'calories100g: $calories100g, co2e100g: $co2e100g, '
+      'confidenceBand: $confidenceBand)';
 }
