@@ -6,12 +6,14 @@ void main() {
     skip: 'BarcodeScanNotifier not yet implemented',
     () {
       test(
-        'lookup chain — high confidence path returns FoodItem with co2e100g and confidenceBand high',
+        'lookup chain — high confidence path returns FoodItem '
+        'with co2e100g and confidenceBand high',
         () {},
       );
 
       test(
-        'lookup chain — medium confidence path returns FoodItem with confidenceBand medium',
+        'lookup chain — medium confidence path returns FoodItem '
+        'with confidenceBand medium',
         () {},
       );
 
