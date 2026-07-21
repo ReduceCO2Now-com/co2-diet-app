@@ -74,12 +74,18 @@ Plans:
 **Depends on**: Phase 2
 **Requirements**: LOG-03, LOG-04, CO2-01, LEG-05
 **Success Criteria** (what must be TRUE):
-  1. A user can open the barcode scanner, scan a product barcode, and the resulting food is autofilled with name, nutritional values, and CO₂e estimate — verified end-to-end on at least one real iOS device and one real Android device before this phase closes (P0 acceptance criterion; simulator alone is insufficient).
+  1. A user can open the barcode scanner, scan a product barcode, and the resulting food is autofilled with name, nutritional values, and CO₂e estimate — verified end-to-end on at least one real Android device (Galaxy Tab S7 FE) before this phase closes (P0 acceptance criterion; simulator alone is insufficient). iOS real-device gate deferred to Phase 4 (no physical iPhone available).
   2. When a barcode scan finds no match (online or offline), the user is offered an explicit "Add as custom food" fallback — no dead-end UX.
-  3. Every food item surfaces a CO₂e value paired with a High / Medium / Low confidence band and rounded to 1–2 significant figures — never as a single false-precision number.
-  4. A documented product→CO₂ factor table (per-category and per-product where available) is loaded from the reference DB, and the methodology + data sources are publicly documented and linked from within the app.
-  5. NFR-06(b) verified: >90% of products in the bundled seed DB have at least a category-average CO₂e estimate (measurable only once the CO₂ factor table exists; moved from Phase 2 success criteria since the CO₂ factor table is built in this phase).
-**Plans**: TBD
+  3. Every food item surfaces a CO₂e value paired with a High or Medium confidence band and rounded to 1–2 significant figures — never as a single false-precision number. No Low tier (no data source to back it).
+  4. A documented product→CO₂ factor table (per-category and per-product where available) is loaded from the reference DB, and the methodology + data sources are publicly documented (docs/CO2_METHODOLOGY.md) and linked from within the app (MethodologyScreen + ConfidenceChip explanation sheet).
+  5. NFR-06(b) verified: >90% of products in the bundled seed DB have at least a category-average CO₂e estimate, verified by the integration benchmark on a connected Android device.
+**Plans**: 5 plans
+Plans:
+- [ ] 03-01-PLAN.md — Wave 0 test stubs for all Phase 3 test files
+- [ ] 03-02-PLAN.md — FoodItem CO₂ fields + FoodCatalogDao barcode lookup + AGRIBALYSE ingest + off_to_agribalyse_map.csv
+- [ ] 03-03-PLAN.md — Scanner UI: mobile_scanner deps, BarcodeScanNotifier, BarcodeScanScreen, router wiring, barcode icon in FoodSearchScreen
+- [ ] 03-04-PLAN.md — CO₂ display: warningAmber token, ConfidenceChip, FoodDetailBottomSheet CO₂ row, MethodologyScreen, docs/CO2_METHODOLOGY.md, NFR-06(b) benchmark
+- [ ] 03-05-PLAN.md — Real-device human-verify checkpoint: Galaxy Tab S7 FE end-to-end scan + NFR-06(b) benchmark
 **UI hint**: yes
 
 ### Phase 4: Meal Logging Core (<10s target)
@@ -161,7 +167,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Foundations & Sync-Safe Schema | 7/7 | Complete   | 2026-07-17 |
 | 2. Food Catalog Ingest & Search | 7/7 | Complete   | 2026-07-20 |
-| 3. Barcode Scanning & CO₂ Factor Table | 0/0 | Not started | - |
+| 3. Barcode Scanning & CO₂ Factor Table | 0/5 | In planning | - |
 | 4. Meal Logging Core | 0/0 | Not started | - |
 | 5. Full Local App (Local Mode Shippable) | 0/0 | Not started | - |
 | 6. Onboarding, Legal & Pre-Submission | 0/0 | Not started | - |
@@ -193,3 +199,4 @@ Plans:
 
 *Roadmap created: 2026-07-16*
 *Phase 2 planned: 2026-07-17 — 7 plans, 4 waves*
+*Phase 3 planned: 2026-07-21 — 5 plans, 4 waves*
