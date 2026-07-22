@@ -84,6 +84,13 @@ class _FoodSearchScreenState extends ConsumerState<FoodSearchScreen> {
           onSubmitted: notifier.onQuerySubmitted,
           textInputAction: TextInputAction.search,
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.qr_code_scanner),
+            tooltip: 'Scan barcode',
+            onPressed: () => context.push('/barcode-scan'),
+          ),
+        ],
       ),
       body: searchState.when(
         data: (state) => _buildBody(context, state, notifier),
