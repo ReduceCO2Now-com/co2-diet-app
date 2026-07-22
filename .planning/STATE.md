@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
-status: verifying
-stopped_at: Plan 03-04 complete — CO2 display wiring (ConfidenceChip, formatCo2Display, MethodologyScreen, FoodDetailBottomSheet CO2 row, docs/CO2_METHODOLOGY.md, NFR-06(b) benchmark)
-last_updated: "2026-07-22T16:22:45.477Z"
+status: planning
+stopped_at: Plan 03-05 complete — Phase 3 real-device human-verify checkpoint PASSED (Galaxy Tab S7 FE, Android 14, NFR-06(b) 94.6%, all P0 criteria satisfied, macro regression fixed)
+last_updated: "2026-07-22T16:30:21.274Z"
 progress:
   total_phases: 9
   completed_phases: 3
@@ -38,7 +38,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - **Milestone:** v1 launch
 - **Phase:** 03-barcode-scanning-co-factor-table — COMPLETE (5 of 5 plans done)
 - **Plan:** 03-05 complete — Real-device human-verify checkpoint: Galaxy Tab S7 FE (Android 14), 94.6% CO₂ coverage, all P0 barcode scan criteria satisfied + macro regression fix
-- **Status:** Phase 3 COMPLETE; ready for Phase 4 planning (Meal Logging Core)
+- **Status:** Ready to plan
 - **Progress:** [██████████] 100%
 - **v1 requirements:** 21 / 75 delivered (CO2-01, CO2-04, LEG-05, LOG-03, LOG-04, NFR-06, PROF-01 through PROF-05, PRIV-07, LOG-01, LOG-02)
 
