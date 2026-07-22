@@ -26,6 +26,7 @@ class FoodItem {
     this.fat100g,
     this.co2e100g,
     this.confidenceBand,
+    this.categoriesTags,
   });
 
   /// Creates a [FoodItem] from a Drift [QueryRow].
@@ -87,6 +88,13 @@ class FoodItem {
   /// - null: no CO₂ estimate available; [co2e100g] will also be null
   final String? confidenceBand;
 
+  /// OFF category tags from the API response (e.g. ['en:milks', 'en:dairy']).
+  ///
+  /// Transient — never persisted to DB or read from [fromQueryRow]. Populated
+  /// only for items fetched via [OffApiClient.fetchByBarcode] and used by
+  /// [FoodCatalogDao.lookupByBarcodeFromApi] to match against co2_factors.
+  final List<String>? categoriesTags;
+
   /// Sentinel object used by [copyWith] to detect when a caller explicitly
   /// passes `null` for a nullable field vs. not providing the field at all.
   static const _sentinel = Object();
@@ -107,6 +115,7 @@ class FoodItem {
     Object? fat100g = _sentinel,
     Object? co2e100g = _sentinel,
     Object? confidenceBand = _sentinel,
+    Object? categoriesTags = _sentinel,
   }) {
     return FoodItem(
       barcode: barcode == _sentinel ? this.barcode : barcode as String?,
@@ -129,6 +138,9 @@ class FoodItem {
       confidenceBand: confidenceBand == _sentinel
           ? this.confidenceBand
           : confidenceBand as String?,
+      categoriesTags: categoriesTags == _sentinel
+          ? this.categoriesTags
+          : categoriesTags as List<String>?,
     );
   }
 

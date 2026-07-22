@@ -121,6 +121,7 @@ class OffApiClient {
         PerSize.oneHundredGrams,
       ),
       fat100g: nutriments?.getValue(Nutrient.fat, PerSize.oneHundredGrams),
+      categoriesTags: p.categoriesTags,
     );
   }
 }

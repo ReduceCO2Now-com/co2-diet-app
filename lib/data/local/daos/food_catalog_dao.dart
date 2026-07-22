@@ -235,15 +235,15 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
   }
 
   /// Enriches an already-fetched API [FoodItem] with CO₂ data from
-  /// `off_ref.co2_factors` using the item's inferred category tag.
+  /// `off_ref.co2_factors` using [FoodItem.categoriesTags] from the API.
   ///
-  /// Called by the BarcodeScanNotifier (Plan 03) for Step 3 of the lookup
-  /// chain: when a barcode miss in the local DB triggers an OFF API GET,
-  /// the API result can still receive a Medium-confidence CO₂ estimate by
-  /// matching against the `co2_factors` table.
+  /// Iterates [apiResult.categoriesTags] most-specific-first (OFF API order)
+  /// and returns on the first hit in co2_factors. This avoids a circular
+  /// barcode→products subquery that always fails for items not in the local DB.
   ///
-  /// Returns [apiResult] unchanged when no category match is found or when
-  /// [AppDatabase.offRefPath] is null.
+  /// Returns [apiResult] unchanged when no category match is found, when
+  /// [FoodItem.categoriesTags] is null/empty, or when [AppDatabase.offRefPath]
+  /// is null.
   Future<FoodItem> lookupByBarcodeFromApi(
     String barcode,
     FoodItem apiResult,
@@ -251,49 +251,29 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
     if (barcode.isEmpty || barcode.length > 13) return apiResult;
     if (attachedDatabase.offRefPath == null) return apiResult;
 
-    // Attempt to find a category CO₂ factor using the categories_tags from
-    // the API-fetched product. The ingest pipeline stores a co2_factors lookup
-    // table keyed by OFF categories_tag values.
-    try {
-      final catRows = await attachedDatabase.customSelect(
-        '''
-        SELECT
-          ? AS barcode,
-          ? AS product_name,
-          NULL AS product_name_en,
-          NULL AS brand,
-          NULL AS calories_100g,
-          NULL AS protein_100g,
-          NULL AS carbs_100g,
-          NULL AS fat_100g,
-          cf.co2e_median AS co2e_100g,
-          'medium' AS confidence_band
-        FROM off_ref.co2_factors cf
-        WHERE cf.categories_tag IN (
-          SELECT cf2.categories_tag
-          FROM off_ref.products p2
-          JOIN off_ref.co2_factors cf2
-            ON cf2.categories_tag = p2.primary_category_tag
-          WHERE p2.barcode = ?
-          LIMIT 1
-        )
-        LIMIT 1
-        ''',
-        variables: [
-          Variable.withString(barcode),
-          Variable.withString(apiResult.productName),
-          Variable.withString(barcode),
-        ],
-        readsFrom: {},
-      ).get();
+    final tags = apiResult.categoriesTags;
+    if (tags == null || tags.isEmpty) return apiResult;
 
-      if (catRows.isNotEmpty) {
-        final co2e = catRows.first.read<double?>('co2e_100g');
-        if (co2e != null) {
-          return apiResult.copyWith(
-            co2e100g: co2e,
-            confidenceBand: 'medium',
-          );
+    // Iterate tags most-specific-first (OFF API order) — return on first hit.
+    try {
+      for (final tag in tags) {
+        final rows = await attachedDatabase.customSelect(
+          'SELECT co2e_median AS co2e_100g'
+          ' FROM off_ref.co2_factors'
+          ' WHERE categories_tag = ?'
+          ' LIMIT 1',
+          variables: [Variable.withString(tag)],
+          readsFrom: {},
+        ).get();
+
+        if (rows.isNotEmpty) {
+          final co2e = rows.first.read<double?>('co2e_100g');
+          if (co2e != null) {
+            return apiResult.copyWith(
+              co2e100g: co2e,
+              confidenceBand: 'medium',
+            );
+          }
         }
       }
     } on Exception catch (e) {
