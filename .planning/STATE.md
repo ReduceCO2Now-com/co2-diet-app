@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
-status: executing
-last_updated: "2026-07-22T12:30:29.871Z"
+status: completed
+last_updated: "2026-07-22T12:42:07.587Z"
 progress:
   total_phases: 9
   completed_phases: 2
@@ -35,11 +35,11 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 03-barcode-scanning-co-factor-table — IN PROGRESS (3 of 5 plans done)
-- **Plan:** 03-03 complete — Scanner UI shell (BarcodeScanScreen, ScanFrameOverlay, BarcodeScanNoMatchScreen, barcode icon in FoodSearchScreen)
-- **Status:** Phase 3 Wave 2 done; ready for 03-04 (CO₂ display wiring, Plan 02 data layer integration)
+- **Phase:** 03-barcode-scanning-co-factor-table — IN PROGRESS (4 of 5 plans done)
+- **Plan:** 03-04 complete — CO2 display wiring (warningAmber token, ConfidenceChip, formatCo2Display, FoodDetailBottomSheet CO2 row, MethodologyScreen, /methodology route, docs/CO2_METHODOLOGY.md, NFR-06(b) benchmark activated)
+- **Status:** Phase 3 Wave 3 done; ready for 03-05 (human verify checkpoint — barcode scan CO2 display on real device)
 - **Progress:** [░░░░░░░░░░] 0%
-- **v1 requirements:** 15 / 75 delivered (CO2-04, PROF-01 through PROF-05, PRIV-07, LOG-01, LOG-02, NFR-06)
+- **v1 requirements:** 17 / 75 delivered (CO2-01, CO2-04, LEG-05, PROF-01 through PROF-05, PRIV-07, LOG-01, LOG-02, LOG-03, NFR-06)
 
 ```
 [░░░░░░░░░░░░░░░░░░░░] 1%
@@ -135,10 +135,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-22T12:29:00Z
-**Stopped at:** Plan 03-03 complete — barcode scanner UI shell implemented
-**Next action:** Execute Plan 03-04 (CO₂ display, integrate data from Plan 02 layer)
-**Suggested next command:** `/gsd:execute-plan 03-04`
+**Last session:** 2026-07-21T01:00:39Z
+**Stopped at:** Plan 03-04 complete — CO2 display wiring (ConfidenceChip, formatCo2Display, MethodologyScreen, FoodDetailBottomSheet CO2 row, docs/CO2_METHODOLOGY.md, NFR-06(b) benchmark)
+**Next action:** Execute Plan 03-05 (human verify checkpoint — real device barcode scan with CO2 display)
+**Suggested next command:** `/gsd:execute-plan 03-05`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
@@ -187,6 +187,11 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 03-03]: MobileScanner 7.4.0 errorBuilder has 2-arg signature Widget Function(BuildContext, MobileScannerException) — no child parameter
 - [Phase 03-03]: MobileScannerController.dispose() returns Future<void> — wrapped with unawaited() in State.dispose() per discarded_futures lint
 - [Phase 03-03]: BarcodeScanState uses plain Dart sealed class (not Freezed) — variants are simple records with no copyWith/toJson needs
+- [Phase 03-04]: formatCo2Display lives in dedicated co2_formatter.dart (not inline in food_detail_sheet.dart) — public function importable from tests without widget tree
+- [Phase 03-04]: CO2 row hidden entirely (no '—' placeholder) when co2e100g is null — per CONTEXT.md design decision, no false-precision
+- [Phase 03-04]: ConfidenceChip.showExplanation static helper pattern — callers provide BuildContext, chip does not navigate itself
+- [Phase 03-04]: url_launcher ^6.3.1 added; LaunchMode.externalApplication preferred over in-app WebView for methodology link (privacy-safe)
+- [Phase 03-04]: NFR-06(b) benchmark self-skips when off_reference.sqlite absent via setUpAll try/on Object catch — consistent with food_search_benchmark_test.dart pattern
 
 ## Performance Metrics
 
@@ -201,3 +206,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 03-barcode-scanning-co-factor-table P01 | 2m 13s | 2 tasks | 6 files |
 | Phase 03 P02 | 90min | 2 tasks | 6 files |
 | Phase 03-barcode-scanning-co-factor-table P03 | ~14m | 2 tasks | 15 files |
+| Phase 03-barcode-scanning-co-factor-table P04 | ~7m | 2 tasks | 11 files |
