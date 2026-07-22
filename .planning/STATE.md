@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-07-22T12:13:21.908Z"
+last_updated: "2026-07-22T12:30:29.871Z"
 progress:
   total_phases: 9
   completed_phases: 2
@@ -35,9 +35,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 03-barcode-scanning-co-factor-table — IN PROGRESS (1 of 5 plans done)
-- **Plan:** 03-01 complete — Wave 0 test stubs (6 stub files, all skip cleanly, flutter test exits 0)
-- **Status:** Phase 3 in progress; Wave 0 stubs done; ready for 03-02 (BarcodeScanNotifier + DAO barcode lookup)
+- **Phase:** 03-barcode-scanning-co-factor-table — IN PROGRESS (3 of 5 plans done)
+- **Plan:** 03-03 complete — Scanner UI shell (BarcodeScanScreen, ScanFrameOverlay, BarcodeScanNoMatchScreen, barcode icon in FoodSearchScreen)
+- **Status:** Phase 3 Wave 2 done; ready for 03-04 (CO₂ display wiring, Plan 02 data layer integration)
 - **Progress:** [░░░░░░░░░░] 0%
 - **v1 requirements:** 15 / 75 delivered (CO2-04, PROF-01 through PROF-05, PRIV-07, LOG-01, LOG-02, NFR-06)
 
@@ -135,10 +135,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-22T12:13:21.902Z
-**Stopped at:** Phase 3 context gathered
-**Next action:** Plan Phase 3 (Barcode Scanning & CO₂ Factor Table)
-**Suggested next command:** `/gsd:plan-phase 3`
+**Last session:** 2026-07-22T12:29:00Z
+**Stopped at:** Plan 03-03 complete — barcode scanner UI shell implemented
+**Next action:** Execute Plan 03-04 (CO₂ display, integrate data from Plan 02 layer)
+**Suggested next command:** `/gsd:execute-plan 03-04`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
@@ -183,6 +183,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 02-07]: bare catch (e) in buildTestRepo() catches StateError from ensureOffReferenceDb without triggering avoid_catching_errors lint (which targets explicit on Error type names)
 - [Phase 03-01]: Phase 3 Wave 0 unit stubs follow group-level skip pattern — group skip: arg on group(), not individual tests (same as Phase 2 Wave 0 stubs)
 - [Phase 03-01]: Integration stub co2_coverage_benchmark_test.dart uses markTestSkipped() inside testWidgets body — consistent with Phase 2 food_search_benchmark_test.dart Wave 0 stub pattern
+- [Phase 03-03]: BarcodeScanScreen uses _showItemSheet helper with showModalBottomSheet directly (not showFoodDetailSheet void wrapper) to track sheet dismissal for camera resume
+- [Phase 03-03]: MobileScanner 7.4.0 errorBuilder has 2-arg signature Widget Function(BuildContext, MobileScannerException) — no child parameter
+- [Phase 03-03]: MobileScannerController.dispose() returns Future<void> — wrapped with unawaited() in State.dispose() per discarded_futures lint
+- [Phase 03-03]: BarcodeScanState uses plain Dart sealed class (not Freezed) — variants are simple records with no copyWith/toJson needs
 
 ## Performance Metrics
 
@@ -196,3 +200,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 02-food-catalog-ingest-search P07 | ~25m | 2 tasks | 3 files |
 | Phase 03-barcode-scanning-co-factor-table P01 | 2m 13s | 2 tasks | 6 files |
 | Phase 03 P02 | 90min | 2 tasks | 6 files |
+| Phase 03-barcode-scanning-co-factor-table P03 | ~14m | 2 tasks | 15 files |
