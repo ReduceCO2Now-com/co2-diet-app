@@ -1,4 +1,5 @@
 import 'package:co2diet/core/theme/color_tokens.dart';
+import 'package:co2diet/features/barcode_scan/screens/barcode_scan_screen.dart';
 import 'package:co2diet/features/food_search/screens/food_search_screen.dart';
 import 'package:co2diet/features/profile/screens/profile_screen.dart';
 import 'package:co2diet/features/settings/screens/settings_screen.dart';
@@ -84,6 +85,26 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: '/food-search',
         builder: (context, state) => const FoodSearchScreen(),
+      ),
+      GoRoute(
+        path: '/barcode-scan',
+        builder: (context, state) => const BarcodeScanScreen(),
+      ),
+      GoRoute(
+        path: '/custom-food-stub',
+        // Phase 4 owns the real form; Phase 3 shows a placeholder.
+        builder: (context, state) {
+          final barcode = state.uri.queryParameters['barcode'];
+          return Scaffold(
+            appBar: AppBar(title: const Text('Add Custom Food')),
+            body: Center(
+              child: Text(
+                'Custom food form coming in Phase 4'
+                '${barcode != null ? ' (barcode: $barcode)' : ''}',
+              ),
+            ),
+          );
+        },
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, shell) => AppShell(shell: shell),

@@ -36,6 +36,38 @@ void configureOff() {
 /// catches it and rethrows as `NetworkException`, surfaced as error state in
 /// Plan 02-05 without blocking the UI thread.
 class OffApiClient {
+  /// Fetches a single product by exact [barcode] from the OFF API v3.
+  ///
+  /// Returns a [FoodItem] if the product is found on the OFF server, or
+  /// null when the server returns a 404/not-found response.
+  ///
+  /// Throws on network errors — the caller
+  /// (`FoodCatalogRepository.lookupByBarcode`) catches and handles them.
+  ///
+  /// T-03-03-01 mitigation: [barcode] is a product-identifier string passed
+  /// as a URL segment (not SQL) — no injection risk at this layer.
+  /// T-04-04-04 mitigation: all Product field accesses use null-safe `?.`
+  /// operators to handle malformed API responses without throwing.
+  Future<FoodItem?> fetchByBarcode(String barcode) async {
+    final config = ProductQueryConfiguration(
+      barcode,
+      language: OpenFoodFactsLanguage.ENGLISH,
+      fields: [
+        ProductField.BARCODE,
+        ProductField.NAME,
+        ProductField.NAME_IN_LANGUAGES,
+        ProductField.BRANDS,
+        ProductField.NUTRIMENTS,
+        ProductField.CATEGORIES_TAGS,
+      ],
+      version: ProductQueryVersion.v3,
+    );
+
+    final result = await OpenFoodAPIClient.getProductV3(config);
+    if (result.product == null) return null;
+    return _productToFoodItem(result.product!);
+  }
+
   /// Searches the OFF API v3 for products matching [query].
   ///
   /// Returns up to 20 [FoodItem]s mapped from the API response.

@@ -5,7 +5,9 @@ import 'package:co2diet/data/local/daos/food_catalog_dao.dart';
 import 'package:co2diet/data/remote/off_api_client.dart';
 import 'package:co2diet/domain/entities/food_item.dart';
 import 'package:co2diet/domain/repositories/i_food_catalog_repository.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 
 /// Exception thrown by [FoodCatalogRepository.searchAndCache] when the OFF API
@@ -54,6 +56,68 @@ final class FoodCatalogRepository implements IFoodCatalogRepository {
   @override
   Future<List<FoodItem>> searchLocal(String query) =>
       _dao.searchLocalFoods(query);
+
+  @override
+  Future<FoodItem?> lookupByBarcode(String barcode) async {
+    // Steps 1+2: local DB lookup with CO₂ enrichment via the DAO.
+    final local = await _dao.lookupByBarcodeWithCo2(barcode);
+    if (local != null) return local;
+
+    // Connectivity check before attempting Step 3 (API fallback).
+    final connectivity = await Connectivity().checkConnectivity();
+    final isOffline =
+        connectivity.isEmpty ||
+        connectivity.contains(ConnectivityResult.none);
+    if (isOffline) return null;
+
+    // Step 3: OFF API GET — fetch by barcode.
+    try {
+      final apiResult = await _apiClient.fetchByBarcode(barcode);
+      if (apiResult == null) return null;
+
+      // Enrich with category CO₂ from the local reference DB.
+      final enriched = await _dao.lookupByBarcodeFromApi(barcode, apiResult);
+
+      // Cache to UserFoodCacheTable so future local lookups find this product.
+      final db = _dao.attachedDatabase;
+      final rowid = await db
+          .into(db.userFoodCacheTable)
+          .insertOnConflictUpdate(
+            UserFoodCacheTableCompanion.insert(
+              id: _uuid.v7(),
+              productName: enriched.productName,
+              productNameEn: Value(enriched.productNameEn),
+              brand: Value(enriched.brand),
+              barcode: Value(enriched.barcode),
+              calories100g: Value(enriched.calories100g),
+              protein100g: Value(enriched.protein100g),
+              carbs100g: Value(enriched.carbs100g),
+              fat100g: Value(enriched.fat100g),
+              categoriesTags: const Value(null),
+              hlcMillis: BigInt.from(DateTime.now().millisecondsSinceEpoch),
+              hlcCounter: 0,
+              hlcNodeId: 'local',
+              dirty: const Value(true),
+            ),
+          );
+
+      // Index in FTS5 for future name-based searches (D-API-FALLBACK).
+      await db.customStatement(
+        'INSERT OR REPLACE INTO user_food_cache_fts'
+        ' (rowid, product_name, product_name_en, brand)'
+        ' VALUES (?, ?, ?, ?)',
+        [rowid, enriched.productName, enriched.productNameEn, enriched.brand],
+      );
+
+      return enriched;
+    } on SocketException catch (e) {
+      debugPrint('[FoodCatalogRepository] barcode API error: $e');
+      return null;
+    } on Exception catch (e) {
+      debugPrint('[FoodCatalogRepository] barcode API error: $e');
+      return null;
+    }
+  }
 
   @override
   Future<List<FoodItem>> searchAndCache(String query) async {

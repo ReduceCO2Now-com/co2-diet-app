@@ -26,4 +26,21 @@ abstract interface class IFoodCatalogRepository {
   /// Throws a NetworkException on any network or parsing failure.
   /// Callers must check connectivity before invoking this method.
   Future<List<FoodItem>> searchAndCache(String query);
+
+  /// Looks up a food product by exact barcode via the 4-step chain:
+  ///
+  /// 1. `FoodCatalogDao.lookupByBarcodeWithCo2(barcode)` — High confidence
+  ///    (direct AGRIBALYSE barcode crosswalk match). Returns enriched item.
+  /// 2. Already covered inside step 1 (medium confidence category join).
+  /// 3. OFF API GET `fetchByBarcode(barcode)` when steps 1–2 miss and device
+  ///    is online — result enriched with category CO₂ via `lookupByBarcodeFromApi`.
+  ///    Cached into `UserFoodCacheTable`.
+  /// 4. Returns null — caller emits [BarcodeScanNoMatch].
+  ///
+  /// Returns null when [barcode] is empty, longer than 13 chars, or no product
+  /// is found in any step.
+  ///
+  /// T-03-03-01 mitigation: barcode is passed to the DAO using
+  /// Variable.withString parameterization and a max-length guard.
+  Future<FoodItem?> lookupByBarcode(String barcode);
 }

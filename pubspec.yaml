@@ -11,9 +11,20 @@ dependencies:
   # archive 4.0.9 — Pure Dart GZip decompression for first-launch off_reference.sqlite.gz
   # extraction; no FFI, no native binaries. [VERIFIED: pub.dev, loki3d.com publisher]
   archive: 4.0.9
+  # app_settings 8.0.3 — Deep-link to OS Settings app for permission-denied recovery.
+  # AppSettings.openAppSettings() handles iOS/Android platform difference.
+  # [VERIFIED: pub.dev 2026-07-21, 160/160 score]
+  app_settings: 8.0.3
   # connectivity_plus 7.3.0 — Detect network state before OFF API fallback calls.
   # [VERIFIED: pub.dev, flutter.dev ecosystem publisher]
   connectivity_plus: 7.3.0
+  # mobile_scanner 7.4.0 — Barcode scanning via CameraX/MLKit (Android) and AVFoundation (iOS).
+  # [VERIFIED: pub.dev 2026-07-21, 160/160 score, 1.06M downloads/month]
+  mobile_scanner: 7.4.0
+  # permission_handler 12.0.3 — Camera permission pre-check and status query before
+  # showing the native dialog. publisher: baseflow.com.
+  # [VERIFIED: pub.dev 2026-06-01, 160/160 score]
+  permission_handler: 12.0.3
   drift: 2.34.2
   drift_flutter: 0.3.1
   flutter:
@@ -66,6 +77,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/fonts/
+    - assets/off_reference.sqlite.gz
   fonts:
     - family: Plus Jakarta Sans
       fonts:
