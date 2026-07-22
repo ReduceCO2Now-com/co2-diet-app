@@ -1,5 +1,6 @@
 import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/features/barcode_scan/screens/barcode_scan_screen.dart';
+import 'package:co2diet/features/barcode_scan/screens/methodology_screen.dart';
 import 'package:co2diet/features/food_search/screens/food_search_screen.dart';
 import 'package:co2diet/features/profile/screens/profile_screen.dart';
 import 'package:co2diet/features/settings/screens/settings_screen.dart';
@@ -89,6 +90,10 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: '/barcode-scan',
         builder: (context, state) => const BarcodeScanScreen(),
+      ),
+      GoRoute(
+        path: '/methodology',
+        builder: (context, state) => const MethodologyScreen(),
       ),
       GoRoute(
         path: '/custom-food-stub',

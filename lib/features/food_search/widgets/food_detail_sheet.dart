@@ -1,12 +1,16 @@
 import 'dart:async';
 
 import 'package:co2diet/domain/entities/food_item.dart';
+import 'package:co2diet/features/barcode_scan/utils/co2_formatter.dart';
+import 'package:co2diet/features/barcode_scan/widgets/confidence_chip.dart';
 import 'package:flutter/material.dart';
 
-/// Displays a read-only bottom sheet with [item]'s name, brand, and
-/// per-100g macros.
+/// Displays a read-only bottom sheet with [item]'s name, brand, per-100g
+/// macros, and a CO₂e row when data is available.
 ///
-/// CO₂ row is intentionally hidden in Phase 2.
+/// CO₂ row is shown when [FoodItem.co2e100g] is non-null; hidden entirely
+/// (no placeholder '—') when null — per CONTEXT.md "No CO₂ shown rather
+/// than a Low-confidence guess".
 /// The "Log this food" action button is deferred to Phase 4.
 ///
 /// Use [showFoodDetailSheet] to present the sheet from a [BuildContext].
@@ -85,7 +89,41 @@ class _FoodDetailContent extends StatelessWidget {
             label: 'Fat',
             value: '${item.fat100g?.toStringAsFixed(1) ?? '—'} g',
           ),
-          // TODO(phase-3): Add CO₂e row once CO₂ factor table exists.
+          // CO₂ row — only shown when co2e100g is non-null (CO2-01).
+          // Hidden entirely (not '—') when null per CONTEXT.md design decision.
+          if (item.co2e100g != null) ...[
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'CO₂e estimate:',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        formatCo2Display(item.co2e100g)!,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      if (item.confidenceBand != null) ...[
+                        const SizedBox(width: 6),
+                        ConfidenceChip(
+                          band: item.confidenceBand!,
+                          onTap: () => ConfidenceChip.showExplanation(
+                            context,
+                            item.confidenceBand!,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
           const SizedBox(height: 16),
           Text(
             'per 100g',

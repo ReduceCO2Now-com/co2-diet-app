@@ -48,6 +48,10 @@ dependencies:
   # [VERIFIED: pub.dev]
   shimmer: 3.0.0
   uuid: 4.6.0
+  # url_launcher ^6.3.1 — opens GitHub methodology link in system browser
+  # (privacy-preferred over embedded WebView). [RESEARCH.md Open Questions #2]
+  # [VERIFIED: pub.dev, flutter.dev publisher, 160/160 pub score]
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   # build_runner 2.15.1 used (not 2.15.2) — 2.15.2 requires analyzer >=13.3 which

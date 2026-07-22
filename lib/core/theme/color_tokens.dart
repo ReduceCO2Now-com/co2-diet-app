@@ -75,4 +75,10 @@ abstract final class AppColors {
   static const Color softMint = Color(0xFF4BB477);
   static const Color skyBlue = Color(0xFF316FE2);
   static const Color surfaceLowest = Color(0xFFFFFFFF);
+
+  /// Amber warning color for Medium CO₂ confidence chip. Tailwind amber-500.
+  ///
+  /// ACC-04: Color-blind friendly alongside green — not relying on red/green
+  /// alone. [RESEARCH.md Pitfall 8]
+  static const Color warningAmber = Color(0xFFF59E0B);
 }
