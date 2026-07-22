@@ -17,7 +17,7 @@
 
 - [x] **Phase 1: Foundations & Sync-Safe Schema** — Drift v1 with HLC/tombstones/dirty flags/consent/CO₂ methodology version, DI, router, theme, CI dependency-audit pipeline, thinnest E2E vertical slice (completed 2026-07-17)
 - [x] **Phase 2: Food Catalog Ingest & Search** — OFF seed DB ingest, FTS5 index, bundled starter pack, search UI + API fallback, benchmarked <1s on low-end Android (completed 2026-07-20)
-- [ ] **Phase 3: Barcode Scanning & CO₂ Factor Table** — mobile_scanner integration, real-device barcode verification, product-to-CO₂ factor prototype, custom-food fallback
+- [x] **Phase 3: Barcode Scanning & CO₂ Factor Table** — mobile_scanner integration, real-device barcode verification, product-to-CO₂ factor prototype, custom-food fallback (completed 2026-07-22)
 - [ ] **Phase 4: Meal Logging Core** — Breakfast/Lunch/Dinner/Snack slots, portion units, Recent, Favorites, Custom foods, personal overrides, edit/delete/duplicate, offline-first, <10s meal-log verified
 - [ ] **Phase 5: Nutrition, CO₂ Estimator, Dashboard, Insights, Weight, Notifications, Export/Backup** — full local app; CO₂ Estimator + Transparency + Improvement Opportunities; Insights (7d/30d); Weight tracking; local notifications; Export (CSV/Excel/JSON); Backup/Restore. **Local Mode shippable here.**
 - [ ] **Phase 6: Onboarding, Legal Consent, Legal Hub, ED Safety Nets, Accessibility & Pre-Submission** — Splash → Welcome → Legal Consent → Mode Choice → Profile → Carousel; timestamped consent records; Legal Hub (Terms/Privacy/Disclaimer/Impressum); ED safety nets; PrivacyManifest/Data Safety; a11y audit; equal-weight Mode Choice audit; SAM test
@@ -85,7 +85,7 @@ Plans:
 - [x] 03-02-PLAN.md — FoodItem CO₂ fields + FoodCatalogDao barcode lookup + AGRIBALYSE ingest + off_to_agribalyse_map.csv
 - [x] 03-03-PLAN.md — Scanner UI: mobile_scanner deps, BarcodeScanNotifier, BarcodeScanScreen, router wiring, barcode icon in FoodSearchScreen
 - [x] 03-04-PLAN.md — CO₂ display: warningAmber token, ConfidenceChip, FoodDetailBottomSheet CO₂ row, MethodologyScreen, docs/CO2_METHODOLOGY.md, NFR-06(b) benchmark
-- [ ] 03-05-PLAN.md — Real-device human-verify checkpoint: Galaxy Tab S7 FE end-to-end scan + NFR-06(b) benchmark
+- [x] 03-05-PLAN.md — Real-device human-verify checkpoint: Galaxy Tab S7 FE end-to-end scan + NFR-06(b) benchmark
 **UI hint**: yes
 
 ### Phase 4: Meal Logging Core (<10s target)
@@ -167,7 +167,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Foundations & Sync-Safe Schema | 7/7 | Complete   | 2026-07-17 |
 | 2. Food Catalog Ingest & Search | 7/7 | Complete   | 2026-07-20 |
-| 3. Barcode Scanning & CO₂ Factor Table | 4/5 | In Progress|  |
+| 3. Barcode Scanning & CO₂ Factor Table | 5/5 | Complete   | 2026-07-22 |
 | 4. Meal Logging Core | 0/0 | Not started | - |
 | 5. Full Local App (Local Mode Shippable) | 0/0 | Not started | - |
 | 6. Onboarding, Legal & Pre-Submission | 0/0 | Not started | - |

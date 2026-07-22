@@ -2,14 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
-status: completed
-last_updated: "2026-07-22T12:42:07.587Z"
+status: verifying
+stopped_at: Plan 03-04 complete — CO2 display wiring (ConfidenceChip, formatCo2Display, MethodologyScreen, FoodDetailBottomSheet CO2 row, docs/CO2_METHODOLOGY.md, NFR-06(b) benchmark)
+last_updated: "2026-07-22T16:22:45.477Z"
 progress:
   total_phases: 9
-  completed_phases: 2
-  total_plans: 14
-  completed_plans: 14
-  percent: 0
+  completed_phases: 3
+  total_plans: 19
+  completed_plans: 19
+  percent: 100
 ---
 
 # STATE: CO₂ Diet
@@ -35,11 +36,11 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 03-barcode-scanning-co-factor-table — IN PROGRESS (4 of 5 plans done)
-- **Plan:** 03-04 complete — CO2 display wiring (warningAmber token, ConfidenceChip, formatCo2Display, FoodDetailBottomSheet CO2 row, MethodologyScreen, /methodology route, docs/CO2_METHODOLOGY.md, NFR-06(b) benchmark activated)
-- **Status:** Phase 3 Wave 3 done; ready for 03-05 (human verify checkpoint — barcode scan CO2 display on real device)
-- **Progress:** [░░░░░░░░░░] 0%
-- **v1 requirements:** 17 / 75 delivered (CO2-01, CO2-04, LEG-05, PROF-01 through PROF-05, PRIV-07, LOG-01, LOG-02, LOG-03, NFR-06)
+- **Phase:** 03-barcode-scanning-co-factor-table — COMPLETE (5 of 5 plans done)
+- **Plan:** 03-05 complete — Real-device human-verify checkpoint: Galaxy Tab S7 FE (Android 14), 94.6% CO₂ coverage, all P0 barcode scan criteria satisfied + macro regression fix
+- **Status:** Phase 3 COMPLETE; ready for Phase 4 planning (Meal Logging Core)
+- **Progress:** [██████████] 100%
+- **v1 requirements:** 21 / 75 delivered (CO2-01, CO2-04, LEG-05, LOG-03, LOG-04, NFR-06, PROF-01 through PROF-05, PRIV-07, LOG-01, LOG-02)
 
 ```
 [░░░░░░░░░░░░░░░░░░░░] 1%
@@ -135,10 +136,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-21T01:00:39Z
-**Stopped at:** Plan 03-04 complete — CO2 display wiring (ConfidenceChip, formatCo2Display, MethodologyScreen, FoodDetailBottomSheet CO2 row, docs/CO2_METHODOLOGY.md, NFR-06(b) benchmark)
-**Next action:** Execute Plan 03-05 (human verify checkpoint — real device barcode scan with CO2 display)
-**Suggested next command:** `/gsd:execute-plan 03-05`
+**Last session:** 2026-07-22T16:34:00Z
+**Stopped at:** Plan 03-05 complete — Phase 3 real-device human-verify checkpoint PASSED (Galaxy Tab S7 FE, Android 14, NFR-06(b) 94.6%, all P0 criteria satisfied, macro regression fixed)
+**Next action:** Plan Phase 4 (Meal Logging Core — LOG-05 through LOG-13)
+**Suggested next command:** `/gsd:plan-phase 04`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
@@ -192,6 +193,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 03-04]: ConfidenceChip.showExplanation static helper pattern — callers provide BuildContext, chip does not navigate itself
 - [Phase 03-04]: url_launcher ^6.3.1 added; LaunchMode.externalApplication preferred over in-app WebView for methodology link (privacy-safe)
 - [Phase 03-04]: NFR-06(b) benchmark self-skips when off_reference.sqlite absent via setUpAll try/on Object catch — consistent with food_search_benchmark_test.dart pattern
+- [Phase 03-05]: Macro+CO₂ merge: fall through to API when local result has null calories100g; merge API macros + local CO₂/confidence on success; serve local CO₂-only on offline error (off_ref.products has macro data for ~3% of products only)
+- [Phase 03-05]: NFR-06(b) result: 94.6% CO₂ coverage on Galaxy Tab S7 FE (Android 14) — exceeds 90% threshold; Phase 3 P0 barcode criterion satisfied
 
 ## Performance Metrics
 
@@ -207,3 +210,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 03 P02 | 90min | 2 tasks | 6 files |
 | Phase 03-barcode-scanning-co-factor-table P03 | ~14m | 2 tasks | 15 files |
 | Phase 03-barcode-scanning-co-factor-table P04 | ~7m | 2 tasks | 11 files |
+| Phase 03-barcode-scanning-co-factor-table P05 | ~30min | 2 tasks | 9 files |
