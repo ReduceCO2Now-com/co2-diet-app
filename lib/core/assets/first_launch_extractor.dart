@@ -5,8 +5,16 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+/// Bumped whenever `assets/off_reference.sqlite.gz` is rebuilt with a new
+/// schema or data version. Triggers re-extraction on existing installs so
+/// devices never run queries against a stale bundled DB.
+///
+/// Convention: '{phase}-{ingest-tag}' — update when ingest_off.py output
+/// changes the schema or replaces CO₂ data.
+const _offRefVersion = '03-02-AGRIBALYSE-3.1.1';
+
 /// Decompresses the bundled `assets/off_reference.sqlite.gz` asset to the
-/// app documents directory on first launch.
+/// app documents directory, re-extracting if the bundled version changed.
 ///
 /// T-02-03-02 mitigation: The output path is always derived from
 /// getApplicationDocumentsDirectory; it is never constructed from user input.
@@ -21,9 +29,17 @@ import 'package:path_provider/path_provider.dart';
 Future<String> ensureOffReferenceDb() async {
   final docsDir = await getApplicationDocumentsDirectory();
   final dbFile = File(p.join(docsDir.path, 'off_reference.sqlite'));
+  final versionFile = File(p.join(docsDir.path, 'off_reference.version'));
 
-  // Idempotent: skip extraction if the decompressed file already exists.
-  if (dbFile.existsSync()) return dbFile.path;
+  // Re-use existing file only when the on-disk version matches the bundled
+  // version. Mismatched or absent version → delete and re-extract.
+  if (dbFile.existsSync() && versionFile.existsSync()) {
+    final onDiskVersion = versionFile.readAsStringSync().trim();
+    if (onDiskVersion == _offRefVersion) return dbFile.path;
+  }
+
+  // Delete stale file before writing fresh bytes.
+  if (dbFile.existsSync()) dbFile.deleteSync();
 
   // Load the compressed asset from the Flutter bundle.
   late final ByteData byteData;
@@ -42,8 +58,10 @@ Future<String> ensureOffReferenceDb() async {
   final compressed = byteData.buffer.asUint8List();
   final decompressed = const GZipDecoder().decodeBytes(compressed);
 
-  // Write decompressed bytes to the app documents directory.
+  // Write decompressed bytes, then stamp the version so future launches skip
+  // re-extraction until _offRefVersion is bumped again.
   await dbFile.writeAsBytes(decompressed);
+  await versionFile.writeAsString(_offRefVersion);
 
   return dbFile.path;
 }
