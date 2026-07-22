@@ -252,7 +252,12 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
     if (attachedDatabase.offRefPath == null) return apiResult;
 
     final tags = apiResult.categoriesTags;
-    if (tags == null || tags.isEmpty) return apiResult;
+    // TEMP DEBUG — remove after device verification
+    debugPrint('[CO2-DEBUG] lookupByBarcodeFromApi: barcode=$barcode tags=$tags');
+    if (tags == null || tags.isEmpty) {
+      debugPrint('[CO2-DEBUG] no categoriesTags on apiResult — returning unenriched');
+      return apiResult;
+    }
 
     // Iterate tags most-specific-first (OFF API order) — return on first hit.
     try {
@@ -266,9 +271,12 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
           readsFrom: {},
         ).get();
 
+        // TEMP DEBUG
+        debugPrint('[CO2-DEBUG] tag=$tag hit=${rows.isNotEmpty}');
         if (rows.isNotEmpty) {
           final co2e = rows.first.read<double?>('co2e_100g');
           if (co2e != null) {
+            debugPrint('[CO2-DEBUG] matched tag=$tag co2e=$co2e — returning enriched');
             return apiResult.copyWith(
               co2e100g: co2e,
               confidenceBand: 'medium',
@@ -276,6 +284,7 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
           }
         }
       }
+      debugPrint('[CO2-DEBUG] no co2_factors match for any tag — returning unenriched');
     } on Exception catch (e) {
       debugPrint('[FoodCatalogDao] API barcode CO₂ enrichment error: $e');
     }

@@ -73,10 +73,13 @@ final class FoodCatalogRepository implements IFoodCatalogRepository {
     // Step 3: OFF API GET — fetch by barcode.
     try {
       final apiResult = await _apiClient.fetchByBarcode(barcode);
+      // TEMP DEBUG — remove after device verification
+      debugPrint('[CO2-DEBUG] fetchByBarcode result: barcode=$barcode found=${apiResult != null} categories=${apiResult?.categoriesTags}');
       if (apiResult == null) return null;
 
       // Enrich with category CO₂ from the local reference DB.
       final enriched = await _dao.lookupByBarcodeFromApi(barcode, apiResult);
+      debugPrint('[CO2-DEBUG] after enrichment: co2e=${enriched.co2e100g} band=${enriched.confidenceBand}');
 
       // Cache to UserFoodCacheTable so future local lookups find this product.
       final db = _dao.attachedDatabase;

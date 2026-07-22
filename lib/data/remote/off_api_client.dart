@@ -1,4 +1,5 @@
 import 'package:co2diet/domain/entities/food_item.dart';
+import 'package:flutter/foundation.dart';
 import 'package:openfoodfacts/openfoodfacts.dart';
 
 /// One-time setup for the openfoodfacts Dart client.
@@ -107,6 +108,8 @@ class OffApiClient {
   /// T-02-04-01: null nutriments, null barcode, and null product names
   /// are each handled without throwing.
   FoodItem _productToFoodItem(Product p) {
+    // TEMP DEBUG — remove after device verification
+    debugPrint('[CO2-DEBUG] _productToFoodItem: barcode=${p.barcode} categoriesTags=${p.categoriesTags}');
     final nutriments = p.nutriments;
     return FoodItem(
       barcode: p.barcode,
