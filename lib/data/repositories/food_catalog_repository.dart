@@ -61,25 +61,37 @@ final class FoodCatalogRepository implements IFoodCatalogRepository {
   Future<FoodItem?> lookupByBarcode(String barcode) async {
     // Steps 1+2: local DB lookup with CO₂ enrichment via the DAO.
     final local = await _dao.lookupByBarcodeWithCo2(barcode);
-    if (local != null) return local;
+
+    // Return the local result only when it also has macro data.
+    // off_ref.products stores macro data for ~3% of products; the other 97%
+    // have a primary_category_tag (for CO₂) but null macro columns. If we
+    // return those early we show CO₂ but blank calories/protein/carbs/fat.
+    if (local != null && local.calories100g != null) return local;
 
     // Connectivity check before attempting Step 3 (API fallback).
     final connectivity = await Connectivity().checkConnectivity();
     final isOffline =
         connectivity.isEmpty ||
         connectivity.contains(ConnectivityResult.none);
-    if (isOffline) return null;
+    // Offline and local has something (CO₂-only): better than nothing.
+    if (isOffline) return local;
 
-    // Step 3: OFF API GET — fetch by barcode.
+    // Step 3: OFF API GET — fetch by barcode for full macro data.
     try {
       final apiResult = await _apiClient.fetchByBarcode(barcode);
-      // TEMP DEBUG — remove after device verification
-      debugPrint('[CO2-DEBUG] fetchByBarcode result: barcode=$barcode found=${apiResult != null} categories=${apiResult?.categoriesTags}');
-      if (apiResult == null) return null;
+      if (apiResult == null) return local; // API miss: return local CO₂ if any
 
-      // Enrich with category CO₂ from the local reference DB.
-      final enriched = await _dao.lookupByBarcodeFromApi(barcode, apiResult);
-      debugPrint('[CO2-DEBUG] after enrichment: co2e=${enriched.co2e100g} band=${enriched.confidenceBand}');
+      final FoodItem enriched;
+      if (local != null) {
+        // Local has CO₂ data but null macros. Merge: API macros + local CO₂.
+        enriched = apiResult.copyWith(
+          co2e100g: local.co2e100g,
+          confidenceBand: local.confidenceBand,
+        );
+      } else {
+        // No local match at all: enrich the API result with category CO₂.
+        enriched = await _dao.lookupByBarcodeFromApi(barcode, apiResult);
+      }
 
       // Cache to UserFoodCacheTable so future local lookups find this product.
       final db = _dao.attachedDatabase;
@@ -115,10 +127,10 @@ final class FoodCatalogRepository implements IFoodCatalogRepository {
       return enriched;
     } on SocketException catch (e) {
       debugPrint('[FoodCatalogRepository] barcode API error: $e');
-      return null;
+      return local;
     } on Exception catch (e) {
       debugPrint('[FoodCatalogRepository] barcode API error: $e');
-      return null;
+      return local;
     }
   }
 
