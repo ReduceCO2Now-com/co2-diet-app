@@ -1,0 +1,92 @@
+off_category_tag,agribalyse_group,notes
+en:beverages,boissons,Broad beverages category — all drinks
+en:waters,boissons,Bottled waters and mineral waters
+en:soft-drinks,boissons,Sodas and carbonated soft drinks
+en:fruit-juices,boissons,100% fruit juices and nectars
+en:fruit-based-beverages,boissons,Fruit-flavoured drinks and squashes
+en:teas,boissons,Tea including herbal and green tea
+en:coffees,boissons,Coffee products including instant
+en:plant-based-milks,boissons,Oat milk and soy milk and almond milk etc.
+en:dairy,lait et produits laitiers,Broad dairy category
+en:dairies,lait et produits laitiers,Dairy products including milk and cream and butter
+en:milks,lait et produits laitiers,Drinking milks (whole and semi-skimmed and skimmed)
+en:fermented-milk-products,lait et produits laitiers,Yogurts and kefir and soured milk etc.
+en:yogurts,lait et produits laitiers,Plain and flavoured yogurts
+en:cheeses,lait et produits laitiers,All cheese types
+en:butter,matières grasses,Butter classified under matières grasses in AGRIBALYSE
+en:creams,lait et produits laitiers,Cream and sour cream products
+en:ice-creams-and-sorbets,glaces et sorbets,Ice cream and sorbets — own AGRIBALYSE group
+en:ice-creams,glaces et sorbets,Ice cream tubs and ice lollies
+en:frozen-desserts,glaces et sorbets,Frozen desserts including sorbet
+en:breads,produits céréaliers,Bread of all types — white and wholemeal and rye
+en:cereals-and-their-products,produits céréaliers,Cereals and grain-based products
+en:cereals-and-potatoes,produits céréaliers,Cereals and starchy products
+en:breakfast-cereals,produits céréaliers,Breakfast cereals including muesli
+en:mueslis,produits céréaliers,Muesli and granola products
+en:pasta,produits céréaliers,Dry and fresh pasta
+en:rice,produits céréaliers,White and brown rice
+en:flours,produits céréaliers,Wheat and other grain flours
+en:biscuits-and-cakes,produits sucrés,Biscuits and cookies and cakes
+en:biscuits,produits sucrés,Biscuits (sweet) including sandwich cookies
+en:cakes,produits sucrés,Cakes and muffins and pastries
+en:biscuits-and-crackers,produits sucrés,Biscuits and crackers — sweet variety
+en:meats,"viandes, œufs, poissons",Broad meats category
+en:meats-and-their-products,"viandes, œufs, poissons",Processed and unprocessed meat products
+en:beef,"viandes, œufs, poissons",Beef and veal
+en:poultry,"viandes, œufs, poissons",Chicken and turkey and duck
+en:chickens,"viandes, œufs, poissons",Chicken and chicken products
+en:pork,"viandes, œufs, poissons",Pork and pork products
+en:hams,"viandes, œufs, poissons",Cured ham and similar products
+en:sausages,"viandes, œufs, poissons",Sausages and wursts
+en:prepared-meats,"viandes, œufs, poissons",Deli meats and ready-to-eat meat products
+en:lamb-and-goat,"viandes, œufs, poissons",Lamb and goat
+en:fish,"viandes, œufs, poissons",Broad fish category
+en:fishes,"viandes, œufs, poissons",All fish species
+en:fishes-and-their-products,"viandes, œufs, poissons",Processed and unprocessed fish products
+en:seafood,"viandes, œufs, poissons",Seafood including shellfish and crustaceans
+en:salmons,"viandes, œufs, poissons",Salmon and smoked salmon
+en:fatty-fishes,"viandes, œufs, poissons",Fatty fish like mackerel and herring and tuna
+en:eggs,"viandes, œufs, poissons",Eggs and egg products
+en:vegetables,"fruits, légumes, légumineuses et oléagineux",Broad vegetables category
+en:plant-based-foods,"fruits, légumes, légumineuses et oléagineux",Plant-based foods including vegetables and pulses
+en:plant-based-foods-and-beverages,"fruits, légumes, légumineuses et oléagineux",Plant-based foods including vegetables and pulses (broad)
+en:fruits,"fruits, légumes, légumineuses et oléagineux",Fresh and dried fruits
+en:legumes,"fruits, légumes, légumineuses et oléagineux",Pulses and legumes — beans and lentils and chickpeas
+en:dried-products,"fruits, légumes, légumineuses et oléagineux",Dried legumes and dried fruits
+en:nuts,"fruits, légumes, légumineuses et oléagineux",Tree nuts and nut mixes
+en:olive-tree-products,"fruits, légumes, légumineuses et oléagineux",Olives and olive-derived products
+en:snacks,produits sucrés,Broad snacks — defaults to sweet when subcategory unknown
+en:sweet-snacks,produits sucrés,Sweet snacks and confectionery
+en:confectioneries,produits sucrés,Candy and chocolate and confectionery
+en:candies,produits sucrés,Hard and soft candy
+en:chocolates,produits sucrés,Chocolate bars and tablets
+en:chocolate-and-their-products,produits sucrés,Chocolate and cocoa-based products
+en:cocoa-and-its-products,produits sucrés,Cocoa products including chocolate
+en:sweets,produits sucrés,Confectionery and sweet treats
+en:honeys,produits sucrés,Honey and bee products
+en:sweet-spreads,produits sucrés,Sweet spreads including jam and Nutella and honey
+en:hazelnut-spreads,produits sucrés,Hazelnut-based chocolate spreads
+en:salty-snacks,entrées et plats composés,Salty snacks — crisps and pretzels and popcorn — nearest AGRIBALYSE group
+en:crackers,produits céréaliers,Crackers and crispbreads — cereal-based
+en:chips-and-fries,entrées et plats composés,Potato crisps and chips
+en:appetizers,entrées et plats composés,Party food and finger food
+en:oils-and-fats,matières grasses,Edible oils and fats
+en:vegetable-oils,matières grasses,Plant-derived oils
+en:olive-oils,matières grasses,Olive oil including extra-virgin
+en:fats,matières grasses,Fats and spreads
+en:condiments,aides culinaires et ingrédients divers,Condiments and seasonings
+en:sauces,aides culinaires et ingrédients divers,Sauces — cooking and table sauces
+en:soups,aides culinaires et ingrédients divers,Soups — canned and dry and fresh
+en:spreads,aides culinaires et ingrédients divers,Spreads — savoury including hummus and pâtés
+en:salted-spreads,aides culinaires et ingrédients divers,Savoury spreads
+en:groceries,aides culinaires et ingrédients divers,General grocery items
+en:dips,aides culinaires et ingrédients divers,Dips including hummus and tzatziki and guacamole
+en:hummus,aides culinaires et ingrédients divers,Hummus and chickpea dips
+en:sweeteners,aides culinaires et ingrédients divers,Sugar and sweetener products
+en:meals,entrées et plats composés,Ready meals and composite dishes
+en:frozen-meals,entrées et plats composés,Frozen ready meals and main dishes
+en:frozen-foods,entrées et plats composés,Frozen foods — derive from product pnns_groups_1
+en:pizzas-pies-and-quiches,entrées et plats composés,Pizzas and quiches and savoury pies
+en:pizzas,entrées et plats composés,Pizza including frozen and chilled
+en:sandwiches,entrées et plats composés,Sandwiches and wraps
+en:dietary-supplements,aides culinaires et ingrédients divers,Dietary and sports supplements — nearest available group
