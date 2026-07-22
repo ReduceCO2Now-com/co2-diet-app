@@ -17,46 +17,71 @@ import 'package:co2diet/core/assets/first_launch_extractor.dart';
 import 'package:co2diet/data/local/app_database.dart';
 import 'package:co2diet/data/remote/off_api_client.dart';
 import 'package:co2diet/data/repositories/food_catalog_repository.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  /// Builds a [FoodCatalogRepository] backed by the real off_reference.sqlite.
-  ///
-  /// Returns null when the compressed asset is not present in the app bundle
-  /// (i.e. tools/ingest_off.py has not been run and committed).
-  Future<FoodCatalogRepository?> buildTestRepo() async {
+  // Shared across all tests — created once in setUpAll, closed in tearDownAll.
+  // Creating one AppDatabase per test caused drift_flutter to reuse the same
+  // native executor while spawning multiple Dart wrappers, triggering duplicate
+  // ATTACH DATABASE calls that silently failed and produced empty results.
+  AppDatabase? db;
+  FoodCatalogRepository? repo;
+
+  setUpAll(() async {
     late String offRefPath;
     try {
       offRefPath = await ensureOffReferenceDb();
-    } catch (e) {
-      // ensureOffReferenceDb() throws StateError (an Error, not Exception)
-      // when assets/off_reference.sqlite.gz is not found in the Flutter bundle.
-      // Catching Object (via bare catch) converts the missing-asset condition
-      // into a graceful test skip rather than a test failure.
-      final msg = e.toString();
-      if (msg.contains('not found')) return null;
-      rethrow;
+    } on Object {
+      // ensureOffReferenceDb throws StateError (an Error, not Exception)
+      // when the asset is absent. repo stays null → all tests self-skip.
+      return;
     }
-    final db = AppDatabase.connect(offRefPath: offRefPath);
-    return FoodCatalogRepository(db.foodCatalogDao, OffApiClient());
-  }
+
+    db = AppDatabase.connect(offRefPath: offRefPath);
+    repo = FoodCatalogRepository(db!.foodCatalogDao, OffApiClient());
+
+    // Diagnostic: confirm ATTACH succeeded and products_fts has data.
+    // Output appears in `flutter test ... --verbose` and `adb logcat`.
+    try {
+      final countRow = await db!
+          .customSelect('SELECT count(*) AS n FROM off_ref.products')
+          .getSingleOrNull();
+      final productCount = countRow?.read<int>('n') ?? -1;
+      debugPrint('[BM-diag] off_ref.products row count: $productCount');
+
+      final ftsRow = await db!
+          .customSelect('SELECT count(*) AS n FROM off_ref.products_fts')
+          .getSingleOrNull();
+      final ftsCount = ftsRow?.read<int>('n') ?? -1;
+      debugPrint('[BM-diag] off_ref.products_fts row count: $ftsCount');
+    } on Object catch (e) {
+      debugPrint('[BM-diag] ATTACH or table access failed: $e');
+    }
+  });
+
+  tearDownAll(() async {
+    await db?.close();
+    db = null;
+    repo = null;
+  });
+
+  const skipMsg =
+      'off_reference.sqlite not available — run tools/ingest_off.py first';
 
   testWidgets(
     'BM-01: worst-case 2-char prefix query < 1s',
     (tester) async {
-      final repo = await buildTestRepo();
       if (repo == null) {
-        markTestSkipped(
-          'off_reference.sqlite not available — run tools/ingest_off.py first',
-        );
+        markTestSkipped(skipMsg);
         return;
       }
 
       final sw = Stopwatch()..start();
-      final results = await repo.searchLocal('mi');
+      final results = await repo!.searchLocal('mi');
       sw.stop();
 
       expect(
@@ -76,16 +101,13 @@ void main() {
   testWidgets(
     'BM-02: full-word query < 1s',
     (tester) async {
-      final repo = await buildTestRepo();
       if (repo == null) {
-        markTestSkipped(
-          'off_reference.sqlite not available — run tools/ingest_off.py first',
-        );
+        markTestSkipped(skipMsg);
         return;
       }
 
       final sw = Stopwatch()..start();
-      final results = await repo.searchLocal('banana');
+      final results = await repo!.searchLocal('banana');
       sw.stop();
 
       expect(
@@ -106,16 +128,13 @@ void main() {
     'BM-03: no-local-result query completes in < 1s '
     '(measures local path only)',
     (tester) async {
-      final repo = await buildTestRepo();
       if (repo == null) {
-        markTestSkipped(
-          'off_reference.sqlite not available — run tools/ingest_off.py first',
-        );
+        markTestSkipped(skipMsg);
         return;
       }
 
       final sw = Stopwatch()..start();
-      final results = await repo.searchLocal('xyzzy_noresult_42');
+      final results = await repo!.searchLocal('xyzzy_noresult_42');
       sw.stop();
 
       expect(
@@ -136,11 +155,8 @@ void main() {
   testWidgets(
     'NFR-06a hit-rate benchmark: ≥90% of 20 common foods found locally',
     (tester) async {
-      final repo = await buildTestRepo();
       if (repo == null) {
-        markTestSkipped(
-          'off_reference.sqlite not available — run tools/ingest_off.py first',
-        );
+        markTestSkipped(skipMsg);
         return;
       }
 
@@ -172,7 +188,7 @@ void main() {
 
       var hitCount = 0;
       for (final term in benchmarkFoods) {
-        final results = await repo.searchLocal(term);
+        final results = await repo!.searchLocal(term);
         if (results.isNotEmpty) hitCount++;
       }
 

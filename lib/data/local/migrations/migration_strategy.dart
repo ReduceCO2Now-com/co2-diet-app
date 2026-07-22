@@ -50,11 +50,22 @@ MigrationStrategy buildMigrationStrategy(
       // T-02-03-02: offRefPath is derived from path_provider only.
       // Skip ATTACH when null (unit tests pass null to avoid needing the file).
       if (offRefPath != null) {
-        // Attach the read-only reference DB under alias 'off_ref' so that
-        // FoodCatalogDao can query off_ref.products_fts and off_ref.products.
-        await db.customStatement(
-          "ATTACH DATABASE '$offRefPath' AS off_ref",
-        );
+        // Guard against duplicate ATTACH on a reused native executor (e.g.
+        // when multiple AppDatabase wrappers share one drift_flutter connection
+        // in integration tests). SQLite rejects a second ATTACH with the same
+        // alias; checking pragma_database_list makes the call idempotent.
+        final already = await db
+            .customSelect(
+              "SELECT 1 FROM pragma_database_list WHERE name = 'off_ref'",
+            )
+            .getSingleOrNull();
+        if (already == null) {
+          // Attach the read-only reference DB under alias 'off_ref' so that
+          // FoodCatalogDao can query off_ref.products_fts and off_ref.products.
+          await db.customStatement(
+            "ATTACH DATABASE '$offRefPath' AS off_ref",
+          );
+        }
       }
     },
   );
