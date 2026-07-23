@@ -5,9 +5,11 @@ import 'package:drift/drift.dart';
 ///
 /// onCreate: creates all tables on first install, including
 ///   UserFoodCacheTable and the user_food_cache_fts FTS5 virtual table
-///   declared in `daos/user_food_cache_fts.drift`.
+///   declared in `daos/user_food_cache_fts.drift`, plus MealEntryTable,
+///   FavoriteTable, and UserFoodTable added in Phase 4.
 /// onUpgrade: schemaVersion 1→2 adds UserFoodCacheTable +
-///   user_food_cache_fts.
+///   user_food_cache_fts. schemaVersion 2→3 adds MealEntryTable,
+///   FavoriteTable, and UserFoodTable (Phase 4).
 /// beforeOpen: enables FK enforcement, then ATTACHes off_reference.sqlite
 ///   when [offRefPath] is non-null.
 ///
@@ -40,6 +42,14 @@ MigrationStrategy buildMigrationStrategy(
             prefix='2 3 4'
           )
         ''');
+      }
+
+      // schemaVersion 2 → 3: add MealEntryTable, FavoriteTable, and
+      // UserFoodTable (Phase 4 meal logging core).
+      if (from < 3) {
+        await m.createTable(db.mealEntryTable);
+        await m.createTable(db.favoriteTable);
+        await m.createTable(db.userFoodTable);
       }
     },
     beforeOpen: (_) async {

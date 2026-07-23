@@ -3,8 +3,19 @@ import 'package:co2diet/data/local/daos/food_catalog_dao.dart';
 import 'package:co2diet/data/local/daos/user_profile_dao.dart';
 import 'package:co2diet/data/local/migrations/migration_strategy.dart';
 import 'package:co2diet/data/local/tables/consent_records_table.dart';
+import 'package:co2diet/data/local/tables/favorite_table.dart';
+import 'package:co2diet/data/local/tables/meal_entry_table.dart';
 import 'package:co2diet/data/local/tables/user_food_cache_table.dart';
+import 'package:co2diet/data/local/tables/user_food_table.dart';
 import 'package:co2diet/data/local/tables/user_profile_table.dart';
+// The three imports below have no direct reference in this file's source,
+// but MealSlot/PortionUnit/ServingSize are used as type arguments inside
+// the generated `app_database.g.dart` part file. `part` files share this
+// library's scope and cannot declare their own imports, so these types
+// must be imported here for the generated code to resolve at compile time.
+import 'package:co2diet/domain/entities/meal_slot.dart';
+import 'package:co2diet/domain/entities/portion_unit.dart';
+import 'package:co2diet/domain/entities/serving_size.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
@@ -16,8 +27,12 @@ part 'app_database.g.dart';
 ///   [UserProfileTable]    — single-row user profile with sync-safe columns
 ///   [ConsentRecordsTable] — append-only legal consent audit log
 ///   [UserFoodCacheTable]  — API-cached food entries with sync-safe columns
+///   [MealEntryTable]      — logged meal entries with sync-safe columns
+///   [FavoriteTable]       — favorited foods with sync-safe columns
+///   [UserFoodTable]       — custom foods + personal overrides
 ///
-/// schemaVersion: 2 (Phase 2 adds UserFoodCacheTable + user_food_cache_fts).
+/// schemaVersion: 3 (Phase 4 adds MealEntryTable, FavoriteTable,
+/// UserFoodTable).
 ///
 /// FK enforcement is enabled via PRAGMA foreign_keys = ON in [migration]
 /// beforeOpen callback. ATTACH DATABASE for off_reference.sqlite is executed
@@ -25,7 +40,14 @@ part 'app_database.g.dart';
 ///
 /// Do NOT use sqlite3_flutter_libs — drift_flutter handles native SQLite.
 @DriftDatabase(
-  tables: [UserProfileTable, ConsentRecordsTable, UserFoodCacheTable],
+  tables: [
+    UserProfileTable,
+    ConsentRecordsTable,
+    UserFoodCacheTable,
+    MealEntryTable,
+    FavoriteTable,
+    UserFoodTable,
+  ],
   daos: [UserProfileDao, ConsentRecordsDao, FoodCatalogDao],
   include: {'daos/user_food_cache_fts.drift'},
 )
@@ -48,14 +70,14 @@ class AppDatabase extends _$AppDatabase {
   /// [offRefPath] must be provided after ensureOffReferenceDb has
   /// decompressed the bundled asset to the documents directory.
   AppDatabase.connect({String? offRefPath})
-      : this(driftDatabase(name: 'co2diet'), offRefPath: offRefPath);
+    : this(driftDatabase(name: 'co2diet'), offRefPath: offRefPath);
 
   /// Path to the decompressed off_reference.sqlite asset, or null when
   /// running unit tests that do not need the attached reference DB.
   final String? offRefPath;
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration =>
