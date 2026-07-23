@@ -50,13 +50,13 @@ Requirements for initial release. Each maps to a roadmap phase.
 - [x] **LOG-02**: Food search falls back to the Open Food Facts API when online and local results are fewer than a threshold; API results are cached locally for future offline use
 - [x] **LOG-03**: User can scan a product barcode using the device camera; successful scan autofills food name, nutritional values, and CO₂e estimate; **P0 acceptance criterion: barcode scanning must be tested and verified on at least one real iOS device and one real Android device before launch** (simulator verification alone is not sufficient)
 - [x] **LOG-04**: When barcode scan finds no match (online or offline), user is offered the "Add as custom food" fallback — no dead-end UX
-- [ ] **LOG-05**: User can add food to Breakfast, Lunch, Dinner, or Snack meal slots
-- [ ] **LOG-06**: User can input portion in g, ml, cups, pieces, or portions; cup/slice/portion sizes are user-configurable via My Foods settings; metric default, imperial from locale
-- [ ] **LOG-07**: Recent section shows individually logged food items (not combo/meal entries); one-tap reuse with previously used quantity pre-filled
-- [ ] **LOG-08**: User can mark foods as Favorites; Favorites are one-tap re-loggable
-- [ ] **LOG-09**: User can edit, delete, and duplicate logged meal entries
-- [ ] **LOG-10**: User can create custom foods in My Foods: food identification (name, brand, category), reference amount, nutrition values (calories, protein, carbs, sugar, fat, fiber, salt), CO₂ values (manual or category-estimated), quick serving sizes
-- [ ] **LOG-11**: User can create a personal version/override of an existing database food entry; the original database entry is never mutated, overwritten, or deleted — override and original are stored as an independent pair, fully revertible
+- [x] **LOG-05**: User can add food to Breakfast, Lunch, Dinner, or Snack meal slots
+- [x] **LOG-06**: User can input portion in g, ml, cups, pieces, or portions; cup/slice/portion sizes are user-configurable via My Foods settings; metric default, imperial from locale
+- [x] **LOG-07**: Recent section shows individually logged food items (not combo/meal entries); one-tap reuse with previously used quantity pre-filled
+- [x] **LOG-08**: User can mark foods as Favorites; Favorites are one-tap re-loggable
+- [x] **LOG-09**: User can edit, delete, and duplicate logged meal entries
+- [x] **LOG-10**: User can create custom foods in My Foods: food identification (name, brand, category), reference amount, nutrition values (calories, protein, carbs, sugar, fat, fiber, salt), CO₂ values (manual or category-estimated), quick serving sizes
+- [x] **LOG-11**: User can create a personal version/override of an existing database food entry; the original database entry is never mutated, overwritten, or deleted — override and original are stored as an independent pair, fully revertible
 - [ ] **LOG-12**: All core food logging works fully offline — zero network dependency for the core logging flow
 - [ ] **LOG-13**: End-to-end meal logging (from "Add Breakfast" tap to food saved and visible on Dashboard) completes in under 10 seconds on a mid-range device; verified in user testing before launch
 
@@ -242,13 +242,13 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | LOG-02 | Phase 2 | Complete |
 | LOG-03 | Phase 3 | Complete |
 | LOG-04 | Phase 3 | Complete |
-| LOG-05 | Phase 4 | Pending |
-| LOG-06 | Phase 4 | Pending |
-| LOG-07 | Phase 4 | Pending |
-| LOG-08 | Phase 4 | Pending |
-| LOG-09 | Phase 4 | Pending |
-| LOG-10 | Phase 4 | Pending |
-| LOG-11 | Phase 4 | Pending |
+| LOG-05 | Phase 4 | Complete |
+| LOG-06 | Phase 4 | Complete |
+| LOG-07 | Phase 4 | Complete |
+| LOG-08 | Phase 4 | Complete |
+| LOG-09 | Phase 4 | Complete |
+| LOG-10 | Phase 4 | Complete |
+| LOG-11 | Phase 4 | Complete |
 | LOG-12 | Phase 4 | Pending |
 | LOG-13 | Phase 4 | Pending |
 | NUTR-01 | Phase 5 | Pending |

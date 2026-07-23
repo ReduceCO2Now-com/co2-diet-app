@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-07-23T16:41:13.945Z"
+last_updated: "2026-07-23T18:21:49.000Z"
 progress:
   total_phases: 9
   completed_phases: 3
   total_plans: 32
-  completed_plans: 22
-  percent: 69
+  completed_plans: 23
+  percent: 72
 ---
 
 # STATE: CO₂ Diet
@@ -35,14 +35,14 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 04-meal-logging-core-10s-target — IN PROGRESS (3 of 13 plans done)
-- **Plan:** 04-03 complete — Domain layer: MealSlot/PortionUnit enums (extended with displayLabel/isWeightBased/detectMealSlotForTime), MealEntry/Favorite/ServingSize/UserFood entities (sentinel copyWith), IMealEntryRepository/IUserFoodRepository interfaces
-- **Status:** Ready to execute (04-04 next)
-- **Progress:** [██████░░░░] 69%
-- **v1 requirements:** 21 / 75 delivered (CO2-01, CO2-04, LEG-05, LOG-03, LOG-04, NFR-06, PROF-01 through PROF-05, PRIV-07, LOG-01, LOG-02) — LOG-05/06/08/10/11 have schema+domain-layer support only (Plans 04-02/04-03); not yet counted as delivered since DAOs/repositories/UI are still pending in later Phase 4 plans
+- **Phase:** 04-meal-logging-core-10s-target — IN PROGRESS (4 of 13 plans done)
+- **Plan:** 04-04 complete — MealEntryDao (insert/merge, recent, soft-delete, favorites) and UserFoodDao (insert guard, override lookup/revert, alphabetical list) registered in AppDatabase
+- **Status:** Ready to execute (04-05 next)
+- **Progress:** [███████░░░] 72%
+- **v1 requirements:** 28 / 75 delivered (CO2-01, CO2-04, LEG-05, LOG-01 through LOG-11, NFR-06, PROF-01 through PROF-05, PRIV-07) — LOG-05 through LOG-11 marked complete per Plan 04-04's DAO layer landing (traceability convention: requirement checked off at the plan that lists it in frontmatter); repository/notifier/UI layers for these still land in Plans 04-05 through 04-13 before the features are user-reachable
 
 ```
-[██████████████░░░░░░] 69%
+[██████████████░░░░░░] 72%
 ```
 
 ### Initialization Progress
@@ -135,9 +135,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-23T16:41:13.945Z
-**Stopped at:** Completed 04-03-PLAN.md — Domain layer: MealSlot/PortionUnit enums extended (displayLabel/isWeightBased/detectMealSlotForTime), MealEntry/Favorite/ServingSize/UserFood entities, IMealEntryRepository/IUserFoodRepository interfaces
-**Next action:** Execute Plan 04-04 (DAOs: MealEntryDao, UserFoodDao) — implements against the domain interfaces defined in Plan 04-03
+**Last session:** 2026-07-23T18:21:49.000Z
+**Stopped at:** Completed 04-04-PLAN.md — MealEntryDao (insert/merge, recent dedup, soft-delete, favorites) and UserFoodDao (insert guard, override lookup/revert, alphabetical list); both registered in AppDatabase.daos
+**Next action:** Execute Plan 04-05 (Repositories + DI: MealEntryRepository, UserFoodRepository, meal_logging_providers.dart) — implements against the DAOs defined in Plan 04-04
 **Suggested next command:** `/gsd:execute-phase 4`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
@@ -201,6 +201,11 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 04-03]: `IMealEntryRepository.toggleFavorite` contract: returns the `Favorite` row that now exists after toggling; callers must call `isFavorite` separately to disambiguate insert-vs-delete outcomes
 - [Phase 04-03]: `ServingSize` required no code changes vs. Plan 04-02's stand-in — already matched the round-trip + malformed-input spec; only the stand-in doc-comment note was removed
 - [Phase 04, pre-04-04 gap fix]: Added `co2MethodologyVersionSnapshot` (`MealEntryTable`/`MealEntry`) and `co2MethodologyVersion` (`UserFoodTable`/`UserFood`) — Plan 04-02 had missed the locked CO2-04 decision (`01-CONTEXT.md`: "Column added to `user_profile` and to every CO₂-bearing table as it's created in later phases"). Both nullable, mirroring `confidenceBand(Snapshot)`'s nullability rule — null when CO₂ is absent or `co2Source == 'manual'`. Plan 04-04's DAO (and 04-05/04-07/04-09 onward) must populate/carry this column through insert/merge alongside `confidenceBand(Snapshot)`.
+- [Phase 04-04]: `UserFoodDao.insert`'s required-field guard checks `.present` on `name`/`calories` Companion fields, not `.value == null` — `Value<T>.value` throws a `TypeError` (`null as double`) when the field is absent for a non-nullable `T`, so `.present` is the only safe way to detect "never provided"
+- [Phase 04-04]: `UserFoodDao`'s update method is named `updateFood`, not `update` — `DatabaseAccessor` already declares a generic `update<Tbl,R>(TableInfo)` builder method; a same-named method with an incompatible signature is an `invalid_override` compile error, not a harmless shadow
+- [Phase 04-04]: Raw `customSelect` rows are converted back to typed data classes via `TableInfo.map(QueryRow.data)` (e.g. `mealEntryTable.map(rows.first.data)`) — avoids a second typed-select round trip after a raw merge-check query
+- [Phase 04-04]: `getRecent`'s SQL uses the SQLite "bare column in aggregate query" idiom (`SELECT *, MAX(logged_at) ... GROUP BY food_ref, food_ref_source`) to pick the full row for the max `logged_at` per group — non-standard SQL but well-defined SQLite behavior, avoids a window-function subquery
+- [Phase 04-04]: `UserFoodDao.revert` is a real hard `DELETE`, not the `SyncSafeTable` soft-delete convention — CONTEXT.md requires the original catalog/cache food to reappear in search immediately on revert, which a `deletedAt` tombstone can't satisfy; flagged as a Phase 7 sync follow-up (hard deletes need their own propagation path since there's no tombstone row to sync)
 
 ## Performance Metrics
 
@@ -220,3 +225,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 04-meal-logging-core-10s-target P01 | 9min | 2 tasks | 16 files |
 | Phase 04-meal-logging-core-10s-target P02 | ~30min | 2 tasks | 10 files |
 | Phase 04-meal-logging-core-10s-target P03 | ~15min | 2 tasks | 11 files |
+| Phase 04-meal-logging-core-10s-target P04 | ~20min | 2 tasks | 6 files |
