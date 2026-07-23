@@ -3,14 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: planning
-stopped_at: Phase 4 planned — 13 plans across 9 waves, verification passed
-last_updated: "2026-07-23T11:15:00.000Z"
+last_updated: "2026-07-23T13:08:08.785Z"
 progress:
   total_phases: 9
   completed_phases: 3
-  total_plans: 19
-  completed_plans: 19
-  percent: 100
+  total_plans: 32
+  completed_plans: 20
+  percent: 63
 ---
 
 # STATE: CO₂ Diet
@@ -36,14 +35,14 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 03-barcode-scanning-co-factor-table — COMPLETE (5 of 5 plans done)
-- **Plan:** 03-05 complete — Real-device human-verify checkpoint: Galaxy Tab S7 FE (Android 14), 94.6% CO₂ coverage, all P0 barcode scan criteria satisfied + macro regression fix
-- **Status:** Ready to plan
-- **Progress:** [██████████] 100%
+- **Phase:** 04-meal-logging-core-10s-target — IN PROGRESS (1 of 13 plans done)
+- **Plan:** 04-01 complete — Wave 0 test stubs: 16 files (8 data-layer, 8 feature/UI/integration) covering LOG-05 through LOG-13; zero production code changes
+- **Status:** Ready to execute (04-02 next)
+- **Progress:** [██████░░░░] 63%
 - **v1 requirements:** 21 / 75 delivered (CO2-01, CO2-04, LEG-05, LOG-03, LOG-04, NFR-06, PROF-01 through PROF-05, PRIV-07, LOG-01, LOG-02)
 
 ```
-[░░░░░░░░░░░░░░░░░░░░] 1%
+[████████████░░░░░░░░] 63%
 ```
 
 ### Initialization Progress
@@ -136,8 +135,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-23T11:15:00.000Z
-**Stopped at:** Phase 4 planned — 13 plans (04-01 through 04-13) across 9 waves, plan-checker verification passed on iteration 2 (4 blockers fixed: LOG-06 locale-aware units, non-barcode merge-key fallback, cross-plan toFoodItem() dependency, files_modified ownership)
+**Last session:** 2026-07-23T13:08:08.780Z
+**Stopped at:** Completed 04-01-PLAN.md — Wave 0 test stubs for meal logging core (16 files, LOG-05 through LOG-13)
 **Next action:** Execute Phase 4
 **Suggested next command:** `/gsd:execute-phase 4`
 
@@ -195,6 +194,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 03-04]: NFR-06(b) benchmark self-skips when off_reference.sqlite absent via setUpAll try/on Object catch — consistent with food_search_benchmark_test.dart pattern
 - [Phase 03-05]: Macro+CO₂ merge: fall through to API when local result has null calories100g; merge API macros + local CO₂/confidence on success; serve local CO₂-only on offline error (off_ref.products has macro data for ~3% of products only)
 - [Phase 03-05]: NFR-06(b) result: 94.6% CO₂ coverage on Galaxy Tab S7 FE (Android 14) — exceeds 90% threshold; Phase 3 P0 barcode criterion satisfied
+- [Phase 04-01]: Reused Phase 2/3 Wave 0 stub conventions verbatim (group-level skip for unit/widget, markTestSkipped() body for integration) for Phase 4 test stubs
 
 ## Performance Metrics
 
@@ -211,3 +211,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 03-barcode-scanning-co-factor-table P03 | ~14m | 2 tasks | 15 files |
 | Phase 03-barcode-scanning-co-factor-table P04 | ~7m | 2 tasks | 11 files |
 | Phase 03-barcode-scanning-co-factor-table P05 | ~30min | 2 tasks | 9 files |
+| Phase 04-meal-logging-core-10s-target P01 | 9min | 2 tasks | 16 files |
