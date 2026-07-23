@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-07-23T18:21:49.000Z"
+last_updated: "2026-07-23T20:51:05.000Z"
 progress:
   total_phases: 9
   completed_phases: 3
   total_plans: 32
-  completed_plans: 23
-  percent: 72
+  completed_plans: 24
+  percent: 75
 ---
 
 # STATE: CO₂ Diet
@@ -35,14 +35,14 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 04-meal-logging-core-10s-target — IN PROGRESS (4 of 13 plans done)
-- **Plan:** 04-04 complete — MealEntryDao (insert/merge, recent, soft-delete, favorites) and UserFoodDao (insert guard, override lookup/revert, alphabetical list) registered in AppDatabase
-- **Status:** Ready to execute (04-05 next)
-- **Progress:** [███████░░░] 72%
-- **v1 requirements:** 28 / 75 delivered (CO2-01, CO2-04, LEG-05, LOG-01 through LOG-11, NFR-06, PROF-01 through PROF-05, PRIV-07) — LOG-05 through LOG-11 marked complete per Plan 04-04's DAO layer landing (traceability convention: requirement checked off at the plan that lists it in frontmatter); repository/notifier/UI layers for these still land in Plans 04-05 through 04-13 before the features are user-reachable
+- **Phase:** 04-meal-logging-core-10s-target — IN PROGRESS (5 of 13 plans done)
+- **Plan:** 04-05 complete — MealEntryRepository (row/entity mapping, snapshot-only persistence, favorites) and UserFoodRepository (validation guards, insert/update) implemented against Plan 04-04's DAOs; meal_logging_providers.dart wires 4 keep-alive Riverpod DI providers
+- **Status:** Ready to execute (04-06 next)
+- **Progress:** [████████░░] 75%
+- **v1 requirements:** 28 / 75 delivered (CO2-01, CO2-04, LEG-05, LOG-01 through LOG-11, NFR-06, PROF-01 through PROF-05, PRIV-07) — LOG-05 through LOG-11 marked complete per Plan 04-04's DAO layer landing (traceability convention: requirement checked off at the plan that lists it in frontmatter); Plan 04-05 landed the repository layer (`IMealEntryRepository`/`IUserFoodRepository` now concretely implemented + wired into DI); notifier/UI layers for these still land in Plans 04-06 through 04-13 before the features are user-reachable
 
 ```
-[██████████████░░░░░░] 72%
+[███████████████░░░░░] 75%
 ```
 
 ### Initialization Progress
@@ -135,9 +135,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-23T18:21:49.000Z
-**Stopped at:** Completed 04-04-PLAN.md — MealEntryDao (insert/merge, recent dedup, soft-delete, favorites) and UserFoodDao (insert guard, override lookup/revert, alphabetical list); both registered in AppDatabase.daos
-**Next action:** Execute Plan 04-05 (Repositories + DI: MealEntryRepository, UserFoodRepository, meal_logging_providers.dart) — implements against the DAOs defined in Plan 04-04
+**Last session:** 2026-07-23T20:51:05.000Z
+**Stopped at:** Completed 04-05-PLAN.md — MealEntryRepository (row/entity mapping, snapshot-only persistence, favorites) and UserFoodRepository (validation guards, insert/update) implemented against Plan 04-04's DAOs; meal_logging_providers.dart wires 4 keep-alive Riverpod DI providers (mealEntryDao/userFoodDao/mealEntryRepository/userFoodRepository)
+**Next action:** Execute Plan 04-06 (per ROADMAP.md Phase 4 plan sequence)
 **Suggested next command:** `/gsd:execute-phase 4`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
@@ -206,6 +206,11 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 04-04]: Raw `customSelect` rows are converted back to typed data classes via `TableInfo.map(QueryRow.data)` (e.g. `mealEntryTable.map(rows.first.data)`) — avoids a second typed-select round trip after a raw merge-check query
 - [Phase 04-04]: `getRecent`'s SQL uses the SQLite "bare column in aggregate query" idiom (`SELECT *, MAX(logged_at) ... GROUP BY food_ref, food_ref_source`) to pick the full row for the max `logged_at` per group — non-standard SQL but well-defined SQLite behavior, avoids a window-function subquery
 - [Phase 04-04]: `UserFoodDao.revert` is a real hard `DELETE`, not the `SyncSafeTable` soft-delete convention — CONTEXT.md requires the original catalog/cache food to reappear in search immediately on revert, which a `deletedAt` tombstone can't satisfy; flagged as a Phase 7 sync follow-up (hard deletes need their own propagation path since there's no tombstone row to sync)
+- [Phase 04-05]: `MealEntry.fromRow`/`Favorite.fromRow`/`UserFood.fromRow` live as factory constructors directly on the domain entities (not a separate mapper class) — the exclusive, committed home for the Drift-row-to-entity mapping direction, since Plan 04-03 never imports `package:drift`
+- [Phase 04-05]: `co2MethodologyVersionSnapshot`/`co2MethodologyVersion` are pure pass-through fields at the repository layer — this plan never computes/derives a methodology version string, it only carries whatever the caller already populated through to the Drift row and back, mirroring `confidenceBand(Snapshot)`'s existing handling; the actual CO2-estimate-driven population happens in later plans (04-07+)
+- [Phase 04-05]: `toggleFavorite` returns the row it attempted to persist rather than re-querying after the toggle — `MealEntryDao.toggleFavorite` returns `void` and already does its own insert-vs-delete presence check; callers must call `isFavorite` separately per `IMealEntryRepository`'s documented contract
+- [Phase 04-05]: Repository tests mock the concrete DAO classes directly via mocktail (`class _MockX extends Mock implements XDao {}`) rather than a hand-rolled minimal-interface wrapper, since assertions need to inspect the exact `MealEntryRow`/`UserFoodTableCompanion` passed through byte-for-byte
+- [Phase 04-05]: `import 'package:drift/drift.dart' hide isNull;` needed in test files that import both drift and flutter_test and use the `isNull` matcher — drift's top-level `isNull` collides with `matcher`'s `isNull` (sibling of the existing Phase 01-07 `hide isNotNull` precedent)
 
 ## Performance Metrics
 
@@ -226,3 +231,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 04-meal-logging-core-10s-target P02 | ~30min | 2 tasks | 10 files |
 | Phase 04-meal-logging-core-10s-target P03 | ~15min | 2 tasks | 11 files |
 | Phase 04-meal-logging-core-10s-target P04 | ~20min | 2 tasks | 6 files |
+| Phase 04-meal-logging-core-10s-target P05 | 24min | 2 tasks | 9 files |
