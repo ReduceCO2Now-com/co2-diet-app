@@ -5,14 +5,6 @@ import 'package:flutter/foundation.dart';
 /// A user-configurable quick serving size (e.g. `{label: 'Slice', grams:
 /// 30}`) stored on a `UserFoodTable` row's `quickServingSizes` JSON
 /// column via `servingSizeListConverter` (see `user_food_table.dart`).
-///
-/// STAND-IN NOTE: This class was created by Plan 04-02 (Drift schema
-/// plan) because `UserFoodTable.quickServingSizes`'s `TypeConverter.
-/// json2` directly invokes [decodeList]/[encodeList] — it is not a bare
-/// type-resolution stub. Plan 04-03 (parallel Wave 2 domain-layer plan)
-/// owns the authoritative `serving_size.dart` and should review this
-/// implementation against its own spec (round-trip + malformed-input
-/// behavior) rather than assume it is unimplemented.
 @immutable
 class ServingSize {
   /// Creates a [ServingSize] with the given [label] and [grams].
