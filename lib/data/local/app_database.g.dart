@@ -3449,6 +3449,17 @@ class $MealEntryTableTable extends MealEntryTable
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _co2MethodologyVersionSnapshotMeta =
+      const VerificationMeta('co2MethodologyVersionSnapshot');
+  @override
+  late final GeneratedColumn<String> co2MethodologyVersionSnapshot =
+      GeneratedColumn<String>(
+        'co2_methodology_version_snapshot',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _loggedAtMeta = const VerificationMeta(
     'loggedAt',
   );
@@ -3492,6 +3503,7 @@ class $MealEntryTableTable extends MealEntryTable
     fat100gSnapshot,
     co2e100gSnapshot,
     confidenceBandSnapshot,
+    co2MethodologyVersionSnapshot,
     loggedAt,
     logDate,
   ];
@@ -3649,6 +3661,15 @@ class $MealEntryTableTable extends MealEntryTable
         ),
       );
     }
+    if (data.containsKey('co2_methodology_version_snapshot')) {
+      context.handle(
+        _co2MethodologyVersionSnapshotMeta,
+        co2MethodologyVersionSnapshot.isAcceptableOrUnknown(
+          data['co2_methodology_version_snapshot']!,
+          _co2MethodologyVersionSnapshotMeta,
+        ),
+      );
+    }
     if (data.containsKey('logged_at')) {
       context.handle(
         _loggedAtMeta,
@@ -3754,6 +3775,10 @@ class $MealEntryTableTable extends MealEntryTable
         DriftSqlType.string,
         data['${effectivePrefix}confidence_band_snapshot'],
       ),
+      co2MethodologyVersionSnapshot: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}co2_methodology_version_snapshot'],
+      ),
       loggedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}logged_at'],
@@ -3846,6 +3871,17 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
   /// Confidence band ('high'/'medium'/'low'), captured at log time.
   final String? confidenceBandSnapshot;
 
+  /// Version of the CO₂ calculation methodology that produced
+  /// [co2e100gSnapshot], captured at log time (CO2-04 — per
+  /// `01-CONTEXT.md`'s locked decision that every CO₂-bearing table
+  /// created in later phases carries this column, matching
+  /// `UserProfileTable.co2MethodologyVersion`'s precedent). Nullable and
+  /// only meaningful alongside a non-null [co2e100gSnapshot] — a future
+  /// methodology recalculation flow (Phase 7+) can identify which
+  /// already-logged entries were computed under an older methodology
+  /// without needing to re-derive it from [loggedAt].
+  final String? co2MethodologyVersionSnapshot;
+
   /// Wall-clock timestamp of when the entry was logged.
   final DateTime loggedAt;
 
@@ -3874,6 +3910,7 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
     this.fat100gSnapshot,
     this.co2e100gSnapshot,
     this.confidenceBandSnapshot,
+    this.co2MethodologyVersionSnapshot,
     required this.loggedAt,
     required this.logDate,
   });
@@ -3925,6 +3962,11 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
         confidenceBandSnapshot,
       );
     }
+    if (!nullToAbsent || co2MethodologyVersionSnapshot != null) {
+      map['co2_methodology_version_snapshot'] = Variable<String>(
+        co2MethodologyVersionSnapshot,
+      );
+    }
     map['logged_at'] = Variable<DateTime>(loggedAt);
     map['log_date'] = Variable<String>(logDate);
     return map;
@@ -3967,6 +4009,10 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
       confidenceBandSnapshot: confidenceBandSnapshot == null && nullToAbsent
           ? const Value.absent()
           : Value(confidenceBandSnapshot),
+      co2MethodologyVersionSnapshot:
+          co2MethodologyVersionSnapshot == null && nullToAbsent
+          ? const Value.absent()
+          : Value(co2MethodologyVersionSnapshot),
       loggedAt: Value(loggedAt),
       logDate: Value(logDate),
     );
@@ -4011,6 +4057,9 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
       confidenceBandSnapshot: serializer.fromJson<String?>(
         json['confidenceBandSnapshot'],
       ),
+      co2MethodologyVersionSnapshot: serializer.fromJson<String?>(
+        json['co2MethodologyVersionSnapshot'],
+      ),
       loggedAt: serializer.fromJson<DateTime>(json['loggedAt']),
       logDate: serializer.fromJson<String>(json['logDate']),
     );
@@ -4044,6 +4093,9 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
       'confidenceBandSnapshot': serializer.toJson<String?>(
         confidenceBandSnapshot,
       ),
+      'co2MethodologyVersionSnapshot': serializer.toJson<String?>(
+        co2MethodologyVersionSnapshot,
+      ),
       'loggedAt': serializer.toJson<DateTime>(loggedAt),
       'logDate': serializer.toJson<String>(logDate),
     };
@@ -4069,6 +4121,7 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
     Value<double?> fat100gSnapshot = const Value.absent(),
     Value<double?> co2e100gSnapshot = const Value.absent(),
     Value<String?> confidenceBandSnapshot = const Value.absent(),
+    Value<String?> co2MethodologyVersionSnapshot = const Value.absent(),
     DateTime? loggedAt,
     String? logDate,
   }) => MealEntryRow(
@@ -4105,6 +4158,9 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
     confidenceBandSnapshot: confidenceBandSnapshot.present
         ? confidenceBandSnapshot.value
         : this.confidenceBandSnapshot,
+    co2MethodologyVersionSnapshot: co2MethodologyVersionSnapshot.present
+        ? co2MethodologyVersionSnapshot.value
+        : this.co2MethodologyVersionSnapshot,
     loggedAt: loggedAt ?? this.loggedAt,
     logDate: logDate ?? this.logDate,
   );
@@ -4149,6 +4205,9 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
       confidenceBandSnapshot: data.confidenceBandSnapshot.present
           ? data.confidenceBandSnapshot.value
           : this.confidenceBandSnapshot,
+      co2MethodologyVersionSnapshot: data.co2MethodologyVersionSnapshot.present
+          ? data.co2MethodologyVersionSnapshot.value
+          : this.co2MethodologyVersionSnapshot,
       loggedAt: data.loggedAt.present ? data.loggedAt.value : this.loggedAt,
       logDate: data.logDate.present ? data.logDate.value : this.logDate,
     );
@@ -4176,6 +4235,9 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
           ..write('fat100gSnapshot: $fat100gSnapshot, ')
           ..write('co2e100gSnapshot: $co2e100gSnapshot, ')
           ..write('confidenceBandSnapshot: $confidenceBandSnapshot, ')
+          ..write(
+            'co2MethodologyVersionSnapshot: $co2MethodologyVersionSnapshot, ',
+          )
           ..write('loggedAt: $loggedAt, ')
           ..write('logDate: $logDate')
           ..write(')'))
@@ -4203,6 +4265,7 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
     fat100gSnapshot,
     co2e100gSnapshot,
     confidenceBandSnapshot,
+    co2MethodologyVersionSnapshot,
     loggedAt,
     logDate,
   ]);
@@ -4229,6 +4292,8 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
           other.fat100gSnapshot == this.fat100gSnapshot &&
           other.co2e100gSnapshot == this.co2e100gSnapshot &&
           other.confidenceBandSnapshot == this.confidenceBandSnapshot &&
+          other.co2MethodologyVersionSnapshot ==
+              this.co2MethodologyVersionSnapshot &&
           other.loggedAt == this.loggedAt &&
           other.logDate == this.logDate);
 }
@@ -4253,6 +4318,7 @@ class MealEntryTableCompanion extends UpdateCompanion<MealEntryRow> {
   final Value<double?> fat100gSnapshot;
   final Value<double?> co2e100gSnapshot;
   final Value<String?> confidenceBandSnapshot;
+  final Value<String?> co2MethodologyVersionSnapshot;
   final Value<DateTime> loggedAt;
   final Value<String> logDate;
   final Value<int> rowid;
@@ -4276,6 +4342,7 @@ class MealEntryTableCompanion extends UpdateCompanion<MealEntryRow> {
     this.fat100gSnapshot = const Value.absent(),
     this.co2e100gSnapshot = const Value.absent(),
     this.confidenceBandSnapshot = const Value.absent(),
+    this.co2MethodologyVersionSnapshot = const Value.absent(),
     this.loggedAt = const Value.absent(),
     this.logDate = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -4300,6 +4367,7 @@ class MealEntryTableCompanion extends UpdateCompanion<MealEntryRow> {
     this.fat100gSnapshot = const Value.absent(),
     this.co2e100gSnapshot = const Value.absent(),
     this.confidenceBandSnapshot = const Value.absent(),
+    this.co2MethodologyVersionSnapshot = const Value.absent(),
     required DateTime loggedAt,
     required String logDate,
     this.rowid = const Value.absent(),
@@ -4335,6 +4403,7 @@ class MealEntryTableCompanion extends UpdateCompanion<MealEntryRow> {
     Expression<double>? fat100gSnapshot,
     Expression<double>? co2e100gSnapshot,
     Expression<String>? confidenceBandSnapshot,
+    Expression<String>? co2MethodologyVersionSnapshot,
     Expression<DateTime>? loggedAt,
     Expression<String>? logDate,
     Expression<int>? rowid,
@@ -4363,6 +4432,8 @@ class MealEntryTableCompanion extends UpdateCompanion<MealEntryRow> {
       if (co2e100gSnapshot != null) 'co2e100g_snapshot': co2e100gSnapshot,
       if (confidenceBandSnapshot != null)
         'confidence_band_snapshot': confidenceBandSnapshot,
+      if (co2MethodologyVersionSnapshot != null)
+        'co2_methodology_version_snapshot': co2MethodologyVersionSnapshot,
       if (loggedAt != null) 'logged_at': loggedAt,
       if (logDate != null) 'log_date': logDate,
       if (rowid != null) 'rowid': rowid,
@@ -4389,6 +4460,7 @@ class MealEntryTableCompanion extends UpdateCompanion<MealEntryRow> {
     Value<double?>? fat100gSnapshot,
     Value<double?>? co2e100gSnapshot,
     Value<String?>? confidenceBandSnapshot,
+    Value<String?>? co2MethodologyVersionSnapshot,
     Value<DateTime>? loggedAt,
     Value<String>? logDate,
     Value<int>? rowid,
@@ -4414,6 +4486,8 @@ class MealEntryTableCompanion extends UpdateCompanion<MealEntryRow> {
       co2e100gSnapshot: co2e100gSnapshot ?? this.co2e100gSnapshot,
       confidenceBandSnapshot:
           confidenceBandSnapshot ?? this.confidenceBandSnapshot,
+      co2MethodologyVersionSnapshot:
+          co2MethodologyVersionSnapshot ?? this.co2MethodologyVersionSnapshot,
       loggedAt: loggedAt ?? this.loggedAt,
       logDate: logDate ?? this.logDate,
       rowid: rowid ?? this.rowid,
@@ -4490,6 +4564,11 @@ class MealEntryTableCompanion extends UpdateCompanion<MealEntryRow> {
         confidenceBandSnapshot.value,
       );
     }
+    if (co2MethodologyVersionSnapshot.present) {
+      map['co2_methodology_version_snapshot'] = Variable<String>(
+        co2MethodologyVersionSnapshot.value,
+      );
+    }
     if (loggedAt.present) {
       map['logged_at'] = Variable<DateTime>(loggedAt.value);
     }
@@ -4524,6 +4603,9 @@ class MealEntryTableCompanion extends UpdateCompanion<MealEntryRow> {
           ..write('fat100gSnapshot: $fat100gSnapshot, ')
           ..write('co2e100gSnapshot: $co2e100gSnapshot, ')
           ..write('confidenceBandSnapshot: $confidenceBandSnapshot, ')
+          ..write(
+            'co2MethodologyVersionSnapshot: $co2MethodologyVersionSnapshot, ',
+          )
           ..write('loggedAt: $loggedAt, ')
           ..write('logDate: $logDate, ')
           ..write('rowid: $rowid')
@@ -5767,6 +5849,17 @@ class $UserFoodTableTable extends UserFoodTable
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _co2MethodologyVersionMeta =
+      const VerificationMeta('co2MethodologyVersion');
+  @override
+  late final GeneratedColumn<String> co2MethodologyVersion =
+      GeneratedColumn<String>(
+        'co2_methodology_version',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   static const VerificationMeta _barcodeMeta = const VerificationMeta(
     'barcode',
   );
@@ -5834,6 +5927,7 @@ class $UserFoodTableTable extends UserFoodTable
     co2e100g,
     confidenceBand,
     co2Source,
+    co2MethodologyVersion,
     barcode,
     quickServingSizes,
     overrideOfRef,
@@ -5986,6 +6080,15 @@ class $UserFoodTableTable extends UserFoodTable
         co2Source.isAcceptableOrUnknown(data['co2_source']!, _co2SourceMeta),
       );
     }
+    if (data.containsKey('co2_methodology_version')) {
+      context.handle(
+        _co2MethodologyVersionMeta,
+        co2MethodologyVersion.isAcceptableOrUnknown(
+          data['co2_methodology_version']!,
+          _co2MethodologyVersionMeta,
+        ),
+      );
+    }
     if (data.containsKey('barcode')) {
       context.handle(
         _barcodeMeta,
@@ -6099,6 +6202,10 @@ class $UserFoodTableTable extends UserFoodTable
         DriftSqlType.string,
         data['${effectivePrefix}co2_source'],
       ),
+      co2MethodologyVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}co2_methodology_version'],
+      ),
       barcode: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}barcode'],
@@ -6205,6 +6312,16 @@ class UserFoodRow extends DataClass implements Insertable<UserFoodRow> {
   /// One of `'category_estimate'` or `'manual'`.
   final String? co2Source;
 
+  /// Version of the CO₂ calculation methodology that produced
+  /// [co2e100g] when [co2Source] is `'category_estimate'` (CO2-04 — per
+  /// `01-CONTEXT.md`'s locked decision that every CO₂-bearing table
+  /// created in later phases carries this column, matching
+  /// `UserProfileTable.co2MethodologyVersion`'s precedent). Always `null`
+  /// when [co2Source] is `'manual'`, mirroring [confidenceBand]'s same
+  /// nullability rule — a self-entered number has no methodology to
+  /// version.
+  final String? co2MethodologyVersion;
+
   /// Optional barcode; pre-filled from the barcode no-match flow so a
   /// future scan of that barcode resolves to this custom food.
   final String? barcode;
@@ -6240,6 +6357,7 @@ class UserFoodRow extends DataClass implements Insertable<UserFoodRow> {
     this.co2e100g,
     this.confidenceBand,
     this.co2Source,
+    this.co2MethodologyVersion,
     this.barcode,
     required this.quickServingSizes,
     this.overrideOfRef,
@@ -6291,6 +6409,9 @@ class UserFoodRow extends DataClass implements Insertable<UserFoodRow> {
     }
     if (!nullToAbsent || co2Source != null) {
       map['co2_source'] = Variable<String>(co2Source);
+    }
+    if (!nullToAbsent || co2MethodologyVersion != null) {
+      map['co2_methodology_version'] = Variable<String>(co2MethodologyVersion);
     }
     if (!nullToAbsent || barcode != null) {
       map['barcode'] = Variable<String>(barcode);
@@ -6353,6 +6474,9 @@ class UserFoodRow extends DataClass implements Insertable<UserFoodRow> {
       co2Source: co2Source == null && nullToAbsent
           ? const Value.absent()
           : Value(co2Source),
+      co2MethodologyVersion: co2MethodologyVersion == null && nullToAbsent
+          ? const Value.absent()
+          : Value(co2MethodologyVersion),
       barcode: barcode == null && nullToAbsent
           ? const Value.absent()
           : Value(barcode),
@@ -6392,6 +6516,9 @@ class UserFoodRow extends DataClass implements Insertable<UserFoodRow> {
       co2e100g: serializer.fromJson<double?>(json['co2e100g']),
       confidenceBand: serializer.fromJson<String?>(json['confidenceBand']),
       co2Source: serializer.fromJson<String?>(json['co2Source']),
+      co2MethodologyVersion: serializer.fromJson<String?>(
+        json['co2MethodologyVersion'],
+      ),
       barcode: serializer.fromJson<String?>(json['barcode']),
       quickServingSizes: $UserFoodTableTable.$converterquickServingSizes
           .fromJson(serializer.fromJson<Object?>(json['quickServingSizes'])),
@@ -6423,6 +6550,9 @@ class UserFoodRow extends DataClass implements Insertable<UserFoodRow> {
       'co2e100g': serializer.toJson<double?>(co2e100g),
       'confidenceBand': serializer.toJson<String?>(confidenceBand),
       'co2Source': serializer.toJson<String?>(co2Source),
+      'co2MethodologyVersion': serializer.toJson<String?>(
+        co2MethodologyVersion,
+      ),
       'barcode': serializer.toJson<String?>(barcode),
       'quickServingSizes': serializer.toJson<Object?>(
         $UserFoodTableTable.$converterquickServingSizes.toJson(
@@ -6455,6 +6585,7 @@ class UserFoodRow extends DataClass implements Insertable<UserFoodRow> {
     Value<double?> co2e100g = const Value.absent(),
     Value<String?> confidenceBand = const Value.absent(),
     Value<String?> co2Source = const Value.absent(),
+    Value<String?> co2MethodologyVersion = const Value.absent(),
     Value<String?> barcode = const Value.absent(),
     List<ServingSize>? quickServingSizes,
     Value<String?> overrideOfRef = const Value.absent(),
@@ -6482,6 +6613,9 @@ class UserFoodRow extends DataClass implements Insertable<UserFoodRow> {
         ? confidenceBand.value
         : this.confidenceBand,
     co2Source: co2Source.present ? co2Source.value : this.co2Source,
+    co2MethodologyVersion: co2MethodologyVersion.present
+        ? co2MethodologyVersion.value
+        : this.co2MethodologyVersion,
     barcode: barcode.present ? barcode.value : this.barcode,
     quickServingSizes: quickServingSizes ?? this.quickServingSizes,
     overrideOfRef: overrideOfRef.present
@@ -6519,6 +6653,9 @@ class UserFoodRow extends DataClass implements Insertable<UserFoodRow> {
           ? data.confidenceBand.value
           : this.confidenceBand,
       co2Source: data.co2Source.present ? data.co2Source.value : this.co2Source,
+      co2MethodologyVersion: data.co2MethodologyVersion.present
+          ? data.co2MethodologyVersion.value
+          : this.co2MethodologyVersion,
       barcode: data.barcode.present ? data.barcode.value : this.barcode,
       quickServingSizes: data.quickServingSizes.present
           ? data.quickServingSizes.value
@@ -6555,6 +6692,7 @@ class UserFoodRow extends DataClass implements Insertable<UserFoodRow> {
           ..write('co2e100g: $co2e100g, ')
           ..write('confidenceBand: $confidenceBand, ')
           ..write('co2Source: $co2Source, ')
+          ..write('co2MethodologyVersion: $co2MethodologyVersion, ')
           ..write('barcode: $barcode, ')
           ..write('quickServingSizes: $quickServingSizes, ')
           ..write('overrideOfRef: $overrideOfRef, ')
@@ -6585,6 +6723,7 @@ class UserFoodRow extends DataClass implements Insertable<UserFoodRow> {
     co2e100g,
     confidenceBand,
     co2Source,
+    co2MethodologyVersion,
     barcode,
     quickServingSizes,
     overrideOfRef,
@@ -6614,6 +6753,7 @@ class UserFoodRow extends DataClass implements Insertable<UserFoodRow> {
           other.co2e100g == this.co2e100g &&
           other.confidenceBand == this.confidenceBand &&
           other.co2Source == this.co2Source &&
+          other.co2MethodologyVersion == this.co2MethodologyVersion &&
           other.barcode == this.barcode &&
           other.quickServingSizes == this.quickServingSizes &&
           other.overrideOfRef == this.overrideOfRef &&
@@ -6641,6 +6781,7 @@ class UserFoodTableCompanion extends UpdateCompanion<UserFoodRow> {
   final Value<double?> co2e100g;
   final Value<String?> confidenceBand;
   final Value<String?> co2Source;
+  final Value<String?> co2MethodologyVersion;
   final Value<String?> barcode;
   final Value<List<ServingSize>> quickServingSizes;
   final Value<String?> overrideOfRef;
@@ -6667,6 +6808,7 @@ class UserFoodTableCompanion extends UpdateCompanion<UserFoodRow> {
     this.co2e100g = const Value.absent(),
     this.confidenceBand = const Value.absent(),
     this.co2Source = const Value.absent(),
+    this.co2MethodologyVersion = const Value.absent(),
     this.barcode = const Value.absent(),
     this.quickServingSizes = const Value.absent(),
     this.overrideOfRef = const Value.absent(),
@@ -6694,6 +6836,7 @@ class UserFoodTableCompanion extends UpdateCompanion<UserFoodRow> {
     this.co2e100g = const Value.absent(),
     this.confidenceBand = const Value.absent(),
     this.co2Source = const Value.absent(),
+    this.co2MethodologyVersion = const Value.absent(),
     this.barcode = const Value.absent(),
     required List<ServingSize> quickServingSizes,
     this.overrideOfRef = const Value.absent(),
@@ -6727,6 +6870,7 @@ class UserFoodTableCompanion extends UpdateCompanion<UserFoodRow> {
     Expression<double>? co2e100g,
     Expression<String>? confidenceBand,
     Expression<String>? co2Source,
+    Expression<String>? co2MethodologyVersion,
     Expression<String>? barcode,
     Expression<String>? quickServingSizes,
     Expression<String>? overrideOfRef,
@@ -6754,6 +6898,8 @@ class UserFoodTableCompanion extends UpdateCompanion<UserFoodRow> {
       if (co2e100g != null) 'co2e100g': co2e100g,
       if (confidenceBand != null) 'confidence_band': confidenceBand,
       if (co2Source != null) 'co2_source': co2Source,
+      if (co2MethodologyVersion != null)
+        'co2_methodology_version': co2MethodologyVersion,
       if (barcode != null) 'barcode': barcode,
       if (quickServingSizes != null) 'quick_serving_sizes': quickServingSizes,
       if (overrideOfRef != null) 'override_of_ref': overrideOfRef,
@@ -6783,6 +6929,7 @@ class UserFoodTableCompanion extends UpdateCompanion<UserFoodRow> {
     Value<double?>? co2e100g,
     Value<String?>? confidenceBand,
     Value<String?>? co2Source,
+    Value<String?>? co2MethodologyVersion,
     Value<String?>? barcode,
     Value<List<ServingSize>>? quickServingSizes,
     Value<String?>? overrideOfRef,
@@ -6810,6 +6957,8 @@ class UserFoodTableCompanion extends UpdateCompanion<UserFoodRow> {
       co2e100g: co2e100g ?? this.co2e100g,
       confidenceBand: confidenceBand ?? this.confidenceBand,
       co2Source: co2Source ?? this.co2Source,
+      co2MethodologyVersion:
+          co2MethodologyVersion ?? this.co2MethodologyVersion,
       barcode: barcode ?? this.barcode,
       quickServingSizes: quickServingSizes ?? this.quickServingSizes,
       overrideOfRef: overrideOfRef ?? this.overrideOfRef,
@@ -6881,6 +7030,11 @@ class UserFoodTableCompanion extends UpdateCompanion<UserFoodRow> {
     if (co2Source.present) {
       map['co2_source'] = Variable<String>(co2Source.value);
     }
+    if (co2MethodologyVersion.present) {
+      map['co2_methodology_version'] = Variable<String>(
+        co2MethodologyVersion.value,
+      );
+    }
     if (barcode.present) {
       map['barcode'] = Variable<String>(barcode.value);
     }
@@ -6926,6 +7080,7 @@ class UserFoodTableCompanion extends UpdateCompanion<UserFoodRow> {
           ..write('co2e100g: $co2e100g, ')
           ..write('confidenceBand: $confidenceBand, ')
           ..write('co2Source: $co2Source, ')
+          ..write('co2MethodologyVersion: $co2MethodologyVersion, ')
           ..write('barcode: $barcode, ')
           ..write('quickServingSizes: $quickServingSizes, ')
           ..write('overrideOfRef: $overrideOfRef, ')
@@ -8465,6 +8620,7 @@ typedef $$MealEntryTableTableCreateCompanionBuilder =
       Value<double?> fat100gSnapshot,
       Value<double?> co2e100gSnapshot,
       Value<String?> confidenceBandSnapshot,
+      Value<String?> co2MethodologyVersionSnapshot,
       required DateTime loggedAt,
       required String logDate,
       Value<int> rowid,
@@ -8490,6 +8646,7 @@ typedef $$MealEntryTableTableUpdateCompanionBuilder =
       Value<double?> fat100gSnapshot,
       Value<double?> co2e100gSnapshot,
       Value<String?> confidenceBandSnapshot,
+      Value<String?> co2MethodologyVersionSnapshot,
       Value<DateTime> loggedAt,
       Value<String> logDate,
       Value<int> rowid,
@@ -8598,6 +8755,11 @@ class $$MealEntryTableTableFilterComposer
 
   ColumnFilters<String> get confidenceBandSnapshot => $composableBuilder(
     column: $table.confidenceBandSnapshot,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get co2MethodologyVersionSnapshot => $composableBuilder(
+    column: $table.co2MethodologyVersionSnapshot,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -8716,6 +8878,12 @@ class $$MealEntryTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get co2MethodologyVersionSnapshot =>
+      $composableBuilder(
+        column: $table.co2MethodologyVersionSnapshot,
+        builder: (column) => ColumnOrderings(column),
+      );
+
   ColumnOrderings<DateTime> get loggedAt => $composableBuilder(
     column: $table.loggedAt,
     builder: (column) => ColumnOrderings(column),
@@ -8813,6 +8981,12 @@ class $$MealEntryTableTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<String> get co2MethodologyVersionSnapshot =>
+      $composableBuilder(
+        column: $table.co2MethodologyVersionSnapshot,
+        builder: (column) => column,
+      );
+
   GeneratedColumn<DateTime> get loggedAt =>
       $composableBuilder(column: $table.loggedAt, builder: (column) => column);
 
@@ -8872,6 +9046,8 @@ class $$MealEntryTableTableTableManager
                 Value<double?> fat100gSnapshot = const Value.absent(),
                 Value<double?> co2e100gSnapshot = const Value.absent(),
                 Value<String?> confidenceBandSnapshot = const Value.absent(),
+                Value<String?> co2MethodologyVersionSnapshot =
+                    const Value.absent(),
                 Value<DateTime> loggedAt = const Value.absent(),
                 Value<String> logDate = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -8895,6 +9071,7 @@ class $$MealEntryTableTableTableManager
                 fat100gSnapshot: fat100gSnapshot,
                 co2e100gSnapshot: co2e100gSnapshot,
                 confidenceBandSnapshot: confidenceBandSnapshot,
+                co2MethodologyVersionSnapshot: co2MethodologyVersionSnapshot,
                 loggedAt: loggedAt,
                 logDate: logDate,
                 rowid: rowid,
@@ -8920,6 +9097,8 @@ class $$MealEntryTableTableTableManager
                 Value<double?> fat100gSnapshot = const Value.absent(),
                 Value<double?> co2e100gSnapshot = const Value.absent(),
                 Value<String?> confidenceBandSnapshot = const Value.absent(),
+                Value<String?> co2MethodologyVersionSnapshot =
+                    const Value.absent(),
                 required DateTime loggedAt,
                 required String logDate,
                 Value<int> rowid = const Value.absent(),
@@ -8943,6 +9122,7 @@ class $$MealEntryTableTableTableManager
                 fat100gSnapshot: fat100gSnapshot,
                 co2e100gSnapshot: co2e100gSnapshot,
                 confidenceBandSnapshot: confidenceBandSnapshot,
+                co2MethodologyVersionSnapshot: co2MethodologyVersionSnapshot,
                 loggedAt: loggedAt,
                 logDate: logDate,
                 rowid: rowid,
@@ -9422,6 +9602,7 @@ typedef $$UserFoodTableTableCreateCompanionBuilder =
       Value<double?> co2e100g,
       Value<String?> confidenceBand,
       Value<String?> co2Source,
+      Value<String?> co2MethodologyVersion,
       Value<String?> barcode,
       required List<ServingSize> quickServingSizes,
       Value<String?> overrideOfRef,
@@ -9450,6 +9631,7 @@ typedef $$UserFoodTableTableUpdateCompanionBuilder =
       Value<double?> co2e100g,
       Value<String?> confidenceBand,
       Value<String?> co2Source,
+      Value<String?> co2MethodologyVersion,
       Value<String?> barcode,
       Value<List<ServingSize>> quickServingSizes,
       Value<String?> overrideOfRef,
@@ -9563,6 +9745,11 @@ class $$UserFoodTableTableFilterComposer
 
   ColumnFilters<String> get co2Source => $composableBuilder(
     column: $table.co2Source,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get co2MethodologyVersion => $composableBuilder(
+    column: $table.co2MethodologyVersion,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -9697,6 +9884,11 @@ class $$UserFoodTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get co2MethodologyVersion => $composableBuilder(
+    column: $table.co2MethodologyVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get barcode => $composableBuilder(
     column: $table.barcode,
     builder: (column) => ColumnOrderings(column),
@@ -9793,6 +9985,11 @@ class $$UserFoodTableTableAnnotationComposer
   GeneratedColumn<String> get co2Source =>
       $composableBuilder(column: $table.co2Source, builder: (column) => column);
 
+  GeneratedColumn<String> get co2MethodologyVersion => $composableBuilder(
+    column: $table.co2MethodologyVersion,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<String> get barcode =>
       $composableBuilder(column: $table.barcode, builder: (column) => column);
 
@@ -9864,6 +10061,7 @@ class $$UserFoodTableTableTableManager
                 Value<double?> co2e100g = const Value.absent(),
                 Value<String?> confidenceBand = const Value.absent(),
                 Value<String?> co2Source = const Value.absent(),
+                Value<String?> co2MethodologyVersion = const Value.absent(),
                 Value<String?> barcode = const Value.absent(),
                 Value<List<ServingSize>> quickServingSizes =
                     const Value.absent(),
@@ -9891,6 +10089,7 @@ class $$UserFoodTableTableTableManager
                 co2e100g: co2e100g,
                 confidenceBand: confidenceBand,
                 co2Source: co2Source,
+                co2MethodologyVersion: co2MethodologyVersion,
                 barcode: barcode,
                 quickServingSizes: quickServingSizes,
                 overrideOfRef: overrideOfRef,
@@ -9919,6 +10118,7 @@ class $$UserFoodTableTableTableManager
                 Value<double?> co2e100g = const Value.absent(),
                 Value<String?> confidenceBand = const Value.absent(),
                 Value<String?> co2Source = const Value.absent(),
+                Value<String?> co2MethodologyVersion = const Value.absent(),
                 Value<String?> barcode = const Value.absent(),
                 required List<ServingSize> quickServingSizes,
                 Value<String?> overrideOfRef = const Value.absent(),
@@ -9945,6 +10145,7 @@ class $$UserFoodTableTableTableManager
                 co2e100g: co2e100g,
                 confidenceBand: confidenceBand,
                 co2Source: co2Source,
+                co2MethodologyVersion: co2MethodologyVersion,
                 barcode: barcode,
                 quickServingSizes: quickServingSizes,
                 overrideOfRef: overrideOfRef,

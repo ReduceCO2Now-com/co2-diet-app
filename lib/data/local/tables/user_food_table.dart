@@ -84,6 +84,16 @@ class UserFoodTable extends Table with SyncSafeTable {
   /// One of `'category_estimate'` or `'manual'`.
   Column<String> get co2Source => text().nullable()();
 
+  /// Version of the CO₂ calculation methodology that produced
+  /// [co2e100g] when [co2Source] is `'category_estimate'` (CO2-04 — per
+  /// `01-CONTEXT.md`'s locked decision that every CO₂-bearing table
+  /// created in later phases carries this column, matching
+  /// `UserProfileTable.co2MethodologyVersion`'s precedent). Always `null`
+  /// when [co2Source] is `'manual'`, mirroring [confidenceBand]'s same
+  /// nullability rule — a self-entered number has no methodology to
+  /// version.
+  Column<String> get co2MethodologyVersion => text().nullable()();
+
   /// Optional barcode; pre-filled from the barcode no-match flow so a
   /// future scan of that barcode resolves to this custom food.
   Column<String> get barcode => text().nullable()();

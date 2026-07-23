@@ -39,6 +39,7 @@ class MealEntry {
     this.fat100gSnapshot,
     this.co2e100gSnapshot,
     this.confidenceBandSnapshot,
+    this.co2MethodologyVersionSnapshot,
   });
 
   /// Unique, individually addressable row id.
@@ -86,6 +87,11 @@ class MealEntry {
   /// (snapshot), nullable.
   final String? confidenceBandSnapshot;
 
+  /// Version of the CO₂ calculation methodology that produced
+  /// [co2e100gSnapshot] at the moment of logging (CO2-04 snapshot),
+  /// nullable.
+  final String? co2MethodologyVersionSnapshot;
+
   /// When this entry was logged (UTC).
   final DateTime loggedAt;
 
@@ -118,6 +124,7 @@ class MealEntry {
     Object? fat100gSnapshot = _sentinel,
     Object? co2e100gSnapshot = _sentinel,
     Object? confidenceBandSnapshot = _sentinel,
+    Object? co2MethodologyVersionSnapshot = _sentinel,
     DateTime? loggedAt,
     String? logDate,
   }) {
@@ -150,6 +157,10 @@ class MealEntry {
       confidenceBandSnapshot: confidenceBandSnapshot == _sentinel
           ? this.confidenceBandSnapshot
           : confidenceBandSnapshot as String?,
+      co2MethodologyVersionSnapshot:
+          co2MethodologyVersionSnapshot == _sentinel
+          ? this.co2MethodologyVersionSnapshot
+          : co2MethodologyVersionSnapshot as String?,
       loggedAt: loggedAt ?? this.loggedAt,
       logDate: logDate ?? this.logDate,
     );

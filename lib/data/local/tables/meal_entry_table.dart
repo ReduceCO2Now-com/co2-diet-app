@@ -82,6 +82,17 @@ class MealEntryTable extends Table with SyncSafeTable {
   /// Confidence band ('high'/'medium'/'low'), captured at log time.
   Column<String> get confidenceBandSnapshot => text().nullable()();
 
+  /// Version of the CO₂ calculation methodology that produced
+  /// [co2e100gSnapshot], captured at log time (CO2-04 — per
+  /// `01-CONTEXT.md`'s locked decision that every CO₂-bearing table
+  /// created in later phases carries this column, matching
+  /// `UserProfileTable.co2MethodologyVersion`'s precedent). Nullable and
+  /// only meaningful alongside a non-null [co2e100gSnapshot] — a future
+  /// methodology recalculation flow (Phase 7+) can identify which
+  /// already-logged entries were computed under an older methodology
+  /// without needing to re-derive it from [loggedAt].
+  Column<String> get co2MethodologyVersionSnapshot => text().nullable()();
+
   /// Wall-clock timestamp of when the entry was logged.
   Column<DateTime> get loggedAt => dateTime()();
 

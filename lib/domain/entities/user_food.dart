@@ -31,6 +31,7 @@ class UserFood {
     this.co2e100g,
     this.confidenceBand,
     this.co2Source,
+    this.co2MethodologyVersion,
     this.barcode,
     this.quickServingSizes = const [],
     this.overrideOfRef,
@@ -87,6 +88,11 @@ class UserFood {
   /// Source of the CO₂ estimate: `'category_estimate'` or `'manual'`,
   /// nullable.
   final String? co2Source;
+
+  /// Version of the CO₂ calculation methodology that produced [co2e100g]
+  /// when [co2Source] is `'category_estimate'` (CO2-04), nullable. Always
+  /// null for a `'manual'` [co2Source], mirroring [confidenceBand].
+  final String? co2MethodologyVersion;
 
   /// Barcode, nullable — set when this custom food is associated with a
   /// physical product barcode.
@@ -163,6 +169,7 @@ class UserFood {
     Object? co2e100g = _sentinel,
     Object? confidenceBand = _sentinel,
     Object? co2Source = _sentinel,
+    Object? co2MethodologyVersion = _sentinel,
     Object? barcode = _sentinel,
     List<ServingSize>? quickServingSizes,
     Object? overrideOfRef = _sentinel,
@@ -187,6 +194,9 @@ class UserFood {
           : confidenceBand as String?,
       co2Source:
           co2Source == _sentinel ? this.co2Source : co2Source as String?,
+      co2MethodologyVersion: co2MethodologyVersion == _sentinel
+          ? this.co2MethodologyVersion
+          : co2MethodologyVersion as String?,
       barcode: barcode == _sentinel ? this.barcode : barcode as String?,
       quickServingSizes: quickServingSizes ?? this.quickServingSizes,
       overrideOfRef: overrideOfRef == _sentinel
