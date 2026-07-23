@@ -1,5 +1,7 @@
 import 'package:co2diet/data/local/daos/consent_records_dao.dart';
 import 'package:co2diet/data/local/daos/food_catalog_dao.dart';
+import 'package:co2diet/data/local/daos/meal_entry_dao.dart';
+import 'package:co2diet/data/local/daos/user_food_dao.dart';
 import 'package:co2diet/data/local/daos/user_profile_dao.dart';
 import 'package:co2diet/data/local/migrations/migration_strategy.dart';
 import 'package:co2diet/data/local/tables/consent_records_table.dart';
@@ -48,7 +50,13 @@ part 'app_database.g.dart';
     FavoriteTable,
     UserFoodTable,
   ],
-  daos: [UserProfileDao, ConsentRecordsDao, FoodCatalogDao],
+  daos: [
+    UserProfileDao,
+    ConsentRecordsDao,
+    FoodCatalogDao,
+    MealEntryDao,
+    UserFoodDao,
+  ],
   include: {'daos/user_food_cache_fts.drift'},
 )
 class AppDatabase extends _$AppDatabase {
