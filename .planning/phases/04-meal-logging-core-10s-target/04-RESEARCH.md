@@ -503,14 +503,14 @@ No deprecated/outdated approaches apply here; every pattern recommended above is
 
 **None of these require blocking user confirmation before planning** — A1 and A2 are Claude's-discretion items per CONTEXT.md, and A3/A4 are low-risk implementation details resolvable during execution.
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Should `UserFoodTable`'s quick-serving-sizes use a JSON column or a child table?**
+1. **(RESOLVED — JSON column, Plan 04-02) Should `UserFoodTable`'s quick-serving-sizes use a JSON column or a child table?**
    - What we know: CONTEXT.md describes it as "a dynamic list (label text + gram-value number field pairs)" — doesn't mandate storage shape.
    - What's unclear: Whether a future phase needs to query/filter across serving sizes independently of their parent food.
    - Recommendation: JSON `TypeConverter.json2` column (Pattern 3/Pitfall 6) — simplest correct solution for Phase 4's scope; revisit only if a future phase needs cross-food serving-size queries.
 
-2. **Which side (start/end) should the swipe reveal Edit/Delete/Duplicate?**
+2. **(RESOLVED — `endActionPane`, Plan 04-11) Which side (start/end) should the swipe reveal Edit/Delete/Duplicate?**
    - What we know: CONTEXT.md explicitly leaves "swipe direction mapping (which side reveals which action)" to Claude's discretion.
    - What's unclear: No existing design-token precedent in this codebase for swipe direction.
    - Recommendation: `endActionPane` (right-to-left swipe, the dominant iOS/Android convention for list-row actions) holding all three actions in a fixed order (Edit, Duplicate, Delete-last-in-red) — matches near-universal platform convention (Mail apps, Gmail, most Material list patterns) and avoids needing a `startActionPane` at all.
