@@ -98,7 +98,21 @@ Plans:
   3. A user can create custom foods (My Foods) with name/brand/category, reference amount, full nutrition (calories/protein/carbs/sugar/fat/fiber/salt), CO₂ values (manual or category-estimated), and quick serving sizes; personal overrides of existing DB entries never mutate the original — override and original are stored as an independent, revertible pair.
   4. End-to-end meal logging (from "Add Breakfast" tap → food saved → visible on placeholder dashboard) completes in under 10 seconds on a mid-range device, verified in user testing on real hardware before this phase closes.
   5. All core meal-logging flows function with airplane mode enabled — zero network dependency.
-**Plans**: TBD
+**Plans**: 13 plans
+Plans:
+- [ ] 04-01-PLAN.md — Wave 0 test stubs (16 files covering LOG-05 through LOG-13)
+- [ ] 04-02-PLAN.md — Drift schema: MealEntryTable, FavoriteTable, UserFoodTable (schemaVersion 2→3)
+- [ ] 04-03-PLAN.md — Domain entities & interfaces: MealSlot/PortionUnit, MealEntry, Favorite, ServingSize, UserFood, IMealEntryRepository, IUserFoodRepository
+- [ ] 04-04-PLAN.md — DAOs: MealEntryDao (entries + favorites), UserFoodDao
+- [ ] 04-05-PLAN.md — Repositories + DI: MealEntryRepository, UserFoodRepository, meal_logging_providers.dart
+- [ ] 04-06-PLAN.md — Search & barcode override integration (FoodItem.source, FoodCatalogDao override precedence)
+- [ ] 04-07-PLAN.md — Notifiers: MealEntryNotifier, FavoriteNotifier, UserFoodNotifier
+- [ ] 04-08-PLAN.md — My Foods: Custom Food Form screen + My Foods list screen
+- [ ] 04-09-PLAN.md — Sheet reconciliation + PortionSlotForm (core <10s logging UI)
+- [ ] 04-10-PLAN.md — Food search Recent/Favorites empty-state UI + "Add as custom food" link
+- [ ] 04-11-PLAN.md — Dashboard managing entries: flutter_slidable checkpoint + swipe actions
+- [ ] 04-12-PLAN.md — LOG-13 benchmark + LOG-12 offline logging test fill-ins
+- [ ] 04-13-PLAN.md — Real-device human-verify checkpoint (Android + iOS, <10s + airplane mode)
 **UI hint**: yes
 
 ### Phase 5: Nutrition, CO₂ Estimator, Dashboard, Insights, Weight, Notifications & Export — Local Mode Shippable
@@ -168,7 +182,7 @@ Plans:
 | 1. Foundations & Sync-Safe Schema | 7/7 | Complete   | 2026-07-17 |
 | 2. Food Catalog Ingest & Search | 7/7 | Complete   | 2026-07-20 |
 | 3. Barcode Scanning & CO₂ Factor Table | 5/5 | Complete   | 2026-07-22 |
-| 4. Meal Logging Core | 0/0 | Not started | - |
+| 4. Meal Logging Core | 0/13 | Planned | - |
 | 5. Full Local App (Local Mode Shippable) | 0/0 | Not started | - |
 | 6. Onboarding, Legal & Pre-Submission | 0/0 | Not started | - |
 | 7. Keycloak Auth + Account Mode + Sync | 0/0 | Not started | - |
