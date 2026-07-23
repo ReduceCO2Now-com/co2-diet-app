@@ -150,5 +150,72 @@ void main() {
       expect(updated.co2e100g, equals(3.5));
       expect(updated.confidenceBand, equals('high'));
     });
+
+    // --- source / sourceRowId / resolvedFoodRef (Plan 04-06, LOG-11) ---
+
+    test('source and sourceRowId are null by default', () {
+      const item = FoodItem(productName: 'Test');
+      expect(item.source, isNull);
+      expect(item.sourceRowId, isNull);
+    });
+
+    test('omitting source/sourceRowId in constructor does not affect '
+        'equality/hashCode', () {
+      const withSource = FoodItem(
+        barcode: '111',
+        productName: 'Banana',
+        source: 'user_foods',
+        sourceRowId: 'row-1',
+      );
+      const withoutSource = FoodItem(barcode: '111', productName: 'Banana');
+      expect(withSource, equals(withoutSource));
+      expect(withSource.hashCode, equals(withoutSource.hashCode));
+    });
+
+    test('copyWith(source: "user_foods") sets source, preserves other '
+        'fields', () {
+      const item = FoodItem(barcode: '111', productName: 'Banana');
+      final updated = item.copyWith(source: 'user_foods');
+      expect(updated.source, equals('user_foods'));
+      expect(updated.barcode, equals('111'));
+      expect(updated.productName, equals('Banana'));
+    });
+
+    test('copyWith(sourceRowId: "row-1") sets sourceRowId', () {
+      const item = FoodItem(productName: 'Banana');
+      final updated = item.copyWith(sourceRowId: 'row-1');
+      expect(updated.sourceRowId, equals('row-1'));
+    });
+
+    test('copyWith(source: null) explicitly clears source (sentinel)', () {
+      const item = FoodItem(productName: 'Banana', source: 'off_ref');
+      final updated = item.copyWith(source: null);
+      expect(updated.source, isNull);
+    });
+
+    test('resolvedFoodRef returns barcode when both barcode and '
+        'sourceRowId are set', () {
+      const item = FoodItem(
+        barcode: '7612345678901',
+        productName: 'Banana',
+        sourceRowId: 'row-1',
+      );
+      expect(item.resolvedFoodRef, equals('7612345678901'));
+    });
+
+    test('resolvedFoodRef returns sourceRowId when barcode is null', () {
+      const item = FoodItem(
+        productName: 'Custom Food',
+        source: 'user_foods',
+        sourceRowId: 'row-42',
+      );
+      expect(item.resolvedFoodRef, equals('row-42'));
+    });
+
+    test('resolvedFoodRef throws StateError when both barcode and '
+        'sourceRowId are null', () {
+      const item = FoodItem(productName: 'Mystery Food');
+      expect(() => item.resolvedFoodRef, throwsA(isA<StateError>()));
+    });
   });
 }
