@@ -1,3 +1,4 @@
+import 'package:co2diet/data/local/app_database.dart';
 import 'package:co2diet/domain/entities/portion_unit.dart';
 import 'package:flutter/foundation.dart';
 
@@ -23,6 +24,27 @@ class Favorite {
     this.lastQuantity,
     this.lastUnit,
   });
+
+  /// Maps a Drift [FavoriteRow] 1:1 onto a [Favorite].
+  ///
+  /// Owned exclusively by Plan 04-05 (the data-layer repository plan) —
+  /// Plan 04-03, which defines this entity, deliberately never imports
+  /// `package:drift`, so the Drift-row-to-entity mapping direction lives
+  /// here instead. Every table column maps directly onto the matching
+  /// entity field; no lossy conversions.
+  factory Favorite.fromRow(FavoriteRow row) => Favorite(
+    id: row.id,
+    foodRef: row.foodRef,
+    foodRefSource: row.foodRefSource,
+    productNameSnapshot: row.productNameSnapshot,
+    favoritedAt: row.favoritedAt,
+    brandSnapshot: row.brandSnapshot,
+    calories100gSnapshot: row.calories100gSnapshot,
+    co2e100gSnapshot: row.co2e100gSnapshot,
+    confidenceBandSnapshot: row.confidenceBandSnapshot,
+    lastQuantity: row.lastQuantity,
+    lastUnit: row.lastUnit,
+  );
 
   /// Unique, individually addressable row id.
   final String id;

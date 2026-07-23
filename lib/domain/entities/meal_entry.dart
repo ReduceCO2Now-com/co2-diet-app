@@ -1,3 +1,4 @@
+import 'package:co2diet/data/local/app_database.dart';
 import 'package:co2diet/domain/entities/meal_slot.dart';
 import 'package:co2diet/domain/entities/portion_unit.dart';
 import 'package:flutter/foundation.dart';
@@ -41,6 +42,33 @@ class MealEntry {
     this.confidenceBandSnapshot,
     this.co2MethodologyVersionSnapshot,
   });
+
+  /// Maps a Drift [MealEntryRow] 1:1 onto a [MealEntry].
+  ///
+  /// Owned exclusively by Plan 04-05 (the data-layer repository plan) —
+  /// Plan 04-03, which defines this entity, deliberately never imports
+  /// `package:drift`, so the Drift-row-to-entity mapping direction lives
+  /// here instead. Every table column maps directly onto the matching
+  /// entity field; no lossy conversions.
+  factory MealEntry.fromRow(MealEntryRow row) => MealEntry(
+    id: row.id,
+    mealSlot: row.mealSlot,
+    foodRef: row.foodRef,
+    foodRefSource: row.foodRefSource,
+    quantity: row.quantity,
+    unit: row.unit,
+    productNameSnapshot: row.productNameSnapshot,
+    loggedAt: row.loggedAt,
+    logDate: row.logDate,
+    brandSnapshot: row.brandSnapshot,
+    calories100gSnapshot: row.calories100gSnapshot,
+    protein100gSnapshot: row.protein100gSnapshot,
+    carbs100gSnapshot: row.carbs100gSnapshot,
+    fat100gSnapshot: row.fat100gSnapshot,
+    co2e100gSnapshot: row.co2e100gSnapshot,
+    confidenceBandSnapshot: row.confidenceBandSnapshot,
+    co2MethodologyVersionSnapshot: row.co2MethodologyVersionSnapshot,
+  );
 
   /// Unique, individually addressable row id.
   final String id;
