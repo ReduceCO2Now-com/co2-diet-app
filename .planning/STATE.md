@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-07-23T16:29:30.489Z"
+last_updated: "2026-07-23T16:41:13.945Z"
 progress:
   total_phases: 9
   completed_phases: 3
   total_plans: 32
-  completed_plans: 21
-  percent: 66
+  completed_plans: 22
+  percent: 69
 ---
 
 # STATE: CO₂ Diet
@@ -35,14 +35,14 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 04-meal-logging-core-10s-target — IN PROGRESS (2 of 13 plans done)
-- **Plan:** 04-02 complete — Drift schema: MealEntryTable, FavoriteTable, UserFoodTable (all SyncSafeTable), schemaVersion 2→3, onUpgrade from<3 branch; minimal MealSlot/PortionUnit/ServingSize stand-ins created to unblock compilation ahead of Plan 04-03
-- **Status:** Ready to execute (04-03 next)
-- **Progress:** [██████░░░░] 66%
-- **v1 requirements:** 21 / 75 delivered (CO2-01, CO2-04, LEG-05, LOG-03, LOG-04, NFR-06, PROF-01 through PROF-05, PRIV-07, LOG-01, LOG-02) — LOG-05/06/07/08/10/11 have schema-layer support only (Plan 04-02); not yet counted as delivered since DAOs/repositories/UI are still pending in later Phase 4 plans
+- **Phase:** 04-meal-logging-core-10s-target — IN PROGRESS (3 of 13 plans done)
+- **Plan:** 04-03 complete — Domain layer: MealSlot/PortionUnit enums (extended with displayLabel/isWeightBased/detectMealSlotForTime), MealEntry/Favorite/ServingSize/UserFood entities (sentinel copyWith), IMealEntryRepository/IUserFoodRepository interfaces
+- **Status:** Ready to execute (04-04 next)
+- **Progress:** [██████░░░░] 69%
+- **v1 requirements:** 21 / 75 delivered (CO2-01, CO2-04, LEG-05, LOG-03, LOG-04, NFR-06, PROF-01 through PROF-05, PRIV-07, LOG-01, LOG-02) — LOG-05/06/08/10/11 have schema+domain-layer support only (Plans 04-02/04-03); not yet counted as delivered since DAOs/repositories/UI are still pending in later Phase 4 plans
 
 ```
-[█████████████░░░░░░░] 66%
+[██████████████░░░░░░] 69%
 ```
 
 ### Initialization Progress
@@ -135,9 +135,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-23T16:29:30.489Z
-**Stopped at:** Completed 04-02-PLAN.md — Drift schema: MealEntryTable, FavoriteTable, UserFoodTable (schemaVersion 2→3); minimal MealSlot/PortionUnit/ServingSize stand-ins created ahead of Plan 04-03
-**Next action:** Execute Plan 04-03 (domain entities & interfaces) — its executor should review the stand-in `lib/domain/entities/meal_slot.dart`/`portion_unit.dart`/`serving_size.dart` created by Plan 04-02 and extend/verify against its own spec
+**Last session:** 2026-07-23T16:41:13.945Z
+**Stopped at:** Completed 04-03-PLAN.md — Domain layer: MealSlot/PortionUnit enums extended (displayLabel/isWeightBased/detectMealSlotForTime), MealEntry/Favorite/ServingSize/UserFood entities, IMealEntryRepository/IUserFoodRepository interfaces
+**Next action:** Execute Plan 04-04 (DAOs: MealEntryDao, UserFoodDao) — implements against the domain interfaces defined in Plan 04-03
 **Suggested next command:** `/gsd:execute-phase 4`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
@@ -197,6 +197,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 04-01]: Reused Phase 2/3 Wave 0 stub conventions verbatim (group-level skip for unit/widget, markTestSkipped() body for integration) for Phase 4 test stubs
 - [Phase 04-02]: `app_database.dart` must directly import `meal_slot.dart`/`portion_unit.dart`/`serving_size.dart` even though those types are only used inside table files — `app_database.g.dart` is `part of 'app_database.dart'` and part files share the enclosing library's import scope (they cannot declare their own imports); Dart CFE requires the types resolvable from the main library file's own imports
 - [Phase 04-02]: Minimal stand-in `MealSlot`/`PortionUnit`/`ServingSize` domain files created (enum values only for the first two; functionally complete for `ServingSize` since its `decodeList`/`encodeList` are directly invoked by `UserFoodTable`'s type converter) — Plan 04-03 owns the authoritative versions and should extend/review rather than assume unimplemented
+- [Phase 04-03]: `detectMealSlotForTime` boundaries: <11:00 breakfast, 11:00–15:00 lunch, 15:00–18:00 snack, >=18:00 dinner — single shared implementation in `meal_slot.dart` for Plan 04-09/04-10 to consume
+- [Phase 04-03]: `IMealEntryRepository.toggleFavorite` contract: returns the `Favorite` row that now exists after toggling; callers must call `isFavorite` separately to disambiguate insert-vs-delete outcomes
+- [Phase 04-03]: `ServingSize` required no code changes vs. Plan 04-02's stand-in — already matched the round-trip + malformed-input spec; only the stand-in doc-comment note was removed
 
 ## Performance Metrics
 
@@ -215,3 +218,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 03-barcode-scanning-co-factor-table P05 | ~30min | 2 tasks | 9 files |
 | Phase 04-meal-logging-core-10s-target P01 | 9min | 2 tasks | 16 files |
 | Phase 04-meal-logging-core-10s-target P02 | ~30min | 2 tasks | 10 files |
+| Phase 04-meal-logging-core-10s-target P03 | ~15min | 2 tasks | 11 files |

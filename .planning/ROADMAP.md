@@ -102,7 +102,7 @@ Plans:
 Plans:
 - [x] 04-01-PLAN.md — Wave 0 test stubs (16 files covering LOG-05 through LOG-13)
 - [x] 04-02-PLAN.md — Drift schema: MealEntryTable, FavoriteTable, UserFoodTable (schemaVersion 2→3)
-- [ ] 04-03-PLAN.md — Domain entities & interfaces: MealSlot/PortionUnit, MealEntry, Favorite, ServingSize, UserFood, IMealEntryRepository, IUserFoodRepository
+- [x] 04-03-PLAN.md — Domain entities & interfaces: MealSlot/PortionUnit, MealEntry, Favorite, ServingSize, UserFood, IMealEntryRepository, IUserFoodRepository
 - [ ] 04-04-PLAN.md — DAOs: MealEntryDao (entries + favorites), UserFoodDao
 - [ ] 04-05-PLAN.md — Repositories + DI: MealEntryRepository, UserFoodRepository, meal_logging_providers.dart
 - [ ] 04-06-PLAN.md — Search & barcode override integration (FoodItem.source, FoodCatalogDao override precedence)
@@ -182,7 +182,7 @@ Plans:
 | 1. Foundations & Sync-Safe Schema | 7/7 | Complete   | 2026-07-17 |
 | 2. Food Catalog Ingest & Search | 7/7 | Complete   | 2026-07-20 |
 | 3. Barcode Scanning & CO₂ Factor Table | 5/5 | Complete   | 2026-07-22 |
-| 4. Meal Logging Core | 2/13 | In Progress|  |
+| 4. Meal Logging Core | 3/13 | In Progress|  |
 | 5. Full Local App (Local Mode Shippable) | 0/0 | Not started | - |
 | 6. Onboarding, Legal & Pre-Submission | 0/0 | Not started | - |
 | 7. Keycloak Auth + Account Mode + Sync | 0/0 | Not started | - |
