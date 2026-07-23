@@ -1,3 +1,4 @@
+import 'package:co2diet/data/local/app_database.dart';
 import 'package:co2diet/domain/entities/serving_size.dart';
 import 'package:flutter/foundation.dart';
 
@@ -37,6 +38,38 @@ class UserFood {
     this.overrideOfRef,
     this.overrideOfSource,
   });
+
+  /// Maps a Drift [UserFoodRow] 1:1 onto a [UserFood].
+  ///
+  /// Owned exclusively by Plan 04-05 (the data-layer repository plan) —
+  /// Plan 04-03, which defines this entity, deliberately never imports
+  /// `package:drift`, so the Drift-row-to-entity mapping direction lives
+  /// here instead. `row.quickServingSizes` is already decoded to
+  /// `List<ServingSize>` at the column level by the table's
+  /// `TypeConverter.json2` (Plan 04-02) — assigned directly, never
+  /// re-decoded.
+  factory UserFood.fromRow(UserFoodRow row) => UserFood(
+    id: row.id,
+    name: row.name,
+    brand: row.brand,
+    category: row.category,
+    referenceAmountG: row.referenceAmountG,
+    calories: row.calories,
+    protein: row.protein,
+    carbs: row.carbs,
+    sugar: row.sugar,
+    fat: row.fat,
+    fiber: row.fiber,
+    salt: row.salt,
+    co2e100g: row.co2e100g,
+    confidenceBand: row.confidenceBand,
+    co2Source: row.co2Source,
+    co2MethodologyVersion: row.co2MethodologyVersion,
+    barcode: row.barcode,
+    quickServingSizes: row.quickServingSizes,
+    overrideOfRef: row.overrideOfRef,
+    overrideOfSource: row.overrideOfSource,
+  );
 
   /// Unique row id.
   final String id;
