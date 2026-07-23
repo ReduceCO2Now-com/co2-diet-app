@@ -1,0 +1,93 @@
+import 'package:co2diet/data/local/mixins/sync_safe_table.dart';
+import 'package:co2diet/domain/entities/meal_slot.dart';
+import 'package:co2diet/domain/entities/portion_unit.dart';
+import 'package:drift/drift.dart';
+
+/// Drift table for logged meal entries using the [SyncSafeTable] mixin.
+///
+/// `mealSlot` and `unit` reference the [MealSlot]/[PortionUnit] enums from
+/// the domain layer (Plan 04-03 — a parallel Wave 2 plan). Both plans land
+/// in the same wave; this file compiles once Plan 04-03's domain entities
+/// exist.
+///
+/// ## "Snapshot, not reference" (CONTEXT.md)
+///
+/// All `*Snapshot` columns are captured once, at log time, from the source
+/// food (off_ref product, cached API result, or user food) and are NEVER
+/// re-joined to that source at read time. Creating or editing a personal
+/// override (a `UserFoodTable` row with `overrideOfRef` set) must never
+/// retroactively change values already logged here — that is the entire
+/// point of snapshotting instead of referencing.
+///
+/// This snapshot intentionally captures calories/protein/carbs/fat/co2e
+/// only — NOT sugar/fiber/salt, which `UserFoodTable` captures. This is a
+/// deliberate Phase 4 scope boundary matching what `PortionSlotForm`'s
+/// live-scaling UI displays. Phase 5's nutrition rollups will need to
+/// treat sugar/fiber/salt as unavailable for Phase-4-logged entries.
+/// Flagged here explicitly for Phase 5 planning rather than expanded now.
+///
+/// ## No cross-attached-database foreign keys (RESEARCH.md Pitfall 1)
+///
+/// [foodRef] is a plain text column — never a Drift `.references()` FK.
+/// SQLite cannot enforce foreign keys across the `ATTACH`ed `off_ref`
+/// database, and a real FK would fight the snapshot data model anyway
+/// (the referenced row may later be edited or become an override without
+/// this row needing to change). Validation of `foodRef`/`foodRefSource`
+/// pairs happens at the application layer (DAO/repository), not via SQL
+/// constraints.
+@DataClassName('MealEntryRow')
+class MealEntryTable extends Table with SyncSafeTable {
+  /// Which meal slot this entry belongs to (breakfast/lunch/dinner/snack).
+  /// Stored via `textEnum` as `Enum.name` — append-only, see [MealSlot].
+  Column<String> get mealSlot => textEnum<MealSlot>()();
+
+  /// Reference to the source food: a barcode (off_ref/user_food_cache) or
+  /// a `UserFoodTable.id` (user_foods). Never a Drift `.references()` FK
+  /// (RESEARCH.md Pitfall 1 — cross-attached-DB FK is impossible and would
+  /// fight the snapshot data model).
+  Column<String> get foodRef => text()();
+
+  /// One of `'off_ref'`, `'user_food_cache'`, `'user_foods'` — identifies
+  /// which table/database [foodRef] resolves against.
+  Column<String> get foodRefSource => text()();
+
+  /// Logged quantity, in [unit].
+  Column<double> get quantity => real()();
+
+  /// Unit the [quantity] is expressed in (g/ml/piece/cup/portion).
+  Column<String> get unit => textEnum<PortionUnit>()();
+
+  /// Product name captured at log time. See class doc for the
+  /// "snapshot, not reference" principle.
+  Column<String> get productNameSnapshot => text()();
+
+  /// Brand captured at log time, nullable.
+  Column<String> get brandSnapshot => text().nullable()();
+
+  /// Energy in kcal per 100 g/ml, captured at log time.
+  Column<double> get calories100gSnapshot => real().nullable()();
+
+  /// Protein in g per 100 g/ml, captured at log time.
+  Column<double> get protein100gSnapshot => real().nullable()();
+
+  /// Carbohydrates in g per 100 g/ml, captured at log time.
+  Column<double> get carbs100gSnapshot => real().nullable()();
+
+  /// Fat in g per 100 g/ml, captured at log time.
+  Column<double> get fat100gSnapshot => real().nullable()();
+
+  /// kg CO2e per kg product, captured at log time.
+  Column<double> get co2e100gSnapshot => real().nullable()();
+
+  /// Confidence band ('high'/'medium'/'low'), captured at log time.
+  Column<String> get confidenceBandSnapshot => text().nullable()();
+
+  /// Wall-clock timestamp of when the entry was logged.
+  Column<DateTime> get loggedAt => dateTime()();
+
+  /// `'YYYY-MM-DD'` local calendar day, computed once in Dart at write
+  /// time (RESEARCH.md Pattern 3 / Pitfall 2 — never derived via SQL
+  /// `strftime`). Used for the same-slot/same-day merge check and for
+  /// grouping the dashboard entries list.
+  Column<String> get logDate => text()();
+}
