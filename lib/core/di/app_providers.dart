@@ -18,9 +18,16 @@ part 'app_providers.g.dart';
 /// keepAlive: true — DAO must persist for the full ProviderScope lifetime
 /// because it is referenced by [foodCatalogRepositoryProvider] which is also
 /// keep-alive.
+///
+/// Constructs an explicit [FoodCatalogDao] instance with [UserFoodDao]
+/// wired in (LOG-11 override precedence) rather than using
+/// `AppDatabase.foodCatalogDao`'s generated accessor — the generated
+/// accessor's constructor call has no `userFoodDao` argument since
+/// `@DriftAccessor`'s codegen only ever passes the attached database.
 @Riverpod(keepAlive: true)
 FoodCatalogDao foodCatalogDao(Ref ref) {
-  return ref.watch(appDatabaseProvider).foodCatalogDao;
+  final db = ref.watch(appDatabaseProvider);
+  return FoodCatalogDao(db, userFoodDao: db.userFoodDao);
 }
 
 /// Provides the [OffApiClient] singleton.

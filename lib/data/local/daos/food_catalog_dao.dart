@@ -1,4 +1,5 @@
 import 'package:co2diet/data/local/app_database.dart';
+import 'package:co2diet/data/local/daos/user_food_dao.dart';
 import 'package:co2diet/data/local/tables/user_food_cache_table.dart';
 import 'package:co2diet/domain/entities/food_item.dart';
 import 'package:drift/drift.dart';
@@ -22,11 +23,26 @@ part 'food_catalog_dao.g.dart';
 /// T-03-02-01/02 mitigation: [lookupByBarcodeWithCo2] uses
 /// Variable.withString for the barcode parameter and applies a max-length
 /// guard (EAN-13 = 13 chars max) before any DB access.
+///
+/// LOG-11 override precedence: when [_userFoodDao] is provided, both
+/// [searchLocalFoods] and [lookupByBarcodeWithCo2] check `UserFoodTable`
+/// for a personal override of a matched off_ref/user_food_cache row and
+/// substitute the override's data when found — the original catalog/cache
+/// row is never mutated, only shadowed in read results (T-04-06-02).
 @DriftAccessor(tables: [UserFoodCacheTable])
 class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
     with _$FoodCatalogDaoMixin {
   /// Creates a [FoodCatalogDao] bound to [attachedDatabase].
-  FoodCatalogDao(super.attachedDatabase);
+  ///
+  /// [userFoodDao] is nullable so existing unit tests that construct
+  /// `FoodCatalogDao(db)` directly (without a [UserFoodDao]) keep
+  /// compiling unchanged — when `null`, override-checking is skipped,
+  /// matching the existing `offRefPath == null` unit-test-isolation
+  /// convention already used throughout this DAO.
+  FoodCatalogDao(super.attachedDatabase, {UserFoodDao? userFoodDao})
+    : _userFoodDao = userFoodDao;
+
+  final UserFoodDao? _userFoodDao;
 
   // ---------------------------------------------------------------------------
   // FTS5 name search
@@ -65,6 +81,8 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
             p.fat_100g,
             NULL AS co2e_100g,
             NULL AS confidence_band,
+            'off_ref' AS source,
+            NULL AS source_row_id,
             bm25(products_fts, 10.0, 8.0, 3.0) AS rank
           FROM off_ref.products_fts
           JOIN off_ref.products p ON off_ref.products_fts.rowid = p.rowid
@@ -102,12 +120,14 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
             t.product_name,
             t.product_name_en,
             t.brand,
-            t.calories_100g,
-            t.protein_100g,
-            t.carbs_100g,
-            t.fat_100g,
+            t.calories100g AS calories_100g,
+            t.protein100g AS protein_100g,
+            t.carbs100g AS carbs_100g,
+            t.fat100g AS fat_100g,
             NULL AS co2e_100g,
             NULL AS confidence_band,
+            'user_food_cache' AS source,
+            t.id AS source_row_id,
             0.0 AS rank
           FROM user_food_cache_fts
           JOIN user_food_cache_table t
@@ -134,6 +154,27 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
       }
     }
 
+    // --- LOG-11: personal override precedence ---
+    // For each result with a barcode, check whether a personal override
+    // exists for it and substitute the override's data if so. Per-item
+    // async check (not batched) — acceptable given the existing 25-item
+    // result cap.
+    if (_userFoodDao != null) {
+      for (var i = 0; i < results.length; i++) {
+        final item = results[i];
+        final barcode = item.barcode;
+        final source = item.source;
+        if (barcode == null || source == null) continue;
+        final override = await _userFoodDao.findOverrideByFoodRef(
+          barcode,
+          source,
+        );
+        if (override != null) {
+          results[i] = _foodItemFromUserFoodRow(override);
+        }
+      }
+    }
+
     return results;
   }
 
@@ -156,8 +197,16 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
   /// Returns null if:
   /// - [barcode] is empty or longer than 13 chars (T-03-02-02 DoS guard:
   ///   EAN-13 = 13 chars, EAN-8 = 8, UPC-A = 12 — reject >13).
-  /// - [AppDatabase.offRefPath] is null (no ATTACH — unit test isolation).
-  /// - No match found in either step.
+  /// - [AppDatabase.offRefPath] is null (no ATTACH — unit test isolation)
+  ///   AND no personal override exists (Step 0 below).
+  /// - No match found in Step 0, Step 1, or Step 2.
+  ///
+  /// **Step 0 — Personal override (LOG-11):** When [_userFoodDao] is
+  /// provided, checks `UserFoodTable` for an override of this barcode
+  /// before touching `off_ref` at all — runs before the [offRefPath] null
+  /// check since overrides live in `co2diet.sqlite`, independent of the
+  /// ATTACHed off_ref database. Returns the override's data immediately
+  /// when found, skipping Steps 1–2 entirely.
   ///
   /// T-03-02-01 mitigation: [barcode] is always passed as
   /// `Variable.withString(barcode)` — parameterized query prevents SQL
@@ -166,6 +215,19 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
     // T-03-02-02: Max-length guard — EAN-13 is the longest valid product
     // barcode at 13 chars. Reject oversized or empty inputs immediately.
     if (barcode.isEmpty || barcode.length > 13) return null;
+
+    // Step 0 — personal override check (LOG-11), independent of off_ref
+    // ATTACH state.
+    final userFoodDao = _userFoodDao;
+    if (userFoodDao != null) {
+      final personalOverride = await userFoodDao.findOverrideByFoodRef(
+        barcode,
+        'off_ref',
+      );
+      if (personalOverride != null) {
+        return _foodItemFromUserFoodRow(personalOverride);
+      }
+    }
 
     // No ATTACH — skip all DB queries (unit test isolation pattern).
     if (attachedDatabase.offRefPath == null) return null;
@@ -184,7 +246,9 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
           p.carbs_100g,
           p.fat_100g,
           ov.co2e_100g,
-          'high' AS confidence_band
+          'high' AS confidence_band,
+          'off_ref' AS source,
+          NULL AS source_row_id
         FROM off_ref.food_co2_overrides ov
         JOIN off_ref.products p ON p.barcode = ov.barcode
         WHERE ov.barcode = ?
@@ -213,7 +277,9 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
           p.carbs_100g,
           p.fat_100g,
           cf.co2e_median AS co2e_100g,
-          'medium' AS confidence_band
+          'medium' AS confidence_band,
+          'off_ref' AS source,
+          NULL AS source_row_id
         FROM off_ref.products p
         JOIN off_ref.co2_factors cf
           ON cf.categories_tag = p.primary_category_tag
@@ -290,6 +356,39 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
     }
 
     return apiResult;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Personal override mapping (LOG-11)
+  // ---------------------------------------------------------------------------
+
+  /// Maps a [UserFoodRow] (a personal override or custom food) onto a
+  /// [FoodItem].
+  ///
+  /// Kept local to [FoodCatalogDao] since it is a cross-domain,
+  /// off_ref-interop-specific concern (translating an override row into
+  /// the same [FoodItem] shape search/barcode lookup callers already
+  /// expect), not part of `UserFood`'s own domain contract.
+  ///
+  /// Sets `source: 'user_foods'` and `sourceRowId: row.id` — [row.id] is
+  /// the `UserFoodTable` row's own primary key, i.e. the "catalog/custom-
+  /// food ID" CONTEXT.md's merge-key rule refers to. `barcode: row.barcode`
+  /// preserves the override's own optional user-entered barcode (may be
+  /// null) so a future scan of that barcode still resolves correctly.
+  FoodItem _foodItemFromUserFoodRow(UserFoodRow row) {
+    return FoodItem(
+      barcode: row.barcode,
+      productName: row.name,
+      brand: row.brand,
+      calories100g: row.calories,
+      protein100g: row.protein,
+      carbs100g: row.carbs,
+      fat100g: row.fat,
+      co2e100g: row.co2e100g,
+      confidenceBand: row.confidenceBand,
+      source: 'user_foods',
+      sourceRowId: row.id,
+    );
   }
 
   // ---------------------------------------------------------------------------

@@ -37,6 +37,12 @@ final class NetworkException implements Exception {
 /// `user_food_cache_fts` so future local searches find them without re-hitting
 /// the API (D-API-FALLBACK per CONTEXT.md / 02-RESEARCH.md).
 ///
+/// Override-aware (LOG-11): `FoodCatalogDao` internally substitutes a
+/// personal override's data for the original catalog/cache row whenever
+/// one exists (see `FoodCatalogDao`'s class doc), so this repository needs
+/// no functional change to surface override precedence — it is
+/// transparent at this layer.
+///
 /// HLC fields use Phase 1 placeholders:
 ///   - `hlcNodeId` is `'local'` (Phase 7 replaces with stable device UUID).
 ///   - `hlcCounter` is `0` (Phase 7 implements full HLC increment logic).
@@ -66,6 +72,9 @@ final class FoodCatalogRepository implements IFoodCatalogRepository {
     // off_ref.products stores macro data for ~3% of products; the other 97%
     // have a primary_category_tag (for CO₂) but null macro columns. If we
     // return those early we show CO₂ but blank calories/protein/carbs/fat.
+    // When `local` came from a personal override (LOG-11), `calories` is
+    // always populated per `UserFood.isValid`'s required-field guard, so
+    // this gate passes through unchanged for overrides.
     if (local != null && local.calories100g != null) return local;
 
     // Connectivity check before attempting Step 3 (API fallback).

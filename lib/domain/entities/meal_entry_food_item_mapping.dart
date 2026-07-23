@@ -27,7 +27,6 @@ extension MealEntryFoodItemMapping on MealEntry {
   /// an existing entry.
   FoodItem toFoodItem() => FoodItem(
     productName: productNameSnapshot,
-    barcode: null,
     brand: brandSnapshot,
     calories100g: calories100gSnapshot,
     protein100g: protein100gSnapshot,
@@ -52,12 +51,8 @@ extension FavoriteFoodItemMapping on Favorite {
   /// for pre-filling the logging sheet when re-logging a favorited food.
   FoodItem toFoodItem() => FoodItem(
     productName: productNameSnapshot,
-    barcode: null,
     brand: brandSnapshot,
     calories100g: calories100gSnapshot,
-    protein100g: null,
-    carbs100g: null,
-    fat100g: null,
     co2e100g: co2e100gSnapshot,
     confidenceBand: confidenceBandSnapshot,
     source: foodRefSource,
