@@ -18,6 +18,11 @@ dependencies:
   # connectivity_plus 7.3.0 — Detect network state before OFF API fallback calls.
   # [VERIFIED: pub.dev, flutter.dev ecosystem publisher]
   connectivity_plus: 7.3.0
+  # flutter_slidable 4.0.3 — Swipe-to-reveal Edit/Duplicate/Delete actions on
+  # dashboard meal-entry rows (LOG-09). [VERIFIED: pub.dev, 150/160 score,
+  # flutter-favorite badge, publisher: romainrastel.com, human-approved
+  # per Plan 04-11's blocking package-legitimacy checkpoint]
+  flutter_slidable: ^4.0.3
   # mobile_scanner 7.4.0 — Barcode scanning via CameraX/MLKit (Android) and AVFoundation (iOS).
   # [VERIFIED: pub.dev 2026-07-21, 160/160 score, 1.06M downloads/month]
   mobile_scanner: 7.4.0
