@@ -1,5 +1,6 @@
 import 'package:co2diet/core/di/meal_logging_providers.dart';
 import 'package:co2diet/domain/entities/meal_entry.dart';
+import 'package:co2diet/domain/entities/meal_slot.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -151,4 +152,41 @@ class MealEntryNotifier extends _$MealEntryNotifier {
   /// invalidation-driven lifecycle when it's actually a plain read.
   Future<List<MealEntry>> getRecent({int limit = 15}) =>
       ref.read(mealEntryRepositoryProvider).getRecent(limit: limit);
+
+  /// Logs [recent] again with a single tap (Plan 04-10's Recent one-tap-log
+  /// path): reuses its own snapshot fields (name/brand/macros/CO2) and its
+  /// own quantity/unit as today's starting values, with a freshly
+  /// auto-detected slot. Recent items have no separate "last used" memory
+  /// to update afterward (unlike `FavoriteNotifier.logFromFavorite`'s
+  /// `touchFavoriteUsage` call) — the tapped row already IS the most recent
+  /// use, so there's nothing else to record.
+  Future<MealLogResult> logFromRecent(MealEntry recent) {
+    final now = DateTime.now();
+    final draft = MealEntry(
+      id: '',
+      mealSlot: detectMealSlotForTime(now),
+      foodRef: recent.foodRef,
+      foodRefSource: recent.foodRefSource,
+      quantity: recent.quantity,
+      unit: recent.unit,
+      productNameSnapshot: recent.productNameSnapshot,
+      brandSnapshot: recent.brandSnapshot,
+      calories100gSnapshot: recent.calories100gSnapshot,
+      protein100gSnapshot: recent.protein100gSnapshot,
+      carbs100gSnapshot: recent.carbs100gSnapshot,
+      fat100gSnapshot: recent.fat100gSnapshot,
+      co2e100gSnapshot: recent.co2e100gSnapshot,
+      confidenceBandSnapshot: recent.confidenceBandSnapshot,
+      loggedAt: now,
+      logDate: _formatLogDate(now),
+    );
+    return logFood(draft);
+  }
 }
+
+/// Formats [now] as a `yyyy-MM-dd` logical log date, matching
+/// `MealEntryRepository.getEntriesForToday`'s existing convention.
+String _formatLogDate(DateTime now) =>
+    '${now.year.toString().padLeft(4, '0')}-'
+    '${now.month.toString().padLeft(2, '0')}-'
+    '${now.day.toString().padLeft(2, '0')}';

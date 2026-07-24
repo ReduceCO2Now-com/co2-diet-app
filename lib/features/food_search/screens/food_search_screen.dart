@@ -4,7 +4,7 @@ import 'package:co2diet/features/food_search/widgets/api_loading_banner.dart';
 import 'package:co2diet/features/food_search/widgets/food_detail_sheet.dart';
 import 'package:co2diet/features/food_search/widgets/food_result_row.dart';
 import 'package:co2diet/features/food_search/widgets/no_results_widget.dart';
-import 'package:co2diet/features/food_search/widgets/search_prompt_widget.dart';
+import 'package:co2diet/features/food_search/widgets/recent_favorites_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,7 +16,8 @@ import 'package:go_router/go_router.dart';
 /// the bottom navigation bar.
 ///
 /// State machine (see [FoodSearchNotifier] and [FoodSearchState]):
-///   - Initial / query < 2 chars → [SearchPromptWidget]
+///   - Initial / query < 2 chars → [RecentFavoritesList] (Recent +
+///     Favorites, or the original search prompt when both are empty)
 ///   - Non-empty results → [ListView] of [FoodResultRow]s
 ///   - Empty results (API returned 0 items) → [NoResultsVariant.genuine]
 ///   - Offline, no local hits → [NoResultsVariant.offline]
@@ -110,7 +111,7 @@ class _FoodSearchScreenState extends ConsumerState<FoodSearchScreen> {
     FoodSearchNotifier notifier,
   ) {
     return switch (state) {
-      FoodSearchPrompt() => const SearchPromptWidget(),
+      FoodSearchPrompt() => const RecentFavoritesList(),
       FoodSearchResults(:final items) when items.isEmpty => NoResultsWidget(
           variant: NoResultsVariant.genuine,
           query: _controller.text,

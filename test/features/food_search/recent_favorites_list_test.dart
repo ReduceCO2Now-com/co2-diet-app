@@ -97,6 +97,9 @@ void main() {
     when(
       () => mockMealEntryRepo.getEntriesForToday(),
     ).thenAnswer((_) async => <MealEntry>[]);
+    when(
+      () => mockMealEntryRepo.isFavorite(any(), any()),
+    ).thenAnswer((_) async => false);
   });
 
   group('RecentFavoritesList', () {
