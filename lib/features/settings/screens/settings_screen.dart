@@ -27,6 +27,12 @@ class SettingsScreen extends StatelessWidget {
             onTap: () => context.push('/food-search'),
           ),
           ListTile(
+            leading: const Icon(Icons.restaurant_menu),
+            title: const Text('My Foods'),
+            subtitle: const Text('Custom foods and personal overrides'),
+            onTap: () => context.push('/my-foods'),
+          ),
+          ListTile(
             leading: const Icon(Icons.info_outline),
             title: const Text('Open source licenses'),
             subtitle: const Text('View all package licenses'),

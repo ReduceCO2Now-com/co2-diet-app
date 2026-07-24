@@ -3,6 +3,7 @@ import 'package:co2diet/features/barcode_scan/screens/barcode_scan_screen.dart';
 import 'package:co2diet/features/barcode_scan/screens/methodology_screen.dart';
 import 'package:co2diet/features/food_search/screens/food_search_screen.dart';
 import 'package:co2diet/features/my_foods/screens/custom_food_form_screen.dart';
+import 'package:co2diet/features/my_foods/screens/my_foods_screen.dart';
 import 'package:co2diet/features/profile/screens/profile_screen.dart';
 import 'package:co2diet/features/settings/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
@@ -109,6 +110,10 @@ GoRouter appRouter(Ref ref) {
           overrideOfSource: state.uri.queryParameters['overrideOfSource'],
           userFoodId: state.uri.queryParameters['userFoodId'],
         ),
+      ),
+      GoRoute(
+        path: '/my-foods',
+        builder: (context, state) => const MyFoodsScreen(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, shell) => AppShell(shell: shell),
