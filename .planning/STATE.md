@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-07-24T18:15:00.000Z"
+last_updated: "2026-07-24T17:37:35Z"
 progress:
   total_phases: 9
   completed_phases: 3
   total_plans: 32
-  completed_plans: 30
-  percent: 94
+  completed_plans: 31
+  percent: 97
 ---
 
 # STATE: CO₂ Diet
@@ -35,14 +35,14 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 04-meal-logging-core-10s-target — IN PROGRESS (11 of 13 plans done)
-- **Plan:** 04-11 complete — `MealEntryRow` (Slidable-wrapped, Edit/Duplicate/Delete swipe actions) + real `PlaceholderDashboardScreen` body grouping today's entries by slot; `flutter_slidable` added post package-legitimacy checkpoint approval
-- **Status:** Ready to execute (04-12 next)
-- **Progress:** [█████████░] 94%
-- **v1 requirements:** 30 / 75 delivered (CO2-01, CO2-04, LEG-05, LOG-01 through LOG-11, NFR-06, PROF-01 through PROF-05, PRIV-07) — LOG-05/LOG-09 fully wired end-to-end by Plan 04-11 (dashboard visibility + edit/delete/duplicate); LOG-13 stays pending until Plans 04-12/04-13 deliver the automated benchmark + required real-device testing
+- **Phase:** 04-meal-logging-core-10s-target — IN PROGRESS (12 of 13 plans done)
+- **Plan:** 04-12 complete — `meal_logging_benchmark_test.dart` (real WidgetTester-driven LOG-13 tap-to-saved benchmark, self-skips without `off_reference.sqlite`) + `offline_logging_test.dart` (runtime proof against unmocked in-memory-DB-backed repositories that core logging + custom-food/override never touch the network)
+- **Status:** Ready to execute (04-13 next — Phase 4's mandatory real-device human-verify checkpoint)
+- **Progress:** [███████████████████░] 97%
+- **v1 requirements:** 31 / 75 delivered (CO2-01, CO2-04, LEG-05, LOG-01 through LOG-12, NFR-06, PROF-01 through PROF-05, PRIV-07) — LOG-12 fully automated-proven offline-safe by Plan 04-12; LOG-13's literal "<10s, verified in user testing" requirement is only Dart-proxy-covered so far — Plan 04-13's real mid-range-device + physical-iPhone human-verify checkpoint is what actually closes it (REQUIREMENTS.md checkbox reflects the mechanical per-plan mark-complete step, not final human-verified closure)
 
 ```
-[███████████████████░] 94%
+[███████████████████░] 97%
 ```
 
 ### Initialization Progress
@@ -135,9 +135,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-24T18:15:00.000Z
-**Stopped at:** Completed 04-11-PLAN.md — MealEntryRow (Slidable Edit/Duplicate/Delete) + real PlaceholderDashboardScreen body grouping today's entries by slot (LOG-05/LOG-09); flutter_slidable added after human-verify package-legitimacy checkpoint approval
-**Next action:** Execute Plan 04-12 — fill remaining Wave 0 stubs (LOG-13 tap-to-saved benchmark, LOG-12 offline assertion) — per ROADMAP.md Phase 4 plan sequence
+**Last session:** 2026-07-24T17:42:42.535Z
+**Stopped at:** Completed 04-12-PLAN.md — `meal_logging_benchmark_test.dart` (LOG-13 tap-to-saved benchmark) + `offline_logging_test.dart` (LOG-12 offline assertion), both real (unskipped) implementations
+**Next action:** Execute Plan 04-13 — Phase 4's mandatory real-device human-verify checkpoint (mid-range Android + physical iPhone via TestFlight): literal LOG-13 <10s tap-to-saved timing and LOG-12 airplane-mode full-flow pass
 **Suggested next command:** `/gsd:execute-phase 4`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
@@ -228,6 +228,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 04-11]: flutter_slidable (^4.0.3) approved via blocking-human package-legitimacy checkpoint (pub.dev score 150/160, flutter-favorite badge, verified publisher romainrastel.com, MIT license, active repo) — pub.dev/Dart isn't a slopcheck-supported ecosystem, so independent-signal review + explicit human approval was required before install
 - [Phase 04-11]: PlaceholderDashboardScreen extracted out of app_router.dart into its own file (lib/features/dashboard/screens/) now that it has a real body — matches every other screen's file-per-screen convention
 - [Phase 04-11]: MealEntryRow's scaled calorie/CO2 display only computed for weight-based units (g/ml), mirroring Plan 04-10's RecentRow precedent for non-weight units (piece/cup/portion)
+- [Phase 04-12]: Offline test overrides appDatabaseProvider (in-memory) + offApiClientProvider (throwing mock) rather than the repository providers directly, so the real MealEntryRepository/UserFoodRepository/DAOs run unmocked
+- [Phase 04-12]: Post-mutation assertions re-read container.read(xProvider.future) instead of the synchronous .value, since ref.invalidateSelf() reruns build() asynchronously and .value can race a still-loading rebuild
+- [Phase 04-12]: meal_logging_benchmark_test.dart's Stopwatch window starts immediately before the tap on the first search-result row, not at food-search-screen entry, per this plan's task spec
 
 ## Performance Metrics
 
@@ -254,3 +257,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 04-meal-logging-core-10s-target P08 | ~25min | 2 tasks | 7 files |
 | Phase 04-meal-logging-core-10s-target P09 | ~21min | 2 tasks | 4 files |
 | Phase 04-meal-logging-core-10s-target P10 | ~20min | 2 tasks | 6 files |
+| Phase 04-meal-logging-core-10s-target P12 | ~10min | 2 tasks | 2 files |

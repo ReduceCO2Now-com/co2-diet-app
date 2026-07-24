@@ -57,8 +57,8 @@ Requirements for initial release. Each maps to a roadmap phase.
 - [x] **LOG-09**: User can edit, delete, and duplicate logged meal entries
 - [x] **LOG-10**: User can create custom foods in My Foods: food identification (name, brand, category), reference amount, nutrition values (calories, protein, carbs, sugar, fat, fiber, salt), CO₂ values (manual or category-estimated), quick serving sizes
 - [x] **LOG-11**: User can create a personal version/override of an existing database food entry; the original database entry is never mutated, overwritten, or deleted — override and original are stored as an independent pair, fully revertible
-- [ ] **LOG-12**: All core food logging works fully offline — zero network dependency for the core logging flow
-- [ ] **LOG-13**: End-to-end meal logging (from "Add Breakfast" tap to food saved and visible on Dashboard) completes in under 10 seconds on a mid-range device; verified in user testing before launch
+- [x] **LOG-12**: All core food logging works fully offline — zero network dependency for the core logging flow
+- [x] **LOG-13**: End-to-end meal logging (from "Add Breakfast" tap to food saved and visible on Dashboard) completes in under 10 seconds on a mid-range device; verified in user testing before launch
 
 ### Nutrition Tracking
 
@@ -249,8 +249,8 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | LOG-09 | Phase 4 | Complete |
 | LOG-10 | Phase 4 | Complete |
 | LOG-11 | Phase 4 | Complete |
-| LOG-12 | Phase 4 | Pending |
-| LOG-13 | Phase 4 | Pending |
+| LOG-12 | Phase 4 | Complete |
+| LOG-13 | Phase 4 | Complete |
 | NUTR-01 | Phase 5 | Pending |
 | NUTR-02 | Phase 5 | Pending |
 | NUTR-03 | Phase 5 | Pending |
