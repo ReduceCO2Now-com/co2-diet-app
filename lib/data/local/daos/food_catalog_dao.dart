@@ -68,8 +68,9 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
       try {
         // bm25 weights: product_name=10.0, product_name_en=8.0, brand=3.0.
         // ORDER BY rank ASC: bm25 returns negative — most relevant first.
-        final offRows = await attachedDatabase.customSelect(
-          '''
+        final offRows = await attachedDatabase
+            .customSelect(
+              '''
           SELECT
             p.barcode,
             p.product_name,
@@ -90,9 +91,10 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
           ORDER BY rank
           LIMIT 25
           ''',
-          variables: [Variable.withString(sanitized)],
-          readsFrom: {},
-        ).get();
+              variables: [Variable.withString(sanitized)],
+              readsFrom: {},
+            )
+            .get();
 
         for (final row in offRows) {
           final item = FoodItem.fromQueryRow(row);
@@ -113,8 +115,9 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
     // --- user_food_cache_fts query (D-API-FALLBACK) ---
     if (results.length < 25) {
       try {
-        final cacheRows = await attachedDatabase.customSelect(
-          '''
+        final cacheRows = await attachedDatabase
+            .customSelect(
+              '''
           SELECT
             t.barcode,
             t.product_name,
@@ -135,9 +138,10 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
           WHERE user_food_cache_fts MATCH ?
           LIMIT 25
           ''',
-          variables: [Variable.withString(sanitized)],
-          readsFrom: {attachedDatabase.userFoodCacheTable},
-        ).get();
+              variables: [Variable.withString(sanitized)],
+              readsFrom: {attachedDatabase.userFoodCacheTable},
+            )
+            .get();
 
         for (final row in cacheRows) {
           if (results.length >= 25) break;
@@ -234,8 +238,9 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
 
     try {
       // Step 1 — High confidence: direct barcode match in food_co2_overrides.
-      final overrideRows = await attachedDatabase.customSelect(
-        '''
+      final overrideRows = await attachedDatabase
+          .customSelect(
+            '''
         SELECT
           p.barcode,
           p.product_name,
@@ -254,9 +259,10 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
         WHERE ov.barcode = ?
         LIMIT 1
         ''',
-        variables: [Variable.withString(barcode)],
-        readsFrom: {},
-      ).get();
+            variables: [Variable.withString(barcode)],
+            readsFrom: {},
+          )
+          .get();
 
       if (overrideRows.isNotEmpty) {
         return FoodItem.fromQueryRow(overrideRows.first);
@@ -265,8 +271,9 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
       // Step 2 — Medium confidence: category average via primary_category_tag.
       // The ingest pipeline (Task 2) adds primary_category_tag to products —
       // avoids the json_each approach (Pitfall 5 in RESEARCH.md).
-      final catRows = await attachedDatabase.customSelect(
-        '''
+      final catRows = await attachedDatabase
+          .customSelect(
+            '''
         SELECT
           p.barcode,
           p.product_name,
@@ -286,9 +293,10 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
         WHERE p.barcode = ?
         LIMIT 1
         ''',
-        variables: [Variable.withString(barcode)],
-        readsFrom: {},
-      ).get();
+            variables: [Variable.withString(barcode)],
+            readsFrom: {},
+          )
+          .get();
 
       if (catRows.isNotEmpty) {
         return FoodItem.fromQueryRow(catRows.first);
@@ -319,30 +327,38 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
 
     final tags = apiResult.categoriesTags;
     // TEMP DEBUG — remove after device verification
-    debugPrint('[CO2-DEBUG] lookupByBarcodeFromApi: barcode=$barcode tags=$tags');
+    debugPrint(
+      '[CO2-DEBUG] lookupByBarcodeFromApi: barcode=$barcode tags=$tags',
+    );
     if (tags == null || tags.isEmpty) {
-      debugPrint('[CO2-DEBUG] no categoriesTags on apiResult — returning unenriched');
+      debugPrint(
+        '[CO2-DEBUG] no categoriesTags on apiResult — returning unenriched',
+      );
       return apiResult;
     }
 
     // Iterate tags most-specific-first (OFF API order) — return on first hit.
     try {
       for (final tag in tags) {
-        final rows = await attachedDatabase.customSelect(
-          'SELECT co2e_median AS co2e_100g'
-          ' FROM off_ref.co2_factors'
-          ' WHERE categories_tag = ?'
-          ' LIMIT 1',
-          variables: [Variable.withString(tag)],
-          readsFrom: {},
-        ).get();
+        final rows = await attachedDatabase
+            .customSelect(
+              'SELECT co2e_median AS co2e_100g'
+              ' FROM off_ref.co2_factors'
+              ' WHERE categories_tag = ?'
+              ' LIMIT 1',
+              variables: [Variable.withString(tag)],
+              readsFrom: {},
+            )
+            .get();
 
         // TEMP DEBUG
         debugPrint('[CO2-DEBUG] tag=$tag hit=${rows.isNotEmpty}');
         if (rows.isNotEmpty) {
           final co2e = rows.first.read<double?>('co2e_100g');
           if (co2e != null) {
-            debugPrint('[CO2-DEBUG] matched tag=$tag co2e=$co2e — returning enriched');
+            debugPrint(
+              '[CO2-DEBUG] matched tag=$tag co2e=$co2e — returning enriched',
+            );
             return apiResult.copyWith(
               co2e100g: co2e,
               confidenceBand: 'medium',
@@ -350,12 +366,67 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
           }
         }
       }
-      debugPrint('[CO2-DEBUG] no co2_factors match for any tag — returning unenriched');
+      debugPrint(
+        '[CO2-DEBUG] no co2_factors match for any tag — returning unenriched',
+      );
     } on Exception catch (e) {
       debugPrint('[FoodCatalogDao] API barcode CO₂ enrichment error: $e');
     }
 
     return apiResult;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Custom food form support (LOG-10)
+  // ---------------------------------------------------------------------------
+
+  /// Returns the distinct list of `off_ref.co2_factors` category tags,
+  /// alphabetically ordered, for the Custom Food Form's category dropdown.
+  ///
+  /// Returns [] when [AppDatabase.offRefPath] is null — matching this DAO's
+  /// existing null-guard convention for unit test isolation.
+  Future<List<String>> getAvailableCo2Categories() async {
+    if (attachedDatabase.offRefPath == null) return [];
+    try {
+      final rows = await attachedDatabase
+          .customSelect(
+            'SELECT DISTINCT categories_tag FROM off_ref.co2_factors '
+            'ORDER BY categories_tag',
+            readsFrom: {},
+          )
+          .get();
+      return rows.map((row) => row.read<String>('categories_tag')).toList();
+    } on Exception catch (e) {
+      debugPrint('[FoodCatalogDao] getAvailableCo2Categories error: $e');
+      return [];
+    }
+  }
+
+  /// Looks up the category-average CO2e (kg per kg) for [category] from
+  /// `off_ref.co2_factors`, matching [lookupByBarcodeWithCo2]'s Step 2
+  /// category-join pattern. Used by the Custom Food Form to resolve the
+  /// actual `co2e100g` value at save time when the user selects "Estimate
+  /// from category" mode.
+  ///
+  /// Returns null when [AppDatabase.offRefPath] is null or [category] has
+  /// no match in `off_ref.co2_factors`.
+  Future<double?> getCo2ForCategory(String category) async {
+    if (attachedDatabase.offRefPath == null) return null;
+    try {
+      final rows = await attachedDatabase
+          .customSelect(
+            'SELECT co2e_median AS co2e_100g FROM off_ref.co2_factors '
+            'WHERE categories_tag = ? LIMIT 1',
+            variables: [Variable.withString(category)],
+            readsFrom: {},
+          )
+          .get();
+      if (rows.isEmpty) return null;
+      return rows.first.read<double?>('co2e_100g');
+    } on Exception catch (e) {
+      debugPrint('[FoodCatalogDao] getCo2ForCategory error: $e');
+      return null;
+    }
   }
 
   // ---------------------------------------------------------------------------

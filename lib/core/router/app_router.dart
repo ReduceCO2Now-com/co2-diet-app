@@ -2,6 +2,7 @@ import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/features/barcode_scan/screens/barcode_scan_screen.dart';
 import 'package:co2diet/features/barcode_scan/screens/methodology_screen.dart';
 import 'package:co2diet/features/food_search/screens/food_search_screen.dart';
+import 'package:co2diet/features/my_foods/screens/custom_food_form_screen.dart';
 import 'package:co2diet/features/profile/screens/profile_screen.dart';
 import 'package:co2diet/features/settings/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
@@ -97,19 +98,17 @@ GoRouter appRouter(Ref ref) {
       ),
       GoRoute(
         path: '/custom-food-stub',
-        // Phase 4 owns the real form; Phase 3 shows a placeholder.
-        builder: (context, state) {
-          final barcode = state.uri.queryParameters['barcode'];
-          return Scaffold(
-            appBar: AppBar(title: const Text('Add Custom Food')),
-            body: Center(
-              child: Text(
-                'Custom food form coming in Phase 4'
-                '${barcode != null ? ' (barcode: $barcode)' : ''}',
-              ),
-            ),
-          );
-        },
+        // Route contract (Plan 04-08): see CustomFoodFormScreen's doc
+        // comment for the five mutually-exclusive query-param variants.
+        // Path name kept as `/custom-food-stub` — BarcodeScanNoMatchScreen
+        // already depends on `/custom-food-stub?barcode=...` unchanged.
+        builder: (context, state) => CustomFoodFormScreen(
+          barcode: state.uri.queryParameters['barcode'],
+          name: state.uri.queryParameters['name'],
+          overrideOf: state.uri.queryParameters['overrideOf'],
+          overrideOfSource: state.uri.queryParameters['overrideOfSource'],
+          userFoodId: state.uri.queryParameters['userFoodId'],
+        ),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, shell) => AppShell(shell: shell),
