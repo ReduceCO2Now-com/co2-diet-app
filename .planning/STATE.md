@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-07-24T10:49:05.170Z"
+last_updated: "2026-07-24T13:28:42.032Z"
 progress:
   total_phases: 9
   completed_phases: 3
   total_plans: 32
-  completed_plans: 28
-  percent: 88
+  completed_plans: 29
+  percent: 91
 ---
 
 # STATE: CO₂ Diet
@@ -35,14 +35,14 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 04-meal-logging-core-10s-target — IN PROGRESS (9 of 13 plans done)
-- **Plan:** 04-09 complete — Sheet reconciliation (`_BarcodeScanDetailSheet` deleted, single shared `_FoodDetailContent` for search + scan) + `PortionSlotForm` (meal-slot/quantity/unit picker, locale-aware defaults, live-scaled macros, Log/Undo/Retry) + favorite star + "Edit this food" action
-- **Status:** Ready to execute (04-10 next)
-- **Progress:** [█████████░] 88%
-- **v1 requirements:** 28 / 75 delivered (CO2-01, CO2-04, LEG-05, LOG-01 through LOG-11, NFR-06, PROF-01 through PROF-05, PRIV-07) — LOG-13 stays pending until Plans 04-12/04-13 deliver the automated benchmark + required real-device testing; Plan 04-10 wires the remaining Recent/Favorites edit-icon and search no-results entry points
+- **Phase:** 04-meal-logging-core-10s-target — IN PROGRESS (10 of 13 plans done)
+- **Plan:** 04-10 complete — `RecentFavoritesList` widget (Recent + Favorites one-tap-log empty state), `MealEntryNotifier.logFromRecent`, and `NoResultsWidget` "Add as custom food" link on the genuine no-results variant
+- **Status:** Ready to execute (04-11 next)
+- **Progress:** [█████████░] 91%
+- **v1 requirements:** 28 / 75 delivered (CO2-01, CO2-04, LEG-05, LOG-01 through LOG-11, NFR-06, PROF-01 through PROF-05, PRIV-07) — LOG-13 stays pending until Plans 04-12/04-13 deliver the automated benchmark + required real-device testing; LOG-07/LOG-08/LOG-10's Recent/Favorites edit-icon and search no-results entry points are now fully wired by Plan 04-10
 
 ```
-[██████████████████░░] 88%
+[██████████████████░░] 91%
 ```
 
 ### Initialization Progress
@@ -135,9 +135,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-24T12:42:03+02:00
-**Stopped at:** Completed 04-09-PLAN.md — sheet reconciliation (`_BarcodeScanDetailSheet` deleted, single shared `_FoodDetailContent`) + `PortionSlotForm` (meal-slot/quantity/unit picker, locale-aware defaults, live-scaled macros, Log/Undo/Retry) + favorite star + "Edit this food" action; `portion_slot_form_test.dart` passes with 0 skips, full suite green
-**Next action:** Execute Plan 04-10 (Recent/Favorites empty-state + one-tap-log + edit icon + search no-results "Add as custom food" link) — per ROADMAP.md Phase 4 plan sequence
+**Last session:** 2026-07-24T13:28:38.304Z
+**Stopped at:** Completed 04-10-PLAN.md — Recent/Favorites one-tap-log (RecentFavoritesList widget, MealEntryNotifier.logFromRecent) + search no-results 'Add as custom food' link (LOG-07/LOG-08/LOG-10)
+**Next action:** Execute Plan 04-11 — per ROADMAP.md Phase 4 plan sequence
 **Suggested next command:** `/gsd:execute-phase 4`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
@@ -224,6 +224,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 04-09]: `PortionSlotForm`'s "Edit this food" resolves any existing override via `UserFoodNotifier.findOverrideForFoodRef` first, redirecting to `/custom-food-stub?userFoodId=` when one exists rather than always creating a new one via `?overrideOf=&overrideOfSource=` — prevents duplicate override rows on repeat edits (flagged as a follow-up in 04-08-SUMMARY.md)
 - [Phase 04-09]: `ServingSize.label` (free text, no unit tag) maps to `PortionUnit` via keyword match — 'cup' -> `cup`, 'piece'/'slice' -> `piece`, anything else -> `portion` (the generic user-configured-serving catch-all)
 - [Phase 04-09]: `mealEntryProvider` (autoDispose, no `keepAlive`) needs an active `ref.watch` for the duration of any mutation that calls `ref.invalidateSelf()` after an `await` — without one (true today, since Phase 4's dashboard is still a placeholder and nothing else watches it), the provider can be disposed mid-flight and crash. `PortionSlotForm` now `ref.watch(mealEntryProvider)`s in `build()`, and its Undo `SnackBarAction` reads through a captured `ProviderContainer` (`ProviderScope.containerOf(context, listen: false)`) rather than the state's own `ref`, since the sheet is already disposed by the time Undo can be tapped. Any future one-off `ref.read(...).notifier).mutatingMethod()` call site on an autoDispose notifier should apply the same pattern.
+- [Phase 04-10]: MealEntryNotifier.logFromRecent added (mirrors FavoriteNotifier.logFromFavorite) for Recent's one-tap-log path; Recent row calorie/CO2 summary only computed for weight-based units (g/ml) since piece/cup/portion needs a weight-per-unit conversion not available at this call site
 
 ## Performance Metrics
 
@@ -249,3 +250,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 04 P07 | ~35min | 2 tasks | 10 files |
 | Phase 04-meal-logging-core-10s-target P08 | ~25min | 2 tasks | 7 files |
 | Phase 04-meal-logging-core-10s-target P09 | ~21min | 2 tasks | 4 files |
+| Phase 04-meal-logging-core-10s-target P10 | ~20min | 2 tasks | 6 files |

@@ -109,7 +109,7 @@ Plans:
 - [x] 04-07-PLAN.md — Notifiers: MealEntryNotifier, FavoriteNotifier, UserFoodNotifier
 - [x] 04-08-PLAN.md — My Foods: Custom Food Form screen + My Foods list screen
 - [x] 04-09-PLAN.md — Sheet reconciliation + PortionSlotForm (core <10s logging UI)
-- [ ] 04-10-PLAN.md — Food search Recent/Favorites empty-state UI + "Add as custom food" link
+- [x] 04-10-PLAN.md — Food search Recent/Favorites empty-state UI + "Add as custom food" link
 - [ ] 04-11-PLAN.md — Dashboard managing entries: flutter_slidable checkpoint + swipe actions
 - [ ] 04-12-PLAN.md — LOG-13 benchmark + LOG-12 offline logging test fill-ins
 - [ ] 04-13-PLAN.md — Real-device human-verify checkpoint (Android + iOS, <10s + airplane mode)
@@ -182,7 +182,7 @@ Plans:
 | 1. Foundations & Sync-Safe Schema | 7/7 | Complete   | 2026-07-17 |
 | 2. Food Catalog Ingest & Search | 7/7 | Complete   | 2026-07-20 |
 | 3. Barcode Scanning & CO₂ Factor Table | 5/5 | Complete   | 2026-07-22 |
-| 4. Meal Logging Core | 9/13 | In Progress|  |
+| 4. Meal Logging Core | 10/13 | In Progress|  |
 | 5. Full Local App (Local Mode Shippable) | 0/0 | Not started | - |
 | 6. Onboarding, Legal & Pre-Submission | 0/0 | Not started | - |
 | 7. Keycloak Auth + Account Mode + Sync | 0/0 | Not started | - |
