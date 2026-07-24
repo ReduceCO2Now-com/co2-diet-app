@@ -5,6 +5,7 @@ import 'package:co2diet/features/barcode_scan/providers/barcode_scan_notifier.da
 import 'package:co2diet/features/barcode_scan/screens/barcode_no_match_screen.dart';
 import 'package:co2diet/features/barcode_scan/widgets/camera_permission_denied_widget.dart';
 import 'package:co2diet/features/barcode_scan/widgets/scan_frame_overlay.dart';
+import 'package:co2diet/features/food_search/widgets/food_detail_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -98,16 +99,14 @@ class _BarcodeScanScreenState extends ConsumerState<BarcodeScanScreen> {
         .lookupBarcode(barcode.rawValue!);
   }
 
-  /// Presents the food detail sheet and resets the scanner state on dismissal.
+  /// Presents the shared food detail sheet and resets the scanner state on
+  /// dismissal.
   ///
-  /// Uses [showModalBottomSheet] directly so the future completes when the
-  /// sheet is dismissed — allowing camera resumption and state reset.
+  /// Awaits [showFoodDetailSheet]'s real dismissal `Future` (Plan 04-09's
+  /// sheet-reconciliation fix removed the `unawaited()` swallow from the
+  /// shared helper) — allowing camera resumption and state reset.
   Future<void> _showItemSheet(FoodItem item) async {
-    await showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      builder: (ctx) => _BarcodeScanDetailSheet(item: item),
-    );
+    await showFoodDetailSheet(context, item);
     if (mounted) {
       setState(() => _processing = false);
       unawaited(_controller.start());
@@ -193,113 +192,6 @@ class _BarcodeScanScreenState extends ConsumerState<BarcodeScanScreen> {
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
               ),
             ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Bottom sheet content displayed after a successful barcode lookup.
-///
-/// Mirrors the Phase 2 food detail sheet content so the scanner screen can
-/// track sheet dismissal via the [showModalBottomSheet] future — the shared
-/// `showFoodDetailSheet` helper wraps the future with `unawaited` which
-/// prevents completion tracking.
-///
-/// CO₂ row is shown when [FoodItem.co2e100g] is non-null.
-/// "Log this food" button is deferred to Phase 4.
-class _BarcodeScanDetailSheet extends StatelessWidget {
-  const _BarcodeScanDetailSheet({required this.item});
-
-  final FoodItem item;
-
-  @override
-  Widget build(BuildContext context) {
-    final hasBrand = item.brand != null && item.brand!.isNotEmpty;
-    final textTheme = Theme.of(context).textTheme;
-
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        16,
-        16,
-        16,
-        16 + MediaQuery.of(context).viewInsets.bottom,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Drag handle
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(item.productName, style: textTheme.titleLarge),
-          if (hasBrand) ...[
-            const SizedBox(height: 4),
-            Text(
-              item.brand!,
-              style: textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-          const Divider(height: 24),
-          _MacroRow(
-            label: 'Calories',
-            value: '${item.calories100g?.round() ?? '—'} kcal',
-          ),
-          _MacroRow(
-            label: 'Protein',
-            value: '${item.protein100g?.toStringAsFixed(1) ?? '—'} g',
-          ),
-          _MacroRow(
-            label: 'Carbohydrates',
-            value: '${item.carbs100g?.toStringAsFixed(1) ?? '—'} g',
-          ),
-          _MacroRow(
-            label: 'Fat',
-            value: '${item.fat100g?.toStringAsFixed(1) ?? '—'} g',
-          ),
-          if (item.co2e100g != null)
-            _MacroRow(
-              label: 'CO₂e',
-              value:
-                  '${item.co2e100g!.toStringAsFixed(2)} kg CO₂e/kg '
-                  '(${item.confidenceBand ?? 'unknown'})',
-            ),
-          const SizedBox(height: 16),
-          Text('per 100g', style: textTheme.labelSmall),
-          // TODO(phase-4): Add 'Log this food' FilledButton here.
-        ],
-      ),
-    );
-  }
-}
-
-/// A single label/value row used inside [_BarcodeScanDetailSheet].
-class _MacroRow extends StatelessWidget {
-  const _MacroRow({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: Theme.of(context).textTheme.bodyMedium),
-          Text(value, style: Theme.of(context).textTheme.bodyMedium),
         ],
       ),
     );
