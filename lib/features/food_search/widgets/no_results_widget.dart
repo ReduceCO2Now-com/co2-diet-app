@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 /// Variants for [NoResultsWidget] — each maps to a distinct no-results state.
 enum NoResultsVariant {
@@ -14,10 +15,16 @@ enum NoResultsVariant {
 
 /// Displays one of three "no results" states for the food search screen.
 ///
-/// - [NoResultsVariant.genuine] — "No results for '...'"
+/// - [NoResultsVariant.genuine] — "No results for '...'", plus an
+///   "Add as custom food" link (LOG-10) that navigates to
+///   `/custom-food-stub?name=<query>`.
 /// - [NoResultsVariant.offline] — "No results — connect to the internet…"
 /// - [NoResultsVariant.networkError] — "Couldn't reach the food database…"
 ///   with a "Try again" button when [onRetry] is non-null.
+///
+/// The offline and network-error variants deliberately do NOT show the
+/// "Add as custom food" link — neither has actually confirmed there's no
+/// match (CONTEXT.md).
 ///
 /// All text uses [Theme.of(context)] tokens — no hardcoded colors.
 class NoResultsWidget extends StatelessWidget {
@@ -71,6 +78,19 @@ class NoResultsWidget extends StatelessWidget {
               FilledButton.tonal(
                 onPressed: onRetry,
                 child: const Text('Try again'),
+              ),
+            ],
+            // "Add as custom food" (LOG-10) appears only on the genuine
+            // no-match state — offline and network-error states haven't
+            // actually confirmed there's no match, so offering to create a
+            // custom food there would be premature (CONTEXT.md).
+            if (variant == NoResultsVariant.genuine) ...[
+              const SizedBox(height: 16),
+              FilledButton.tonal(
+                onPressed: () => context.push(
+                  '/custom-food-stub?name=${Uri.encodeComponent(query)}',
+                ),
+                child: const Text('Add as custom food'),
               ),
             ],
           ],
