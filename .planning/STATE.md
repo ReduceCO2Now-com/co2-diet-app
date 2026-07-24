@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-07-24T09:54:46.897Z"
+last_updated: "2026-07-24T10:09:02.692Z"
 progress:
   total_phases: 9
   completed_phases: 3
   total_plans: 32
-  completed_plans: 26
-  percent: 81
+  completed_plans: 27
+  percent: 84
 ---
 
 # STATE: CO₂ Diet
@@ -35,14 +35,14 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 04-meal-logging-core-10s-target — IN PROGRESS (7 of 13 plans done)
-- **Plan:** 04-07 complete — MealEntryNotifier (today's-entries mutation surface: logFood/undoMerge/editEntry/deleteEntry/undoDelete/duplicateEntry/getRecent), FavoriteNotifier (LOG-08 one-tap-log via logFromFavorite), UserFoodNotifier (LOG-10/11 custom food/override save/revert) — all three `@riverpod class` AsyncNotifiers Plans 04-08 through 04-11 will consume exclusively
-- **Status:** Ready to execute (04-08 next)
-- **Progress:** [████████████████░░░░] 81%
-- **v1 requirements:** 28 / 75 delivered (CO2-01, CO2-04, LEG-05, LOG-01 through LOG-11, NFR-06, PROF-01 through PROF-05, PRIV-07) — LOG-05/07/08/09/10/11's notifier (UI-facing mutation) layer is now concretely implemented (Plan 04-07); UI screens for these still land in Plans 04-08 through 04-11 before the features are user-reachable
+- **Phase:** 04-meal-logging-core-10s-target — IN PROGRESS (8 of 13 plans done)
+- **Plan:** 04-08 complete — CustomFoodFormScreen (LOG-10/11 create/edit/override form, replaces the `/custom-food-stub` placeholder) + ServingSizeEditor + MyFoodsScreen (alphabetical list, reachable from Settings only) + FoodCatalogDao category helpers
+- **Status:** Ready to execute (04-09 next)
+- **Progress:** [████████░░] 84%
+- **v1 requirements:** 28 / 75 delivered (CO2-01, CO2-04, LEG-05, LOG-01 through LOG-11, NFR-06, PROF-01 through PROF-05, PRIV-07) — LOG-10/LOG-11 are now fully user-reachable (form + list UI); Plans 04-09/04-10 still wire the remaining "Edit this food"/search-no-results entry points into this plan's route contract
 
 ```
-[████████████████░░░░] 81%
+[█████████████████░░░] 84%
 ```
 
 ### Initialization Progress
@@ -135,9 +135,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-24T09:54:46.892Z
-**Stopped at:** Completed 04-07-PLAN.md — MealEntryNotifier (Task 1, recovered/verified from an interrupted prior session) + FavoriteNotifier + UserFoodNotifier (Task 2); all three notifier test files pass with 0 skips, full suite green
-**Next action:** Execute Plan 04-08 (My Foods: Custom Food Form screen + My Foods list screen) — per ROADMAP.md Phase 4 plan sequence
+**Last session:** 2026-07-24T10:08:02.000Z
+**Stopped at:** Completed 04-08-PLAN.md — CustomFoodFormScreen + ServingSizeEditor + MyFoodsScreen; `/custom-food-stub` now builds the real form (Phase 3 placeholder removed), `/my-foods` added and reachable from Settings; `custom_food_form_test.dart` passes with 0 skips, full suite green
+**Next action:** Execute Plan 04-09 (wire `FoodDetailBottomSheet`'s "Edit this food" action into this plan's route contract) — per ROADMAP.md Phase 4 plan sequence
 **Suggested next command:** `/gsd:execute-phase 4`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
@@ -216,6 +216,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 04-06]: Drift's camelCase→snake_case column naming does NOT insert an underscore before a digit-led suffix like "100g" — `UserFoodCacheTable.calories100g` generates column `calories100g` (no underscore), not `calories_100g`; only genuinely snake_case-authored external tables (e.g. off_ref.products from `tools/ingest_off.py`) use the underscored form — a pre-existing `food_catalog_dao.dart` query bug from this mismatch was fixed in this plan (see 04-06-SUMMARY.md Deviations)
 - [Phase 04-07]: UserFoodNotifier.build() is parameterless (no @riverpod family {String? filter}) to keep generated provider name (userFoodProvider) predictable; My Foods screen (04-08) filters client-side
 - [Phase 04-07]: FavoriteNotifier.logFromFavorite composes with MealEntryNotifier via ref.read(mealEntryProvider.notifier).logFood(draft) rather than re-implementing merge/persist logic, keeping the one-tap-log write path singular
+- [Phase 04-08]: `CustomFoodFormScreen` takes barcode/name/overrideOf/overrideOfSource/userFoodId as constructor params (router builder passes `state.uri.queryParameters[...]` through) rather than reading `GoRouterState.of(context)` directly — keeps the screen widget-testable with a plain `MaterialApp` host, no `GoRouter` needed in tests
+- [Phase 04-08]: Revert-to-original visibility is driven by `_overrideOfRef != null` (set by either a resolved existing override row or a fresh `overrideOf` route param); the tap handler only calls `revertOverride` when a concrete id is already known, otherwise it just pops — covers "editing a saved override" and "about to create a first override, changed my mind" without a crash
+- [Phase 04-08]: `co2MethodologyVersion` left null on category-estimate saves — no methodology-version constant exists anywhere in the codebase yet; mirrors the field's current all-null state everywhere else rather than inventing an unbacked value
+- [Phase 04-08]: Widget tests reusing the same tester across multiple `pumpWidget` calls must keep an identical `ProviderScope` override-list shape (Riverpod forbids adding/removing overrides on update) and must use a distinct `Key` per call if `initState`-driven async setup needs to re-run (Flutter reconciles same-position widgets via `didUpdateWidget`, not a fresh mount)
 
 ## Performance Metrics
 
@@ -239,3 +243,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 04-meal-logging-core-10s-target P05 | 24min | 2 tasks | 9 files |
 | Phase 04-meal-logging-core-10s-target P06 | ~20min | 2 tasks | 8 files |
 | Phase 04 P07 | ~35min | 2 tasks | 10 files |
+| Phase 04-meal-logging-core-10s-target P08 | ~25min | 2 tasks | 7 files |
