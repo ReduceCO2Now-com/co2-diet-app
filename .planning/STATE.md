@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-07-24T10:09:02.692Z"
+last_updated: "2026-07-24T10:49:05.170Z"
 progress:
   total_phases: 9
   completed_phases: 3
   total_plans: 32
-  completed_plans: 27
-  percent: 84
+  completed_plans: 28
+  percent: 88
 ---
 
 # STATE: CO₂ Diet
@@ -35,14 +35,14 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 04-meal-logging-core-10s-target — IN PROGRESS (8 of 13 plans done)
-- **Plan:** 04-08 complete — CustomFoodFormScreen (LOG-10/11 create/edit/override form, replaces the `/custom-food-stub` placeholder) + ServingSizeEditor + MyFoodsScreen (alphabetical list, reachable from Settings only) + FoodCatalogDao category helpers
-- **Status:** Ready to execute (04-09 next)
-- **Progress:** [████████░░] 84%
-- **v1 requirements:** 28 / 75 delivered (CO2-01, CO2-04, LEG-05, LOG-01 through LOG-11, NFR-06, PROF-01 through PROF-05, PRIV-07) — LOG-10/LOG-11 are now fully user-reachable (form + list UI); Plans 04-09/04-10 still wire the remaining "Edit this food"/search-no-results entry points into this plan's route contract
+- **Phase:** 04-meal-logging-core-10s-target — IN PROGRESS (9 of 13 plans done)
+- **Plan:** 04-09 complete — Sheet reconciliation (`_BarcodeScanDetailSheet` deleted, single shared `_FoodDetailContent` for search + scan) + `PortionSlotForm` (meal-slot/quantity/unit picker, locale-aware defaults, live-scaled macros, Log/Undo/Retry) + favorite star + "Edit this food" action
+- **Status:** Ready to execute (04-10 next)
+- **Progress:** [█████████░] 88%
+- **v1 requirements:** 28 / 75 delivered (CO2-01, CO2-04, LEG-05, LOG-01 through LOG-11, NFR-06, PROF-01 through PROF-05, PRIV-07) — LOG-13 stays pending until Plans 04-12/04-13 deliver the automated benchmark + required real-device testing; Plan 04-10 wires the remaining Recent/Favorites edit-icon and search no-results entry points
 
 ```
-[█████████████████░░░] 84%
+[██████████████████░░] 88%
 ```
 
 ### Initialization Progress
@@ -135,9 +135,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-24T10:08:02.000Z
-**Stopped at:** Completed 04-08-PLAN.md — CustomFoodFormScreen + ServingSizeEditor + MyFoodsScreen; `/custom-food-stub` now builds the real form (Phase 3 placeholder removed), `/my-foods` added and reachable from Settings; `custom_food_form_test.dart` passes with 0 skips, full suite green
-**Next action:** Execute Plan 04-09 (wire `FoodDetailBottomSheet`'s "Edit this food" action into this plan's route contract) — per ROADMAP.md Phase 4 plan sequence
+**Last session:** 2026-07-24T12:42:03+02:00
+**Stopped at:** Completed 04-09-PLAN.md — sheet reconciliation (`_BarcodeScanDetailSheet` deleted, single shared `_FoodDetailContent`) + `PortionSlotForm` (meal-slot/quantity/unit picker, locale-aware defaults, live-scaled macros, Log/Undo/Retry) + favorite star + "Edit this food" action; `portion_slot_form_test.dart` passes with 0 skips, full suite green
+**Next action:** Execute Plan 04-10 (Recent/Favorites empty-state + one-tap-log + edit icon + search no-results "Add as custom food" link) — per ROADMAP.md Phase 4 plan sequence
 **Suggested next command:** `/gsd:execute-phase 4`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
@@ -220,6 +220,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 04-08]: Revert-to-original visibility is driven by `_overrideOfRef != null` (set by either a resolved existing override row or a fresh `overrideOf` route param); the tap handler only calls `revertOverride` when a concrete id is already known, otherwise it just pops — covers "editing a saved override" and "about to create a first override, changed my mind" without a crash
 - [Phase 04-08]: `co2MethodologyVersion` left null on category-estimate saves — no methodology-version constant exists anywhere in the codebase yet; mirrors the field's current all-null state everywhere else rather than inventing an unbacked value
 - [Phase 04-08]: Widget tests reusing the same tester across multiple `pumpWidget` calls must keep an identical `ProviderScope` override-list shape (Riverpod forbids adding/removing overrides on update) and must use a distinct `Key` per call if `initState`-driven async setup needs to re-run (Flutter reconciles same-position widgets via `didUpdateWidget`, not a fresh mount)
+- [Phase 04-09]: `showFoodDetailSheet` returns the real `Future<void>` from `showModalBottomSheet` (no more `unawaited()` swallow); `_BarcodeScanDetailSheet`/its private `_MacroRow` deleted — both search and barcode-scan entry points render the single shared `_FoodDetailContent` again, restoring Phase 3's original no-divergence intent
+- [Phase 04-09]: `PortionSlotForm`'s "Edit this food" resolves any existing override via `UserFoodNotifier.findOverrideForFoodRef` first, redirecting to `/custom-food-stub?userFoodId=` when one exists rather than always creating a new one via `?overrideOf=&overrideOfSource=` — prevents duplicate override rows on repeat edits (flagged as a follow-up in 04-08-SUMMARY.md)
+- [Phase 04-09]: `ServingSize.label` (free text, no unit tag) maps to `PortionUnit` via keyword match — 'cup' -> `cup`, 'piece'/'slice' -> `piece`, anything else -> `portion` (the generic user-configured-serving catch-all)
+- [Phase 04-09]: `mealEntryProvider` (autoDispose, no `keepAlive`) needs an active `ref.watch` for the duration of any mutation that calls `ref.invalidateSelf()` after an `await` — without one (true today, since Phase 4's dashboard is still a placeholder and nothing else watches it), the provider can be disposed mid-flight and crash. `PortionSlotForm` now `ref.watch(mealEntryProvider)`s in `build()`, and its Undo `SnackBarAction` reads through a captured `ProviderContainer` (`ProviderScope.containerOf(context, listen: false)`) rather than the state's own `ref`, since the sheet is already disposed by the time Undo can be tapped. Any future one-off `ref.read(...).notifier).mutatingMethod()` call site on an autoDispose notifier should apply the same pattern.
 
 ## Performance Metrics
 
@@ -244,3 +248,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 04-meal-logging-core-10s-target P06 | ~20min | 2 tasks | 8 files |
 | Phase 04 P07 | ~35min | 2 tasks | 10 files |
 | Phase 04-meal-logging-core-10s-target P08 | ~25min | 2 tasks | 7 files |
+| Phase 04-meal-logging-core-10s-target P09 | ~21min | 2 tasks | 4 files |
