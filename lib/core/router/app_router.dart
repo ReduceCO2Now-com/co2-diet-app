@@ -1,6 +1,7 @@
 import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/features/barcode_scan/screens/barcode_scan_screen.dart';
 import 'package:co2diet/features/barcode_scan/screens/methodology_screen.dart';
+import 'package:co2diet/features/dashboard/screens/placeholder_dashboard_screen.dart';
 import 'package:co2diet/features/food_search/screens/food_search_screen.dart';
 import 'package:co2diet/features/my_foods/screens/custom_food_form_screen.dart';
 import 'package:co2diet/features/my_foods/screens/my_foods_screen.dart';
@@ -11,27 +12,6 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_router.g.dart';
-
-/// Placeholder dashboard screen.
-///
-/// Replaced with a real implementation in Phase 5.
-class PlaceholderDashboardScreen extends StatelessWidget {
-  /// Creates the placeholder dashboard screen.
-  const PlaceholderDashboardScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Dashboard')),
-      body: Center(
-        child: Text(
-          'Dashboard coming in Phase 5',
-          style: Theme.of(context).textTheme.bodyLarge,
-        ),
-      ),
-    );
-  }
-}
 
 /// Bottom navigation shell that wraps the three main branches.
 class AppShell extends StatelessWidget {
