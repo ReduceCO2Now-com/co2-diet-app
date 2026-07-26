@@ -106,6 +106,17 @@ void main() {
         await container.read(mealEntryProvider.future);
         final notifier = container.read(mealEntryProvider.notifier);
 
+        // `build()` queries `getEntriesForToday()`, which filters by the
+        // real `DateTime.now()` — so the draft's `logDate`/`loggedAt` must
+        // track the actual current date rather than a fixed literal, or
+        // this assertion silently breaks once the wall clock moves past a
+        // hardcoded day (see 04-13-SUMMARY.md Deviations).
+        final now = DateTime.now();
+        final today = DateTime(now.year, now.month, now.day, 12);
+        final logDate =
+            '${now.year.toString().padLeft(4, '0')}-'
+            '${now.month.toString().padLeft(2, '0')}-'
+            '${now.day.toString().padLeft(2, '0')}';
         final draft = MealEntry(
           id: '',
           mealSlot: MealSlot.lunch,
@@ -115,8 +126,8 @@ void main() {
           unit: PortionUnit.g,
           productNameSnapshot: 'Offline Test Food',
           calories100gSnapshot: 52,
-          loggedAt: DateTime(2026, 7, 24, 12),
-          logDate: '2026-07-24',
+          loggedAt: today,
+          logDate: logDate,
         );
 
         final logResult = await notifier.logFood(draft);
