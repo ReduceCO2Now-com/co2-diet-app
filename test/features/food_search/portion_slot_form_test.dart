@@ -276,6 +276,33 @@ void main() {
     );
 
     testWidgets(
+      'a missing macro shows "—" while a genuine zero shows "0" — the two '
+      'must never render identically (honesty-in-numbers)',
+      (tester) async {
+        await tester.pumpWidget(
+          _wrap(
+            PortionSlotForm(
+              item: _buildItem(
+                calories100g: 0, // genuine zero, e.g. mineral water
+                protein100g: null, // no data
+                carbs100g: 0,
+                fat100g: null,
+              ),
+            ),
+            userFoodRepo: mockUserFoodRepo,
+            mealEntryRepo: mockMealEntryRepo,
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // 100g default -> a genuine zero scales to zero, not to a dash.
+        expect(find.text('0 kcal'), findsOneWidget); // calories: real zero
+        expect(find.text('0.0 g'), findsOneWidget); // carbs: real zero
+        expect(find.text('— g'), findsNWidgets(2)); // protein + fat: no data
+      },
+    );
+
+    testWidgets(
       'Log this food button is disabled until quantity is valid (>0)',
       (tester) async {
         await tester.pumpWidget(

@@ -56,6 +56,17 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
   ///
   /// Returns [] if [query] sanitizes to empty (T-02-03-03: early return
   /// for DoS mitigation — caller enforces the 2-char minimum).
+  ///
+  /// **Nutrition-data boost:** results are ordered `(calories_100g IS NULL),
+  /// rank` — a two-tier sort, not a blended score. Every product with a
+  /// non-null `calories_100g` (the field `FoodResultRow` actually displays)
+  /// outranks every product without one, and each tier is still ordered by
+  /// BM25 relevance internally. Most OFF products have no nutrition data at
+  /// all (only ~3.6% of the bundled reference DB does), so without this,
+  /// a generic query like "milk" surfaced almost entirely "— kcal/100g"
+  /// rows ahead of the few complete ones. Applied before `LIMIT 25`, so a
+  /// relevant-but-incomplete row can be displaced out of the top 25 by a
+  /// complete one that BM25 alone would have ranked lower.
   Future<List<FoodItem>> searchLocalFoods(String query) async {
     final sanitized = _sanitizeFts5Query(query);
     if (sanitized.isEmpty) return [];
@@ -68,6 +79,9 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
       try {
         // bm25 weights: product_name=10.0, product_name_en=8.0, brand=3.0.
         // ORDER BY rank ASC: bm25 returns negative — most relevant first.
+        // (p.calories_100g IS NULL) sorts to 0/1 — data-complete rows (0)
+        // before data-empty rows (1); rank is the secondary/tie-break sort
+        // within each tier. See searchLocalFoods' doc comment.
         final offRows = await attachedDatabase
             .customSelect(
               '''
@@ -88,7 +102,7 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
           FROM off_ref.products_fts
           JOIN off_ref.products p ON off_ref.products_fts.rowid = p.rowid
           WHERE products_fts MATCH ?
-          ORDER BY rank
+          ORDER BY (p.calories_100g IS NULL), rank
           LIMIT 25
           ''',
               variables: [Variable.withString(sanitized)],
@@ -136,6 +150,7 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
           JOIN user_food_cache_table t
             ON user_food_cache_fts.rowid = t.rowid
           WHERE user_food_cache_fts MATCH ?
+          ORDER BY (t.calories100g IS NULL)
           LIMIT 25
           ''',
               variables: [Variable.withString(sanitized)],
