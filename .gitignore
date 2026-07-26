@@ -47,3 +47,4 @@ app.*.map.json
 # Large data files - not committed
 tools/data/
 assets/off_reference_sample.sqlite
+assets/off_reference.sqlite
