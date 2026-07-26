@@ -122,6 +122,15 @@ void main() {
         reason: '"banana" search never returned a result row',
       );
 
+      // Dismiss the on-device software keyboard before interacting with the
+      // food detail sheet. On a real device (unlike the widget-test
+      // environment), TextInputAction.search does not auto-hide the native
+      // keyboard, and a lingering keyboard shrinks the viewport enough to
+      // push the sheet's "Log this food" button off-screen, causing the
+      // tap to miss.
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pump(_pumpStep);
+
       // --- LOG-13 measured window starts here ---
       final stopwatch = Stopwatch()..start();
 
@@ -143,6 +152,14 @@ void main() {
       // Quantity/unit accept the form's default (100g) — one of the two
       // sanctioned paths per this task's spec ("tap a quantity chip (or
       // accept the default)").
+      //
+      // On some real-device screen sizes (e.g. a tablet in portrait mode),
+      // the "Log this food" button renders below the initially-visible
+      // portion of the scrollable bottom sheet, so it must be scrolled
+      // into view before it can be tapped — mirroring the scroll a real
+      // human tester would perform.
+      await tester.ensureVisible(logButtonFinder);
+      await tester.pump(_pumpStep);
       await tester.tap(logButtonFinder);
       await tester.pump(); // Start the sheet's dismissal + snackbar entry.
 
@@ -153,6 +170,15 @@ void main() {
 
       stopwatch.stop();
       // --- LOG-13 measured window ends here ---
+
+      // Intentional stdout print (not a debug leftover): this is the only
+      // way to surface the measured proxy timing to the human running this
+      // benchmark on a physical device — `debugPrint` output is not
+      // captured in the `flutter test` integration-test summary.
+      // ignore: avoid_print
+      print(
+        'LOG-13 proxy measured elapsed: ${stopwatch.elapsedMilliseconds}ms',
+      );
 
       expect(
         foundSnackbar,
