@@ -50,6 +50,7 @@ class PlaceholderDashboardScreen extends ConsumerWidget {
     messenger.showSnackBar(
       SnackBar(
         content: const Text('Deleted'),
+        duration: const Duration(seconds: 5),
         action: SnackBarAction(
           label: 'Undo',
           onPressed: () {

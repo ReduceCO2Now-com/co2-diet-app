@@ -63,6 +63,7 @@ class _RecentFavoritesListState extends ConsumerState<RecentFavoritesList> {
     messenger.showSnackBar(
       SnackBar(
         content: Text('Added to ${slot.displayLabel}'),
+        duration: const Duration(seconds: 5),
         action: SnackBarAction(
           label: 'Undo',
           onPressed: () {

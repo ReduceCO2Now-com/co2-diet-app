@@ -275,6 +275,7 @@ class _PortionSlotFormState extends ConsumerState<PortionSlotForm> {
       messenger.showSnackBar(
         SnackBar(
           content: Text('Added to $slotLabel'),
+          duration: const Duration(seconds: 5),
           action: SnackBarAction(
             label: 'Undo',
             onPressed: () {
@@ -327,6 +328,61 @@ class _PortionSlotFormState extends ConsumerState<PortionSlotForm> {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Macro/CO₂ table is rendered first — above the slot/quantity
+        // controls — so it stays visible without scrolling once the
+        // on-screen keyboard opens for the quantity field (a real physical-
+        // tablet finding: with the block below the quantity row, the
+        // keyboard pushed it out of the visible area and it read as "not
+        // showing at all" during manual testing, even though it was still
+        // in the tree and live-scaling correctly).
+        _MacroRow(
+          label: 'Calories',
+          value: '${scaled.calories?.round() ?? '—'} kcal',
+        ),
+        _MacroRow(
+          label: 'Protein',
+          value: '${scaled.protein?.toStringAsFixed(1) ?? '—'} g',
+        ),
+        _MacroRow(
+          label: 'Carbohydrates',
+          value: '${scaled.carbs?.toStringAsFixed(1) ?? '—'} g',
+        ),
+        _MacroRow(
+          label: 'Fat',
+          value: '${scaled.fat?.toStringAsFixed(1) ?? '—'} g',
+        ),
+        // CO₂ row — hidden entirely (not '—') when null, per CONTEXT.md.
+        if (scaled.co2e != null) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('CO₂e estimate:', style: textTheme.bodyMedium),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      formatCo2Display(scaled.co2e)!,
+                      style: textTheme.bodyMedium,
+                    ),
+                    if (widget.item.confidenceBand != null) ...[
+                      const SizedBox(width: 6),
+                      ConfidenceChip(
+                        band: widget.item.confidenceBand!,
+                        onTap: () => ConfidenceChip.showExplanation(
+                          context,
+                          widget.item.confidenceBand!,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+        const Divider(height: 24),
         SegmentedButton<MealSlot>(
           segments: MealSlot.values
               .map(
@@ -387,54 +443,6 @@ class _PortionSlotFormState extends ConsumerState<PortionSlotForm> {
             ),
           ],
         ),
-        const Divider(height: 24),
-        _MacroRow(
-          label: 'Calories',
-          value: '${scaled.calories?.round() ?? '—'} kcal',
-        ),
-        _MacroRow(
-          label: 'Protein',
-          value: '${scaled.protein?.toStringAsFixed(1) ?? '—'} g',
-        ),
-        _MacroRow(
-          label: 'Carbohydrates',
-          value: '${scaled.carbs?.toStringAsFixed(1) ?? '—'} g',
-        ),
-        _MacroRow(
-          label: 'Fat',
-          value: '${scaled.fat?.toStringAsFixed(1) ?? '—'} g',
-        ),
-        // CO₂ row — hidden entirely (not '—') when null, per CONTEXT.md.
-        if (scaled.co2e != null) ...[
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('CO₂e estimate:', style: textTheme.bodyMedium),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      formatCo2Display(scaled.co2e)!,
-                      style: textTheme.bodyMedium,
-                    ),
-                    if (widget.item.confidenceBand != null) ...[
-                      const SizedBox(width: 6),
-                      ConfidenceChip(
-                        band: widget.item.confidenceBand!,
-                        onTap: () => ConfidenceChip.showExplanation(
-                          context,
-                          widget.item.confidenceBand!,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
         const SizedBox(height: 16),
         SizedBox(
           width: double.infinity,
