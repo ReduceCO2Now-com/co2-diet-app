@@ -51,6 +51,9 @@ class PlaceholderDashboardScreen extends ConsumerWidget {
       SnackBar(
         content: const Text('Deleted'),
         duration: const Duration(seconds: 5),
+        // See PortionSlotForm._handleLogPressed — SnackBar.persist defaults
+        // to true whenever an `action` is set, which no-ops the timeout.
+        persist: false,
         action: SnackBarAction(
           label: 'Undo',
           onPressed: () {

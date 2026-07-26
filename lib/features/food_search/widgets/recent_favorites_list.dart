@@ -46,6 +46,13 @@ class _RecentFavoritesListState extends ConsumerState<RecentFavoritesList> {
   /// provider state.
   late final Future<List<MealEntry>> _recentFuture;
 
+  /// Guards against a double-tap (or a rapid second tap while the first
+  /// write is still in flight) firing [_logRecent]/[_logFavorite] twice —
+  /// same race as `PortionSlotForm._handleLogPressed`'s `_isSubmitting`
+  /// guard, since a `ListTile.onTap` has no built-in re-entry protection
+  /// either and two overlapping calls would merge-double the quantity.
+  bool _isLogging = false;
+
   @override
   void initState() {
     super.initState();
@@ -64,6 +71,9 @@ class _RecentFavoritesListState extends ConsumerState<RecentFavoritesList> {
       SnackBar(
         content: Text('Added to ${slot.displayLabel}'),
         duration: const Duration(seconds: 5),
+        // See PortionSlotForm._handleLogPressed — SnackBar.persist defaults
+        // to true whenever an `action` is set, which no-ops the timeout.
+        persist: false,
         action: SnackBarAction(
           label: 'Undo',
           onPressed: () {
@@ -82,19 +92,31 @@ class _RecentFavoritesListState extends ConsumerState<RecentFavoritesList> {
   }
 
   Future<void> _logRecent(MealEntry recent) async {
-    final slot = detectMealSlotForTime(DateTime.now());
-    final result = await ref
-        .read(mealEntryProvider.notifier)
-        .logFromRecent(recent);
-    _showLoggedSnackBar(slot, result);
+    if (_isLogging) return;
+    _isLogging = true;
+    try {
+      final slot = detectMealSlotForTime(DateTime.now());
+      final result = await ref
+          .read(mealEntryProvider.notifier)
+          .logFromRecent(recent);
+      _showLoggedSnackBar(slot, result);
+    } finally {
+      _isLogging = false;
+    }
   }
 
   Future<void> _logFavorite(Favorite favorite) async {
-    final slot = detectMealSlotForTime(DateTime.now());
-    final result = await ref
-        .read(favoriteProvider.notifier)
-        .logFromFavorite(favorite, autoDetectedSlot: slot);
-    _showLoggedSnackBar(slot, result);
+    if (_isLogging) return;
+    _isLogging = true;
+    try {
+      final slot = detectMealSlotForTime(DateTime.now());
+      final result = await ref
+          .read(favoriteProvider.notifier)
+          .logFromFavorite(favorite, autoDetectedSlot: slot);
+      _showLoggedSnackBar(slot, result);
+    } finally {
+      _isLogging = false;
+    }
   }
 
   void _editRecent(MealEntry recent) {

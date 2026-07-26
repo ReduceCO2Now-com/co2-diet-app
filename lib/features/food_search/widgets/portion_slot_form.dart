@@ -235,9 +235,18 @@ class _PortionSlotFormState extends ConsumerState<PortionSlotForm> {
     return quantity != null && quantity > 0;
   }
 
+  /// Guards against a double-tap (or a rapid second tap while the first
+  /// write is still in flight) firing [_handleLogPressed] twice — since
+  /// "Log this food" isn't disabled during its async write, two overlapping
+  /// calls would both merge into the same slot/day/food/unit entry, silently
+  /// doubling the logged quantity.
+  bool _isSubmitting = false;
+
   Future<void> _handleLogPressed() async {
+    if (_isSubmitting) return;
     final quantity = double.tryParse(_quantityController.text);
     if (quantity == null || quantity <= 0) return;
+    _isSubmitting = true;
 
     final now = DateTime.now();
     final draft = MealEntry(
@@ -276,6 +285,11 @@ class _PortionSlotFormState extends ConsumerState<PortionSlotForm> {
         SnackBar(
           content: Text('Added to $slotLabel'),
           duration: const Duration(seconds: 5),
+          // Flutter's SnackBar defaults `persist` to true whenever an
+          // `action` is set (see SnackBar.persist doc), which makes the
+          // auto-dismiss timeout a no-op regardless of `duration` — must be
+          // set explicitly to false to get the standard timed dismissal.
+          persist: false,
           action: SnackBarAction(
             label: 'Undo',
             onPressed: () {
@@ -304,6 +318,8 @@ class _PortionSlotFormState extends ConsumerState<PortionSlotForm> {
           ),
         ),
       );
+    } finally {
+      _isSubmitting = false;
     }
   }
 
