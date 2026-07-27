@@ -67,6 +67,19 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
   /// rows ahead of the few complete ones. Applied before `LIMIT 25`, so a
   /// relevant-but-incomplete row can be displaced out of the top 25 by a
   /// complete one that BM25 alone would have ranked lower.
+  ///
+  /// **CO₂ enrichment (off_ref results):** LEFT JOINs `food_co2_overrides`
+  /// (exact barcode match → `confidence_band = 'high'`) and `co2_factors`
+  /// (category-average via `primary_category_tag` → `'medium'`) directly
+  /// into this query, mirroring [lookupByBarcodeWithCo2]'s Step 1/Step 2
+  /// chain — search results must carry the same CO₂ data a barcode scan of
+  /// the same product would, per CONTEXT.md's honesty-in-numbers principle.
+  /// Done as a single LEFT JOIN rather than a per-row lookup (unlike the
+  /// barcode path, which only ever resolves one item) to avoid an N+1 query
+  /// against up to 25 results. `user_food_cache_fts` results (API-fallback
+  /// cache) are NOT enriched this way — cached rows don't retain a
+  /// `primary_category_tag` to join against (see `searchAndCache`), a
+  /// separate, narrower gap than the one this fixes.
   Future<List<FoodItem>> searchLocalFoods(String query) async {
     final sanitized = _sanitizeFts5Query(query);
     if (sanitized.isEmpty) return [];
@@ -82,6 +95,12 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
         // (p.calories_100g IS NULL) sorts to 0/1 — data-complete rows (0)
         // before data-empty rows (1); rank is the secondary/tie-break sort
         // within each tier. See searchLocalFoods' doc comment.
+        //
+        // CO2 enrichment: LEFT JOIN food_co2_overrides (exact barcode,
+        // 'high' confidence) and co2_factors (category average via
+        // primary_category_tag, 'medium' confidence) — same two-step chain
+        // as lookupByBarcodeWithCo2, applied to every search result instead
+        // of a single barcode.
         final offRows = await attachedDatabase
             .customSelect(
               '''
@@ -94,13 +113,20 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
             p.protein_100g,
             p.carbs_100g,
             p.fat_100g,
-            NULL AS co2e_100g,
-            NULL AS confidence_band,
+            COALESCE(ov.co2e_100g, cf.co2e_median) AS co2e_100g,
+            CASE
+              WHEN ov.co2e_100g IS NOT NULL THEN 'high'
+              WHEN cf.co2e_median IS NOT NULL THEN 'medium'
+              ELSE NULL
+            END AS confidence_band,
             'off_ref' AS source,
             NULL AS source_row_id,
             bm25(products_fts, 10.0, 8.0, 3.0) AS rank
           FROM off_ref.products_fts
           JOIN off_ref.products p ON off_ref.products_fts.rowid = p.rowid
+          LEFT JOIN off_ref.food_co2_overrides ov ON ov.barcode = p.barcode
+          LEFT JOIN off_ref.co2_factors cf
+            ON cf.categories_tag = p.primary_category_tag
           WHERE products_fts MATCH ?
           ORDER BY (p.calories_100g IS NULL), rank
           LIMIT 25
