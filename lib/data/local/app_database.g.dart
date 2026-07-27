@@ -11119,6 +11119,16 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   );
   late final MealEntryDao mealEntryDao = MealEntryDao(this as AppDatabase);
   late final UserFoodDao userFoodDao = UserFoodDao(this as AppDatabase);
+  late final Co2SettingsDao co2SettingsDao = Co2SettingsDao(
+    this as AppDatabase,
+  );
+  late final WeightDao weightDao = WeightDao(this as AppDatabase);
+  late final NotificationPrefsDao notificationPrefsDao = NotificationPrefsDao(
+    this as AppDatabase,
+  );
+  late final BackupMetadataDao backupMetadataDao = BackupMetadataDao(
+    this as AppDatabase,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
