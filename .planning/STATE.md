@@ -1,15 +1,15 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.1
-milestone_name: milestone
+milestone: v1
+milestone_name: v1 launch
 status: executing
-last_updated: "2026-07-27T21:31:51.588Z"
+last_updated: "2026-07-27T21:40:12.290Z"
 progress:
   total_phases: 9
   completed_phases: 4
   total_plans: 51
-  completed_plans: 36
-  percent: 71
+  completed_plans: 38
+  percent: 44
 ---
 
 # STATE: CO₂ Diet
@@ -35,11 +35,11 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable — IN PROGRESS (5 of 19 plans done)
-- **Plan:** 6 of 19 (05-05 complete — Co2SettingsDao/WeightDao/NotificationPrefsDao/BackupMetadataDao created and registered in AppDatabase)
+- **Phase:** 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable — IN PROGRESS (6 of 19 plans done)
+- **Plan:** 7 of 19 (05-06 complete — Co2Settings entity, ICo2SettingsRepository/Co2SettingsRepository, DI providers, Co2SettingsNotifier)
 - **Status:** Ready to execute
-- **Progress:** [███░░░░░░░] 26% (5 of 19 Phase 5 plans done)
-- **v1 requirements:** 33 / 75 delivered (CO2-01, CO2-02, CO2-04, LEG-05, LOG-01 through LOG-12, NFR-05, NFR-06, PROF-01 through PROF-05, PRIV-07) — Phase 4 fully closed (04-13 real-device checkpoint approved on both platforms); 05-02 closes the Phase-4 CO2 cache-path gap (CO2-02, NFR-05); 05-03 adds the Phase 5 Drift schema foundation (schema-only); 05-04 wires sugar/fiber/salt through FoodItem/MealEntry/repository (NUTR-01 still not fully delivered — daily-totals rollup is 05-10-PLAN.md, dashboard/insights UI later still); 05-05 adds the DAO layer for CO2 Settings/Weight/Notifications/Backup (CO2-03, WT-01 through WT-04, NOTIF-01, PRIV-02, PRIV-03 still not fully delivered — repository/UI plans pending); remaining Phase 5 requirements are test-stub-scaffolded only so far
+- **Progress:** [████████░░] 75%
+- **v1 requirements:** 34 / 75 delivered (CO2-01, CO2-02, CO2-03, CO2-04, LEG-05, LOG-01 through LOG-12, NFR-05, NFR-06, PROF-01 through PROF-05, PRIV-07) — Phase 4 fully closed (04-13 real-device checkpoint approved on both platforms); 05-02 closes the Phase-4 CO2 cache-path gap (CO2-02, NFR-05); 05-03 adds the Phase 5 Drift schema foundation (schema-only); 05-04 wires sugar/fiber/salt through FoodItem/MealEntry/repository (NUTR-01 still not fully delivered — daily-totals rollup is 05-10-PLAN.md, dashboard/insights UI later still); 05-05 adds the DAO layer for CO2 Settings/Weight/Notifications/Backup; 05-06 delivers the CO2 Settings domain layer (CO2-03 now fully delivered — WT-01 through WT-04, NOTIF-01, PRIV-02, PRIV-03 still not fully delivered — repository/UI plans pending); remaining Phase 5 requirements are test-stub-scaffolded only so far
 
 ```
 [███████░░░] 71%
@@ -135,9 +135,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-27T21:31:51.583Z
-**Stopped at:** Completed 05-05-PLAN.md -- Co2SettingsDao/WeightDao/NotificationPrefsDao/BackupMetadataDao created and registered in AppDatabase
-**Next action:** Execute Plan 05-06
+**Last session:** 2026-07-27T21:40:12.285Z
+**Stopped at:** Completed 05-06-PLAN.md -- Co2Settings domain layer (entity/repository/DI providers/notifier) delivered
+**Next action:** Execute Plan 05-07
 **Suggested next command:** `/gsd:execute-phase 5`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
@@ -241,6 +241,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 05-05]: WeightDao.deleteEntry is a hard DELETE, not the SyncSafeTable soft-delete convention -- mirrors UserFoodDao.revert's precedent (Phase 04-04); a mis-logged weigh-in has no sync-relevant tombstone need
 - [Phase 05-05]: Test files importing both drift and flutter_test must hide BOTH isNull and isNotNull from drift.dart when the test uses both matchers -- extends the Phase 04-05 'hide isNull' precedent
 - [Phase 05-05]: DateTime round-trip assertions use isAtSameMomentAs, not equals -- Drift's SQLite dateTime() column deserializes to a local-time DateTime that is the same instant as a UTC input but not flagged UTC, so equals spuriously fails off-UTC machines
+- [Phase 05-06]: Co2Settings entity has no id field -- Co2SettingsRepository owns id lifecycle internally (reuse existing single row's id, or generate UUID v7 on first save)
 
 ## Performance Metrics
 
@@ -273,3 +274,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P03 | 10min | 2 tasks | 9 files |
 | Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P04 | ~5min | 2 tasks | 5 files |
 | Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P05 | ~10min | 3 tasks | 9 files |
+| Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P06 | ~10min | 2 tasks | 9 files |

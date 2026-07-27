@@ -132,7 +132,7 @@ Plans:
 - [x] 05-03-PLAN.md — Schema: 5 new tables + MealEntryTable nutrient columns (schemaVersion 3→4)
 - [x] 05-04-PLAN.md — FoodItem/MealEntry nutrient snapshot entity + repository updates
 - [x] 05-05-PLAN.md — New DAOs: Co2Settings, Weight, NotificationPrefs, BackupMetadata
-- [ ] 05-06-PLAN.md — CO2 Settings domain (entity, repository, notifier, DI)
+- [x] 05-06-PLAN.md — CO2 Settings domain (entity, repository, notifier, DI)
 - [ ] 05-07-PLAN.md — Weight Tracking domain (entity, repository, notifier, DI)
 - [ ] 05-08-PLAN.md — Package installs (fl_chart, flutter_local_notifications, timezone, flutter_timezone) + NotificationService
 - [ ] 05-09-PLAN.md — Package installs (share_plus, csv, excel) + BackupExportService
@@ -203,7 +203,7 @@ Plans:
 | 2. Food Catalog Ingest & Search | 7/7 | Complete   | 2026-07-20 |
 | 3. Barcode Scanning & CO₂ Factor Table | 5/5 | Complete   | 2026-07-22 |
 | 4. Meal Logging Core | 12/13 | In Progress|  |
-| 5. Full Local App (Local Mode Shippable) | 5/19 | In Progress|  |
+| 5. Full Local App (Local Mode Shippable) | 6/19 | In Progress|  |
 | 6. Onboarding, Legal & Pre-Submission | 0/0 | Not started | - |
 | 7. Keycloak Auth + Account Mode + Sync | 0/0 | Not started | - |
 | 8. Reference Data Delivery (Full OFF Pack) | 0/0 | Not started | - |
