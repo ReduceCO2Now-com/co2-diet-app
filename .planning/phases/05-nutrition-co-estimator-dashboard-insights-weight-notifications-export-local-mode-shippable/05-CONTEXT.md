@@ -3,6 +3,22 @@
 **Gathered:** 2026-07-27
 **Status:** Ready for planning
 
+<planning_addendum>
+## Planning Addendum (post plan-checker review, 2026-07-27)
+
+The first planning pass surfaced four judgment calls the plan-checker correctly flagged as un-escalated decisions rather than legitimate planner discretion. Resolved directly with the user before revision:
+
+- **Backup/export encryption: no encryption in v1.** The "Privacy & Ownership statement" section of Backup & Restore must explicitly disclose that shared backups are not encrypted by the app and the user is responsible for the security of wherever they send it. Design the backup format with a version field so encryption can be added later without breaking compatibility.
+- **Restore from backup (PRIV-04) must support importing an external file**, not just backups still in the app's own documents directory — add a minimal file/document-picker package (gated behind the same package-legitimacy checkpoint pattern used elsewhere this phase) so restore works after a reinstall or on a new device, which is the realistic restore scenario.
+- **Biweekly/Monthly weigh-in reminders re-arm on every app foreground event**, not only when the Weight Tracking screen itself is opened — `flutter_local_notifications` has no native biweekly/monthly recurrence primitive, so the app must re-check and reschedule on a broader, more reliable trigger than a single screen's lifecycle.
+- **INS-01's "today's breakdown by meal" is a real stacked bar chart** (fl_chart's `BarChart` with stacked `BarChartRodStackItem`s), not a plain grouped list — the phase already depends on fl_chart for Dashboard/Weight trend charts, so this reuses the same library rather than adding new scope.
+
+Also addressed from the plan-checker's warnings:
+- **CO2-02's "weekly total" must be explicitly computed and displayed somewhere** (Data Analysis screen is the natural home) — day-by-day trend charts alone don't satisfy "daily / weekly totals" from ROADMAP.md's success criteria.
+- **`PersonalCo2MultiplierCalculator` giving 3 of 7 CONTEXT.md-listed settings factors (location, storage, household size) no numeric effect** in the first cut is accepted as-is for v1 — confirmed acceptable rather than requiring all 7 factors to produce a distinguishable numeric contribution, consistent with the app's no-false-precision principle (don't fabricate a number when there's no defensible way to compute one yet). Document this narrowing explicitly in code comments rather than treating it as silently-decided scope reduction.
+
+</planning_addendum>
+
 <domain>
 ## Phase Boundary
 
