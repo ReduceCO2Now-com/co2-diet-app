@@ -12,10 +12,11 @@ import 'package:flutter/foundation.dart';
 /// user_food_cache, or user_foods) never silently rewrites history for
 /// already-logged meals.
 ///
-/// Scope note: the snapshot intentionally captures calories/protein/carbs/
-/// fat/co2e only — not sugar/fiber/salt, which `UserFood` captures. This is
-/// a deliberate Phase 4 scope boundary, flagged here for Phase 5
-/// nutrition-rollup planning rather than expanded now.
+/// Also snapshots `sugar100gSnapshot`/`fiber100gSnapshot`/`saltSnapshot`
+/// (added in Phase 5, NUTR-01) — populated only when the source food
+/// carries that data (personal overrides / custom foods via `UserFood`);
+/// null for off_ref/user_food_cache-sourced entries, which have no such
+/// data (honest absence, not a fabricated `0`).
 ///
 /// Unlike `FoodItem` (which has no `id`), [MealEntry] rows are individually
 /// addressable for edit/delete/duplicate, so [id] is required and equality
@@ -41,6 +42,9 @@ class MealEntry {
     this.co2e100gSnapshot,
     this.confidenceBandSnapshot,
     this.co2MethodologyVersionSnapshot,
+    this.sugar100gSnapshot,
+    this.fiber100gSnapshot,
+    this.saltSnapshot,
   });
 
   /// Maps a Drift [MealEntryRow] 1:1 onto a [MealEntry].
@@ -68,6 +72,9 @@ class MealEntry {
     co2e100gSnapshot: row.co2e100gSnapshot,
     confidenceBandSnapshot: row.confidenceBandSnapshot,
     co2MethodologyVersionSnapshot: row.co2MethodologyVersionSnapshot,
+    sugar100gSnapshot: row.sugar100gSnapshot,
+    fiber100gSnapshot: row.fiber100gSnapshot,
+    saltSnapshot: row.saltSnapshot,
   );
 
   /// Unique, individually addressable row id.
@@ -120,6 +127,23 @@ class MealEntry {
   /// nullable.
   final String? co2MethodologyVersionSnapshot;
 
+  /// Sugar per 100g/100ml at the moment of logging (snapshot), nullable.
+  ///
+  /// Populated only when the source `FoodItem` carried a non-null
+  /// `sugar100g` (personal overrides / custom foods, source `'user_foods'`
+  /// — see `UserFoodTable`). Always `null` for entries logged from
+  /// off_ref/user_food_cache foods, which have no sugar data — honest
+  /// absence, not a fabricated `0`.
+  final double? sugar100gSnapshot;
+
+  /// Fiber per 100g/100ml at the moment of logging (snapshot), nullable.
+  /// See [sugar100gSnapshot]'s doc comment for the same source-data rule.
+  final double? fiber100gSnapshot;
+
+  /// Salt per 100g/100ml at the moment of logging (snapshot), nullable.
+  /// See [sugar100gSnapshot]'s doc comment for the same source-data rule.
+  final double? saltSnapshot;
+
   /// When this entry was logged (UTC).
   final DateTime loggedAt;
 
@@ -153,6 +177,9 @@ class MealEntry {
     Object? co2e100gSnapshot = _sentinel,
     Object? confidenceBandSnapshot = _sentinel,
     Object? co2MethodologyVersionSnapshot = _sentinel,
+    Object? sugar100gSnapshot = _sentinel,
+    Object? fiber100gSnapshot = _sentinel,
+    Object? saltSnapshot = _sentinel,
     DateTime? loggedAt,
     String? logDate,
   }) {
@@ -189,6 +216,15 @@ class MealEntry {
           co2MethodologyVersionSnapshot == _sentinel
           ? this.co2MethodologyVersionSnapshot
           : co2MethodologyVersionSnapshot as String?,
+      sugar100gSnapshot: sugar100gSnapshot == _sentinel
+          ? this.sugar100gSnapshot
+          : sugar100gSnapshot as double?,
+      fiber100gSnapshot: fiber100gSnapshot == _sentinel
+          ? this.fiber100gSnapshot
+          : fiber100gSnapshot as double?,
+      saltSnapshot: saltSnapshot == _sentinel
+          ? this.saltSnapshot
+          : saltSnapshot as double?,
       loggedAt: loggedAt ?? this.loggedAt,
       logDate: logDate ?? this.logDate,
     );
@@ -215,7 +251,9 @@ class MealEntry {
   String toString() =>
       'MealEntry(id: $id, mealSlot: $mealSlot, foodRef: $foodRef, '
       'foodRefSource: $foodRefSource, quantity: $quantity, unit: $unit, '
-      'productNameSnapshot: $productNameSnapshot, logDate: $logDate)';
+      'productNameSnapshot: $productNameSnapshot, logDate: $logDate, '
+      'sugar100gSnapshot: $sugar100gSnapshot, '
+      'fiber100gSnapshot: $fiber100gSnapshot, saltSnapshot: $saltSnapshot)';
 }
 
 /// Live-scaled macro/CO₂ values for a [MealEntry], computed from its
@@ -233,6 +271,9 @@ class ScaledMacros {
     this.carbs,
     this.fat,
     this.co2e,
+    this.sugar,
+    this.fiber,
+    this.salt,
   });
 
   /// Scaled calories, or `null` when the source snapshot was `null`.
@@ -250,6 +291,15 @@ class ScaledMacros {
   /// Scaled CO₂e, or `null` when the source snapshot was `null`.
   final double? co2e;
 
+  /// Scaled sugar (g), or `null` when the source snapshot was `null`.
+  final double? sugar;
+
+  /// Scaled fiber (g), or `null` when the source snapshot was `null`.
+  final double? fiber;
+
+  /// Scaled salt (g), or `null` when the source snapshot was `null`.
+  final double? salt;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -258,15 +308,19 @@ class ScaledMacros {
           other.protein == protein &&
           other.carbs == carbs &&
           other.fat == fat &&
-          other.co2e == co2e);
+          other.co2e == co2e &&
+          other.sugar == sugar &&
+          other.fiber == fiber &&
+          other.salt == salt);
 
   @override
-  int get hashCode => Object.hash(calories, protein, carbs, fat, co2e);
+  int get hashCode =>
+      Object.hash(calories, protein, carbs, fat, co2e, sugar, fiber, salt);
 
   @override
   String toString() =>
       'ScaledMacros(calories: $calories, protein: $protein, carbs: $carbs, '
-      'fat: $fat, co2e: $co2e)';
+      'fat: $fat, co2e: $co2e, sugar: $sugar, fiber: $fiber, salt: $salt)';
 }
 
 /// Pure function computing [entry]'s live-scaled macro/CO₂ values for the
@@ -281,5 +335,8 @@ ScaledMacros scaledMacros(MealEntry entry, {required double gramsEquivalent}) {
     carbs: scale(entry.carbs100gSnapshot),
     fat: scale(entry.fat100gSnapshot),
     co2e: scale(entry.co2e100gSnapshot),
+    sugar: scale(entry.sugar100gSnapshot),
+    fiber: scale(entry.fiber100gSnapshot),
+    salt: scale(entry.saltSnapshot),
   );
 }

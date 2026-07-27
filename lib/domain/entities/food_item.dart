@@ -29,6 +29,9 @@ class FoodItem {
     this.categoriesTags,
     this.source,
     this.sourceRowId,
+    this.sugar100g,
+    this.fiber100g,
+    this.salt100g,
   });
 
   /// Creates a [FoodItem] from a Drift [QueryRow].
@@ -117,6 +120,24 @@ class FoodItem {
   /// `source_row_id` column.
   final String? sourceRowId;
 
+  /// Sugar in g per 100 g, nullable.
+  ///
+  /// Only ever populated for `FoodItem`s built from a `UserFoodRow`
+  /// (personal overrides / custom foods — see
+  /// `FoodCatalogDao._foodItemFromUserFoodRow`). Always `null` for
+  /// [fromQueryRow]-constructed instances: neither `off_ref.products` nor
+  /// `user_food_cache_table` has a sugar column, so there is nothing to
+  /// select — honest absence, not a fabricated `0`.
+  final double? sugar100g;
+
+  /// Fiber in g per 100 g, nullable. See [sugar100g]'s doc comment for the
+  /// same off_ref/user_food_cache absence rule.
+  final double? fiber100g;
+
+  /// Salt in g per 100 g, nullable. See [sugar100g]'s doc comment for the
+  /// same off_ref/user_food_cache absence rule.
+  final double? salt100g;
+
   /// The single authoritative merge-key resolution rule (CONTEXT.md Merge
   /// Semantics): "the food's internal reference/ID — barcode when
   /// present, otherwise catalog/custom-food ID — never a product-name
@@ -166,6 +187,9 @@ class FoodItem {
     Object? categoriesTags = _sentinel,
     Object? source = _sentinel,
     Object? sourceRowId = _sentinel,
+    Object? sugar100g = _sentinel,
+    Object? fiber100g = _sentinel,
+    Object? salt100g = _sentinel,
   }) {
     return FoodItem(
       barcode: barcode == _sentinel ? this.barcode : barcode as String?,
@@ -195,6 +219,11 @@ class FoodItem {
       sourceRowId: sourceRowId == _sentinel
           ? this.sourceRowId
           : sourceRowId as String?,
+      sugar100g:
+          sugar100g == _sentinel ? this.sugar100g : sugar100g as double?,
+      fiber100g:
+          fiber100g == _sentinel ? this.fiber100g : fiber100g as double?,
+      salt100g: salt100g == _sentinel ? this.salt100g : salt100g as double?,
     );
   }
 
@@ -215,5 +244,6 @@ class FoodItem {
       'productNameEn: $productNameEn, brand: $brand, '
       'calories100g: $calories100g, co2e100g: $co2e100g, '
       'confidenceBand: $confidenceBand, source: $source, '
-      'sourceRowId: $sourceRowId)';
+      'sourceRowId: $sourceRowId, sugar100g: $sugar100g, '
+      'fiber100g: $fiber100g, salt100g: $salt100g)';
 }
