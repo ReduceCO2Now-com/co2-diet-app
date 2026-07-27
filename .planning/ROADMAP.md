@@ -18,7 +18,7 @@
 - [x] **Phase 1: Foundations & Sync-Safe Schema** — Drift v1 with HLC/tombstones/dirty flags/consent/CO₂ methodology version, DI, router, theme, CI dependency-audit pipeline, thinnest E2E vertical slice (completed 2026-07-17)
 - [x] **Phase 2: Food Catalog Ingest & Search** — OFF seed DB ingest, FTS5 index, bundled starter pack, search UI + API fallback, benchmarked <1s on low-end Android (completed 2026-07-20)
 - [x] **Phase 3: Barcode Scanning & CO₂ Factor Table** — mobile_scanner integration, real-device barcode verification, product-to-CO₂ factor prototype, custom-food fallback (completed 2026-07-22)
-- [ ] **Phase 4: Meal Logging Core** — Breakfast/Lunch/Dinner/Snack slots, portion units, Recent, Favorites, Custom foods, personal overrides, edit/delete/duplicate, offline-first, <10s meal-log verified
+- [x] **Phase 4: Meal Logging Core** — Breakfast/Lunch/Dinner/Snack slots, portion units, Recent, Favorites, Custom foods, personal overrides, edit/delete/duplicate, offline-first, <10s meal-log verified (completed 2026-07-27)
 - [ ] **Phase 5: Nutrition, CO₂ Estimator, Dashboard, Insights, Weight, Notifications, Export/Backup** — full local app; CO₂ Estimator + Transparency + Improvement Opportunities; Insights (7d/30d); Weight tracking; local notifications; Export (CSV/Excel/JSON); Backup/Restore. **Local Mode shippable here.**
 - [ ] **Phase 6: Onboarding, Legal Consent, Legal Hub, ED Safety Nets, Accessibility & Pre-Submission** — Splash → Welcome → Legal Consent → Mode Choice → Profile → Carousel; timestamped consent records; Legal Hub (Terms/Privacy/Disclaimer/Impressum); ED safety nets; PrivacyManifest/Data Safety; a11y audit; equal-weight Mode Choice audit; SAM test
 - [ ] **Phase 7: Keycloak Auth + Account Mode + Sync** — flutter_appauth OIDC/PKCE, Apple + Google IdPs, email/password + reset, Local→Account upgrade, outbox drainer + delta pull LWW-by-HLC, GDPR endpoints (export/delete), sync status UI
@@ -112,7 +112,7 @@ Plans:
 - [x] 04-10-PLAN.md — Food search Recent/Favorites empty-state UI + "Add as custom food" link
 - [x] 04-11-PLAN.md — Dashboard managing entries: flutter_slidable checkpoint + swipe actions
 - [x] 04-12-PLAN.md — LOG-13 benchmark + LOG-12 offline logging test fill-ins
-- [ ] 04-13-PLAN.md — Real-device human-verify checkpoint (Android + iOS, <10s + airplane mode)
+- [x] 04-13-PLAN.md — Real-device human-verify checkpoint (Android + iOS, <10s + airplane mode)
 **UI hint**: yes
 
 ### Phase 5: Nutrition, CO₂ Estimator, Dashboard, Insights, Weight, Notifications & Export — Local Mode Shippable
