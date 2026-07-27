@@ -77,9 +77,12 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
   /// Done as a single LEFT JOIN rather than a per-row lookup (unlike the
   /// barcode path, which only ever resolves one item) to avoid an N+1 query
   /// against up to 25 results. `user_food_cache_fts` results (API-fallback
-  /// cache) are NOT enriched this way — cached rows don't retain a
-  /// `primary_category_tag` to join against (see `searchAndCache`), a
-  /// separate, narrower gap than the one this fixes.
+  /// cache) are ALSO enriched: `FoodCatalogRepository`'s cache-write path
+  /// stores the resolved single most-specific category tag into
+  /// `user_food_cache_table.categories_tags`, so this method's second query
+  /// branch LEFT JOINs `off_ref.co2_factors` on that stored tag — there is
+  /// no per-product override table for cached items, so this branch only
+  /// ever reaches `'medium'` confidence, never `'high'`.
   Future<List<FoodItem>> searchLocalFoods(String query) async {
     final sanitized = _sanitizeFts5Query(query);
     if (sanitized.isEmpty) return [];
@@ -155,9 +158,47 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
     // --- user_food_cache_fts query (D-API-FALLBACK) ---
     if (results.length < 25) {
       try {
-        final cacheRows = await attachedDatabase
-            .customSelect(
-              '''
+        // CO2 enrichment: only when off_ref is ATTACHed (unit-test-isolation
+        // convention, matching the off_ref branch above). When null, keep
+        // selecting plain NULL columns — no join — so existing unit tests
+        // without an ATTACHed off_ref keep working exactly as before.
+        final cacheRows = attachedDatabase.offRefPath != null
+            ? await attachedDatabase
+                  .customSelect(
+                    '''
+          SELECT
+            t.barcode,
+            t.product_name,
+            t.product_name_en,
+            t.brand,
+            t.calories100g AS calories_100g,
+            t.protein100g AS protein_100g,
+            t.carbs100g AS carbs_100g,
+            t.fat100g AS fat_100g,
+            cf.co2e_median AS co2e_100g,
+            CASE
+              WHEN cf.co2e_median IS NOT NULL THEN 'medium'
+              ELSE NULL
+            END AS confidence_band,
+            'user_food_cache' AS source,
+            t.id AS source_row_id,
+            0.0 AS rank
+          FROM user_food_cache_fts
+          JOIN user_food_cache_table t
+            ON user_food_cache_fts.rowid = t.rowid
+          LEFT JOIN off_ref.co2_factors cf
+            ON cf.categories_tag = t.categories_tags
+          WHERE user_food_cache_fts MATCH ?
+          ORDER BY (t.calories100g IS NULL)
+          LIMIT 25
+          ''',
+                    variables: [Variable.withString(sanitized)],
+                    readsFrom: {attachedDatabase.userFoodCacheTable},
+                  )
+                  .get()
+            : await attachedDatabase
+                  .customSelect(
+                    '''
           SELECT
             t.barcode,
             t.product_name,
@@ -179,10 +220,10 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
           ORDER BY (t.calories100g IS NULL)
           LIMIT 25
           ''',
-              variables: [Variable.withString(sanitized)],
-              readsFrom: {attachedDatabase.userFoodCacheTable},
-            )
-            .get();
+                    variables: [Variable.withString(sanitized)],
+                    readsFrom: {attachedDatabase.userFoodCacheTable},
+                  )
+                  .get();
 
         for (final row in cacheRows) {
           if (results.length >= 25) break;
