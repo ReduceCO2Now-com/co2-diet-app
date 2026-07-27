@@ -130,7 +130,7 @@ Plans:
 - [x] 05-01-PLAN.md — Wave 0 test stubs (25 files across all six sub-domains)
 - [x] 05-02-PLAN.md — CO2 cache-path gap fix (Phase 4 deferred item folded in)
 - [x] 05-03-PLAN.md — Schema: 5 new tables + MealEntryTable nutrient columns (schemaVersion 3→4)
-- [ ] 05-04-PLAN.md — FoodItem/MealEntry nutrient snapshot entity + repository updates
+- [x] 05-04-PLAN.md — FoodItem/MealEntry nutrient snapshot entity + repository updates
 - [ ] 05-05-PLAN.md — New DAOs: Co2Settings, Weight, NotificationPrefs, BackupMetadata
 - [ ] 05-06-PLAN.md — CO2 Settings domain (entity, repository, notifier, DI)
 - [ ] 05-07-PLAN.md — Weight Tracking domain (entity, repository, notifier, DI)
@@ -203,7 +203,7 @@ Plans:
 | 2. Food Catalog Ingest & Search | 7/7 | Complete   | 2026-07-20 |
 | 3. Barcode Scanning & CO₂ Factor Table | 5/5 | Complete   | 2026-07-22 |
 | 4. Meal Logging Core | 12/13 | In Progress|  |
-| 5. Full Local App (Local Mode Shippable) | 3/19 | In Progress|  |
+| 5. Full Local App (Local Mode Shippable) | 4/19 | In Progress|  |
 | 6. Onboarding, Legal & Pre-Submission | 0/0 | Not started | - |
 | 7. Keycloak Auth + Account Mode + Sync | 0/0 | Not started | - |
 | 8. Reference Data Delivery (Full OFF Pack) | 0/0 | Not started | - |

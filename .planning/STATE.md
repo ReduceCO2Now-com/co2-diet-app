@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-07-27T21:15:12.461Z"
+last_updated: "2026-07-27T21:22:39.731Z"
 progress:
   total_phases: 9
   completed_phases: 4
   total_plans: 51
-  completed_plans: 34
-  percent: 67
+  completed_plans: 35
+  percent: 69
 ---
 
 # STATE: CO₂ Diet
@@ -35,14 +35,14 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable — IN PROGRESS (2 of 19 plans done)
-- **Plan:** 4 of 19 (05-03 complete — Phase 5 Drift schema foundation: 5 new tables + MealEntryTable nutrient columns + schemaVersion 3->4)
+- **Phase:** 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable — IN PROGRESS (4 of 19 plans done)
+- **Plan:** 5 of 19 (05-04 complete — FoodItem/MealEntry gain sugar/fiber/salt fields end-to-end; write path now persists them from personal overrides/custom foods)
 - **Status:** Ready to execute
-- **Progress:** [██░░░░░░░░] 16% (3 of 19 Phase 5 plans done)
-- **v1 requirements:** 33 / 75 delivered (CO2-01, CO2-02, CO2-04, LEG-05, LOG-01 through LOG-12, NFR-05, NFR-06, PROF-01 through PROF-05, PRIV-07) — Phase 4 fully closed (04-13 real-device checkpoint approved on both platforms); 05-02 closes the Phase-4 CO2 cache-path gap (CO2-02, NFR-05); 05-03 adds the Phase 5 Drift schema foundation (schema-only — NUTR-01/CO2-03/WT-01/WT-03/WT-04/NOTIF-01/NOTIF-02/PRIV-02/PRIV-03 not yet functionally delivered, DAOs/repositories/UI still pending); remaining Phase 5 requirements are test-stub-scaffolded only so far
+- **Progress:** [██░░░░░░░░] 21% (4 of 19 Phase 5 plans done)
+- **v1 requirements:** 33 / 75 delivered (CO2-01, CO2-02, CO2-04, LEG-05, LOG-01 through LOG-12, NFR-05, NFR-06, PROF-01 through PROF-05, PRIV-07) — Phase 4 fully closed (04-13 real-device checkpoint approved on both platforms); 05-02 closes the Phase-4 CO2 cache-path gap (CO2-02, NFR-05); 05-03 adds the Phase 5 Drift schema foundation (schema-only); 05-04 wires sugar/fiber/salt through FoodItem/MealEntry/repository (NUTR-01 still not fully delivered — daily-totals rollup is 05-10-PLAN.md, dashboard/insights UI later still); remaining Phase 5 requirements are test-stub-scaffolded only so far
 
 ```
-[██████░░░░] 67%
+[███████░░░] 69%
 ```
 
 ### Initialization Progress
@@ -135,9 +135,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-27T21:15:12.455Z
-**Stopped at:** Completed 05-03-PLAN.md -- Phase 5 Drift schema foundation (5 new tables + MealEntryTable nutrient columns + schemaVersion 3->4)
-**Next action:** Execute Plan 05-02 — CO2 cache-path gap fix (Phase 4 deferred item folded in)
+**Last session:** 2026-07-27T21:22:39.725Z
+**Stopped at:** Completed 05-04-PLAN.md -- FoodItem/MealEntry gain sugar/fiber/salt end-to-end; write path persists them from personal overrides/custom foods
+**Next action:** Execute Plan 05-05 — New DAOs: Co2Settings, Weight, NotificationPrefs, BackupMetadata
 **Suggested next command:** `/gsd:execute-phase 5`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
@@ -236,6 +236,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 05-02]: user_food_cache_fts CO2 join only ever reaches 'medium' confidence (no per-cached-item override table exists), mirroring off_ref.products' category-average tier
 - [Phase 05-03]: saltSnapshot (not sodiumSnapshot) on MealEntryTable -- matches this app's established EU-label 'salt (g)' convention from UserFoodTable.salt; no unit conversion invented
 - [Phase 05-03]: Phase 5 singleton settings tables (Co2SettingsTable/WeightSettingsTable/NotificationPrefsTable/BackupMetadataTable) all reuse UserProfileTable's upsert-on-PK convention; DAOs deliberately deferred to a later plan
+- [Phase 05-04]: FoodItem.fromQueryRow never populates sugar100g/fiber100g/salt100g -- off_ref/user_food_cache tables have no such columns; documented permanent null, not an oversight
+- [Phase 05-04]: No referenceAmountG rescale added to FoodCatalogDao._foodItemFromUserFoodRow for the new nutrient fields -- mirrors this method's existing non-rescaled treatment of every other macro field (pre-existing Phase 4 simplification, out of scope)
 
 ## Performance Metrics
 
@@ -266,3 +268,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 05 P01 | ~12min | 5 tasks | 25 files |
 | Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P02 | ~10min | 2 tasks | 3 files |
 | Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P03 | 10min | 2 tasks | 9 files |
+| Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P04 | ~5min | 2 tasks | 5 files |
