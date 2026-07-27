@@ -91,15 +91,28 @@ final class FoodCatalogRepository implements IFoodCatalogRepository {
       if (apiResult == null) return local; // API miss: return local CO₂ if any
 
       final FoodItem enriched;
+      // The single most-specific category tag from whichever FoodItem still
+      // carries the API's categoriesTags list (OFF API order is
+      // most-specific-first, matching lookupByBarcodeFromApi's iteration
+      // order). copyWith() does not touch categoriesTags, so when merging
+      // (the `local != null` branch below), apiResult (not enriched) is the
+      // correct source.
+      final String? primaryCategoryTag;
       if (local != null) {
         // Local has CO₂ data but null macros. Merge: API macros + local CO₂.
         enriched = apiResult.copyWith(
           co2e100g: local.co2e100g,
           confidenceBand: local.confidenceBand,
         );
+        primaryCategoryTag = apiResult.categoriesTags?.isNotEmpty == true
+            ? apiResult.categoriesTags!.first
+            : null;
       } else {
         // No local match at all: enrich the API result with category CO₂.
         enriched = await _dao.lookupByBarcodeFromApi(barcode, apiResult);
+        primaryCategoryTag = enriched.categoriesTags?.isNotEmpty == true
+            ? enriched.categoriesTags!.first
+            : null;
       }
 
       // Cache to UserFoodCacheTable so future local lookups find this product.
@@ -117,7 +130,7 @@ final class FoodCatalogRepository implements IFoodCatalogRepository {
               protein100g: Value(enriched.protein100g),
               carbs100g: Value(enriched.carbs100g),
               fat100g: Value(enriched.fat100g),
-              categoriesTags: const Value(null),
+              categoriesTags: Value(primaryCategoryTag),
               hlcMillis: BigInt.from(DateTime.now().millisecondsSinceEpoch),
               hlcCounter: 0,
               hlcNodeId: 'local',
@@ -179,7 +192,16 @@ final class FoodCatalogRepository implements IFoodCatalogRepository {
               protein100g: Value(item.protein100g),
               carbs100g: Value(item.carbs100g),
               fat100g: Value(item.fat100g),
-              categoriesTags: const Value(null),
+              // Single most-specific category tag (OFF API order is
+              // most-specific-first) — mirrors lookupByBarcode's cache-write
+              // path so a search-fetched product also shows a CO2 estimate
+              // on a later offline local search (see searchLocalFoods'
+              // user_food_cache_fts join).
+              categoriesTags: Value(
+                item.categoriesTags?.isNotEmpty == true
+                    ? item.categoriesTags!.first
+                    : null,
+              ),
               hlcMillis: BigInt.from(DateTime.now().millisecondsSinceEpoch),
               hlcCounter: 0,
               hlcNodeId: 'local',
