@@ -125,7 +125,27 @@ Plans:
   3. Data Analysis screen shows today's breakdown by meal, largest contributors, goal comparison with dynamic message, switchable 7-day / 30-day rolling trend, Improvement Opportunities, expandable per-serving + per-100g detail, Estimate Transparency, and an Insights Timeline — all working fully offline.
   4. Weight tracking: user can log weight (value/unit/date/note), view an interactive trend chart (7d/30d/90d/1yr/all), set an optional weight goal with progress on the chart, and configure weigh-in reminder frequency + day; Weight is primarily under Profile/Settings with the Insights-tab placement resolved as a documented design decision.
   5. Local notifications work via `flutter_local_notifications` only (zero FCM/APNs); user can export all data as CSV/Excel/JSON zip with manifest, create manual backups (device/cloud/share), configure automatic backups, restore from backup with preview + explicit confirmation, and delete all local data via a typed-confirmation Danger Zone. In Local Mode, no data is ever transmitted to any server without explicit user action.
-**Plans**: TBD
+**Plans**: 19 plans
+Plans:
+- [ ] 05-01-PLAN.md — Wave 0 test stubs (25 files across all six sub-domains)
+- [ ] 05-02-PLAN.md — CO2 cache-path gap fix (Phase 4 deferred item folded in)
+- [ ] 05-03-PLAN.md — Schema: 5 new tables + MealEntryTable nutrient columns (schemaVersion 3→4)
+- [ ] 05-04-PLAN.md — FoodItem/MealEntry nutrient snapshot entity + repository updates
+- [ ] 05-05-PLAN.md — New DAOs: Co2Settings, Weight, NotificationPrefs, BackupMetadata
+- [ ] 05-06-PLAN.md — CO2 Settings domain (entity, repository, notifier, DI)
+- [ ] 05-07-PLAN.md — Weight Tracking domain (entity, repository, notifier, DI)
+- [ ] 05-08-PLAN.md — Package installs (fl_chart, flutter_local_notifications, timezone, flutter_timezone) + NotificationService
+- [ ] 05-09-PLAN.md — Package installs (share_plus, csv, excel) + BackupExportService
+- [ ] 05-10-PLAN.md — DailyTotalsCalculator + PersonalCo2MultiplierCalculator
+- [ ] 05-11-PLAN.md — Dashboard widgets (metric cards, sparkline, quick insight, mode indicator, CO2 prompt)
+- [ ] 05-12-PLAN.md — CO2 Calculation Settings screen
+- [ ] 05-13-PLAN.md — Weight Tracking screen (chart, goal, reminders)
+- [ ] 05-14-PLAN.md — Meal reminder settings section widget
+- [ ] 05-15-PLAN.md — Data Analysis screen core (breakdown, contributors, goal, trend, transparency, detailed food analysis)
+- [ ] 05-16-PLAN.md — Backup & Restore screen
+- [ ] 05-17-PLAN.md — Improvement Opportunities + Insights Timeline
+- [ ] 05-18-PLAN.md — Final integration: router wiring, Dashboard assembly, Settings entry points
+- [ ] 05-19-PLAN.md — Offline-proof test + NFR-05 audit + full regression
 **UI hint**: yes
 
 ### Phase 6: Onboarding, Legal Consent, Legal Hub, ED Safety Nets, Accessibility & Pre-Submission
@@ -183,7 +203,7 @@ Plans:
 | 2. Food Catalog Ingest & Search | 7/7 | Complete   | 2026-07-20 |
 | 3. Barcode Scanning & CO₂ Factor Table | 5/5 | Complete   | 2026-07-22 |
 | 4. Meal Logging Core | 12/13 | In Progress|  |
-| 5. Full Local App (Local Mode Shippable) | 0/0 | Not started | - |
+| 5. Full Local App (Local Mode Shippable) | 0/19 | Planned | - |
 | 6. Onboarding, Legal & Pre-Submission | 0/0 | Not started | - |
 | 7. Keycloak Auth + Account Mode + Sync | 0/0 | Not started | - |
 | 8. Reference Data Delivery (Full OFF Pack) | 0/0 | Not started | - |
