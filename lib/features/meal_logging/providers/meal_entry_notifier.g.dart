@@ -57,7 +57,7 @@ final class MealEntryNotifierProvider
   MealEntryNotifier create() => MealEntryNotifier();
 }
 
-String _$mealEntryNotifierHash() => r'003d16461cb89c0578a4153d6cec7984af1f6c9d';
+String _$mealEntryNotifierHash() => r'7165b7afee83285bc4c1ab7e423a1c702579b6a3';
 
 /// AsyncNotifier exposing today's logged [MealEntry] rows and the mutation
 /// surface (log/edit/delete/duplicate/undo) the UI layer (Plans 04-08

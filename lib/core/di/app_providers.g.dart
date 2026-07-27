@@ -13,6 +13,12 @@ part of 'app_providers.dart';
 /// keepAlive: true — DAO must persist for the full ProviderScope lifetime
 /// because it is referenced by [foodCatalogRepositoryProvider] which is also
 /// keep-alive.
+///
+/// Constructs an explicit [FoodCatalogDao] instance with [UserFoodDao]
+/// wired in (LOG-11 override precedence) rather than using
+/// `AppDatabase.foodCatalogDao`'s generated accessor — the generated
+/// accessor's constructor call has no `userFoodDao` argument since
+/// `@DriftAccessor`'s codegen only ever passes the attached database.
 
 @ProviderFor(foodCatalogDao)
 final foodCatalogDaoProvider = FoodCatalogDaoProvider._();
@@ -22,6 +28,12 @@ final foodCatalogDaoProvider = FoodCatalogDaoProvider._();
 /// keepAlive: true — DAO must persist for the full ProviderScope lifetime
 /// because it is referenced by [foodCatalogRepositoryProvider] which is also
 /// keep-alive.
+///
+/// Constructs an explicit [FoodCatalogDao] instance with [UserFoodDao]
+/// wired in (LOG-11 override precedence) rather than using
+/// `AppDatabase.foodCatalogDao`'s generated accessor — the generated
+/// accessor's constructor call has no `userFoodDao` argument since
+/// `@DriftAccessor`'s codegen only ever passes the attached database.
 
 final class FoodCatalogDaoProvider
     extends $FunctionalProvider<FoodCatalogDao, FoodCatalogDao, FoodCatalogDao>
@@ -31,6 +43,12 @@ final class FoodCatalogDaoProvider
   /// keepAlive: true — DAO must persist for the full ProviderScope lifetime
   /// because it is referenced by [foodCatalogRepositoryProvider] which is also
   /// keep-alive.
+  ///
+  /// Constructs an explicit [FoodCatalogDao] instance with [UserFoodDao]
+  /// wired in (LOG-11 override precedence) rather than using
+  /// `AppDatabase.foodCatalogDao`'s generated accessor — the generated
+  /// accessor's constructor call has no `userFoodDao` argument since
+  /// `@DriftAccessor`'s codegen only ever passes the attached database.
   FoodCatalogDaoProvider._()
     : super(
         from: null,
@@ -64,7 +82,7 @@ final class FoodCatalogDaoProvider
   }
 }
 
-String _$foodCatalogDaoHash() => r'64c5e8a123018a8f84092f390b0fef355535eec7';
+String _$foodCatalogDaoHash() => r'7e7f68ac0514ca3276e96a5754ba6022af3bee85';
 
 /// Provides the [OffApiClient] singleton.
 ///

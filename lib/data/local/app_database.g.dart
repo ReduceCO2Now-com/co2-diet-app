@@ -3427,6 +3427,41 @@ class $MealEntryTableTable extends MealEntryTable
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _sugar100gSnapshotMeta = const VerificationMeta(
+    'sugar100gSnapshot',
+  );
+  @override
+  late final GeneratedColumn<double> sugar100gSnapshot =
+      GeneratedColumn<double>(
+        'sugar100g_snapshot',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _fiber100gSnapshotMeta = const VerificationMeta(
+    'fiber100gSnapshot',
+  );
+  @override
+  late final GeneratedColumn<double> fiber100gSnapshot =
+      GeneratedColumn<double>(
+        'fiber100g_snapshot',
+        aliasedName,
+        true,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _saltSnapshotMeta = const VerificationMeta(
+    'saltSnapshot',
+  );
+  @override
+  late final GeneratedColumn<double> saltSnapshot = GeneratedColumn<double>(
+    'salt_snapshot',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _co2e100gSnapshotMeta = const VerificationMeta(
     'co2e100gSnapshot',
   );
@@ -3501,6 +3536,9 @@ class $MealEntryTableTable extends MealEntryTable
     protein100gSnapshot,
     carbs100gSnapshot,
     fat100gSnapshot,
+    sugar100gSnapshot,
+    fiber100gSnapshot,
+    saltSnapshot,
     co2e100gSnapshot,
     confidenceBandSnapshot,
     co2MethodologyVersionSnapshot,
@@ -3643,6 +3681,33 @@ class $MealEntryTableTable extends MealEntryTable
         ),
       );
     }
+    if (data.containsKey('sugar100g_snapshot')) {
+      context.handle(
+        _sugar100gSnapshotMeta,
+        sugar100gSnapshot.isAcceptableOrUnknown(
+          data['sugar100g_snapshot']!,
+          _sugar100gSnapshotMeta,
+        ),
+      );
+    }
+    if (data.containsKey('fiber100g_snapshot')) {
+      context.handle(
+        _fiber100gSnapshotMeta,
+        fiber100gSnapshot.isAcceptableOrUnknown(
+          data['fiber100g_snapshot']!,
+          _fiber100gSnapshotMeta,
+        ),
+      );
+    }
+    if (data.containsKey('salt_snapshot')) {
+      context.handle(
+        _saltSnapshotMeta,
+        saltSnapshot.isAcceptableOrUnknown(
+          data['salt_snapshot']!,
+          _saltSnapshotMeta,
+        ),
+      );
+    }
     if (data.containsKey('co2e100g_snapshot')) {
       context.handle(
         _co2e100gSnapshotMeta,
@@ -3767,6 +3832,18 @@ class $MealEntryTableTable extends MealEntryTable
         DriftSqlType.double,
         data['${effectivePrefix}fat100g_snapshot'],
       ),
+      sugar100gSnapshot: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}sugar100g_snapshot'],
+      ),
+      fiber100gSnapshot: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}fiber100g_snapshot'],
+      ),
+      saltSnapshot: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}salt_snapshot'],
+      ),
       co2e100gSnapshot: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}co2e100g_snapshot'],
@@ -3865,6 +3942,19 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
   /// Fat in g per 100 g/ml, captured at log time.
   final double? fat100gSnapshot;
 
+  /// Sugar in g per 100 g/ml, captured at log time. Added in Phase 5
+  /// (NUTR-01) — see class doc for nullability rules.
+  final double? sugar100gSnapshot;
+
+  /// Fiber in g per 100 g/ml, captured at log time. Added in Phase 5
+  /// (NUTR-01) — see class doc for nullability rules.
+  final double? fiber100gSnapshot;
+
+  /// Salt in g per 100 g/ml, captured at log time (this app's EU-label
+  /// "sodium" convention — see class doc). Added in Phase 5 (NUTR-01) —
+  /// see class doc for nullability rules.
+  final double? saltSnapshot;
+
   /// kg CO2e per kg product, captured at log time.
   final double? co2e100gSnapshot;
 
@@ -3908,6 +3998,9 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
     this.protein100gSnapshot,
     this.carbs100gSnapshot,
     this.fat100gSnapshot,
+    this.sugar100gSnapshot,
+    this.fiber100gSnapshot,
+    this.saltSnapshot,
     this.co2e100gSnapshot,
     this.confidenceBandSnapshot,
     this.co2MethodologyVersionSnapshot,
@@ -3953,6 +4046,15 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
     }
     if (!nullToAbsent || fat100gSnapshot != null) {
       map['fat100g_snapshot'] = Variable<double>(fat100gSnapshot);
+    }
+    if (!nullToAbsent || sugar100gSnapshot != null) {
+      map['sugar100g_snapshot'] = Variable<double>(sugar100gSnapshot);
+    }
+    if (!nullToAbsent || fiber100gSnapshot != null) {
+      map['fiber100g_snapshot'] = Variable<double>(fiber100gSnapshot);
+    }
+    if (!nullToAbsent || saltSnapshot != null) {
+      map['salt_snapshot'] = Variable<double>(saltSnapshot);
     }
     if (!nullToAbsent || co2e100gSnapshot != null) {
       map['co2e100g_snapshot'] = Variable<double>(co2e100gSnapshot);
@@ -4003,6 +4105,15 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
       fat100gSnapshot: fat100gSnapshot == null && nullToAbsent
           ? const Value.absent()
           : Value(fat100gSnapshot),
+      sugar100gSnapshot: sugar100gSnapshot == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sugar100gSnapshot),
+      fiber100gSnapshot: fiber100gSnapshot == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fiber100gSnapshot),
+      saltSnapshot: saltSnapshot == null && nullToAbsent
+          ? const Value.absent()
+          : Value(saltSnapshot),
       co2e100gSnapshot: co2e100gSnapshot == null && nullToAbsent
           ? const Value.absent()
           : Value(co2e100gSnapshot),
@@ -4053,6 +4164,13 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
         json['carbs100gSnapshot'],
       ),
       fat100gSnapshot: serializer.fromJson<double?>(json['fat100gSnapshot']),
+      sugar100gSnapshot: serializer.fromJson<double?>(
+        json['sugar100gSnapshot'],
+      ),
+      fiber100gSnapshot: serializer.fromJson<double?>(
+        json['fiber100gSnapshot'],
+      ),
+      saltSnapshot: serializer.fromJson<double?>(json['saltSnapshot']),
       co2e100gSnapshot: serializer.fromJson<double?>(json['co2e100gSnapshot']),
       confidenceBandSnapshot: serializer.fromJson<String?>(
         json['confidenceBandSnapshot'],
@@ -4089,6 +4207,9 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
       'protein100gSnapshot': serializer.toJson<double?>(protein100gSnapshot),
       'carbs100gSnapshot': serializer.toJson<double?>(carbs100gSnapshot),
       'fat100gSnapshot': serializer.toJson<double?>(fat100gSnapshot),
+      'sugar100gSnapshot': serializer.toJson<double?>(sugar100gSnapshot),
+      'fiber100gSnapshot': serializer.toJson<double?>(fiber100gSnapshot),
+      'saltSnapshot': serializer.toJson<double?>(saltSnapshot),
       'co2e100gSnapshot': serializer.toJson<double?>(co2e100gSnapshot),
       'confidenceBandSnapshot': serializer.toJson<String?>(
         confidenceBandSnapshot,
@@ -4119,6 +4240,9 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
     Value<double?> protein100gSnapshot = const Value.absent(),
     Value<double?> carbs100gSnapshot = const Value.absent(),
     Value<double?> fat100gSnapshot = const Value.absent(),
+    Value<double?> sugar100gSnapshot = const Value.absent(),
+    Value<double?> fiber100gSnapshot = const Value.absent(),
+    Value<double?> saltSnapshot = const Value.absent(),
     Value<double?> co2e100gSnapshot = const Value.absent(),
     Value<String?> confidenceBandSnapshot = const Value.absent(),
     Value<String?> co2MethodologyVersionSnapshot = const Value.absent(),
@@ -4152,6 +4276,13 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
     fat100gSnapshot: fat100gSnapshot.present
         ? fat100gSnapshot.value
         : this.fat100gSnapshot,
+    sugar100gSnapshot: sugar100gSnapshot.present
+        ? sugar100gSnapshot.value
+        : this.sugar100gSnapshot,
+    fiber100gSnapshot: fiber100gSnapshot.present
+        ? fiber100gSnapshot.value
+        : this.fiber100gSnapshot,
+    saltSnapshot: saltSnapshot.present ? saltSnapshot.value : this.saltSnapshot,
     co2e100gSnapshot: co2e100gSnapshot.present
         ? co2e100gSnapshot.value
         : this.co2e100gSnapshot,
@@ -4199,6 +4330,15 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
       fat100gSnapshot: data.fat100gSnapshot.present
           ? data.fat100gSnapshot.value
           : this.fat100gSnapshot,
+      sugar100gSnapshot: data.sugar100gSnapshot.present
+          ? data.sugar100gSnapshot.value
+          : this.sugar100gSnapshot,
+      fiber100gSnapshot: data.fiber100gSnapshot.present
+          ? data.fiber100gSnapshot.value
+          : this.fiber100gSnapshot,
+      saltSnapshot: data.saltSnapshot.present
+          ? data.saltSnapshot.value
+          : this.saltSnapshot,
       co2e100gSnapshot: data.co2e100gSnapshot.present
           ? data.co2e100gSnapshot.value
           : this.co2e100gSnapshot,
@@ -4233,6 +4373,9 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
           ..write('protein100gSnapshot: $protein100gSnapshot, ')
           ..write('carbs100gSnapshot: $carbs100gSnapshot, ')
           ..write('fat100gSnapshot: $fat100gSnapshot, ')
+          ..write('sugar100gSnapshot: $sugar100gSnapshot, ')
+          ..write('fiber100gSnapshot: $fiber100gSnapshot, ')
+          ..write('saltSnapshot: $saltSnapshot, ')
           ..write('co2e100gSnapshot: $co2e100gSnapshot, ')
           ..write('confidenceBandSnapshot: $confidenceBandSnapshot, ')
           ..write(
@@ -4263,6 +4406,9 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
     protein100gSnapshot,
     carbs100gSnapshot,
     fat100gSnapshot,
+    sugar100gSnapshot,
+    fiber100gSnapshot,
+    saltSnapshot,
     co2e100gSnapshot,
     confidenceBandSnapshot,
     co2MethodologyVersionSnapshot,
@@ -4290,6 +4436,9 @@ class MealEntryRow extends DataClass implements Insertable<MealEntryRow> {
           other.protein100gSnapshot == this.protein100gSnapshot &&
           other.carbs100gSnapshot == this.carbs100gSnapshot &&
           other.fat100gSnapshot == this.fat100gSnapshot &&
+          other.sugar100gSnapshot == this.sugar100gSnapshot &&
+          other.fiber100gSnapshot == this.fiber100gSnapshot &&
+          other.saltSnapshot == this.saltSnapshot &&
           other.co2e100gSnapshot == this.co2e100gSnapshot &&
           other.confidenceBandSnapshot == this.confidenceBandSnapshot &&
           other.co2MethodologyVersionSnapshot ==
@@ -4316,6 +4465,9 @@ class MealEntryTableCompanion extends UpdateCompanion<MealEntryRow> {
   final Value<double?> protein100gSnapshot;
   final Value<double?> carbs100gSnapshot;
   final Value<double?> fat100gSnapshot;
+  final Value<double?> sugar100gSnapshot;
+  final Value<double?> fiber100gSnapshot;
+  final Value<double?> saltSnapshot;
   final Value<double?> co2e100gSnapshot;
   final Value<String?> confidenceBandSnapshot;
   final Value<String?> co2MethodologyVersionSnapshot;
@@ -4340,6 +4492,9 @@ class MealEntryTableCompanion extends UpdateCompanion<MealEntryRow> {
     this.protein100gSnapshot = const Value.absent(),
     this.carbs100gSnapshot = const Value.absent(),
     this.fat100gSnapshot = const Value.absent(),
+    this.sugar100gSnapshot = const Value.absent(),
+    this.fiber100gSnapshot = const Value.absent(),
+    this.saltSnapshot = const Value.absent(),
     this.co2e100gSnapshot = const Value.absent(),
     this.confidenceBandSnapshot = const Value.absent(),
     this.co2MethodologyVersionSnapshot = const Value.absent(),
@@ -4365,6 +4520,9 @@ class MealEntryTableCompanion extends UpdateCompanion<MealEntryRow> {
     this.protein100gSnapshot = const Value.absent(),
     this.carbs100gSnapshot = const Value.absent(),
     this.fat100gSnapshot = const Value.absent(),
+    this.sugar100gSnapshot = const Value.absent(),
+    this.fiber100gSnapshot = const Value.absent(),
+    this.saltSnapshot = const Value.absent(),
     this.co2e100gSnapshot = const Value.absent(),
     this.confidenceBandSnapshot = const Value.absent(),
     this.co2MethodologyVersionSnapshot = const Value.absent(),
@@ -4401,6 +4559,9 @@ class MealEntryTableCompanion extends UpdateCompanion<MealEntryRow> {
     Expression<double>? protein100gSnapshot,
     Expression<double>? carbs100gSnapshot,
     Expression<double>? fat100gSnapshot,
+    Expression<double>? sugar100gSnapshot,
+    Expression<double>? fiber100gSnapshot,
+    Expression<double>? saltSnapshot,
     Expression<double>? co2e100gSnapshot,
     Expression<String>? confidenceBandSnapshot,
     Expression<String>? co2MethodologyVersionSnapshot,
@@ -4429,6 +4590,9 @@ class MealEntryTableCompanion extends UpdateCompanion<MealEntryRow> {
         'protein100g_snapshot': protein100gSnapshot,
       if (carbs100gSnapshot != null) 'carbs100g_snapshot': carbs100gSnapshot,
       if (fat100gSnapshot != null) 'fat100g_snapshot': fat100gSnapshot,
+      if (sugar100gSnapshot != null) 'sugar100g_snapshot': sugar100gSnapshot,
+      if (fiber100gSnapshot != null) 'fiber100g_snapshot': fiber100gSnapshot,
+      if (saltSnapshot != null) 'salt_snapshot': saltSnapshot,
       if (co2e100gSnapshot != null) 'co2e100g_snapshot': co2e100gSnapshot,
       if (confidenceBandSnapshot != null)
         'confidence_band_snapshot': confidenceBandSnapshot,
@@ -4458,6 +4622,9 @@ class MealEntryTableCompanion extends UpdateCompanion<MealEntryRow> {
     Value<double?>? protein100gSnapshot,
     Value<double?>? carbs100gSnapshot,
     Value<double?>? fat100gSnapshot,
+    Value<double?>? sugar100gSnapshot,
+    Value<double?>? fiber100gSnapshot,
+    Value<double?>? saltSnapshot,
     Value<double?>? co2e100gSnapshot,
     Value<String?>? confidenceBandSnapshot,
     Value<String?>? co2MethodologyVersionSnapshot,
@@ -4483,6 +4650,9 @@ class MealEntryTableCompanion extends UpdateCompanion<MealEntryRow> {
       protein100gSnapshot: protein100gSnapshot ?? this.protein100gSnapshot,
       carbs100gSnapshot: carbs100gSnapshot ?? this.carbs100gSnapshot,
       fat100gSnapshot: fat100gSnapshot ?? this.fat100gSnapshot,
+      sugar100gSnapshot: sugar100gSnapshot ?? this.sugar100gSnapshot,
+      fiber100gSnapshot: fiber100gSnapshot ?? this.fiber100gSnapshot,
+      saltSnapshot: saltSnapshot ?? this.saltSnapshot,
       co2e100gSnapshot: co2e100gSnapshot ?? this.co2e100gSnapshot,
       confidenceBandSnapshot:
           confidenceBandSnapshot ?? this.confidenceBandSnapshot,
@@ -4556,6 +4726,15 @@ class MealEntryTableCompanion extends UpdateCompanion<MealEntryRow> {
     if (fat100gSnapshot.present) {
       map['fat100g_snapshot'] = Variable<double>(fat100gSnapshot.value);
     }
+    if (sugar100gSnapshot.present) {
+      map['sugar100g_snapshot'] = Variable<double>(sugar100gSnapshot.value);
+    }
+    if (fiber100gSnapshot.present) {
+      map['fiber100g_snapshot'] = Variable<double>(fiber100gSnapshot.value);
+    }
+    if (saltSnapshot.present) {
+      map['salt_snapshot'] = Variable<double>(saltSnapshot.value);
+    }
     if (co2e100gSnapshot.present) {
       map['co2e100g_snapshot'] = Variable<double>(co2e100gSnapshot.value);
     }
@@ -4601,6 +4780,9 @@ class MealEntryTableCompanion extends UpdateCompanion<MealEntryRow> {
           ..write('protein100gSnapshot: $protein100gSnapshot, ')
           ..write('carbs100gSnapshot: $carbs100gSnapshot, ')
           ..write('fat100gSnapshot: $fat100gSnapshot, ')
+          ..write('sugar100gSnapshot: $sugar100gSnapshot, ')
+          ..write('fiber100gSnapshot: $fiber100gSnapshot, ')
+          ..write('saltSnapshot: $saltSnapshot, ')
           ..write('co2e100gSnapshot: $co2e100gSnapshot, ')
           ..write('confidenceBandSnapshot: $confidenceBandSnapshot, ')
           ..write(
@@ -7091,6 +7273,3815 @@ class UserFoodTableCompanion extends UpdateCompanion<UserFoodRow> {
   }
 }
 
+class $Co2SettingsTableTable extends Co2SettingsTable
+    with TableInfo<$Co2SettingsTableTable, Co2SettingsRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $Co2SettingsTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hlcMillisMeta = const VerificationMeta(
+    'hlcMillis',
+  );
+  @override
+  late final GeneratedColumn<BigInt> hlcMillis = GeneratedColumn<BigInt>(
+    'hlc_millis',
+    aliasedName,
+    false,
+    type: DriftSqlType.bigInt,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hlcCounterMeta = const VerificationMeta(
+    'hlcCounter',
+  );
+  @override
+  late final GeneratedColumn<int> hlcCounter = GeneratedColumn<int>(
+    'hlc_counter',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hlcNodeIdMeta = const VerificationMeta(
+    'hlcNodeId',
+  );
+  @override
+  late final GeneratedColumn<String> hlcNodeId = GeneratedColumn<String>(
+    'hlc_node_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dirtyMeta = const VerificationMeta('dirty');
+  @override
+  late final GeneratedColumn<bool> dirty = GeneratedColumn<bool>(
+    'dirty',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("dirty" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _locationCountryMeta = const VerificationMeta(
+    'locationCountry',
+  );
+  @override
+  late final GeneratedColumn<String> locationCountry = GeneratedColumn<String>(
+    'location_country',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _locationRegionMeta = const VerificationMeta(
+    'locationRegion',
+  );
+  @override
+  late final GeneratedColumn<String> locationRegion = GeneratedColumn<String>(
+    'location_region',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _purchasingSourceMeta = const VerificationMeta(
+    'purchasingSource',
+  );
+  @override
+  late final GeneratedColumn<String> purchasingSource = GeneratedColumn<String>(
+    'purchasing_source',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _shoppingTransportMeta = const VerificationMeta(
+    'shoppingTransport',
+  );
+  @override
+  late final GeneratedColumn<String> shoppingTransport =
+      GeneratedColumn<String>(
+        'shopping_transport',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _cookingMethodMeta = const VerificationMeta(
+    'cookingMethod',
+  );
+  @override
+  late final GeneratedColumn<String> cookingMethod = GeneratedColumn<String>(
+    'cooking_method',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _foodStorageMeta = const VerificationMeta(
+    'foodStorage',
+  );
+  @override
+  late final GeneratedColumn<String> foodStorage = GeneratedColumn<String>(
+    'food_storage',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _householdSizeMeta = const VerificationMeta(
+    'householdSize',
+  );
+  @override
+  late final GeneratedColumn<int> householdSize = GeneratedColumn<int>(
+    'household_size',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _foodWasteLevelMeta = const VerificationMeta(
+    'foodWasteLevel',
+  );
+  @override
+  late final GeneratedColumn<String> foodWasteLevel = GeneratedColumn<String>(
+    'food_waste_level',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    hlcMillis,
+    hlcCounter,
+    hlcNodeId,
+    dirty,
+    deletedAt,
+    locationCountry,
+    locationRegion,
+    purchasingSource,
+    shoppingTransport,
+    cookingMethod,
+    foodStorage,
+    householdSize,
+    foodWasteLevel,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'co2_settings_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Co2SettingsRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('hlc_millis')) {
+      context.handle(
+        _hlcMillisMeta,
+        hlcMillis.isAcceptableOrUnknown(data['hlc_millis']!, _hlcMillisMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcMillisMeta);
+    }
+    if (data.containsKey('hlc_counter')) {
+      context.handle(
+        _hlcCounterMeta,
+        hlcCounter.isAcceptableOrUnknown(data['hlc_counter']!, _hlcCounterMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcCounterMeta);
+    }
+    if (data.containsKey('hlc_node_id')) {
+      context.handle(
+        _hlcNodeIdMeta,
+        hlcNodeId.isAcceptableOrUnknown(data['hlc_node_id']!, _hlcNodeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcNodeIdMeta);
+    }
+    if (data.containsKey('dirty')) {
+      context.handle(
+        _dirtyMeta,
+        dirty.isAcceptableOrUnknown(data['dirty']!, _dirtyMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('location_country')) {
+      context.handle(
+        _locationCountryMeta,
+        locationCountry.isAcceptableOrUnknown(
+          data['location_country']!,
+          _locationCountryMeta,
+        ),
+      );
+    }
+    if (data.containsKey('location_region')) {
+      context.handle(
+        _locationRegionMeta,
+        locationRegion.isAcceptableOrUnknown(
+          data['location_region']!,
+          _locationRegionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('purchasing_source')) {
+      context.handle(
+        _purchasingSourceMeta,
+        purchasingSource.isAcceptableOrUnknown(
+          data['purchasing_source']!,
+          _purchasingSourceMeta,
+        ),
+      );
+    }
+    if (data.containsKey('shopping_transport')) {
+      context.handle(
+        _shoppingTransportMeta,
+        shoppingTransport.isAcceptableOrUnknown(
+          data['shopping_transport']!,
+          _shoppingTransportMeta,
+        ),
+      );
+    }
+    if (data.containsKey('cooking_method')) {
+      context.handle(
+        _cookingMethodMeta,
+        cookingMethod.isAcceptableOrUnknown(
+          data['cooking_method']!,
+          _cookingMethodMeta,
+        ),
+      );
+    }
+    if (data.containsKey('food_storage')) {
+      context.handle(
+        _foodStorageMeta,
+        foodStorage.isAcceptableOrUnknown(
+          data['food_storage']!,
+          _foodStorageMeta,
+        ),
+      );
+    }
+    if (data.containsKey('household_size')) {
+      context.handle(
+        _householdSizeMeta,
+        householdSize.isAcceptableOrUnknown(
+          data['household_size']!,
+          _householdSizeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('food_waste_level')) {
+      context.handle(
+        _foodWasteLevelMeta,
+        foodWasteLevel.isAcceptableOrUnknown(
+          data['food_waste_level']!,
+          _foodWasteLevelMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Co2SettingsRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Co2SettingsRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      hlcMillis: attachedDatabase.typeMapping.read(
+        DriftSqlType.bigInt,
+        data['${effectivePrefix}hlc_millis'],
+      )!,
+      hlcCounter: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}hlc_counter'],
+      )!,
+      hlcNodeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}hlc_node_id'],
+      )!,
+      dirty: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}dirty'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      locationCountry: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}location_country'],
+      ),
+      locationRegion: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}location_region'],
+      ),
+      purchasingSource: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}purchasing_source'],
+      ),
+      shoppingTransport: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}shopping_transport'],
+      ),
+      cookingMethod: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}cooking_method'],
+      ),
+      foodStorage: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}food_storage'],
+      ),
+      householdSize: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}household_size'],
+      ),
+      foodWasteLevel: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}food_waste_level'],
+      ),
+    );
+  }
+
+  @override
+  $Co2SettingsTableTable createAlias(String alias) {
+    return $Co2SettingsTableTable(attachedDatabase, alias);
+  }
+}
+
+class Co2SettingsRow extends DataClass implements Insertable<Co2SettingsRow> {
+  /// Primary key: UUID v7 stored as TEXT (time-ordered, globally unique).
+  final String id;
+
+  /// HLC wall-clock component: milliseconds since Unix epoch.
+  /// Stored as int64 (BigInt in Dart) to fit 64-bit epoch millis.
+  final BigInt hlcMillis;
+
+  /// HLC logical counter: tie-breaking for same-millisecond writes.
+  final int hlcCounter;
+
+  /// HLC node identifier: stable device installation UUID (UUID v4).
+  /// Generated once on first app install and persisted in secure storage.
+  final String hlcNodeId;
+
+  /// Dirty flag: true = row has local changes not yet synced to backend.
+  /// Defaults to true on insert — every new row starts dirty until
+  /// sync confirms receipt.
+  final bool dirty;
+
+  /// Tombstone: null = row is live; non-null = row was soft-deleted.
+  /// Soft-deleted rows are retained for 90 days to allow sync to
+  /// propagate the deletion.
+  final DateTime? deletedAt;
+
+  /// Country the user shops/lives in, used for regional CO2 averages.
+  final String? locationCountry;
+
+  /// Region/state within [locationCountry], used for finer regional
+  /// CO2 averages when available.
+  final String? locationRegion;
+
+  /// Where the user primarily buys food.
+  /// Values: 'supermarket', 'local_farm', 'mix'.
+  final String? purchasingSource;
+
+  /// How the user typically travels to buy food.
+  /// Values: 'car', 'public', 'walk_bike'.
+  final String? shoppingTransport;
+
+  /// The user's primary cooking method.
+  /// Values: 'electric', 'gas', 'induction'.
+  final String? cookingMethod;
+
+  /// The user's food storage setup.
+  /// Values: 'small_fridge', 'large_fridge_freezer'.
+  final String? foodStorage;
+
+  /// Number of people in the user's household.
+  final int? householdSize;
+
+  /// The user's self-reported food waste level.
+  /// Values: 'low', 'medium', 'high'.
+  final String? foodWasteLevel;
+  const Co2SettingsRow({
+    required this.id,
+    required this.hlcMillis,
+    required this.hlcCounter,
+    required this.hlcNodeId,
+    required this.dirty,
+    this.deletedAt,
+    this.locationCountry,
+    this.locationRegion,
+    this.purchasingSource,
+    this.shoppingTransport,
+    this.cookingMethod,
+    this.foodStorage,
+    this.householdSize,
+    this.foodWasteLevel,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['hlc_millis'] = Variable<BigInt>(hlcMillis);
+    map['hlc_counter'] = Variable<int>(hlcCounter);
+    map['hlc_node_id'] = Variable<String>(hlcNodeId);
+    map['dirty'] = Variable<bool>(dirty);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    if (!nullToAbsent || locationCountry != null) {
+      map['location_country'] = Variable<String>(locationCountry);
+    }
+    if (!nullToAbsent || locationRegion != null) {
+      map['location_region'] = Variable<String>(locationRegion);
+    }
+    if (!nullToAbsent || purchasingSource != null) {
+      map['purchasing_source'] = Variable<String>(purchasingSource);
+    }
+    if (!nullToAbsent || shoppingTransport != null) {
+      map['shopping_transport'] = Variable<String>(shoppingTransport);
+    }
+    if (!nullToAbsent || cookingMethod != null) {
+      map['cooking_method'] = Variable<String>(cookingMethod);
+    }
+    if (!nullToAbsent || foodStorage != null) {
+      map['food_storage'] = Variable<String>(foodStorage);
+    }
+    if (!nullToAbsent || householdSize != null) {
+      map['household_size'] = Variable<int>(householdSize);
+    }
+    if (!nullToAbsent || foodWasteLevel != null) {
+      map['food_waste_level'] = Variable<String>(foodWasteLevel);
+    }
+    return map;
+  }
+
+  Co2SettingsTableCompanion toCompanion(bool nullToAbsent) {
+    return Co2SettingsTableCompanion(
+      id: Value(id),
+      hlcMillis: Value(hlcMillis),
+      hlcCounter: Value(hlcCounter),
+      hlcNodeId: Value(hlcNodeId),
+      dirty: Value(dirty),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      locationCountry: locationCountry == null && nullToAbsent
+          ? const Value.absent()
+          : Value(locationCountry),
+      locationRegion: locationRegion == null && nullToAbsent
+          ? const Value.absent()
+          : Value(locationRegion),
+      purchasingSource: purchasingSource == null && nullToAbsent
+          ? const Value.absent()
+          : Value(purchasingSource),
+      shoppingTransport: shoppingTransport == null && nullToAbsent
+          ? const Value.absent()
+          : Value(shoppingTransport),
+      cookingMethod: cookingMethod == null && nullToAbsent
+          ? const Value.absent()
+          : Value(cookingMethod),
+      foodStorage: foodStorage == null && nullToAbsent
+          ? const Value.absent()
+          : Value(foodStorage),
+      householdSize: householdSize == null && nullToAbsent
+          ? const Value.absent()
+          : Value(householdSize),
+      foodWasteLevel: foodWasteLevel == null && nullToAbsent
+          ? const Value.absent()
+          : Value(foodWasteLevel),
+    );
+  }
+
+  factory Co2SettingsRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Co2SettingsRow(
+      id: serializer.fromJson<String>(json['id']),
+      hlcMillis: serializer.fromJson<BigInt>(json['hlcMillis']),
+      hlcCounter: serializer.fromJson<int>(json['hlcCounter']),
+      hlcNodeId: serializer.fromJson<String>(json['hlcNodeId']),
+      dirty: serializer.fromJson<bool>(json['dirty']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      locationCountry: serializer.fromJson<String?>(json['locationCountry']),
+      locationRegion: serializer.fromJson<String?>(json['locationRegion']),
+      purchasingSource: serializer.fromJson<String?>(json['purchasingSource']),
+      shoppingTransport: serializer.fromJson<String?>(
+        json['shoppingTransport'],
+      ),
+      cookingMethod: serializer.fromJson<String?>(json['cookingMethod']),
+      foodStorage: serializer.fromJson<String?>(json['foodStorage']),
+      householdSize: serializer.fromJson<int?>(json['householdSize']),
+      foodWasteLevel: serializer.fromJson<String?>(json['foodWasteLevel']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'hlcMillis': serializer.toJson<BigInt>(hlcMillis),
+      'hlcCounter': serializer.toJson<int>(hlcCounter),
+      'hlcNodeId': serializer.toJson<String>(hlcNodeId),
+      'dirty': serializer.toJson<bool>(dirty),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'locationCountry': serializer.toJson<String?>(locationCountry),
+      'locationRegion': serializer.toJson<String?>(locationRegion),
+      'purchasingSource': serializer.toJson<String?>(purchasingSource),
+      'shoppingTransport': serializer.toJson<String?>(shoppingTransport),
+      'cookingMethod': serializer.toJson<String?>(cookingMethod),
+      'foodStorage': serializer.toJson<String?>(foodStorage),
+      'householdSize': serializer.toJson<int?>(householdSize),
+      'foodWasteLevel': serializer.toJson<String?>(foodWasteLevel),
+    };
+  }
+
+  Co2SettingsRow copyWith({
+    String? id,
+    BigInt? hlcMillis,
+    int? hlcCounter,
+    String? hlcNodeId,
+    bool? dirty,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    Value<String?> locationCountry = const Value.absent(),
+    Value<String?> locationRegion = const Value.absent(),
+    Value<String?> purchasingSource = const Value.absent(),
+    Value<String?> shoppingTransport = const Value.absent(),
+    Value<String?> cookingMethod = const Value.absent(),
+    Value<String?> foodStorage = const Value.absent(),
+    Value<int?> householdSize = const Value.absent(),
+    Value<String?> foodWasteLevel = const Value.absent(),
+  }) => Co2SettingsRow(
+    id: id ?? this.id,
+    hlcMillis: hlcMillis ?? this.hlcMillis,
+    hlcCounter: hlcCounter ?? this.hlcCounter,
+    hlcNodeId: hlcNodeId ?? this.hlcNodeId,
+    dirty: dirty ?? this.dirty,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    locationCountry: locationCountry.present
+        ? locationCountry.value
+        : this.locationCountry,
+    locationRegion: locationRegion.present
+        ? locationRegion.value
+        : this.locationRegion,
+    purchasingSource: purchasingSource.present
+        ? purchasingSource.value
+        : this.purchasingSource,
+    shoppingTransport: shoppingTransport.present
+        ? shoppingTransport.value
+        : this.shoppingTransport,
+    cookingMethod: cookingMethod.present
+        ? cookingMethod.value
+        : this.cookingMethod,
+    foodStorage: foodStorage.present ? foodStorage.value : this.foodStorage,
+    householdSize: householdSize.present
+        ? householdSize.value
+        : this.householdSize,
+    foodWasteLevel: foodWasteLevel.present
+        ? foodWasteLevel.value
+        : this.foodWasteLevel,
+  );
+  Co2SettingsRow copyWithCompanion(Co2SettingsTableCompanion data) {
+    return Co2SettingsRow(
+      id: data.id.present ? data.id.value : this.id,
+      hlcMillis: data.hlcMillis.present ? data.hlcMillis.value : this.hlcMillis,
+      hlcCounter: data.hlcCounter.present
+          ? data.hlcCounter.value
+          : this.hlcCounter,
+      hlcNodeId: data.hlcNodeId.present ? data.hlcNodeId.value : this.hlcNodeId,
+      dirty: data.dirty.present ? data.dirty.value : this.dirty,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      locationCountry: data.locationCountry.present
+          ? data.locationCountry.value
+          : this.locationCountry,
+      locationRegion: data.locationRegion.present
+          ? data.locationRegion.value
+          : this.locationRegion,
+      purchasingSource: data.purchasingSource.present
+          ? data.purchasingSource.value
+          : this.purchasingSource,
+      shoppingTransport: data.shoppingTransport.present
+          ? data.shoppingTransport.value
+          : this.shoppingTransport,
+      cookingMethod: data.cookingMethod.present
+          ? data.cookingMethod.value
+          : this.cookingMethod,
+      foodStorage: data.foodStorage.present
+          ? data.foodStorage.value
+          : this.foodStorage,
+      householdSize: data.householdSize.present
+          ? data.householdSize.value
+          : this.householdSize,
+      foodWasteLevel: data.foodWasteLevel.present
+          ? data.foodWasteLevel.value
+          : this.foodWasteLevel,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Co2SettingsRow(')
+          ..write('id: $id, ')
+          ..write('hlcMillis: $hlcMillis, ')
+          ..write('hlcCounter: $hlcCounter, ')
+          ..write('hlcNodeId: $hlcNodeId, ')
+          ..write('dirty: $dirty, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('locationCountry: $locationCountry, ')
+          ..write('locationRegion: $locationRegion, ')
+          ..write('purchasingSource: $purchasingSource, ')
+          ..write('shoppingTransport: $shoppingTransport, ')
+          ..write('cookingMethod: $cookingMethod, ')
+          ..write('foodStorage: $foodStorage, ')
+          ..write('householdSize: $householdSize, ')
+          ..write('foodWasteLevel: $foodWasteLevel')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    hlcMillis,
+    hlcCounter,
+    hlcNodeId,
+    dirty,
+    deletedAt,
+    locationCountry,
+    locationRegion,
+    purchasingSource,
+    shoppingTransport,
+    cookingMethod,
+    foodStorage,
+    householdSize,
+    foodWasteLevel,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Co2SettingsRow &&
+          other.id == this.id &&
+          other.hlcMillis == this.hlcMillis &&
+          other.hlcCounter == this.hlcCounter &&
+          other.hlcNodeId == this.hlcNodeId &&
+          other.dirty == this.dirty &&
+          other.deletedAt == this.deletedAt &&
+          other.locationCountry == this.locationCountry &&
+          other.locationRegion == this.locationRegion &&
+          other.purchasingSource == this.purchasingSource &&
+          other.shoppingTransport == this.shoppingTransport &&
+          other.cookingMethod == this.cookingMethod &&
+          other.foodStorage == this.foodStorage &&
+          other.householdSize == this.householdSize &&
+          other.foodWasteLevel == this.foodWasteLevel);
+}
+
+class Co2SettingsTableCompanion extends UpdateCompanion<Co2SettingsRow> {
+  final Value<String> id;
+  final Value<BigInt> hlcMillis;
+  final Value<int> hlcCounter;
+  final Value<String> hlcNodeId;
+  final Value<bool> dirty;
+  final Value<DateTime?> deletedAt;
+  final Value<String?> locationCountry;
+  final Value<String?> locationRegion;
+  final Value<String?> purchasingSource;
+  final Value<String?> shoppingTransport;
+  final Value<String?> cookingMethod;
+  final Value<String?> foodStorage;
+  final Value<int?> householdSize;
+  final Value<String?> foodWasteLevel;
+  final Value<int> rowid;
+  const Co2SettingsTableCompanion({
+    this.id = const Value.absent(),
+    this.hlcMillis = const Value.absent(),
+    this.hlcCounter = const Value.absent(),
+    this.hlcNodeId = const Value.absent(),
+    this.dirty = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.locationCountry = const Value.absent(),
+    this.locationRegion = const Value.absent(),
+    this.purchasingSource = const Value.absent(),
+    this.shoppingTransport = const Value.absent(),
+    this.cookingMethod = const Value.absent(),
+    this.foodStorage = const Value.absent(),
+    this.householdSize = const Value.absent(),
+    this.foodWasteLevel = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  Co2SettingsTableCompanion.insert({
+    required String id,
+    required BigInt hlcMillis,
+    required int hlcCounter,
+    required String hlcNodeId,
+    this.dirty = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.locationCountry = const Value.absent(),
+    this.locationRegion = const Value.absent(),
+    this.purchasingSource = const Value.absent(),
+    this.shoppingTransport = const Value.absent(),
+    this.cookingMethod = const Value.absent(),
+    this.foodStorage = const Value.absent(),
+    this.householdSize = const Value.absent(),
+    this.foodWasteLevel = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       hlcMillis = Value(hlcMillis),
+       hlcCounter = Value(hlcCounter),
+       hlcNodeId = Value(hlcNodeId);
+  static Insertable<Co2SettingsRow> custom({
+    Expression<String>? id,
+    Expression<BigInt>? hlcMillis,
+    Expression<int>? hlcCounter,
+    Expression<String>? hlcNodeId,
+    Expression<bool>? dirty,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? locationCountry,
+    Expression<String>? locationRegion,
+    Expression<String>? purchasingSource,
+    Expression<String>? shoppingTransport,
+    Expression<String>? cookingMethod,
+    Expression<String>? foodStorage,
+    Expression<int>? householdSize,
+    Expression<String>? foodWasteLevel,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (hlcMillis != null) 'hlc_millis': hlcMillis,
+      if (hlcCounter != null) 'hlc_counter': hlcCounter,
+      if (hlcNodeId != null) 'hlc_node_id': hlcNodeId,
+      if (dirty != null) 'dirty': dirty,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (locationCountry != null) 'location_country': locationCountry,
+      if (locationRegion != null) 'location_region': locationRegion,
+      if (purchasingSource != null) 'purchasing_source': purchasingSource,
+      if (shoppingTransport != null) 'shopping_transport': shoppingTransport,
+      if (cookingMethod != null) 'cooking_method': cookingMethod,
+      if (foodStorage != null) 'food_storage': foodStorage,
+      if (householdSize != null) 'household_size': householdSize,
+      if (foodWasteLevel != null) 'food_waste_level': foodWasteLevel,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  Co2SettingsTableCompanion copyWith({
+    Value<String>? id,
+    Value<BigInt>? hlcMillis,
+    Value<int>? hlcCounter,
+    Value<String>? hlcNodeId,
+    Value<bool>? dirty,
+    Value<DateTime?>? deletedAt,
+    Value<String?>? locationCountry,
+    Value<String?>? locationRegion,
+    Value<String?>? purchasingSource,
+    Value<String?>? shoppingTransport,
+    Value<String?>? cookingMethod,
+    Value<String?>? foodStorage,
+    Value<int?>? householdSize,
+    Value<String?>? foodWasteLevel,
+    Value<int>? rowid,
+  }) {
+    return Co2SettingsTableCompanion(
+      id: id ?? this.id,
+      hlcMillis: hlcMillis ?? this.hlcMillis,
+      hlcCounter: hlcCounter ?? this.hlcCounter,
+      hlcNodeId: hlcNodeId ?? this.hlcNodeId,
+      dirty: dirty ?? this.dirty,
+      deletedAt: deletedAt ?? this.deletedAt,
+      locationCountry: locationCountry ?? this.locationCountry,
+      locationRegion: locationRegion ?? this.locationRegion,
+      purchasingSource: purchasingSource ?? this.purchasingSource,
+      shoppingTransport: shoppingTransport ?? this.shoppingTransport,
+      cookingMethod: cookingMethod ?? this.cookingMethod,
+      foodStorage: foodStorage ?? this.foodStorage,
+      householdSize: householdSize ?? this.householdSize,
+      foodWasteLevel: foodWasteLevel ?? this.foodWasteLevel,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (hlcMillis.present) {
+      map['hlc_millis'] = Variable<BigInt>(hlcMillis.value);
+    }
+    if (hlcCounter.present) {
+      map['hlc_counter'] = Variable<int>(hlcCounter.value);
+    }
+    if (hlcNodeId.present) {
+      map['hlc_node_id'] = Variable<String>(hlcNodeId.value);
+    }
+    if (dirty.present) {
+      map['dirty'] = Variable<bool>(dirty.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (locationCountry.present) {
+      map['location_country'] = Variable<String>(locationCountry.value);
+    }
+    if (locationRegion.present) {
+      map['location_region'] = Variable<String>(locationRegion.value);
+    }
+    if (purchasingSource.present) {
+      map['purchasing_source'] = Variable<String>(purchasingSource.value);
+    }
+    if (shoppingTransport.present) {
+      map['shopping_transport'] = Variable<String>(shoppingTransport.value);
+    }
+    if (cookingMethod.present) {
+      map['cooking_method'] = Variable<String>(cookingMethod.value);
+    }
+    if (foodStorage.present) {
+      map['food_storage'] = Variable<String>(foodStorage.value);
+    }
+    if (householdSize.present) {
+      map['household_size'] = Variable<int>(householdSize.value);
+    }
+    if (foodWasteLevel.present) {
+      map['food_waste_level'] = Variable<String>(foodWasteLevel.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Co2SettingsTableCompanion(')
+          ..write('id: $id, ')
+          ..write('hlcMillis: $hlcMillis, ')
+          ..write('hlcCounter: $hlcCounter, ')
+          ..write('hlcNodeId: $hlcNodeId, ')
+          ..write('dirty: $dirty, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('locationCountry: $locationCountry, ')
+          ..write('locationRegion: $locationRegion, ')
+          ..write('purchasingSource: $purchasingSource, ')
+          ..write('shoppingTransport: $shoppingTransport, ')
+          ..write('cookingMethod: $cookingMethod, ')
+          ..write('foodStorage: $foodStorage, ')
+          ..write('householdSize: $householdSize, ')
+          ..write('foodWasteLevel: $foodWasteLevel, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $WeightEntryTableTable extends WeightEntryTable
+    with TableInfo<$WeightEntryTableTable, WeightEntryRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WeightEntryTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hlcMillisMeta = const VerificationMeta(
+    'hlcMillis',
+  );
+  @override
+  late final GeneratedColumn<BigInt> hlcMillis = GeneratedColumn<BigInt>(
+    'hlc_millis',
+    aliasedName,
+    false,
+    type: DriftSqlType.bigInt,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hlcCounterMeta = const VerificationMeta(
+    'hlcCounter',
+  );
+  @override
+  late final GeneratedColumn<int> hlcCounter = GeneratedColumn<int>(
+    'hlc_counter',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hlcNodeIdMeta = const VerificationMeta(
+    'hlcNodeId',
+  );
+  @override
+  late final GeneratedColumn<String> hlcNodeId = GeneratedColumn<String>(
+    'hlc_node_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dirtyMeta = const VerificationMeta('dirty');
+  @override
+  late final GeneratedColumn<bool> dirty = GeneratedColumn<bool>(
+    'dirty',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("dirty" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<double> value = GeneratedColumn<double>(
+    'value',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<WeightUnit, String> unit =
+      GeneratedColumn<String>(
+        'unit',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<WeightUnit>($WeightEntryTableTable.$converterunit);
+  static const VerificationMeta _loggedAtMeta = const VerificationMeta(
+    'loggedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> loggedAt = GeneratedColumn<DateTime>(
+    'logged_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    hlcMillis,
+    hlcCounter,
+    hlcNodeId,
+    dirty,
+    deletedAt,
+    value,
+    unit,
+    loggedAt,
+    note,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'weight_entry_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WeightEntryRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('hlc_millis')) {
+      context.handle(
+        _hlcMillisMeta,
+        hlcMillis.isAcceptableOrUnknown(data['hlc_millis']!, _hlcMillisMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcMillisMeta);
+    }
+    if (data.containsKey('hlc_counter')) {
+      context.handle(
+        _hlcCounterMeta,
+        hlcCounter.isAcceptableOrUnknown(data['hlc_counter']!, _hlcCounterMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcCounterMeta);
+    }
+    if (data.containsKey('hlc_node_id')) {
+      context.handle(
+        _hlcNodeIdMeta,
+        hlcNodeId.isAcceptableOrUnknown(data['hlc_node_id']!, _hlcNodeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcNodeIdMeta);
+    }
+    if (data.containsKey('dirty')) {
+      context.handle(
+        _dirtyMeta,
+        dirty.isAcceptableOrUnknown(data['dirty']!, _dirtyMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+        _valueMeta,
+        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_valueMeta);
+    }
+    if (data.containsKey('logged_at')) {
+      context.handle(
+        _loggedAtMeta,
+        loggedAt.isAcceptableOrUnknown(data['logged_at']!, _loggedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_loggedAtMeta);
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  WeightEntryRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WeightEntryRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      hlcMillis: attachedDatabase.typeMapping.read(
+        DriftSqlType.bigInt,
+        data['${effectivePrefix}hlc_millis'],
+      )!,
+      hlcCounter: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}hlc_counter'],
+      )!,
+      hlcNodeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}hlc_node_id'],
+      )!,
+      dirty: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}dirty'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      value: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}value'],
+      )!,
+      unit: $WeightEntryTableTable.$converterunit.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}unit'],
+        )!,
+      ),
+      loggedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}logged_at'],
+      )!,
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
+    );
+  }
+
+  @override
+  $WeightEntryTableTable createAlias(String alias) {
+    return $WeightEntryTableTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<WeightUnit, String, String> $converterunit =
+      const EnumNameConverter<WeightUnit>(WeightUnit.values);
+}
+
+class WeightEntryRow extends DataClass implements Insertable<WeightEntryRow> {
+  /// Primary key: UUID v7 stored as TEXT (time-ordered, globally unique).
+  final String id;
+
+  /// HLC wall-clock component: milliseconds since Unix epoch.
+  /// Stored as int64 (BigInt in Dart) to fit 64-bit epoch millis.
+  final BigInt hlcMillis;
+
+  /// HLC logical counter: tie-breaking for same-millisecond writes.
+  final int hlcCounter;
+
+  /// HLC node identifier: stable device installation UUID (UUID v4).
+  /// Generated once on first app install and persisted in secure storage.
+  final String hlcNodeId;
+
+  /// Dirty flag: true = row has local changes not yet synced to backend.
+  /// Defaults to true on insert — every new row starts dirty until
+  /// sync confirms receipt.
+  final bool dirty;
+
+  /// Tombstone: null = row is live; non-null = row was soft-deleted.
+  /// Soft-deleted rows are retained for 90 days to allow sync to
+  /// propagate the deletion.
+  final DateTime? deletedAt;
+
+  /// The logged weight value, expressed in [unit].
+  final double value;
+
+  /// Unit [value] is expressed in. Stored via `textEnum` as
+  /// `Enum.name` — append-only, see [WeightUnit].
+  final WeightUnit unit;
+
+  /// Wall-clock timestamp of when this weigh-in was logged.
+  final DateTime loggedAt;
+
+  /// Optional free-text note attached to this weigh-in.
+  final String? note;
+  const WeightEntryRow({
+    required this.id,
+    required this.hlcMillis,
+    required this.hlcCounter,
+    required this.hlcNodeId,
+    required this.dirty,
+    this.deletedAt,
+    required this.value,
+    required this.unit,
+    required this.loggedAt,
+    this.note,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['hlc_millis'] = Variable<BigInt>(hlcMillis);
+    map['hlc_counter'] = Variable<int>(hlcCounter);
+    map['hlc_node_id'] = Variable<String>(hlcNodeId);
+    map['dirty'] = Variable<bool>(dirty);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    map['value'] = Variable<double>(value);
+    {
+      map['unit'] = Variable<String>(
+        $WeightEntryTableTable.$converterunit.toSql(unit),
+      );
+    }
+    map['logged_at'] = Variable<DateTime>(loggedAt);
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    return map;
+  }
+
+  WeightEntryTableCompanion toCompanion(bool nullToAbsent) {
+    return WeightEntryTableCompanion(
+      id: Value(id),
+      hlcMillis: Value(hlcMillis),
+      hlcCounter: Value(hlcCounter),
+      hlcNodeId: Value(hlcNodeId),
+      dirty: Value(dirty),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      value: Value(value),
+      unit: Value(unit),
+      loggedAt: Value(loggedAt),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+    );
+  }
+
+  factory WeightEntryRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WeightEntryRow(
+      id: serializer.fromJson<String>(json['id']),
+      hlcMillis: serializer.fromJson<BigInt>(json['hlcMillis']),
+      hlcCounter: serializer.fromJson<int>(json['hlcCounter']),
+      hlcNodeId: serializer.fromJson<String>(json['hlcNodeId']),
+      dirty: serializer.fromJson<bool>(json['dirty']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      value: serializer.fromJson<double>(json['value']),
+      unit: $WeightEntryTableTable.$converterunit.fromJson(
+        serializer.fromJson<String>(json['unit']),
+      ),
+      loggedAt: serializer.fromJson<DateTime>(json['loggedAt']),
+      note: serializer.fromJson<String?>(json['note']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'hlcMillis': serializer.toJson<BigInt>(hlcMillis),
+      'hlcCounter': serializer.toJson<int>(hlcCounter),
+      'hlcNodeId': serializer.toJson<String>(hlcNodeId),
+      'dirty': serializer.toJson<bool>(dirty),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'value': serializer.toJson<double>(value),
+      'unit': serializer.toJson<String>(
+        $WeightEntryTableTable.$converterunit.toJson(unit),
+      ),
+      'loggedAt': serializer.toJson<DateTime>(loggedAt),
+      'note': serializer.toJson<String?>(note),
+    };
+  }
+
+  WeightEntryRow copyWith({
+    String? id,
+    BigInt? hlcMillis,
+    int? hlcCounter,
+    String? hlcNodeId,
+    bool? dirty,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    double? value,
+    WeightUnit? unit,
+    DateTime? loggedAt,
+    Value<String?> note = const Value.absent(),
+  }) => WeightEntryRow(
+    id: id ?? this.id,
+    hlcMillis: hlcMillis ?? this.hlcMillis,
+    hlcCounter: hlcCounter ?? this.hlcCounter,
+    hlcNodeId: hlcNodeId ?? this.hlcNodeId,
+    dirty: dirty ?? this.dirty,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    value: value ?? this.value,
+    unit: unit ?? this.unit,
+    loggedAt: loggedAt ?? this.loggedAt,
+    note: note.present ? note.value : this.note,
+  );
+  WeightEntryRow copyWithCompanion(WeightEntryTableCompanion data) {
+    return WeightEntryRow(
+      id: data.id.present ? data.id.value : this.id,
+      hlcMillis: data.hlcMillis.present ? data.hlcMillis.value : this.hlcMillis,
+      hlcCounter: data.hlcCounter.present
+          ? data.hlcCounter.value
+          : this.hlcCounter,
+      hlcNodeId: data.hlcNodeId.present ? data.hlcNodeId.value : this.hlcNodeId,
+      dirty: data.dirty.present ? data.dirty.value : this.dirty,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      value: data.value.present ? data.value.value : this.value,
+      unit: data.unit.present ? data.unit.value : this.unit,
+      loggedAt: data.loggedAt.present ? data.loggedAt.value : this.loggedAt,
+      note: data.note.present ? data.note.value : this.note,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WeightEntryRow(')
+          ..write('id: $id, ')
+          ..write('hlcMillis: $hlcMillis, ')
+          ..write('hlcCounter: $hlcCounter, ')
+          ..write('hlcNodeId: $hlcNodeId, ')
+          ..write('dirty: $dirty, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('value: $value, ')
+          ..write('unit: $unit, ')
+          ..write('loggedAt: $loggedAt, ')
+          ..write('note: $note')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    hlcMillis,
+    hlcCounter,
+    hlcNodeId,
+    dirty,
+    deletedAt,
+    value,
+    unit,
+    loggedAt,
+    note,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WeightEntryRow &&
+          other.id == this.id &&
+          other.hlcMillis == this.hlcMillis &&
+          other.hlcCounter == this.hlcCounter &&
+          other.hlcNodeId == this.hlcNodeId &&
+          other.dirty == this.dirty &&
+          other.deletedAt == this.deletedAt &&
+          other.value == this.value &&
+          other.unit == this.unit &&
+          other.loggedAt == this.loggedAt &&
+          other.note == this.note);
+}
+
+class WeightEntryTableCompanion extends UpdateCompanion<WeightEntryRow> {
+  final Value<String> id;
+  final Value<BigInt> hlcMillis;
+  final Value<int> hlcCounter;
+  final Value<String> hlcNodeId;
+  final Value<bool> dirty;
+  final Value<DateTime?> deletedAt;
+  final Value<double> value;
+  final Value<WeightUnit> unit;
+  final Value<DateTime> loggedAt;
+  final Value<String?> note;
+  final Value<int> rowid;
+  const WeightEntryTableCompanion({
+    this.id = const Value.absent(),
+    this.hlcMillis = const Value.absent(),
+    this.hlcCounter = const Value.absent(),
+    this.hlcNodeId = const Value.absent(),
+    this.dirty = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.value = const Value.absent(),
+    this.unit = const Value.absent(),
+    this.loggedAt = const Value.absent(),
+    this.note = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WeightEntryTableCompanion.insert({
+    required String id,
+    required BigInt hlcMillis,
+    required int hlcCounter,
+    required String hlcNodeId,
+    this.dirty = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    required double value,
+    required WeightUnit unit,
+    required DateTime loggedAt,
+    this.note = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       hlcMillis = Value(hlcMillis),
+       hlcCounter = Value(hlcCounter),
+       hlcNodeId = Value(hlcNodeId),
+       value = Value(value),
+       unit = Value(unit),
+       loggedAt = Value(loggedAt);
+  static Insertable<WeightEntryRow> custom({
+    Expression<String>? id,
+    Expression<BigInt>? hlcMillis,
+    Expression<int>? hlcCounter,
+    Expression<String>? hlcNodeId,
+    Expression<bool>? dirty,
+    Expression<DateTime>? deletedAt,
+    Expression<double>? value,
+    Expression<String>? unit,
+    Expression<DateTime>? loggedAt,
+    Expression<String>? note,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (hlcMillis != null) 'hlc_millis': hlcMillis,
+      if (hlcCounter != null) 'hlc_counter': hlcCounter,
+      if (hlcNodeId != null) 'hlc_node_id': hlcNodeId,
+      if (dirty != null) 'dirty': dirty,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (value != null) 'value': value,
+      if (unit != null) 'unit': unit,
+      if (loggedAt != null) 'logged_at': loggedAt,
+      if (note != null) 'note': note,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WeightEntryTableCompanion copyWith({
+    Value<String>? id,
+    Value<BigInt>? hlcMillis,
+    Value<int>? hlcCounter,
+    Value<String>? hlcNodeId,
+    Value<bool>? dirty,
+    Value<DateTime?>? deletedAt,
+    Value<double>? value,
+    Value<WeightUnit>? unit,
+    Value<DateTime>? loggedAt,
+    Value<String?>? note,
+    Value<int>? rowid,
+  }) {
+    return WeightEntryTableCompanion(
+      id: id ?? this.id,
+      hlcMillis: hlcMillis ?? this.hlcMillis,
+      hlcCounter: hlcCounter ?? this.hlcCounter,
+      hlcNodeId: hlcNodeId ?? this.hlcNodeId,
+      dirty: dirty ?? this.dirty,
+      deletedAt: deletedAt ?? this.deletedAt,
+      value: value ?? this.value,
+      unit: unit ?? this.unit,
+      loggedAt: loggedAt ?? this.loggedAt,
+      note: note ?? this.note,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (hlcMillis.present) {
+      map['hlc_millis'] = Variable<BigInt>(hlcMillis.value);
+    }
+    if (hlcCounter.present) {
+      map['hlc_counter'] = Variable<int>(hlcCounter.value);
+    }
+    if (hlcNodeId.present) {
+      map['hlc_node_id'] = Variable<String>(hlcNodeId.value);
+    }
+    if (dirty.present) {
+      map['dirty'] = Variable<bool>(dirty.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (value.present) {
+      map['value'] = Variable<double>(value.value);
+    }
+    if (unit.present) {
+      map['unit'] = Variable<String>(
+        $WeightEntryTableTable.$converterunit.toSql(unit.value),
+      );
+    }
+    if (loggedAt.present) {
+      map['logged_at'] = Variable<DateTime>(loggedAt.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WeightEntryTableCompanion(')
+          ..write('id: $id, ')
+          ..write('hlcMillis: $hlcMillis, ')
+          ..write('hlcCounter: $hlcCounter, ')
+          ..write('hlcNodeId: $hlcNodeId, ')
+          ..write('dirty: $dirty, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('value: $value, ')
+          ..write('unit: $unit, ')
+          ..write('loggedAt: $loggedAt, ')
+          ..write('note: $note, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $WeightSettingsTableTable extends WeightSettingsTable
+    with TableInfo<$WeightSettingsTableTable, WeightSettingsRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WeightSettingsTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hlcMillisMeta = const VerificationMeta(
+    'hlcMillis',
+  );
+  @override
+  late final GeneratedColumn<BigInt> hlcMillis = GeneratedColumn<BigInt>(
+    'hlc_millis',
+    aliasedName,
+    false,
+    type: DriftSqlType.bigInt,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hlcCounterMeta = const VerificationMeta(
+    'hlcCounter',
+  );
+  @override
+  late final GeneratedColumn<int> hlcCounter = GeneratedColumn<int>(
+    'hlc_counter',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hlcNodeIdMeta = const VerificationMeta(
+    'hlcNodeId',
+  );
+  @override
+  late final GeneratedColumn<String> hlcNodeId = GeneratedColumn<String>(
+    'hlc_node_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dirtyMeta = const VerificationMeta('dirty');
+  @override
+  late final GeneratedColumn<bool> dirty = GeneratedColumn<bool>(
+    'dirty',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("dirty" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _targetWeightKgMeta = const VerificationMeta(
+    'targetWeightKg',
+  );
+  @override
+  late final GeneratedColumn<double> targetWeightKg = GeneratedColumn<double>(
+    'target_weight_kg',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _targetDateMeta = const VerificationMeta(
+    'targetDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> targetDate = GeneratedColumn<DateTime>(
+    'target_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _reminderFrequencyMeta = const VerificationMeta(
+    'reminderFrequency',
+  );
+  @override
+  late final GeneratedColumn<String> reminderFrequency =
+      GeneratedColumn<String>(
+        'reminder_frequency',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _reminderWeekdayMeta = const VerificationMeta(
+    'reminderWeekday',
+  );
+  @override
+  late final GeneratedColumn<int> reminderWeekday = GeneratedColumn<int>(
+    'reminder_weekday',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _reminderTimeMeta = const VerificationMeta(
+    'reminderTime',
+  );
+  @override
+  late final GeneratedColumn<String> reminderTime = GeneratedColumn<String>(
+    'reminder_time',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _reminderEnabledMeta = const VerificationMeta(
+    'reminderEnabled',
+  );
+  @override
+  late final GeneratedColumn<bool> reminderEnabled = GeneratedColumn<bool>(
+    'reminder_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("reminder_enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    hlcMillis,
+    hlcCounter,
+    hlcNodeId,
+    dirty,
+    deletedAt,
+    targetWeightKg,
+    targetDate,
+    reminderFrequency,
+    reminderWeekday,
+    reminderTime,
+    reminderEnabled,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'weight_settings_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WeightSettingsRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('hlc_millis')) {
+      context.handle(
+        _hlcMillisMeta,
+        hlcMillis.isAcceptableOrUnknown(data['hlc_millis']!, _hlcMillisMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcMillisMeta);
+    }
+    if (data.containsKey('hlc_counter')) {
+      context.handle(
+        _hlcCounterMeta,
+        hlcCounter.isAcceptableOrUnknown(data['hlc_counter']!, _hlcCounterMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcCounterMeta);
+    }
+    if (data.containsKey('hlc_node_id')) {
+      context.handle(
+        _hlcNodeIdMeta,
+        hlcNodeId.isAcceptableOrUnknown(data['hlc_node_id']!, _hlcNodeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcNodeIdMeta);
+    }
+    if (data.containsKey('dirty')) {
+      context.handle(
+        _dirtyMeta,
+        dirty.isAcceptableOrUnknown(data['dirty']!, _dirtyMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('target_weight_kg')) {
+      context.handle(
+        _targetWeightKgMeta,
+        targetWeightKg.isAcceptableOrUnknown(
+          data['target_weight_kg']!,
+          _targetWeightKgMeta,
+        ),
+      );
+    }
+    if (data.containsKey('target_date')) {
+      context.handle(
+        _targetDateMeta,
+        targetDate.isAcceptableOrUnknown(data['target_date']!, _targetDateMeta),
+      );
+    }
+    if (data.containsKey('reminder_frequency')) {
+      context.handle(
+        _reminderFrequencyMeta,
+        reminderFrequency.isAcceptableOrUnknown(
+          data['reminder_frequency']!,
+          _reminderFrequencyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('reminder_weekday')) {
+      context.handle(
+        _reminderWeekdayMeta,
+        reminderWeekday.isAcceptableOrUnknown(
+          data['reminder_weekday']!,
+          _reminderWeekdayMeta,
+        ),
+      );
+    }
+    if (data.containsKey('reminder_time')) {
+      context.handle(
+        _reminderTimeMeta,
+        reminderTime.isAcceptableOrUnknown(
+          data['reminder_time']!,
+          _reminderTimeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('reminder_enabled')) {
+      context.handle(
+        _reminderEnabledMeta,
+        reminderEnabled.isAcceptableOrUnknown(
+          data['reminder_enabled']!,
+          _reminderEnabledMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  WeightSettingsRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WeightSettingsRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      hlcMillis: attachedDatabase.typeMapping.read(
+        DriftSqlType.bigInt,
+        data['${effectivePrefix}hlc_millis'],
+      )!,
+      hlcCounter: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}hlc_counter'],
+      )!,
+      hlcNodeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}hlc_node_id'],
+      )!,
+      dirty: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}dirty'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      targetWeightKg: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}target_weight_kg'],
+      ),
+      targetDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}target_date'],
+      ),
+      reminderFrequency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reminder_frequency'],
+      ),
+      reminderWeekday: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}reminder_weekday'],
+      ),
+      reminderTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reminder_time'],
+      ),
+      reminderEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}reminder_enabled'],
+      )!,
+    );
+  }
+
+  @override
+  $WeightSettingsTableTable createAlias(String alias) {
+    return $WeightSettingsTableTable(attachedDatabase, alias);
+  }
+}
+
+class WeightSettingsRow extends DataClass
+    implements Insertable<WeightSettingsRow> {
+  /// Primary key: UUID v7 stored as TEXT (time-ordered, globally unique).
+  final String id;
+
+  /// HLC wall-clock component: milliseconds since Unix epoch.
+  /// Stored as int64 (BigInt in Dart) to fit 64-bit epoch millis.
+  final BigInt hlcMillis;
+
+  /// HLC logical counter: tie-breaking for same-millisecond writes.
+  final int hlcCounter;
+
+  /// HLC node identifier: stable device installation UUID (UUID v4).
+  /// Generated once on first app install and persisted in secure storage.
+  final String hlcNodeId;
+
+  /// Dirty flag: true = row has local changes not yet synced to backend.
+  /// Defaults to true on insert — every new row starts dirty until
+  /// sync confirms receipt.
+  final bool dirty;
+
+  /// Tombstone: null = row is live; non-null = row was soft-deleted.
+  /// Soft-deleted rows are retained for 90 days to allow sync to
+  /// propagate the deletion.
+  final DateTime? deletedAt;
+
+  /// Target weight in kilograms. Always stored in kg; imperial
+  /// conversion is an app-layer concern (mirrors
+  /// `UserProfileTable.weightKg`'s existing convention).
+  final double? targetWeightKg;
+
+  /// Target date for reaching [targetWeightKg].
+  final DateTime? targetDate;
+
+  /// How often the user wants a weigh-in reminder.
+  /// Values: 'never', 'weekly', 'biweekly', 'monthly', 'custom'.
+  final String? reminderFrequency;
+
+  /// Day of week the reminder fires on, 1 (Monday) to 7 (Sunday),
+  /// ISO-8601 weekday numbering. Only meaningful when
+  /// [reminderFrequency] is `'custom'`.
+  final int? reminderWeekday;
+
+  /// Local time the reminder fires at, `'HH:mm'` 24-hour string.
+  final String? reminderTime;
+
+  /// Whether the weigh-in reminder is enabled.
+  final bool reminderEnabled;
+  const WeightSettingsRow({
+    required this.id,
+    required this.hlcMillis,
+    required this.hlcCounter,
+    required this.hlcNodeId,
+    required this.dirty,
+    this.deletedAt,
+    this.targetWeightKg,
+    this.targetDate,
+    this.reminderFrequency,
+    this.reminderWeekday,
+    this.reminderTime,
+    required this.reminderEnabled,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['hlc_millis'] = Variable<BigInt>(hlcMillis);
+    map['hlc_counter'] = Variable<int>(hlcCounter);
+    map['hlc_node_id'] = Variable<String>(hlcNodeId);
+    map['dirty'] = Variable<bool>(dirty);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    if (!nullToAbsent || targetWeightKg != null) {
+      map['target_weight_kg'] = Variable<double>(targetWeightKg);
+    }
+    if (!nullToAbsent || targetDate != null) {
+      map['target_date'] = Variable<DateTime>(targetDate);
+    }
+    if (!nullToAbsent || reminderFrequency != null) {
+      map['reminder_frequency'] = Variable<String>(reminderFrequency);
+    }
+    if (!nullToAbsent || reminderWeekday != null) {
+      map['reminder_weekday'] = Variable<int>(reminderWeekday);
+    }
+    if (!nullToAbsent || reminderTime != null) {
+      map['reminder_time'] = Variable<String>(reminderTime);
+    }
+    map['reminder_enabled'] = Variable<bool>(reminderEnabled);
+    return map;
+  }
+
+  WeightSettingsTableCompanion toCompanion(bool nullToAbsent) {
+    return WeightSettingsTableCompanion(
+      id: Value(id),
+      hlcMillis: Value(hlcMillis),
+      hlcCounter: Value(hlcCounter),
+      hlcNodeId: Value(hlcNodeId),
+      dirty: Value(dirty),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      targetWeightKg: targetWeightKg == null && nullToAbsent
+          ? const Value.absent()
+          : Value(targetWeightKg),
+      targetDate: targetDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(targetDate),
+      reminderFrequency: reminderFrequency == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reminderFrequency),
+      reminderWeekday: reminderWeekday == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reminderWeekday),
+      reminderTime: reminderTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reminderTime),
+      reminderEnabled: Value(reminderEnabled),
+    );
+  }
+
+  factory WeightSettingsRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WeightSettingsRow(
+      id: serializer.fromJson<String>(json['id']),
+      hlcMillis: serializer.fromJson<BigInt>(json['hlcMillis']),
+      hlcCounter: serializer.fromJson<int>(json['hlcCounter']),
+      hlcNodeId: serializer.fromJson<String>(json['hlcNodeId']),
+      dirty: serializer.fromJson<bool>(json['dirty']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      targetWeightKg: serializer.fromJson<double?>(json['targetWeightKg']),
+      targetDate: serializer.fromJson<DateTime?>(json['targetDate']),
+      reminderFrequency: serializer.fromJson<String?>(
+        json['reminderFrequency'],
+      ),
+      reminderWeekday: serializer.fromJson<int?>(json['reminderWeekday']),
+      reminderTime: serializer.fromJson<String?>(json['reminderTime']),
+      reminderEnabled: serializer.fromJson<bool>(json['reminderEnabled']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'hlcMillis': serializer.toJson<BigInt>(hlcMillis),
+      'hlcCounter': serializer.toJson<int>(hlcCounter),
+      'hlcNodeId': serializer.toJson<String>(hlcNodeId),
+      'dirty': serializer.toJson<bool>(dirty),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'targetWeightKg': serializer.toJson<double?>(targetWeightKg),
+      'targetDate': serializer.toJson<DateTime?>(targetDate),
+      'reminderFrequency': serializer.toJson<String?>(reminderFrequency),
+      'reminderWeekday': serializer.toJson<int?>(reminderWeekday),
+      'reminderTime': serializer.toJson<String?>(reminderTime),
+      'reminderEnabled': serializer.toJson<bool>(reminderEnabled),
+    };
+  }
+
+  WeightSettingsRow copyWith({
+    String? id,
+    BigInt? hlcMillis,
+    int? hlcCounter,
+    String? hlcNodeId,
+    bool? dirty,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    Value<double?> targetWeightKg = const Value.absent(),
+    Value<DateTime?> targetDate = const Value.absent(),
+    Value<String?> reminderFrequency = const Value.absent(),
+    Value<int?> reminderWeekday = const Value.absent(),
+    Value<String?> reminderTime = const Value.absent(),
+    bool? reminderEnabled,
+  }) => WeightSettingsRow(
+    id: id ?? this.id,
+    hlcMillis: hlcMillis ?? this.hlcMillis,
+    hlcCounter: hlcCounter ?? this.hlcCounter,
+    hlcNodeId: hlcNodeId ?? this.hlcNodeId,
+    dirty: dirty ?? this.dirty,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    targetWeightKg: targetWeightKg.present
+        ? targetWeightKg.value
+        : this.targetWeightKg,
+    targetDate: targetDate.present ? targetDate.value : this.targetDate,
+    reminderFrequency: reminderFrequency.present
+        ? reminderFrequency.value
+        : this.reminderFrequency,
+    reminderWeekday: reminderWeekday.present
+        ? reminderWeekday.value
+        : this.reminderWeekday,
+    reminderTime: reminderTime.present ? reminderTime.value : this.reminderTime,
+    reminderEnabled: reminderEnabled ?? this.reminderEnabled,
+  );
+  WeightSettingsRow copyWithCompanion(WeightSettingsTableCompanion data) {
+    return WeightSettingsRow(
+      id: data.id.present ? data.id.value : this.id,
+      hlcMillis: data.hlcMillis.present ? data.hlcMillis.value : this.hlcMillis,
+      hlcCounter: data.hlcCounter.present
+          ? data.hlcCounter.value
+          : this.hlcCounter,
+      hlcNodeId: data.hlcNodeId.present ? data.hlcNodeId.value : this.hlcNodeId,
+      dirty: data.dirty.present ? data.dirty.value : this.dirty,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      targetWeightKg: data.targetWeightKg.present
+          ? data.targetWeightKg.value
+          : this.targetWeightKg,
+      targetDate: data.targetDate.present
+          ? data.targetDate.value
+          : this.targetDate,
+      reminderFrequency: data.reminderFrequency.present
+          ? data.reminderFrequency.value
+          : this.reminderFrequency,
+      reminderWeekday: data.reminderWeekday.present
+          ? data.reminderWeekday.value
+          : this.reminderWeekday,
+      reminderTime: data.reminderTime.present
+          ? data.reminderTime.value
+          : this.reminderTime,
+      reminderEnabled: data.reminderEnabled.present
+          ? data.reminderEnabled.value
+          : this.reminderEnabled,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WeightSettingsRow(')
+          ..write('id: $id, ')
+          ..write('hlcMillis: $hlcMillis, ')
+          ..write('hlcCounter: $hlcCounter, ')
+          ..write('hlcNodeId: $hlcNodeId, ')
+          ..write('dirty: $dirty, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('targetWeightKg: $targetWeightKg, ')
+          ..write('targetDate: $targetDate, ')
+          ..write('reminderFrequency: $reminderFrequency, ')
+          ..write('reminderWeekday: $reminderWeekday, ')
+          ..write('reminderTime: $reminderTime, ')
+          ..write('reminderEnabled: $reminderEnabled')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    hlcMillis,
+    hlcCounter,
+    hlcNodeId,
+    dirty,
+    deletedAt,
+    targetWeightKg,
+    targetDate,
+    reminderFrequency,
+    reminderWeekday,
+    reminderTime,
+    reminderEnabled,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WeightSettingsRow &&
+          other.id == this.id &&
+          other.hlcMillis == this.hlcMillis &&
+          other.hlcCounter == this.hlcCounter &&
+          other.hlcNodeId == this.hlcNodeId &&
+          other.dirty == this.dirty &&
+          other.deletedAt == this.deletedAt &&
+          other.targetWeightKg == this.targetWeightKg &&
+          other.targetDate == this.targetDate &&
+          other.reminderFrequency == this.reminderFrequency &&
+          other.reminderWeekday == this.reminderWeekday &&
+          other.reminderTime == this.reminderTime &&
+          other.reminderEnabled == this.reminderEnabled);
+}
+
+class WeightSettingsTableCompanion extends UpdateCompanion<WeightSettingsRow> {
+  final Value<String> id;
+  final Value<BigInt> hlcMillis;
+  final Value<int> hlcCounter;
+  final Value<String> hlcNodeId;
+  final Value<bool> dirty;
+  final Value<DateTime?> deletedAt;
+  final Value<double?> targetWeightKg;
+  final Value<DateTime?> targetDate;
+  final Value<String?> reminderFrequency;
+  final Value<int?> reminderWeekday;
+  final Value<String?> reminderTime;
+  final Value<bool> reminderEnabled;
+  final Value<int> rowid;
+  const WeightSettingsTableCompanion({
+    this.id = const Value.absent(),
+    this.hlcMillis = const Value.absent(),
+    this.hlcCounter = const Value.absent(),
+    this.hlcNodeId = const Value.absent(),
+    this.dirty = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.targetWeightKg = const Value.absent(),
+    this.targetDate = const Value.absent(),
+    this.reminderFrequency = const Value.absent(),
+    this.reminderWeekday = const Value.absent(),
+    this.reminderTime = const Value.absent(),
+    this.reminderEnabled = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WeightSettingsTableCompanion.insert({
+    required String id,
+    required BigInt hlcMillis,
+    required int hlcCounter,
+    required String hlcNodeId,
+    this.dirty = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.targetWeightKg = const Value.absent(),
+    this.targetDate = const Value.absent(),
+    this.reminderFrequency = const Value.absent(),
+    this.reminderWeekday = const Value.absent(),
+    this.reminderTime = const Value.absent(),
+    this.reminderEnabled = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       hlcMillis = Value(hlcMillis),
+       hlcCounter = Value(hlcCounter),
+       hlcNodeId = Value(hlcNodeId);
+  static Insertable<WeightSettingsRow> custom({
+    Expression<String>? id,
+    Expression<BigInt>? hlcMillis,
+    Expression<int>? hlcCounter,
+    Expression<String>? hlcNodeId,
+    Expression<bool>? dirty,
+    Expression<DateTime>? deletedAt,
+    Expression<double>? targetWeightKg,
+    Expression<DateTime>? targetDate,
+    Expression<String>? reminderFrequency,
+    Expression<int>? reminderWeekday,
+    Expression<String>? reminderTime,
+    Expression<bool>? reminderEnabled,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (hlcMillis != null) 'hlc_millis': hlcMillis,
+      if (hlcCounter != null) 'hlc_counter': hlcCounter,
+      if (hlcNodeId != null) 'hlc_node_id': hlcNodeId,
+      if (dirty != null) 'dirty': dirty,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (targetWeightKg != null) 'target_weight_kg': targetWeightKg,
+      if (targetDate != null) 'target_date': targetDate,
+      if (reminderFrequency != null) 'reminder_frequency': reminderFrequency,
+      if (reminderWeekday != null) 'reminder_weekday': reminderWeekday,
+      if (reminderTime != null) 'reminder_time': reminderTime,
+      if (reminderEnabled != null) 'reminder_enabled': reminderEnabled,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WeightSettingsTableCompanion copyWith({
+    Value<String>? id,
+    Value<BigInt>? hlcMillis,
+    Value<int>? hlcCounter,
+    Value<String>? hlcNodeId,
+    Value<bool>? dirty,
+    Value<DateTime?>? deletedAt,
+    Value<double?>? targetWeightKg,
+    Value<DateTime?>? targetDate,
+    Value<String?>? reminderFrequency,
+    Value<int?>? reminderWeekday,
+    Value<String?>? reminderTime,
+    Value<bool>? reminderEnabled,
+    Value<int>? rowid,
+  }) {
+    return WeightSettingsTableCompanion(
+      id: id ?? this.id,
+      hlcMillis: hlcMillis ?? this.hlcMillis,
+      hlcCounter: hlcCounter ?? this.hlcCounter,
+      hlcNodeId: hlcNodeId ?? this.hlcNodeId,
+      dirty: dirty ?? this.dirty,
+      deletedAt: deletedAt ?? this.deletedAt,
+      targetWeightKg: targetWeightKg ?? this.targetWeightKg,
+      targetDate: targetDate ?? this.targetDate,
+      reminderFrequency: reminderFrequency ?? this.reminderFrequency,
+      reminderWeekday: reminderWeekday ?? this.reminderWeekday,
+      reminderTime: reminderTime ?? this.reminderTime,
+      reminderEnabled: reminderEnabled ?? this.reminderEnabled,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (hlcMillis.present) {
+      map['hlc_millis'] = Variable<BigInt>(hlcMillis.value);
+    }
+    if (hlcCounter.present) {
+      map['hlc_counter'] = Variable<int>(hlcCounter.value);
+    }
+    if (hlcNodeId.present) {
+      map['hlc_node_id'] = Variable<String>(hlcNodeId.value);
+    }
+    if (dirty.present) {
+      map['dirty'] = Variable<bool>(dirty.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (targetWeightKg.present) {
+      map['target_weight_kg'] = Variable<double>(targetWeightKg.value);
+    }
+    if (targetDate.present) {
+      map['target_date'] = Variable<DateTime>(targetDate.value);
+    }
+    if (reminderFrequency.present) {
+      map['reminder_frequency'] = Variable<String>(reminderFrequency.value);
+    }
+    if (reminderWeekday.present) {
+      map['reminder_weekday'] = Variable<int>(reminderWeekday.value);
+    }
+    if (reminderTime.present) {
+      map['reminder_time'] = Variable<String>(reminderTime.value);
+    }
+    if (reminderEnabled.present) {
+      map['reminder_enabled'] = Variable<bool>(reminderEnabled.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WeightSettingsTableCompanion(')
+          ..write('id: $id, ')
+          ..write('hlcMillis: $hlcMillis, ')
+          ..write('hlcCounter: $hlcCounter, ')
+          ..write('hlcNodeId: $hlcNodeId, ')
+          ..write('dirty: $dirty, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('targetWeightKg: $targetWeightKg, ')
+          ..write('targetDate: $targetDate, ')
+          ..write('reminderFrequency: $reminderFrequency, ')
+          ..write('reminderWeekday: $reminderWeekday, ')
+          ..write('reminderTime: $reminderTime, ')
+          ..write('reminderEnabled: $reminderEnabled, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $NotificationPrefsTableTable extends NotificationPrefsTable
+    with TableInfo<$NotificationPrefsTableTable, NotificationPrefsRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $NotificationPrefsTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hlcMillisMeta = const VerificationMeta(
+    'hlcMillis',
+  );
+  @override
+  late final GeneratedColumn<BigInt> hlcMillis = GeneratedColumn<BigInt>(
+    'hlc_millis',
+    aliasedName,
+    false,
+    type: DriftSqlType.bigInt,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hlcCounterMeta = const VerificationMeta(
+    'hlcCounter',
+  );
+  @override
+  late final GeneratedColumn<int> hlcCounter = GeneratedColumn<int>(
+    'hlc_counter',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hlcNodeIdMeta = const VerificationMeta(
+    'hlcNodeId',
+  );
+  @override
+  late final GeneratedColumn<String> hlcNodeId = GeneratedColumn<String>(
+    'hlc_node_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dirtyMeta = const VerificationMeta('dirty');
+  @override
+  late final GeneratedColumn<bool> dirty = GeneratedColumn<bool>(
+    'dirty',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("dirty" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _breakfastEnabledMeta = const VerificationMeta(
+    'breakfastEnabled',
+  );
+  @override
+  late final GeneratedColumn<bool> breakfastEnabled = GeneratedColumn<bool>(
+    'breakfast_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("breakfast_enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _breakfastTimeMeta = const VerificationMeta(
+    'breakfastTime',
+  );
+  @override
+  late final GeneratedColumn<String> breakfastTime = GeneratedColumn<String>(
+    'breakfast_time',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lunchEnabledMeta = const VerificationMeta(
+    'lunchEnabled',
+  );
+  @override
+  late final GeneratedColumn<bool> lunchEnabled = GeneratedColumn<bool>(
+    'lunch_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("lunch_enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _lunchTimeMeta = const VerificationMeta(
+    'lunchTime',
+  );
+  @override
+  late final GeneratedColumn<String> lunchTime = GeneratedColumn<String>(
+    'lunch_time',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dinnerEnabledMeta = const VerificationMeta(
+    'dinnerEnabled',
+  );
+  @override
+  late final GeneratedColumn<bool> dinnerEnabled = GeneratedColumn<bool>(
+    'dinner_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("dinner_enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _dinnerTimeMeta = const VerificationMeta(
+    'dinnerTime',
+  );
+  @override
+  late final GeneratedColumn<String> dinnerTime = GeneratedColumn<String>(
+    'dinner_time',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _snackEnabledMeta = const VerificationMeta(
+    'snackEnabled',
+  );
+  @override
+  late final GeneratedColumn<bool> snackEnabled = GeneratedColumn<bool>(
+    'snack_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("snack_enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _snackTimeMeta = const VerificationMeta(
+    'snackTime',
+  );
+  @override
+  late final GeneratedColumn<String> snackTime = GeneratedColumn<String>(
+    'snack_time',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    hlcMillis,
+    hlcCounter,
+    hlcNodeId,
+    dirty,
+    deletedAt,
+    breakfastEnabled,
+    breakfastTime,
+    lunchEnabled,
+    lunchTime,
+    dinnerEnabled,
+    dinnerTime,
+    snackEnabled,
+    snackTime,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'notification_prefs_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<NotificationPrefsRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('hlc_millis')) {
+      context.handle(
+        _hlcMillisMeta,
+        hlcMillis.isAcceptableOrUnknown(data['hlc_millis']!, _hlcMillisMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcMillisMeta);
+    }
+    if (data.containsKey('hlc_counter')) {
+      context.handle(
+        _hlcCounterMeta,
+        hlcCounter.isAcceptableOrUnknown(data['hlc_counter']!, _hlcCounterMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcCounterMeta);
+    }
+    if (data.containsKey('hlc_node_id')) {
+      context.handle(
+        _hlcNodeIdMeta,
+        hlcNodeId.isAcceptableOrUnknown(data['hlc_node_id']!, _hlcNodeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcNodeIdMeta);
+    }
+    if (data.containsKey('dirty')) {
+      context.handle(
+        _dirtyMeta,
+        dirty.isAcceptableOrUnknown(data['dirty']!, _dirtyMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('breakfast_enabled')) {
+      context.handle(
+        _breakfastEnabledMeta,
+        breakfastEnabled.isAcceptableOrUnknown(
+          data['breakfast_enabled']!,
+          _breakfastEnabledMeta,
+        ),
+      );
+    }
+    if (data.containsKey('breakfast_time')) {
+      context.handle(
+        _breakfastTimeMeta,
+        breakfastTime.isAcceptableOrUnknown(
+          data['breakfast_time']!,
+          _breakfastTimeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('lunch_enabled')) {
+      context.handle(
+        _lunchEnabledMeta,
+        lunchEnabled.isAcceptableOrUnknown(
+          data['lunch_enabled']!,
+          _lunchEnabledMeta,
+        ),
+      );
+    }
+    if (data.containsKey('lunch_time')) {
+      context.handle(
+        _lunchTimeMeta,
+        lunchTime.isAcceptableOrUnknown(data['lunch_time']!, _lunchTimeMeta),
+      );
+    }
+    if (data.containsKey('dinner_enabled')) {
+      context.handle(
+        _dinnerEnabledMeta,
+        dinnerEnabled.isAcceptableOrUnknown(
+          data['dinner_enabled']!,
+          _dinnerEnabledMeta,
+        ),
+      );
+    }
+    if (data.containsKey('dinner_time')) {
+      context.handle(
+        _dinnerTimeMeta,
+        dinnerTime.isAcceptableOrUnknown(data['dinner_time']!, _dinnerTimeMeta),
+      );
+    }
+    if (data.containsKey('snack_enabled')) {
+      context.handle(
+        _snackEnabledMeta,
+        snackEnabled.isAcceptableOrUnknown(
+          data['snack_enabled']!,
+          _snackEnabledMeta,
+        ),
+      );
+    }
+    if (data.containsKey('snack_time')) {
+      context.handle(
+        _snackTimeMeta,
+        snackTime.isAcceptableOrUnknown(data['snack_time']!, _snackTimeMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  NotificationPrefsRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return NotificationPrefsRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      hlcMillis: attachedDatabase.typeMapping.read(
+        DriftSqlType.bigInt,
+        data['${effectivePrefix}hlc_millis'],
+      )!,
+      hlcCounter: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}hlc_counter'],
+      )!,
+      hlcNodeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}hlc_node_id'],
+      )!,
+      dirty: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}dirty'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      breakfastEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}breakfast_enabled'],
+      )!,
+      breakfastTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}breakfast_time'],
+      ),
+      lunchEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}lunch_enabled'],
+      )!,
+      lunchTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}lunch_time'],
+      ),
+      dinnerEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}dinner_enabled'],
+      )!,
+      dinnerTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}dinner_time'],
+      ),
+      snackEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}snack_enabled'],
+      )!,
+      snackTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}snack_time'],
+      ),
+    );
+  }
+
+  @override
+  $NotificationPrefsTableTable createAlias(String alias) {
+    return $NotificationPrefsTableTable(attachedDatabase, alias);
+  }
+}
+
+class NotificationPrefsRow extends DataClass
+    implements Insertable<NotificationPrefsRow> {
+  /// Primary key: UUID v7 stored as TEXT (time-ordered, globally unique).
+  final String id;
+
+  /// HLC wall-clock component: milliseconds since Unix epoch.
+  /// Stored as int64 (BigInt in Dart) to fit 64-bit epoch millis.
+  final BigInt hlcMillis;
+
+  /// HLC logical counter: tie-breaking for same-millisecond writes.
+  final int hlcCounter;
+
+  /// HLC node identifier: stable device installation UUID (UUID v4).
+  /// Generated once on first app install and persisted in secure storage.
+  final String hlcNodeId;
+
+  /// Dirty flag: true = row has local changes not yet synced to backend.
+  /// Defaults to true on insert — every new row starts dirty until
+  /// sync confirms receipt.
+  final bool dirty;
+
+  /// Tombstone: null = row is live; non-null = row was soft-deleted.
+  /// Soft-deleted rows are retained for 90 days to allow sync to
+  /// propagate the deletion.
+  final DateTime? deletedAt;
+
+  /// Whether the breakfast reminder is enabled.
+  final bool breakfastEnabled;
+
+  /// Local time the breakfast reminder fires at, `'HH:mm'`.
+  final String? breakfastTime;
+
+  /// Whether the lunch reminder is enabled.
+  final bool lunchEnabled;
+
+  /// Local time the lunch reminder fires at, `'HH:mm'`.
+  final String? lunchTime;
+
+  /// Whether the dinner reminder is enabled.
+  final bool dinnerEnabled;
+
+  /// Local time the dinner reminder fires at, `'HH:mm'`.
+  final String? dinnerTime;
+
+  /// Whether the snack reminder is enabled.
+  final bool snackEnabled;
+
+  /// Local time the snack reminder fires at, `'HH:mm'`.
+  final String? snackTime;
+  const NotificationPrefsRow({
+    required this.id,
+    required this.hlcMillis,
+    required this.hlcCounter,
+    required this.hlcNodeId,
+    required this.dirty,
+    this.deletedAt,
+    required this.breakfastEnabled,
+    this.breakfastTime,
+    required this.lunchEnabled,
+    this.lunchTime,
+    required this.dinnerEnabled,
+    this.dinnerTime,
+    required this.snackEnabled,
+    this.snackTime,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['hlc_millis'] = Variable<BigInt>(hlcMillis);
+    map['hlc_counter'] = Variable<int>(hlcCounter);
+    map['hlc_node_id'] = Variable<String>(hlcNodeId);
+    map['dirty'] = Variable<bool>(dirty);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    map['breakfast_enabled'] = Variable<bool>(breakfastEnabled);
+    if (!nullToAbsent || breakfastTime != null) {
+      map['breakfast_time'] = Variable<String>(breakfastTime);
+    }
+    map['lunch_enabled'] = Variable<bool>(lunchEnabled);
+    if (!nullToAbsent || lunchTime != null) {
+      map['lunch_time'] = Variable<String>(lunchTime);
+    }
+    map['dinner_enabled'] = Variable<bool>(dinnerEnabled);
+    if (!nullToAbsent || dinnerTime != null) {
+      map['dinner_time'] = Variable<String>(dinnerTime);
+    }
+    map['snack_enabled'] = Variable<bool>(snackEnabled);
+    if (!nullToAbsent || snackTime != null) {
+      map['snack_time'] = Variable<String>(snackTime);
+    }
+    return map;
+  }
+
+  NotificationPrefsTableCompanion toCompanion(bool nullToAbsent) {
+    return NotificationPrefsTableCompanion(
+      id: Value(id),
+      hlcMillis: Value(hlcMillis),
+      hlcCounter: Value(hlcCounter),
+      hlcNodeId: Value(hlcNodeId),
+      dirty: Value(dirty),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      breakfastEnabled: Value(breakfastEnabled),
+      breakfastTime: breakfastTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(breakfastTime),
+      lunchEnabled: Value(lunchEnabled),
+      lunchTime: lunchTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lunchTime),
+      dinnerEnabled: Value(dinnerEnabled),
+      dinnerTime: dinnerTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dinnerTime),
+      snackEnabled: Value(snackEnabled),
+      snackTime: snackTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(snackTime),
+    );
+  }
+
+  factory NotificationPrefsRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return NotificationPrefsRow(
+      id: serializer.fromJson<String>(json['id']),
+      hlcMillis: serializer.fromJson<BigInt>(json['hlcMillis']),
+      hlcCounter: serializer.fromJson<int>(json['hlcCounter']),
+      hlcNodeId: serializer.fromJson<String>(json['hlcNodeId']),
+      dirty: serializer.fromJson<bool>(json['dirty']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      breakfastEnabled: serializer.fromJson<bool>(json['breakfastEnabled']),
+      breakfastTime: serializer.fromJson<String?>(json['breakfastTime']),
+      lunchEnabled: serializer.fromJson<bool>(json['lunchEnabled']),
+      lunchTime: serializer.fromJson<String?>(json['lunchTime']),
+      dinnerEnabled: serializer.fromJson<bool>(json['dinnerEnabled']),
+      dinnerTime: serializer.fromJson<String?>(json['dinnerTime']),
+      snackEnabled: serializer.fromJson<bool>(json['snackEnabled']),
+      snackTime: serializer.fromJson<String?>(json['snackTime']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'hlcMillis': serializer.toJson<BigInt>(hlcMillis),
+      'hlcCounter': serializer.toJson<int>(hlcCounter),
+      'hlcNodeId': serializer.toJson<String>(hlcNodeId),
+      'dirty': serializer.toJson<bool>(dirty),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'breakfastEnabled': serializer.toJson<bool>(breakfastEnabled),
+      'breakfastTime': serializer.toJson<String?>(breakfastTime),
+      'lunchEnabled': serializer.toJson<bool>(lunchEnabled),
+      'lunchTime': serializer.toJson<String?>(lunchTime),
+      'dinnerEnabled': serializer.toJson<bool>(dinnerEnabled),
+      'dinnerTime': serializer.toJson<String?>(dinnerTime),
+      'snackEnabled': serializer.toJson<bool>(snackEnabled),
+      'snackTime': serializer.toJson<String?>(snackTime),
+    };
+  }
+
+  NotificationPrefsRow copyWith({
+    String? id,
+    BigInt? hlcMillis,
+    int? hlcCounter,
+    String? hlcNodeId,
+    bool? dirty,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    bool? breakfastEnabled,
+    Value<String?> breakfastTime = const Value.absent(),
+    bool? lunchEnabled,
+    Value<String?> lunchTime = const Value.absent(),
+    bool? dinnerEnabled,
+    Value<String?> dinnerTime = const Value.absent(),
+    bool? snackEnabled,
+    Value<String?> snackTime = const Value.absent(),
+  }) => NotificationPrefsRow(
+    id: id ?? this.id,
+    hlcMillis: hlcMillis ?? this.hlcMillis,
+    hlcCounter: hlcCounter ?? this.hlcCounter,
+    hlcNodeId: hlcNodeId ?? this.hlcNodeId,
+    dirty: dirty ?? this.dirty,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    breakfastEnabled: breakfastEnabled ?? this.breakfastEnabled,
+    breakfastTime: breakfastTime.present
+        ? breakfastTime.value
+        : this.breakfastTime,
+    lunchEnabled: lunchEnabled ?? this.lunchEnabled,
+    lunchTime: lunchTime.present ? lunchTime.value : this.lunchTime,
+    dinnerEnabled: dinnerEnabled ?? this.dinnerEnabled,
+    dinnerTime: dinnerTime.present ? dinnerTime.value : this.dinnerTime,
+    snackEnabled: snackEnabled ?? this.snackEnabled,
+    snackTime: snackTime.present ? snackTime.value : this.snackTime,
+  );
+  NotificationPrefsRow copyWithCompanion(NotificationPrefsTableCompanion data) {
+    return NotificationPrefsRow(
+      id: data.id.present ? data.id.value : this.id,
+      hlcMillis: data.hlcMillis.present ? data.hlcMillis.value : this.hlcMillis,
+      hlcCounter: data.hlcCounter.present
+          ? data.hlcCounter.value
+          : this.hlcCounter,
+      hlcNodeId: data.hlcNodeId.present ? data.hlcNodeId.value : this.hlcNodeId,
+      dirty: data.dirty.present ? data.dirty.value : this.dirty,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      breakfastEnabled: data.breakfastEnabled.present
+          ? data.breakfastEnabled.value
+          : this.breakfastEnabled,
+      breakfastTime: data.breakfastTime.present
+          ? data.breakfastTime.value
+          : this.breakfastTime,
+      lunchEnabled: data.lunchEnabled.present
+          ? data.lunchEnabled.value
+          : this.lunchEnabled,
+      lunchTime: data.lunchTime.present ? data.lunchTime.value : this.lunchTime,
+      dinnerEnabled: data.dinnerEnabled.present
+          ? data.dinnerEnabled.value
+          : this.dinnerEnabled,
+      dinnerTime: data.dinnerTime.present
+          ? data.dinnerTime.value
+          : this.dinnerTime,
+      snackEnabled: data.snackEnabled.present
+          ? data.snackEnabled.value
+          : this.snackEnabled,
+      snackTime: data.snackTime.present ? data.snackTime.value : this.snackTime,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NotificationPrefsRow(')
+          ..write('id: $id, ')
+          ..write('hlcMillis: $hlcMillis, ')
+          ..write('hlcCounter: $hlcCounter, ')
+          ..write('hlcNodeId: $hlcNodeId, ')
+          ..write('dirty: $dirty, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('breakfastEnabled: $breakfastEnabled, ')
+          ..write('breakfastTime: $breakfastTime, ')
+          ..write('lunchEnabled: $lunchEnabled, ')
+          ..write('lunchTime: $lunchTime, ')
+          ..write('dinnerEnabled: $dinnerEnabled, ')
+          ..write('dinnerTime: $dinnerTime, ')
+          ..write('snackEnabled: $snackEnabled, ')
+          ..write('snackTime: $snackTime')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    hlcMillis,
+    hlcCounter,
+    hlcNodeId,
+    dirty,
+    deletedAt,
+    breakfastEnabled,
+    breakfastTime,
+    lunchEnabled,
+    lunchTime,
+    dinnerEnabled,
+    dinnerTime,
+    snackEnabled,
+    snackTime,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is NotificationPrefsRow &&
+          other.id == this.id &&
+          other.hlcMillis == this.hlcMillis &&
+          other.hlcCounter == this.hlcCounter &&
+          other.hlcNodeId == this.hlcNodeId &&
+          other.dirty == this.dirty &&
+          other.deletedAt == this.deletedAt &&
+          other.breakfastEnabled == this.breakfastEnabled &&
+          other.breakfastTime == this.breakfastTime &&
+          other.lunchEnabled == this.lunchEnabled &&
+          other.lunchTime == this.lunchTime &&
+          other.dinnerEnabled == this.dinnerEnabled &&
+          other.dinnerTime == this.dinnerTime &&
+          other.snackEnabled == this.snackEnabled &&
+          other.snackTime == this.snackTime);
+}
+
+class NotificationPrefsTableCompanion
+    extends UpdateCompanion<NotificationPrefsRow> {
+  final Value<String> id;
+  final Value<BigInt> hlcMillis;
+  final Value<int> hlcCounter;
+  final Value<String> hlcNodeId;
+  final Value<bool> dirty;
+  final Value<DateTime?> deletedAt;
+  final Value<bool> breakfastEnabled;
+  final Value<String?> breakfastTime;
+  final Value<bool> lunchEnabled;
+  final Value<String?> lunchTime;
+  final Value<bool> dinnerEnabled;
+  final Value<String?> dinnerTime;
+  final Value<bool> snackEnabled;
+  final Value<String?> snackTime;
+  final Value<int> rowid;
+  const NotificationPrefsTableCompanion({
+    this.id = const Value.absent(),
+    this.hlcMillis = const Value.absent(),
+    this.hlcCounter = const Value.absent(),
+    this.hlcNodeId = const Value.absent(),
+    this.dirty = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.breakfastEnabled = const Value.absent(),
+    this.breakfastTime = const Value.absent(),
+    this.lunchEnabled = const Value.absent(),
+    this.lunchTime = const Value.absent(),
+    this.dinnerEnabled = const Value.absent(),
+    this.dinnerTime = const Value.absent(),
+    this.snackEnabled = const Value.absent(),
+    this.snackTime = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  NotificationPrefsTableCompanion.insert({
+    required String id,
+    required BigInt hlcMillis,
+    required int hlcCounter,
+    required String hlcNodeId,
+    this.dirty = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.breakfastEnabled = const Value.absent(),
+    this.breakfastTime = const Value.absent(),
+    this.lunchEnabled = const Value.absent(),
+    this.lunchTime = const Value.absent(),
+    this.dinnerEnabled = const Value.absent(),
+    this.dinnerTime = const Value.absent(),
+    this.snackEnabled = const Value.absent(),
+    this.snackTime = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       hlcMillis = Value(hlcMillis),
+       hlcCounter = Value(hlcCounter),
+       hlcNodeId = Value(hlcNodeId);
+  static Insertable<NotificationPrefsRow> custom({
+    Expression<String>? id,
+    Expression<BigInt>? hlcMillis,
+    Expression<int>? hlcCounter,
+    Expression<String>? hlcNodeId,
+    Expression<bool>? dirty,
+    Expression<DateTime>? deletedAt,
+    Expression<bool>? breakfastEnabled,
+    Expression<String>? breakfastTime,
+    Expression<bool>? lunchEnabled,
+    Expression<String>? lunchTime,
+    Expression<bool>? dinnerEnabled,
+    Expression<String>? dinnerTime,
+    Expression<bool>? snackEnabled,
+    Expression<String>? snackTime,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (hlcMillis != null) 'hlc_millis': hlcMillis,
+      if (hlcCounter != null) 'hlc_counter': hlcCounter,
+      if (hlcNodeId != null) 'hlc_node_id': hlcNodeId,
+      if (dirty != null) 'dirty': dirty,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (breakfastEnabled != null) 'breakfast_enabled': breakfastEnabled,
+      if (breakfastTime != null) 'breakfast_time': breakfastTime,
+      if (lunchEnabled != null) 'lunch_enabled': lunchEnabled,
+      if (lunchTime != null) 'lunch_time': lunchTime,
+      if (dinnerEnabled != null) 'dinner_enabled': dinnerEnabled,
+      if (dinnerTime != null) 'dinner_time': dinnerTime,
+      if (snackEnabled != null) 'snack_enabled': snackEnabled,
+      if (snackTime != null) 'snack_time': snackTime,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  NotificationPrefsTableCompanion copyWith({
+    Value<String>? id,
+    Value<BigInt>? hlcMillis,
+    Value<int>? hlcCounter,
+    Value<String>? hlcNodeId,
+    Value<bool>? dirty,
+    Value<DateTime?>? deletedAt,
+    Value<bool>? breakfastEnabled,
+    Value<String?>? breakfastTime,
+    Value<bool>? lunchEnabled,
+    Value<String?>? lunchTime,
+    Value<bool>? dinnerEnabled,
+    Value<String?>? dinnerTime,
+    Value<bool>? snackEnabled,
+    Value<String?>? snackTime,
+    Value<int>? rowid,
+  }) {
+    return NotificationPrefsTableCompanion(
+      id: id ?? this.id,
+      hlcMillis: hlcMillis ?? this.hlcMillis,
+      hlcCounter: hlcCounter ?? this.hlcCounter,
+      hlcNodeId: hlcNodeId ?? this.hlcNodeId,
+      dirty: dirty ?? this.dirty,
+      deletedAt: deletedAt ?? this.deletedAt,
+      breakfastEnabled: breakfastEnabled ?? this.breakfastEnabled,
+      breakfastTime: breakfastTime ?? this.breakfastTime,
+      lunchEnabled: lunchEnabled ?? this.lunchEnabled,
+      lunchTime: lunchTime ?? this.lunchTime,
+      dinnerEnabled: dinnerEnabled ?? this.dinnerEnabled,
+      dinnerTime: dinnerTime ?? this.dinnerTime,
+      snackEnabled: snackEnabled ?? this.snackEnabled,
+      snackTime: snackTime ?? this.snackTime,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (hlcMillis.present) {
+      map['hlc_millis'] = Variable<BigInt>(hlcMillis.value);
+    }
+    if (hlcCounter.present) {
+      map['hlc_counter'] = Variable<int>(hlcCounter.value);
+    }
+    if (hlcNodeId.present) {
+      map['hlc_node_id'] = Variable<String>(hlcNodeId.value);
+    }
+    if (dirty.present) {
+      map['dirty'] = Variable<bool>(dirty.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (breakfastEnabled.present) {
+      map['breakfast_enabled'] = Variable<bool>(breakfastEnabled.value);
+    }
+    if (breakfastTime.present) {
+      map['breakfast_time'] = Variable<String>(breakfastTime.value);
+    }
+    if (lunchEnabled.present) {
+      map['lunch_enabled'] = Variable<bool>(lunchEnabled.value);
+    }
+    if (lunchTime.present) {
+      map['lunch_time'] = Variable<String>(lunchTime.value);
+    }
+    if (dinnerEnabled.present) {
+      map['dinner_enabled'] = Variable<bool>(dinnerEnabled.value);
+    }
+    if (dinnerTime.present) {
+      map['dinner_time'] = Variable<String>(dinnerTime.value);
+    }
+    if (snackEnabled.present) {
+      map['snack_enabled'] = Variable<bool>(snackEnabled.value);
+    }
+    if (snackTime.present) {
+      map['snack_time'] = Variable<String>(snackTime.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NotificationPrefsTableCompanion(')
+          ..write('id: $id, ')
+          ..write('hlcMillis: $hlcMillis, ')
+          ..write('hlcCounter: $hlcCounter, ')
+          ..write('hlcNodeId: $hlcNodeId, ')
+          ..write('dirty: $dirty, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('breakfastEnabled: $breakfastEnabled, ')
+          ..write('breakfastTime: $breakfastTime, ')
+          ..write('lunchEnabled: $lunchEnabled, ')
+          ..write('lunchTime: $lunchTime, ')
+          ..write('dinnerEnabled: $dinnerEnabled, ')
+          ..write('dinnerTime: $dinnerTime, ')
+          ..write('snackEnabled: $snackEnabled, ')
+          ..write('snackTime: $snackTime, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $BackupMetadataTableTable extends BackupMetadataTable
+    with TableInfo<$BackupMetadataTableTable, BackupMetadataRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $BackupMetadataTableTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hlcMillisMeta = const VerificationMeta(
+    'hlcMillis',
+  );
+  @override
+  late final GeneratedColumn<BigInt> hlcMillis = GeneratedColumn<BigInt>(
+    'hlc_millis',
+    aliasedName,
+    false,
+    type: DriftSqlType.bigInt,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hlcCounterMeta = const VerificationMeta(
+    'hlcCounter',
+  );
+  @override
+  late final GeneratedColumn<int> hlcCounter = GeneratedColumn<int>(
+    'hlc_counter',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _hlcNodeIdMeta = const VerificationMeta(
+    'hlcNodeId',
+  );
+  @override
+  late final GeneratedColumn<String> hlcNodeId = GeneratedColumn<String>(
+    'hlc_node_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dirtyMeta = const VerificationMeta('dirty');
+  @override
+  late final GeneratedColumn<bool> dirty = GeneratedColumn<bool>(
+    'dirty',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("dirty" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta(
+    'deletedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _autoBackupFrequencyMeta =
+      const VerificationMeta('autoBackupFrequency');
+  @override
+  late final GeneratedColumn<String> autoBackupFrequency =
+      GeneratedColumn<String>(
+        'auto_backup_frequency',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('off'),
+      );
+  static const VerificationMeta _lastBackupAtMeta = const VerificationMeta(
+    'lastBackupAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastBackupAt = GeneratedColumn<DateTime>(
+    'last_backup_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastBackupPathMeta = const VerificationMeta(
+    'lastBackupPath',
+  );
+  @override
+  late final GeneratedColumn<String> lastBackupPath = GeneratedColumn<String>(
+    'last_backup_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    hlcMillis,
+    hlcCounter,
+    hlcNodeId,
+    dirty,
+    deletedAt,
+    autoBackupFrequency,
+    lastBackupAt,
+    lastBackupPath,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'backup_metadata_table';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<BackupMetadataRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('hlc_millis')) {
+      context.handle(
+        _hlcMillisMeta,
+        hlcMillis.isAcceptableOrUnknown(data['hlc_millis']!, _hlcMillisMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcMillisMeta);
+    }
+    if (data.containsKey('hlc_counter')) {
+      context.handle(
+        _hlcCounterMeta,
+        hlcCounter.isAcceptableOrUnknown(data['hlc_counter']!, _hlcCounterMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcCounterMeta);
+    }
+    if (data.containsKey('hlc_node_id')) {
+      context.handle(
+        _hlcNodeIdMeta,
+        hlcNodeId.isAcceptableOrUnknown(data['hlc_node_id']!, _hlcNodeIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcNodeIdMeta);
+    }
+    if (data.containsKey('dirty')) {
+      context.handle(
+        _dirtyMeta,
+        dirty.isAcceptableOrUnknown(data['dirty']!, _dirtyMeta),
+      );
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(
+        _deletedAtMeta,
+        deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta),
+      );
+    }
+    if (data.containsKey('auto_backup_frequency')) {
+      context.handle(
+        _autoBackupFrequencyMeta,
+        autoBackupFrequency.isAcceptableOrUnknown(
+          data['auto_backup_frequency']!,
+          _autoBackupFrequencyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_backup_at')) {
+      context.handle(
+        _lastBackupAtMeta,
+        lastBackupAt.isAcceptableOrUnknown(
+          data['last_backup_at']!,
+          _lastBackupAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_backup_path')) {
+      context.handle(
+        _lastBackupPathMeta,
+        lastBackupPath.isAcceptableOrUnknown(
+          data['last_backup_path']!,
+          _lastBackupPathMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  BackupMetadataRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BackupMetadataRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      hlcMillis: attachedDatabase.typeMapping.read(
+        DriftSqlType.bigInt,
+        data['${effectivePrefix}hlc_millis'],
+      )!,
+      hlcCounter: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}hlc_counter'],
+      )!,
+      hlcNodeId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}hlc_node_id'],
+      )!,
+      dirty: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}dirty'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+      autoBackupFrequency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}auto_backup_frequency'],
+      )!,
+      lastBackupAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_backup_at'],
+      ),
+      lastBackupPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last_backup_path'],
+      ),
+    );
+  }
+
+  @override
+  $BackupMetadataTableTable createAlias(String alias) {
+    return $BackupMetadataTableTable(attachedDatabase, alias);
+  }
+}
+
+class BackupMetadataRow extends DataClass
+    implements Insertable<BackupMetadataRow> {
+  /// Primary key: UUID v7 stored as TEXT (time-ordered, globally unique).
+  final String id;
+
+  /// HLC wall-clock component: milliseconds since Unix epoch.
+  /// Stored as int64 (BigInt in Dart) to fit 64-bit epoch millis.
+  final BigInt hlcMillis;
+
+  /// HLC logical counter: tie-breaking for same-millisecond writes.
+  final int hlcCounter;
+
+  /// HLC node identifier: stable device installation UUID (UUID v4).
+  /// Generated once on first app install and persisted in secure storage.
+  final String hlcNodeId;
+
+  /// Dirty flag: true = row has local changes not yet synced to backend.
+  /// Defaults to true on insert — every new row starts dirty until
+  /// sync confirms receipt.
+  final bool dirty;
+
+  /// Tombstone: null = row is live; non-null = row was soft-deleted.
+  /// Soft-deleted rows are retained for 90 days to allow sync to
+  /// propagate the deletion.
+  final DateTime? deletedAt;
+
+  /// How often automatic backups run.
+  /// Values: 'off', 'daily', 'weekly'.
+  final String autoBackupFrequency;
+
+  /// Wall-clock timestamp of the most recent successful backup.
+  final DateTime? lastBackupAt;
+
+  /// Path to the most recent backup file, within the app's own
+  /// documents directory — never a user-chosen external path.
+  final String? lastBackupPath;
+  const BackupMetadataRow({
+    required this.id,
+    required this.hlcMillis,
+    required this.hlcCounter,
+    required this.hlcNodeId,
+    required this.dirty,
+    this.deletedAt,
+    required this.autoBackupFrequency,
+    this.lastBackupAt,
+    this.lastBackupPath,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['hlc_millis'] = Variable<BigInt>(hlcMillis);
+    map['hlc_counter'] = Variable<int>(hlcCounter);
+    map['hlc_node_id'] = Variable<String>(hlcNodeId);
+    map['dirty'] = Variable<bool>(dirty);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    map['auto_backup_frequency'] = Variable<String>(autoBackupFrequency);
+    if (!nullToAbsent || lastBackupAt != null) {
+      map['last_backup_at'] = Variable<DateTime>(lastBackupAt);
+    }
+    if (!nullToAbsent || lastBackupPath != null) {
+      map['last_backup_path'] = Variable<String>(lastBackupPath);
+    }
+    return map;
+  }
+
+  BackupMetadataTableCompanion toCompanion(bool nullToAbsent) {
+    return BackupMetadataTableCompanion(
+      id: Value(id),
+      hlcMillis: Value(hlcMillis),
+      hlcCounter: Value(hlcCounter),
+      hlcNodeId: Value(hlcNodeId),
+      dirty: Value(dirty),
+      deletedAt: deletedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAt),
+      autoBackupFrequency: Value(autoBackupFrequency),
+      lastBackupAt: lastBackupAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastBackupAt),
+      lastBackupPath: lastBackupPath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastBackupPath),
+    );
+  }
+
+  factory BackupMetadataRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BackupMetadataRow(
+      id: serializer.fromJson<String>(json['id']),
+      hlcMillis: serializer.fromJson<BigInt>(json['hlcMillis']),
+      hlcCounter: serializer.fromJson<int>(json['hlcCounter']),
+      hlcNodeId: serializer.fromJson<String>(json['hlcNodeId']),
+      dirty: serializer.fromJson<bool>(json['dirty']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+      autoBackupFrequency: serializer.fromJson<String>(
+        json['autoBackupFrequency'],
+      ),
+      lastBackupAt: serializer.fromJson<DateTime?>(json['lastBackupAt']),
+      lastBackupPath: serializer.fromJson<String?>(json['lastBackupPath']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'hlcMillis': serializer.toJson<BigInt>(hlcMillis),
+      'hlcCounter': serializer.toJson<int>(hlcCounter),
+      'hlcNodeId': serializer.toJson<String>(hlcNodeId),
+      'dirty': serializer.toJson<bool>(dirty),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+      'autoBackupFrequency': serializer.toJson<String>(autoBackupFrequency),
+      'lastBackupAt': serializer.toJson<DateTime?>(lastBackupAt),
+      'lastBackupPath': serializer.toJson<String?>(lastBackupPath),
+    };
+  }
+
+  BackupMetadataRow copyWith({
+    String? id,
+    BigInt? hlcMillis,
+    int? hlcCounter,
+    String? hlcNodeId,
+    bool? dirty,
+    Value<DateTime?> deletedAt = const Value.absent(),
+    String? autoBackupFrequency,
+    Value<DateTime?> lastBackupAt = const Value.absent(),
+    Value<String?> lastBackupPath = const Value.absent(),
+  }) => BackupMetadataRow(
+    id: id ?? this.id,
+    hlcMillis: hlcMillis ?? this.hlcMillis,
+    hlcCounter: hlcCounter ?? this.hlcCounter,
+    hlcNodeId: hlcNodeId ?? this.hlcNodeId,
+    dirty: dirty ?? this.dirty,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+    autoBackupFrequency: autoBackupFrequency ?? this.autoBackupFrequency,
+    lastBackupAt: lastBackupAt.present ? lastBackupAt.value : this.lastBackupAt,
+    lastBackupPath: lastBackupPath.present
+        ? lastBackupPath.value
+        : this.lastBackupPath,
+  );
+  BackupMetadataRow copyWithCompanion(BackupMetadataTableCompanion data) {
+    return BackupMetadataRow(
+      id: data.id.present ? data.id.value : this.id,
+      hlcMillis: data.hlcMillis.present ? data.hlcMillis.value : this.hlcMillis,
+      hlcCounter: data.hlcCounter.present
+          ? data.hlcCounter.value
+          : this.hlcCounter,
+      hlcNodeId: data.hlcNodeId.present ? data.hlcNodeId.value : this.hlcNodeId,
+      dirty: data.dirty.present ? data.dirty.value : this.dirty,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+      autoBackupFrequency: data.autoBackupFrequency.present
+          ? data.autoBackupFrequency.value
+          : this.autoBackupFrequency,
+      lastBackupAt: data.lastBackupAt.present
+          ? data.lastBackupAt.value
+          : this.lastBackupAt,
+      lastBackupPath: data.lastBackupPath.present
+          ? data.lastBackupPath.value
+          : this.lastBackupPath,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BackupMetadataRow(')
+          ..write('id: $id, ')
+          ..write('hlcMillis: $hlcMillis, ')
+          ..write('hlcCounter: $hlcCounter, ')
+          ..write('hlcNodeId: $hlcNodeId, ')
+          ..write('dirty: $dirty, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('autoBackupFrequency: $autoBackupFrequency, ')
+          ..write('lastBackupAt: $lastBackupAt, ')
+          ..write('lastBackupPath: $lastBackupPath')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    hlcMillis,
+    hlcCounter,
+    hlcNodeId,
+    dirty,
+    deletedAt,
+    autoBackupFrequency,
+    lastBackupAt,
+    lastBackupPath,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BackupMetadataRow &&
+          other.id == this.id &&
+          other.hlcMillis == this.hlcMillis &&
+          other.hlcCounter == this.hlcCounter &&
+          other.hlcNodeId == this.hlcNodeId &&
+          other.dirty == this.dirty &&
+          other.deletedAt == this.deletedAt &&
+          other.autoBackupFrequency == this.autoBackupFrequency &&
+          other.lastBackupAt == this.lastBackupAt &&
+          other.lastBackupPath == this.lastBackupPath);
+}
+
+class BackupMetadataTableCompanion extends UpdateCompanion<BackupMetadataRow> {
+  final Value<String> id;
+  final Value<BigInt> hlcMillis;
+  final Value<int> hlcCounter;
+  final Value<String> hlcNodeId;
+  final Value<bool> dirty;
+  final Value<DateTime?> deletedAt;
+  final Value<String> autoBackupFrequency;
+  final Value<DateTime?> lastBackupAt;
+  final Value<String?> lastBackupPath;
+  final Value<int> rowid;
+  const BackupMetadataTableCompanion({
+    this.id = const Value.absent(),
+    this.hlcMillis = const Value.absent(),
+    this.hlcCounter = const Value.absent(),
+    this.hlcNodeId = const Value.absent(),
+    this.dirty = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.autoBackupFrequency = const Value.absent(),
+    this.lastBackupAt = const Value.absent(),
+    this.lastBackupPath = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  BackupMetadataTableCompanion.insert({
+    required String id,
+    required BigInt hlcMillis,
+    required int hlcCounter,
+    required String hlcNodeId,
+    this.dirty = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.autoBackupFrequency = const Value.absent(),
+    this.lastBackupAt = const Value.absent(),
+    this.lastBackupPath = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       hlcMillis = Value(hlcMillis),
+       hlcCounter = Value(hlcCounter),
+       hlcNodeId = Value(hlcNodeId);
+  static Insertable<BackupMetadataRow> custom({
+    Expression<String>? id,
+    Expression<BigInt>? hlcMillis,
+    Expression<int>? hlcCounter,
+    Expression<String>? hlcNodeId,
+    Expression<bool>? dirty,
+    Expression<DateTime>? deletedAt,
+    Expression<String>? autoBackupFrequency,
+    Expression<DateTime>? lastBackupAt,
+    Expression<String>? lastBackupPath,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (hlcMillis != null) 'hlc_millis': hlcMillis,
+      if (hlcCounter != null) 'hlc_counter': hlcCounter,
+      if (hlcNodeId != null) 'hlc_node_id': hlcNodeId,
+      if (dirty != null) 'dirty': dirty,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (autoBackupFrequency != null)
+        'auto_backup_frequency': autoBackupFrequency,
+      if (lastBackupAt != null) 'last_backup_at': lastBackupAt,
+      if (lastBackupPath != null) 'last_backup_path': lastBackupPath,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  BackupMetadataTableCompanion copyWith({
+    Value<String>? id,
+    Value<BigInt>? hlcMillis,
+    Value<int>? hlcCounter,
+    Value<String>? hlcNodeId,
+    Value<bool>? dirty,
+    Value<DateTime?>? deletedAt,
+    Value<String>? autoBackupFrequency,
+    Value<DateTime?>? lastBackupAt,
+    Value<String?>? lastBackupPath,
+    Value<int>? rowid,
+  }) {
+    return BackupMetadataTableCompanion(
+      id: id ?? this.id,
+      hlcMillis: hlcMillis ?? this.hlcMillis,
+      hlcCounter: hlcCounter ?? this.hlcCounter,
+      hlcNodeId: hlcNodeId ?? this.hlcNodeId,
+      dirty: dirty ?? this.dirty,
+      deletedAt: deletedAt ?? this.deletedAt,
+      autoBackupFrequency: autoBackupFrequency ?? this.autoBackupFrequency,
+      lastBackupAt: lastBackupAt ?? this.lastBackupAt,
+      lastBackupPath: lastBackupPath ?? this.lastBackupPath,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (hlcMillis.present) {
+      map['hlc_millis'] = Variable<BigInt>(hlcMillis.value);
+    }
+    if (hlcCounter.present) {
+      map['hlc_counter'] = Variable<int>(hlcCounter.value);
+    }
+    if (hlcNodeId.present) {
+      map['hlc_node_id'] = Variable<String>(hlcNodeId.value);
+    }
+    if (dirty.present) {
+      map['dirty'] = Variable<bool>(dirty.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    if (autoBackupFrequency.present) {
+      map['auto_backup_frequency'] = Variable<String>(
+        autoBackupFrequency.value,
+      );
+    }
+    if (lastBackupAt.present) {
+      map['last_backup_at'] = Variable<DateTime>(lastBackupAt.value);
+    }
+    if (lastBackupPath.present) {
+      map['last_backup_path'] = Variable<String>(lastBackupPath.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BackupMetadataTableCompanion(')
+          ..write('id: $id, ')
+          ..write('hlcMillis: $hlcMillis, ')
+          ..write('hlcCounter: $hlcCounter, ')
+          ..write('hlcNodeId: $hlcNodeId, ')
+          ..write('dirty: $dirty, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('autoBackupFrequency: $autoBackupFrequency, ')
+          ..write('lastBackupAt: $lastBackupAt, ')
+          ..write('lastBackupPath: $lastBackupPath, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -7105,6 +11096,18 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $MealEntryTableTable mealEntryTable = $MealEntryTableTable(this);
   late final $FavoriteTableTable favoriteTable = $FavoriteTableTable(this);
   late final $UserFoodTableTable userFoodTable = $UserFoodTableTable(this);
+  late final $Co2SettingsTableTable co2SettingsTable = $Co2SettingsTableTable(
+    this,
+  );
+  late final $WeightEntryTableTable weightEntryTable = $WeightEntryTableTable(
+    this,
+  );
+  late final $WeightSettingsTableTable weightSettingsTable =
+      $WeightSettingsTableTable(this);
+  late final $NotificationPrefsTableTable notificationPrefsTable =
+      $NotificationPrefsTableTable(this);
+  late final $BackupMetadataTableTable backupMetadataTable =
+      $BackupMetadataTableTable(this);
   late final UserProfileDao userProfileDao = UserProfileDao(
     this as AppDatabase,
   );
@@ -7128,6 +11131,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     mealEntryTable,
     favoriteTable,
     userFoodTable,
+    co2SettingsTable,
+    weightEntryTable,
+    weightSettingsTable,
+    notificationPrefsTable,
+    backupMetadataTable,
   ];
 }
 
@@ -8620,6 +12628,9 @@ typedef $$MealEntryTableTableCreateCompanionBuilder =
       Value<double?> protein100gSnapshot,
       Value<double?> carbs100gSnapshot,
       Value<double?> fat100gSnapshot,
+      Value<double?> sugar100gSnapshot,
+      Value<double?> fiber100gSnapshot,
+      Value<double?> saltSnapshot,
       Value<double?> co2e100gSnapshot,
       Value<String?> confidenceBandSnapshot,
       Value<String?> co2MethodologyVersionSnapshot,
@@ -8646,6 +12657,9 @@ typedef $$MealEntryTableTableUpdateCompanionBuilder =
       Value<double?> protein100gSnapshot,
       Value<double?> carbs100gSnapshot,
       Value<double?> fat100gSnapshot,
+      Value<double?> sugar100gSnapshot,
+      Value<double?> fiber100gSnapshot,
+      Value<double?> saltSnapshot,
       Value<double?> co2e100gSnapshot,
       Value<String?> confidenceBandSnapshot,
       Value<String?> co2MethodologyVersionSnapshot,
@@ -8747,6 +12761,21 @@ class $$MealEntryTableTableFilterComposer
 
   ColumnFilters<double> get fat100gSnapshot => $composableBuilder(
     column: $table.fat100gSnapshot,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get sugar100gSnapshot => $composableBuilder(
+    column: $table.sugar100gSnapshot,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get fiber100gSnapshot => $composableBuilder(
+    column: $table.fiber100gSnapshot,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get saltSnapshot => $composableBuilder(
+    column: $table.saltSnapshot,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -8870,6 +12899,21 @@ class $$MealEntryTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<double> get sugar100gSnapshot => $composableBuilder(
+    column: $table.sugar100gSnapshot,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get fiber100gSnapshot => $composableBuilder(
+    column: $table.fiber100gSnapshot,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get saltSnapshot => $composableBuilder(
+    column: $table.saltSnapshot,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<double> get co2e100gSnapshot => $composableBuilder(
     column: $table.co2e100gSnapshot,
     builder: (column) => ColumnOrderings(column),
@@ -8973,6 +13017,21 @@ class $$MealEntryTableTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<double> get sugar100gSnapshot => $composableBuilder(
+    column: $table.sugar100gSnapshot,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get fiber100gSnapshot => $composableBuilder(
+    column: $table.fiber100gSnapshot,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get saltSnapshot => $composableBuilder(
+    column: $table.saltSnapshot,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<double> get co2e100gSnapshot => $composableBuilder(
     column: $table.co2e100gSnapshot,
     builder: (column) => column,
@@ -9046,6 +13105,9 @@ class $$MealEntryTableTableTableManager
                 Value<double?> protein100gSnapshot = const Value.absent(),
                 Value<double?> carbs100gSnapshot = const Value.absent(),
                 Value<double?> fat100gSnapshot = const Value.absent(),
+                Value<double?> sugar100gSnapshot = const Value.absent(),
+                Value<double?> fiber100gSnapshot = const Value.absent(),
+                Value<double?> saltSnapshot = const Value.absent(),
                 Value<double?> co2e100gSnapshot = const Value.absent(),
                 Value<String?> confidenceBandSnapshot = const Value.absent(),
                 Value<String?> co2MethodologyVersionSnapshot =
@@ -9071,6 +13133,9 @@ class $$MealEntryTableTableTableManager
                 protein100gSnapshot: protein100gSnapshot,
                 carbs100gSnapshot: carbs100gSnapshot,
                 fat100gSnapshot: fat100gSnapshot,
+                sugar100gSnapshot: sugar100gSnapshot,
+                fiber100gSnapshot: fiber100gSnapshot,
+                saltSnapshot: saltSnapshot,
                 co2e100gSnapshot: co2e100gSnapshot,
                 confidenceBandSnapshot: confidenceBandSnapshot,
                 co2MethodologyVersionSnapshot: co2MethodologyVersionSnapshot,
@@ -9097,6 +13162,9 @@ class $$MealEntryTableTableTableManager
                 Value<double?> protein100gSnapshot = const Value.absent(),
                 Value<double?> carbs100gSnapshot = const Value.absent(),
                 Value<double?> fat100gSnapshot = const Value.absent(),
+                Value<double?> sugar100gSnapshot = const Value.absent(),
+                Value<double?> fiber100gSnapshot = const Value.absent(),
+                Value<double?> saltSnapshot = const Value.absent(),
                 Value<double?> co2e100gSnapshot = const Value.absent(),
                 Value<String?> confidenceBandSnapshot = const Value.absent(),
                 Value<String?> co2MethodologyVersionSnapshot =
@@ -9122,6 +13190,9 @@ class $$MealEntryTableTableTableManager
                 protein100gSnapshot: protein100gSnapshot,
                 carbs100gSnapshot: carbs100gSnapshot,
                 fat100gSnapshot: fat100gSnapshot,
+                sugar100gSnapshot: sugar100gSnapshot,
+                fiber100gSnapshot: fiber100gSnapshot,
+                saltSnapshot: saltSnapshot,
                 co2e100gSnapshot: co2e100gSnapshot,
                 confidenceBandSnapshot: confidenceBandSnapshot,
                 co2MethodologyVersionSnapshot: co2MethodologyVersionSnapshot,
@@ -10179,6 +14250,1772 @@ typedef $$UserFoodTableTableProcessedTableManager =
       UserFoodRow,
       PrefetchHooks Function()
     >;
+typedef $$Co2SettingsTableTableCreateCompanionBuilder =
+    Co2SettingsTableCompanion Function({
+      required String id,
+      required BigInt hlcMillis,
+      required int hlcCounter,
+      required String hlcNodeId,
+      Value<bool> dirty,
+      Value<DateTime?> deletedAt,
+      Value<String?> locationCountry,
+      Value<String?> locationRegion,
+      Value<String?> purchasingSource,
+      Value<String?> shoppingTransport,
+      Value<String?> cookingMethod,
+      Value<String?> foodStorage,
+      Value<int?> householdSize,
+      Value<String?> foodWasteLevel,
+      Value<int> rowid,
+    });
+typedef $$Co2SettingsTableTableUpdateCompanionBuilder =
+    Co2SettingsTableCompanion Function({
+      Value<String> id,
+      Value<BigInt> hlcMillis,
+      Value<int> hlcCounter,
+      Value<String> hlcNodeId,
+      Value<bool> dirty,
+      Value<DateTime?> deletedAt,
+      Value<String?> locationCountry,
+      Value<String?> locationRegion,
+      Value<String?> purchasingSource,
+      Value<String?> shoppingTransport,
+      Value<String?> cookingMethod,
+      Value<String?> foodStorage,
+      Value<int?> householdSize,
+      Value<String?> foodWasteLevel,
+      Value<int> rowid,
+    });
+
+class $$Co2SettingsTableTableFilterComposer
+    extends Composer<_$AppDatabase, $Co2SettingsTableTable> {
+  $$Co2SettingsTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<BigInt> get hlcMillis => $composableBuilder(
+    column: $table.hlcMillis,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get hlcCounter => $composableBuilder(
+    column: $table.hlcCounter,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get hlcNodeId => $composableBuilder(
+    column: $table.hlcNodeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get dirty => $composableBuilder(
+    column: $table.dirty,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get locationCountry => $composableBuilder(
+    column: $table.locationCountry,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get locationRegion => $composableBuilder(
+    column: $table.locationRegion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get purchasingSource => $composableBuilder(
+    column: $table.purchasingSource,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get shoppingTransport => $composableBuilder(
+    column: $table.shoppingTransport,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cookingMethod => $composableBuilder(
+    column: $table.cookingMethod,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get foodStorage => $composableBuilder(
+    column: $table.foodStorage,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get householdSize => $composableBuilder(
+    column: $table.householdSize,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get foodWasteLevel => $composableBuilder(
+    column: $table.foodWasteLevel,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$Co2SettingsTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $Co2SettingsTableTable> {
+  $$Co2SettingsTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<BigInt> get hlcMillis => $composableBuilder(
+    column: $table.hlcMillis,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get hlcCounter => $composableBuilder(
+    column: $table.hlcCounter,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get hlcNodeId => $composableBuilder(
+    column: $table.hlcNodeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get dirty => $composableBuilder(
+    column: $table.dirty,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get locationCountry => $composableBuilder(
+    column: $table.locationCountry,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get locationRegion => $composableBuilder(
+    column: $table.locationRegion,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get purchasingSource => $composableBuilder(
+    column: $table.purchasingSource,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get shoppingTransport => $composableBuilder(
+    column: $table.shoppingTransport,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cookingMethod => $composableBuilder(
+    column: $table.cookingMethod,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get foodStorage => $composableBuilder(
+    column: $table.foodStorage,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get householdSize => $composableBuilder(
+    column: $table.householdSize,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get foodWasteLevel => $composableBuilder(
+    column: $table.foodWasteLevel,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$Co2SettingsTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $Co2SettingsTableTable> {
+  $$Co2SettingsTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<BigInt> get hlcMillis =>
+      $composableBuilder(column: $table.hlcMillis, builder: (column) => column);
+
+  GeneratedColumn<int> get hlcCounter => $composableBuilder(
+    column: $table.hlcCounter,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get hlcNodeId =>
+      $composableBuilder(column: $table.hlcNodeId, builder: (column) => column);
+
+  GeneratedColumn<bool> get dirty =>
+      $composableBuilder(column: $table.dirty, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get locationCountry => $composableBuilder(
+    column: $table.locationCountry,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get locationRegion => $composableBuilder(
+    column: $table.locationRegion,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get purchasingSource => $composableBuilder(
+    column: $table.purchasingSource,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get shoppingTransport => $composableBuilder(
+    column: $table.shoppingTransport,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get cookingMethod => $composableBuilder(
+    column: $table.cookingMethod,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get foodStorage => $composableBuilder(
+    column: $table.foodStorage,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get householdSize => $composableBuilder(
+    column: $table.householdSize,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get foodWasteLevel => $composableBuilder(
+    column: $table.foodWasteLevel,
+    builder: (column) => column,
+  );
+}
+
+class $$Co2SettingsTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $Co2SettingsTableTable,
+          Co2SettingsRow,
+          $$Co2SettingsTableTableFilterComposer,
+          $$Co2SettingsTableTableOrderingComposer,
+          $$Co2SettingsTableTableAnnotationComposer,
+          $$Co2SettingsTableTableCreateCompanionBuilder,
+          $$Co2SettingsTableTableUpdateCompanionBuilder,
+          (
+            Co2SettingsRow,
+            BaseReferences<
+              _$AppDatabase,
+              $Co2SettingsTableTable,
+              Co2SettingsRow
+            >,
+          ),
+          Co2SettingsRow,
+          PrefetchHooks Function()
+        > {
+  $$Co2SettingsTableTableTableManager(
+    _$AppDatabase db,
+    $Co2SettingsTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$Co2SettingsTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$Co2SettingsTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$Co2SettingsTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<BigInt> hlcMillis = const Value.absent(),
+                Value<int> hlcCounter = const Value.absent(),
+                Value<String> hlcNodeId = const Value.absent(),
+                Value<bool> dirty = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String?> locationCountry = const Value.absent(),
+                Value<String?> locationRegion = const Value.absent(),
+                Value<String?> purchasingSource = const Value.absent(),
+                Value<String?> shoppingTransport = const Value.absent(),
+                Value<String?> cookingMethod = const Value.absent(),
+                Value<String?> foodStorage = const Value.absent(),
+                Value<int?> householdSize = const Value.absent(),
+                Value<String?> foodWasteLevel = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => Co2SettingsTableCompanion(
+                id: id,
+                hlcMillis: hlcMillis,
+                hlcCounter: hlcCounter,
+                hlcNodeId: hlcNodeId,
+                dirty: dirty,
+                deletedAt: deletedAt,
+                locationCountry: locationCountry,
+                locationRegion: locationRegion,
+                purchasingSource: purchasingSource,
+                shoppingTransport: shoppingTransport,
+                cookingMethod: cookingMethod,
+                foodStorage: foodStorage,
+                householdSize: householdSize,
+                foodWasteLevel: foodWasteLevel,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required BigInt hlcMillis,
+                required int hlcCounter,
+                required String hlcNodeId,
+                Value<bool> dirty = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String?> locationCountry = const Value.absent(),
+                Value<String?> locationRegion = const Value.absent(),
+                Value<String?> purchasingSource = const Value.absent(),
+                Value<String?> shoppingTransport = const Value.absent(),
+                Value<String?> cookingMethod = const Value.absent(),
+                Value<String?> foodStorage = const Value.absent(),
+                Value<int?> householdSize = const Value.absent(),
+                Value<String?> foodWasteLevel = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => Co2SettingsTableCompanion.insert(
+                id: id,
+                hlcMillis: hlcMillis,
+                hlcCounter: hlcCounter,
+                hlcNodeId: hlcNodeId,
+                dirty: dirty,
+                deletedAt: deletedAt,
+                locationCountry: locationCountry,
+                locationRegion: locationRegion,
+                purchasingSource: purchasingSource,
+                shoppingTransport: shoppingTransport,
+                cookingMethod: cookingMethod,
+                foodStorage: foodStorage,
+                householdSize: householdSize,
+                foodWasteLevel: foodWasteLevel,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$Co2SettingsTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $Co2SettingsTableTable,
+      Co2SettingsRow,
+      $$Co2SettingsTableTableFilterComposer,
+      $$Co2SettingsTableTableOrderingComposer,
+      $$Co2SettingsTableTableAnnotationComposer,
+      $$Co2SettingsTableTableCreateCompanionBuilder,
+      $$Co2SettingsTableTableUpdateCompanionBuilder,
+      (
+        Co2SettingsRow,
+        BaseReferences<_$AppDatabase, $Co2SettingsTableTable, Co2SettingsRow>,
+      ),
+      Co2SettingsRow,
+      PrefetchHooks Function()
+    >;
+typedef $$WeightEntryTableTableCreateCompanionBuilder =
+    WeightEntryTableCompanion Function({
+      required String id,
+      required BigInt hlcMillis,
+      required int hlcCounter,
+      required String hlcNodeId,
+      Value<bool> dirty,
+      Value<DateTime?> deletedAt,
+      required double value,
+      required WeightUnit unit,
+      required DateTime loggedAt,
+      Value<String?> note,
+      Value<int> rowid,
+    });
+typedef $$WeightEntryTableTableUpdateCompanionBuilder =
+    WeightEntryTableCompanion Function({
+      Value<String> id,
+      Value<BigInt> hlcMillis,
+      Value<int> hlcCounter,
+      Value<String> hlcNodeId,
+      Value<bool> dirty,
+      Value<DateTime?> deletedAt,
+      Value<double> value,
+      Value<WeightUnit> unit,
+      Value<DateTime> loggedAt,
+      Value<String?> note,
+      Value<int> rowid,
+    });
+
+class $$WeightEntryTableTableFilterComposer
+    extends Composer<_$AppDatabase, $WeightEntryTableTable> {
+  $$WeightEntryTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<BigInt> get hlcMillis => $composableBuilder(
+    column: $table.hlcMillis,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get hlcCounter => $composableBuilder(
+    column: $table.hlcCounter,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get hlcNodeId => $composableBuilder(
+    column: $table.hlcNodeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get dirty => $composableBuilder(
+    column: $table.dirty,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnWithTypeConverterFilters<WeightUnit, WeightUnit, String> get unit =>
+      $composableBuilder(
+        column: $table.unit,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnFilters<DateTime> get loggedAt => $composableBuilder(
+    column: $table.loggedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$WeightEntryTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $WeightEntryTableTable> {
+  $$WeightEntryTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<BigInt> get hlcMillis => $composableBuilder(
+    column: $table.hlcMillis,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get hlcCounter => $composableBuilder(
+    column: $table.hlcCounter,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get hlcNodeId => $composableBuilder(
+    column: $table.hlcNodeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get dirty => $composableBuilder(
+    column: $table.dirty,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get unit => $composableBuilder(
+    column: $table.unit,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get loggedAt => $composableBuilder(
+    column: $table.loggedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$WeightEntryTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $WeightEntryTableTable> {
+  $$WeightEntryTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<BigInt> get hlcMillis =>
+      $composableBuilder(column: $table.hlcMillis, builder: (column) => column);
+
+  GeneratedColumn<int> get hlcCounter => $composableBuilder(
+    column: $table.hlcCounter,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get hlcNodeId =>
+      $composableBuilder(column: $table.hlcNodeId, builder: (column) => column);
+
+  GeneratedColumn<bool> get dirty =>
+      $composableBuilder(column: $table.dirty, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<double> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<WeightUnit, String> get unit =>
+      $composableBuilder(column: $table.unit, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get loggedAt =>
+      $composableBuilder(column: $table.loggedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+}
+
+class $$WeightEntryTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $WeightEntryTableTable,
+          WeightEntryRow,
+          $$WeightEntryTableTableFilterComposer,
+          $$WeightEntryTableTableOrderingComposer,
+          $$WeightEntryTableTableAnnotationComposer,
+          $$WeightEntryTableTableCreateCompanionBuilder,
+          $$WeightEntryTableTableUpdateCompanionBuilder,
+          (
+            WeightEntryRow,
+            BaseReferences<
+              _$AppDatabase,
+              $WeightEntryTableTable,
+              WeightEntryRow
+            >,
+          ),
+          WeightEntryRow,
+          PrefetchHooks Function()
+        > {
+  $$WeightEntryTableTableTableManager(
+    _$AppDatabase db,
+    $WeightEntryTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$WeightEntryTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$WeightEntryTableTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$WeightEntryTableTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<BigInt> hlcMillis = const Value.absent(),
+                Value<int> hlcCounter = const Value.absent(),
+                Value<String> hlcNodeId = const Value.absent(),
+                Value<bool> dirty = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<double> value = const Value.absent(),
+                Value<WeightUnit> unit = const Value.absent(),
+                Value<DateTime> loggedAt = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => WeightEntryTableCompanion(
+                id: id,
+                hlcMillis: hlcMillis,
+                hlcCounter: hlcCounter,
+                hlcNodeId: hlcNodeId,
+                dirty: dirty,
+                deletedAt: deletedAt,
+                value: value,
+                unit: unit,
+                loggedAt: loggedAt,
+                note: note,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required BigInt hlcMillis,
+                required int hlcCounter,
+                required String hlcNodeId,
+                Value<bool> dirty = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                required double value,
+                required WeightUnit unit,
+                required DateTime loggedAt,
+                Value<String?> note = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => WeightEntryTableCompanion.insert(
+                id: id,
+                hlcMillis: hlcMillis,
+                hlcCounter: hlcCounter,
+                hlcNodeId: hlcNodeId,
+                dirty: dirty,
+                deletedAt: deletedAt,
+                value: value,
+                unit: unit,
+                loggedAt: loggedAt,
+                note: note,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$WeightEntryTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $WeightEntryTableTable,
+      WeightEntryRow,
+      $$WeightEntryTableTableFilterComposer,
+      $$WeightEntryTableTableOrderingComposer,
+      $$WeightEntryTableTableAnnotationComposer,
+      $$WeightEntryTableTableCreateCompanionBuilder,
+      $$WeightEntryTableTableUpdateCompanionBuilder,
+      (
+        WeightEntryRow,
+        BaseReferences<_$AppDatabase, $WeightEntryTableTable, WeightEntryRow>,
+      ),
+      WeightEntryRow,
+      PrefetchHooks Function()
+    >;
+typedef $$WeightSettingsTableTableCreateCompanionBuilder =
+    WeightSettingsTableCompanion Function({
+      required String id,
+      required BigInt hlcMillis,
+      required int hlcCounter,
+      required String hlcNodeId,
+      Value<bool> dirty,
+      Value<DateTime?> deletedAt,
+      Value<double?> targetWeightKg,
+      Value<DateTime?> targetDate,
+      Value<String?> reminderFrequency,
+      Value<int?> reminderWeekday,
+      Value<String?> reminderTime,
+      Value<bool> reminderEnabled,
+      Value<int> rowid,
+    });
+typedef $$WeightSettingsTableTableUpdateCompanionBuilder =
+    WeightSettingsTableCompanion Function({
+      Value<String> id,
+      Value<BigInt> hlcMillis,
+      Value<int> hlcCounter,
+      Value<String> hlcNodeId,
+      Value<bool> dirty,
+      Value<DateTime?> deletedAt,
+      Value<double?> targetWeightKg,
+      Value<DateTime?> targetDate,
+      Value<String?> reminderFrequency,
+      Value<int?> reminderWeekday,
+      Value<String?> reminderTime,
+      Value<bool> reminderEnabled,
+      Value<int> rowid,
+    });
+
+class $$WeightSettingsTableTableFilterComposer
+    extends Composer<_$AppDatabase, $WeightSettingsTableTable> {
+  $$WeightSettingsTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<BigInt> get hlcMillis => $composableBuilder(
+    column: $table.hlcMillis,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get hlcCounter => $composableBuilder(
+    column: $table.hlcCounter,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get hlcNodeId => $composableBuilder(
+    column: $table.hlcNodeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get dirty => $composableBuilder(
+    column: $table.dirty,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get targetWeightKg => $composableBuilder(
+    column: $table.targetWeightKg,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get targetDate => $composableBuilder(
+    column: $table.targetDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get reminderFrequency => $composableBuilder(
+    column: $table.reminderFrequency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get reminderWeekday => $composableBuilder(
+    column: $table.reminderWeekday,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get reminderTime => $composableBuilder(
+    column: $table.reminderTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get reminderEnabled => $composableBuilder(
+    column: $table.reminderEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$WeightSettingsTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $WeightSettingsTableTable> {
+  $$WeightSettingsTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<BigInt> get hlcMillis => $composableBuilder(
+    column: $table.hlcMillis,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get hlcCounter => $composableBuilder(
+    column: $table.hlcCounter,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get hlcNodeId => $composableBuilder(
+    column: $table.hlcNodeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get dirty => $composableBuilder(
+    column: $table.dirty,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get targetWeightKg => $composableBuilder(
+    column: $table.targetWeightKg,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get targetDate => $composableBuilder(
+    column: $table.targetDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get reminderFrequency => $composableBuilder(
+    column: $table.reminderFrequency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get reminderWeekday => $composableBuilder(
+    column: $table.reminderWeekday,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get reminderTime => $composableBuilder(
+    column: $table.reminderTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get reminderEnabled => $composableBuilder(
+    column: $table.reminderEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$WeightSettingsTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $WeightSettingsTableTable> {
+  $$WeightSettingsTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<BigInt> get hlcMillis =>
+      $composableBuilder(column: $table.hlcMillis, builder: (column) => column);
+
+  GeneratedColumn<int> get hlcCounter => $composableBuilder(
+    column: $table.hlcCounter,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get hlcNodeId =>
+      $composableBuilder(column: $table.hlcNodeId, builder: (column) => column);
+
+  GeneratedColumn<bool> get dirty =>
+      $composableBuilder(column: $table.dirty, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<double> get targetWeightKg => $composableBuilder(
+    column: $table.targetWeightKg,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get targetDate => $composableBuilder(
+    column: $table.targetDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get reminderFrequency => $composableBuilder(
+    column: $table.reminderFrequency,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get reminderWeekday => $composableBuilder(
+    column: $table.reminderWeekday,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get reminderTime => $composableBuilder(
+    column: $table.reminderTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get reminderEnabled => $composableBuilder(
+    column: $table.reminderEnabled,
+    builder: (column) => column,
+  );
+}
+
+class $$WeightSettingsTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $WeightSettingsTableTable,
+          WeightSettingsRow,
+          $$WeightSettingsTableTableFilterComposer,
+          $$WeightSettingsTableTableOrderingComposer,
+          $$WeightSettingsTableTableAnnotationComposer,
+          $$WeightSettingsTableTableCreateCompanionBuilder,
+          $$WeightSettingsTableTableUpdateCompanionBuilder,
+          (
+            WeightSettingsRow,
+            BaseReferences<
+              _$AppDatabase,
+              $WeightSettingsTableTable,
+              WeightSettingsRow
+            >,
+          ),
+          WeightSettingsRow,
+          PrefetchHooks Function()
+        > {
+  $$WeightSettingsTableTableTableManager(
+    _$AppDatabase db,
+    $WeightSettingsTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$WeightSettingsTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$WeightSettingsTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$WeightSettingsTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<BigInt> hlcMillis = const Value.absent(),
+                Value<int> hlcCounter = const Value.absent(),
+                Value<String> hlcNodeId = const Value.absent(),
+                Value<bool> dirty = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<double?> targetWeightKg = const Value.absent(),
+                Value<DateTime?> targetDate = const Value.absent(),
+                Value<String?> reminderFrequency = const Value.absent(),
+                Value<int?> reminderWeekday = const Value.absent(),
+                Value<String?> reminderTime = const Value.absent(),
+                Value<bool> reminderEnabled = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => WeightSettingsTableCompanion(
+                id: id,
+                hlcMillis: hlcMillis,
+                hlcCounter: hlcCounter,
+                hlcNodeId: hlcNodeId,
+                dirty: dirty,
+                deletedAt: deletedAt,
+                targetWeightKg: targetWeightKg,
+                targetDate: targetDate,
+                reminderFrequency: reminderFrequency,
+                reminderWeekday: reminderWeekday,
+                reminderTime: reminderTime,
+                reminderEnabled: reminderEnabled,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required BigInt hlcMillis,
+                required int hlcCounter,
+                required String hlcNodeId,
+                Value<bool> dirty = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<double?> targetWeightKg = const Value.absent(),
+                Value<DateTime?> targetDate = const Value.absent(),
+                Value<String?> reminderFrequency = const Value.absent(),
+                Value<int?> reminderWeekday = const Value.absent(),
+                Value<String?> reminderTime = const Value.absent(),
+                Value<bool> reminderEnabled = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => WeightSettingsTableCompanion.insert(
+                id: id,
+                hlcMillis: hlcMillis,
+                hlcCounter: hlcCounter,
+                hlcNodeId: hlcNodeId,
+                dirty: dirty,
+                deletedAt: deletedAt,
+                targetWeightKg: targetWeightKg,
+                targetDate: targetDate,
+                reminderFrequency: reminderFrequency,
+                reminderWeekday: reminderWeekday,
+                reminderTime: reminderTime,
+                reminderEnabled: reminderEnabled,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$WeightSettingsTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $WeightSettingsTableTable,
+      WeightSettingsRow,
+      $$WeightSettingsTableTableFilterComposer,
+      $$WeightSettingsTableTableOrderingComposer,
+      $$WeightSettingsTableTableAnnotationComposer,
+      $$WeightSettingsTableTableCreateCompanionBuilder,
+      $$WeightSettingsTableTableUpdateCompanionBuilder,
+      (
+        WeightSettingsRow,
+        BaseReferences<
+          _$AppDatabase,
+          $WeightSettingsTableTable,
+          WeightSettingsRow
+        >,
+      ),
+      WeightSettingsRow,
+      PrefetchHooks Function()
+    >;
+typedef $$NotificationPrefsTableTableCreateCompanionBuilder =
+    NotificationPrefsTableCompanion Function({
+      required String id,
+      required BigInt hlcMillis,
+      required int hlcCounter,
+      required String hlcNodeId,
+      Value<bool> dirty,
+      Value<DateTime?> deletedAt,
+      Value<bool> breakfastEnabled,
+      Value<String?> breakfastTime,
+      Value<bool> lunchEnabled,
+      Value<String?> lunchTime,
+      Value<bool> dinnerEnabled,
+      Value<String?> dinnerTime,
+      Value<bool> snackEnabled,
+      Value<String?> snackTime,
+      Value<int> rowid,
+    });
+typedef $$NotificationPrefsTableTableUpdateCompanionBuilder =
+    NotificationPrefsTableCompanion Function({
+      Value<String> id,
+      Value<BigInt> hlcMillis,
+      Value<int> hlcCounter,
+      Value<String> hlcNodeId,
+      Value<bool> dirty,
+      Value<DateTime?> deletedAt,
+      Value<bool> breakfastEnabled,
+      Value<String?> breakfastTime,
+      Value<bool> lunchEnabled,
+      Value<String?> lunchTime,
+      Value<bool> dinnerEnabled,
+      Value<String?> dinnerTime,
+      Value<bool> snackEnabled,
+      Value<String?> snackTime,
+      Value<int> rowid,
+    });
+
+class $$NotificationPrefsTableTableFilterComposer
+    extends Composer<_$AppDatabase, $NotificationPrefsTableTable> {
+  $$NotificationPrefsTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<BigInt> get hlcMillis => $composableBuilder(
+    column: $table.hlcMillis,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get hlcCounter => $composableBuilder(
+    column: $table.hlcCounter,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get hlcNodeId => $composableBuilder(
+    column: $table.hlcNodeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get dirty => $composableBuilder(
+    column: $table.dirty,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get breakfastEnabled => $composableBuilder(
+    column: $table.breakfastEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get breakfastTime => $composableBuilder(
+    column: $table.breakfastTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get lunchEnabled => $composableBuilder(
+    column: $table.lunchEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lunchTime => $composableBuilder(
+    column: $table.lunchTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get dinnerEnabled => $composableBuilder(
+    column: $table.dinnerEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get dinnerTime => $composableBuilder(
+    column: $table.dinnerTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get snackEnabled => $composableBuilder(
+    column: $table.snackEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get snackTime => $composableBuilder(
+    column: $table.snackTime,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$NotificationPrefsTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $NotificationPrefsTableTable> {
+  $$NotificationPrefsTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<BigInt> get hlcMillis => $composableBuilder(
+    column: $table.hlcMillis,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get hlcCounter => $composableBuilder(
+    column: $table.hlcCounter,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get hlcNodeId => $composableBuilder(
+    column: $table.hlcNodeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get dirty => $composableBuilder(
+    column: $table.dirty,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get breakfastEnabled => $composableBuilder(
+    column: $table.breakfastEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get breakfastTime => $composableBuilder(
+    column: $table.breakfastTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get lunchEnabled => $composableBuilder(
+    column: $table.lunchEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lunchTime => $composableBuilder(
+    column: $table.lunchTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get dinnerEnabled => $composableBuilder(
+    column: $table.dinnerEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get dinnerTime => $composableBuilder(
+    column: $table.dinnerTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get snackEnabled => $composableBuilder(
+    column: $table.snackEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get snackTime => $composableBuilder(
+    column: $table.snackTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$NotificationPrefsTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $NotificationPrefsTableTable> {
+  $$NotificationPrefsTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<BigInt> get hlcMillis =>
+      $composableBuilder(column: $table.hlcMillis, builder: (column) => column);
+
+  GeneratedColumn<int> get hlcCounter => $composableBuilder(
+    column: $table.hlcCounter,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get hlcNodeId =>
+      $composableBuilder(column: $table.hlcNodeId, builder: (column) => column);
+
+  GeneratedColumn<bool> get dirty =>
+      $composableBuilder(column: $table.dirty, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get breakfastEnabled => $composableBuilder(
+    column: $table.breakfastEnabled,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get breakfastTime => $composableBuilder(
+    column: $table.breakfastTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get lunchEnabled => $composableBuilder(
+    column: $table.lunchEnabled,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lunchTime =>
+      $composableBuilder(column: $table.lunchTime, builder: (column) => column);
+
+  GeneratedColumn<bool> get dinnerEnabled => $composableBuilder(
+    column: $table.dinnerEnabled,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get dinnerTime => $composableBuilder(
+    column: $table.dinnerTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get snackEnabled => $composableBuilder(
+    column: $table.snackEnabled,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get snackTime =>
+      $composableBuilder(column: $table.snackTime, builder: (column) => column);
+}
+
+class $$NotificationPrefsTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $NotificationPrefsTableTable,
+          NotificationPrefsRow,
+          $$NotificationPrefsTableTableFilterComposer,
+          $$NotificationPrefsTableTableOrderingComposer,
+          $$NotificationPrefsTableTableAnnotationComposer,
+          $$NotificationPrefsTableTableCreateCompanionBuilder,
+          $$NotificationPrefsTableTableUpdateCompanionBuilder,
+          (
+            NotificationPrefsRow,
+            BaseReferences<
+              _$AppDatabase,
+              $NotificationPrefsTableTable,
+              NotificationPrefsRow
+            >,
+          ),
+          NotificationPrefsRow,
+          PrefetchHooks Function()
+        > {
+  $$NotificationPrefsTableTableTableManager(
+    _$AppDatabase db,
+    $NotificationPrefsTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$NotificationPrefsTableTableFilterComposer(
+                $db: db,
+                $table: table,
+              ),
+          createOrderingComposer: () =>
+              $$NotificationPrefsTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$NotificationPrefsTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<BigInt> hlcMillis = const Value.absent(),
+                Value<int> hlcCounter = const Value.absent(),
+                Value<String> hlcNodeId = const Value.absent(),
+                Value<bool> dirty = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<bool> breakfastEnabled = const Value.absent(),
+                Value<String?> breakfastTime = const Value.absent(),
+                Value<bool> lunchEnabled = const Value.absent(),
+                Value<String?> lunchTime = const Value.absent(),
+                Value<bool> dinnerEnabled = const Value.absent(),
+                Value<String?> dinnerTime = const Value.absent(),
+                Value<bool> snackEnabled = const Value.absent(),
+                Value<String?> snackTime = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => NotificationPrefsTableCompanion(
+                id: id,
+                hlcMillis: hlcMillis,
+                hlcCounter: hlcCounter,
+                hlcNodeId: hlcNodeId,
+                dirty: dirty,
+                deletedAt: deletedAt,
+                breakfastEnabled: breakfastEnabled,
+                breakfastTime: breakfastTime,
+                lunchEnabled: lunchEnabled,
+                lunchTime: lunchTime,
+                dinnerEnabled: dinnerEnabled,
+                dinnerTime: dinnerTime,
+                snackEnabled: snackEnabled,
+                snackTime: snackTime,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required BigInt hlcMillis,
+                required int hlcCounter,
+                required String hlcNodeId,
+                Value<bool> dirty = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<bool> breakfastEnabled = const Value.absent(),
+                Value<String?> breakfastTime = const Value.absent(),
+                Value<bool> lunchEnabled = const Value.absent(),
+                Value<String?> lunchTime = const Value.absent(),
+                Value<bool> dinnerEnabled = const Value.absent(),
+                Value<String?> dinnerTime = const Value.absent(),
+                Value<bool> snackEnabled = const Value.absent(),
+                Value<String?> snackTime = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => NotificationPrefsTableCompanion.insert(
+                id: id,
+                hlcMillis: hlcMillis,
+                hlcCounter: hlcCounter,
+                hlcNodeId: hlcNodeId,
+                dirty: dirty,
+                deletedAt: deletedAt,
+                breakfastEnabled: breakfastEnabled,
+                breakfastTime: breakfastTime,
+                lunchEnabled: lunchEnabled,
+                lunchTime: lunchTime,
+                dinnerEnabled: dinnerEnabled,
+                dinnerTime: dinnerTime,
+                snackEnabled: snackEnabled,
+                snackTime: snackTime,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$NotificationPrefsTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $NotificationPrefsTableTable,
+      NotificationPrefsRow,
+      $$NotificationPrefsTableTableFilterComposer,
+      $$NotificationPrefsTableTableOrderingComposer,
+      $$NotificationPrefsTableTableAnnotationComposer,
+      $$NotificationPrefsTableTableCreateCompanionBuilder,
+      $$NotificationPrefsTableTableUpdateCompanionBuilder,
+      (
+        NotificationPrefsRow,
+        BaseReferences<
+          _$AppDatabase,
+          $NotificationPrefsTableTable,
+          NotificationPrefsRow
+        >,
+      ),
+      NotificationPrefsRow,
+      PrefetchHooks Function()
+    >;
+typedef $$BackupMetadataTableTableCreateCompanionBuilder =
+    BackupMetadataTableCompanion Function({
+      required String id,
+      required BigInt hlcMillis,
+      required int hlcCounter,
+      required String hlcNodeId,
+      Value<bool> dirty,
+      Value<DateTime?> deletedAt,
+      Value<String> autoBackupFrequency,
+      Value<DateTime?> lastBackupAt,
+      Value<String?> lastBackupPath,
+      Value<int> rowid,
+    });
+typedef $$BackupMetadataTableTableUpdateCompanionBuilder =
+    BackupMetadataTableCompanion Function({
+      Value<String> id,
+      Value<BigInt> hlcMillis,
+      Value<int> hlcCounter,
+      Value<String> hlcNodeId,
+      Value<bool> dirty,
+      Value<DateTime?> deletedAt,
+      Value<String> autoBackupFrequency,
+      Value<DateTime?> lastBackupAt,
+      Value<String?> lastBackupPath,
+      Value<int> rowid,
+    });
+
+class $$BackupMetadataTableTableFilterComposer
+    extends Composer<_$AppDatabase, $BackupMetadataTableTable> {
+  $$BackupMetadataTableTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<BigInt> get hlcMillis => $composableBuilder(
+    column: $table.hlcMillis,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get hlcCounter => $composableBuilder(
+    column: $table.hlcCounter,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get hlcNodeId => $composableBuilder(
+    column: $table.hlcNodeId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get dirty => $composableBuilder(
+    column: $table.dirty,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get autoBackupFrequency => $composableBuilder(
+    column: $table.autoBackupFrequency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastBackupAt => $composableBuilder(
+    column: $table.lastBackupAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastBackupPath => $composableBuilder(
+    column: $table.lastBackupPath,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$BackupMetadataTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $BackupMetadataTableTable> {
+  $$BackupMetadataTableTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<BigInt> get hlcMillis => $composableBuilder(
+    column: $table.hlcMillis,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get hlcCounter => $composableBuilder(
+    column: $table.hlcCounter,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get hlcNodeId => $composableBuilder(
+    column: $table.hlcNodeId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get dirty => $composableBuilder(
+    column: $table.dirty,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get deletedAt => $composableBuilder(
+    column: $table.deletedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get autoBackupFrequency => $composableBuilder(
+    column: $table.autoBackupFrequency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastBackupAt => $composableBuilder(
+    column: $table.lastBackupAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastBackupPath => $composableBuilder(
+    column: $table.lastBackupPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$BackupMetadataTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $BackupMetadataTableTable> {
+  $$BackupMetadataTableTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<BigInt> get hlcMillis =>
+      $composableBuilder(column: $table.hlcMillis, builder: (column) => column);
+
+  GeneratedColumn<int> get hlcCounter => $composableBuilder(
+    column: $table.hlcCounter,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get hlcNodeId =>
+      $composableBuilder(column: $table.hlcNodeId, builder: (column) => column);
+
+  GeneratedColumn<bool> get dirty =>
+      $composableBuilder(column: $table.dirty, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get autoBackupFrequency => $composableBuilder(
+    column: $table.autoBackupFrequency,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastBackupAt => $composableBuilder(
+    column: $table.lastBackupAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastBackupPath => $composableBuilder(
+    column: $table.lastBackupPath,
+    builder: (column) => column,
+  );
+}
+
+class $$BackupMetadataTableTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $BackupMetadataTableTable,
+          BackupMetadataRow,
+          $$BackupMetadataTableTableFilterComposer,
+          $$BackupMetadataTableTableOrderingComposer,
+          $$BackupMetadataTableTableAnnotationComposer,
+          $$BackupMetadataTableTableCreateCompanionBuilder,
+          $$BackupMetadataTableTableUpdateCompanionBuilder,
+          (
+            BackupMetadataRow,
+            BaseReferences<
+              _$AppDatabase,
+              $BackupMetadataTableTable,
+              BackupMetadataRow
+            >,
+          ),
+          BackupMetadataRow,
+          PrefetchHooks Function()
+        > {
+  $$BackupMetadataTableTableTableManager(
+    _$AppDatabase db,
+    $BackupMetadataTableTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$BackupMetadataTableTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$BackupMetadataTableTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$BackupMetadataTableTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<BigInt> hlcMillis = const Value.absent(),
+                Value<int> hlcCounter = const Value.absent(),
+                Value<String> hlcNodeId = const Value.absent(),
+                Value<bool> dirty = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String> autoBackupFrequency = const Value.absent(),
+                Value<DateTime?> lastBackupAt = const Value.absent(),
+                Value<String?> lastBackupPath = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => BackupMetadataTableCompanion(
+                id: id,
+                hlcMillis: hlcMillis,
+                hlcCounter: hlcCounter,
+                hlcNodeId: hlcNodeId,
+                dirty: dirty,
+                deletedAt: deletedAt,
+                autoBackupFrequency: autoBackupFrequency,
+                lastBackupAt: lastBackupAt,
+                lastBackupPath: lastBackupPath,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required BigInt hlcMillis,
+                required int hlcCounter,
+                required String hlcNodeId,
+                Value<bool> dirty = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+                Value<String> autoBackupFrequency = const Value.absent(),
+                Value<DateTime?> lastBackupAt = const Value.absent(),
+                Value<String?> lastBackupPath = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => BackupMetadataTableCompanion.insert(
+                id: id,
+                hlcMillis: hlcMillis,
+                hlcCounter: hlcCounter,
+                hlcNodeId: hlcNodeId,
+                dirty: dirty,
+                deletedAt: deletedAt,
+                autoBackupFrequency: autoBackupFrequency,
+                lastBackupAt: lastBackupAt,
+                lastBackupPath: lastBackupPath,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$BackupMetadataTableTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $BackupMetadataTableTable,
+      BackupMetadataRow,
+      $$BackupMetadataTableTableFilterComposer,
+      $$BackupMetadataTableTableOrderingComposer,
+      $$BackupMetadataTableTableAnnotationComposer,
+      $$BackupMetadataTableTableCreateCompanionBuilder,
+      $$BackupMetadataTableTableUpdateCompanionBuilder,
+      (
+        BackupMetadataRow,
+        BaseReferences<
+          _$AppDatabase,
+          $BackupMetadataTableTable,
+          BackupMetadataRow
+        >,
+      ),
+      BackupMetadataRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -10197,4 +16034,17 @@ class $AppDatabaseManager {
       $$FavoriteTableTableTableManager(_db, _db.favoriteTable);
   $$UserFoodTableTableTableManager get userFoodTable =>
       $$UserFoodTableTableTableManager(_db, _db.userFoodTable);
+  $$Co2SettingsTableTableTableManager get co2SettingsTable =>
+      $$Co2SettingsTableTableTableManager(_db, _db.co2SettingsTable);
+  $$WeightEntryTableTableTableManager get weightEntryTable =>
+      $$WeightEntryTableTableTableManager(_db, _db.weightEntryTable);
+  $$WeightSettingsTableTableTableManager get weightSettingsTable =>
+      $$WeightSettingsTableTableTableManager(_db, _db.weightSettingsTable);
+  $$NotificationPrefsTableTableTableManager get notificationPrefsTable =>
+      $$NotificationPrefsTableTableTableManager(
+        _db,
+        _db.notificationPrefsTable,
+      );
+  $$BackupMetadataTableTableTableManager get backupMetadataTable =>
+      $$BackupMetadataTableTableTableManager(_db, _db.backupMetadataTable);
 }

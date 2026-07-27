@@ -19,12 +19,14 @@ import 'package:drift/drift.dart';
 /// retroactively change values already logged here — that is the entire
 /// point of snapshotting instead of referencing.
 ///
-/// This snapshot intentionally captures calories/protein/carbs/fat/co2e
-/// only — NOT sugar/fiber/salt, which `UserFoodTable` captures. This is a
-/// deliberate Phase 4 scope boundary matching what `PortionSlotForm`'s
-/// live-scaling UI displays. Phase 5's nutrition rollups will need to
-/// treat sugar/fiber/salt as unavailable for Phase-4-logged entries.
-/// Flagged here explicitly for Phase 5 planning rather than expanded now.
+/// [sugar100gSnapshot]/[fiber100gSnapshot]/[saltSnapshot] were added in
+/// Phase 5 (NUTR-01). They remain `null` for every Phase-4-logged row
+/// (migrated with no data) and remain `null` going forward for any entry
+/// sourced from `off_ref`/`user_food_cache` — those tables carry no
+/// sugar/fiber/salt data at all. Only `user_foods`-sourced entries (i.e.
+/// custom foods and personal overrides) can ever populate these three
+/// fields. Named `saltSnapshot`, not `sodium...`, per this app's
+/// established EU-label "salt (g)" convention (see `UserFoodTable.salt`).
 ///
 /// ## No cross-attached-database foreign keys (RESEARCH.md Pitfall 1)
 ///
@@ -75,6 +77,19 @@ class MealEntryTable extends Table with SyncSafeTable {
 
   /// Fat in g per 100 g/ml, captured at log time.
   Column<double> get fat100gSnapshot => real().nullable()();
+
+  /// Sugar in g per 100 g/ml, captured at log time. Added in Phase 5
+  /// (NUTR-01) — see class doc for nullability rules.
+  Column<double> get sugar100gSnapshot => real().nullable()();
+
+  /// Fiber in g per 100 g/ml, captured at log time. Added in Phase 5
+  /// (NUTR-01) — see class doc for nullability rules.
+  Column<double> get fiber100gSnapshot => real().nullable()();
+
+  /// Salt in g per 100 g/ml, captured at log time (this app's EU-label
+  /// "sodium" convention — see class doc). Added in Phase 5 (NUTR-01) —
+  /// see class doc for nullability rules.
+  Column<double> get saltSnapshot => real().nullable()();
 
   /// kg CO2e per kg product, captured at log time.
   Column<double> get co2e100gSnapshot => real().nullable()();

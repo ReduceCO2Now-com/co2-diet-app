@@ -6,10 +6,15 @@ import 'package:drift/drift.dart';
 /// onCreate: creates all tables on first install, including
 ///   UserFoodCacheTable and the user_food_cache_fts FTS5 virtual table
 ///   declared in `daos/user_food_cache_fts.drift`, plus MealEntryTable,
-///   FavoriteTable, and UserFoodTable added in Phase 4.
+///   FavoriteTable, and UserFoodTable added in Phase 4, plus Co2SettingsTable,
+///   WeightEntryTable, WeightSettingsTable, NotificationPrefsTable, and
+///   BackupMetadataTable added in Phase 5.
 /// onUpgrade: schemaVersion 1→2 adds UserFoodCacheTable +
 ///   user_food_cache_fts. schemaVersion 2→3 adds MealEntryTable,
-///   FavoriteTable, and UserFoodTable (Phase 4).
+///   FavoriteTable, and UserFoodTable (Phase 4). schemaVersion 3→4 adds
+///   three nullable nutrient-snapshot columns to MealEntryTable plus
+///   Co2SettingsTable, WeightEntryTable, WeightSettingsTable,
+///   NotificationPrefsTable, and BackupMetadataTable (Phase 5).
 /// beforeOpen: enables FK enforcement, then ATTACHes off_reference.sqlite
 ///   when [offRefPath] is non-null.
 ///
@@ -50,6 +55,28 @@ MigrationStrategy buildMigrationStrategy(
         await m.createTable(db.mealEntryTable);
         await m.createTable(db.favoriteTable);
         await m.createTable(db.userFoodTable);
+      }
+
+      // schemaVersion 3 → 4: add three nullable nutrient-snapshot columns
+      // to MealEntryTable (NUTR-01) plus Co2SettingsTable, WeightEntryTable,
+      // WeightSettingsTable, NotificationPrefsTable, and BackupMetadataTable
+      // (Phase 5 nutrition/CO2-estimator/dashboard/weight/notifications/
+      // export/local-mode work).
+      if (from < 4) {
+        await m.addColumn(
+          db.mealEntryTable,
+          db.mealEntryTable.sugar100gSnapshot,
+        );
+        await m.addColumn(
+          db.mealEntryTable,
+          db.mealEntryTable.fiber100gSnapshot,
+        );
+        await m.addColumn(db.mealEntryTable, db.mealEntryTable.saltSnapshot);
+        await m.createTable(db.co2SettingsTable);
+        await m.createTable(db.weightEntryTable);
+        await m.createTable(db.weightSettingsTable);
+        await m.createTable(db.notificationPrefsTable);
+        await m.createTable(db.backupMetadataTable);
       }
     },
     beforeOpen: (_) async {
