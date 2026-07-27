@@ -6,7 +6,7 @@ void main() {
     skip: 'TrendSparkline not yet implemented',
     () {
       testWidgets(
-        'segmented control switches which metric (CO2/Calories/'
+        'segmented control switches which metric (CO2/Calories/ '
         'Protein) the 7-day sparkline plots',
         (tester) async {},
       );
