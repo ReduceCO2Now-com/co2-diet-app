@@ -62,6 +62,9 @@ final class MealEntryRepository implements IMealEntryRepository {
       co2e100gSnapshot: draft.co2e100gSnapshot,
       confidenceBandSnapshot: draft.confidenceBandSnapshot,
       co2MethodologyVersionSnapshot: draft.co2MethodologyVersionSnapshot,
+      sugar100gSnapshot: draft.sugar100gSnapshot,
+      fiber100gSnapshot: draft.fiber100gSnapshot,
+      saltSnapshot: draft.saltSnapshot,
       loggedAt: draft.loggedAt,
       logDate: draft.logDate,
     );

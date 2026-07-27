@@ -541,6 +541,9 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
       confidenceBand: row.confidenceBand,
       source: 'user_foods',
       sourceRowId: row.id,
+      sugar100g: row.sugar,
+      fiber100g: row.fiber,
+      salt100g: row.salt,
     );
   }
 
