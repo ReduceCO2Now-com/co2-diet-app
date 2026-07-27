@@ -559,20 +559,20 @@ final csvString = const ListToCsvConverter().convert(rows);
 
 ## Open Questions
 
-1. **Should the export/backup zip be encrypted at rest, given it contains full personal nutrition/weight/health-adjacent data?**
+1. **(RESOLVED — see 05-CONTEXT.md Planning Addendum, 2026-07-27) Should the export/backup zip be encrypted at rest, given it contains full personal nutrition/weight/health-adjacent data?**
    - What we know: PRIV-01/02/03/04 describe the export/backup mechanics (formats, manifest, share-sheet destination, typed-delete confirmation) but say nothing about encryption.
    - What's unclear: Whether an unencrypted zip handed to an arbitrary share-sheet target (which could be an unencrypted cloud-drive upload, email attachment, etc.) is acceptable given this app's otherwise very strong privacy positioning (PRIV-08/09, zero third-party SDKs).
-   - Recommendation: Surface this explicitly to the user/PM before planning locks in a no-encryption default — this is exactly the kind of "compliance/security posture" judgment call the researcher-role instructions say must not be silently assumed. If no encryption is chosen, the Backup & Restore screen's existing "Privacy & Ownership statement" section (already in scope per CONTEXT.md) is the natural place to disclose this plainly to the user.
+   - **Disposition:** No encryption in v1 — an explicit, user-confirmed decision (05-CONTEXT.md Planning Addendum), not a silently-assumed default. The Backup & Restore screen's "Privacy & Ownership statement" section (Plan 05-16) discloses this plainly to the user with exact specified copy. `manifest.json` carries a `formatVersion` field (Plan 05-09) from v1 onward specifically so an encrypted format can be added later without breaking compatibility with already-created backups.
 
-2. **Excel package staleness (~2 years, no release since 2024-08-20) — is a newer/actively-maintained alternative available at actual execution time?**
+2. **(DISPOSITIONED — handled as a checkpoint-time recheck, no further action needed) Excel package staleness (~2 years, no release since 2024-08-20) — is a newer/actively-maintained alternative available at actual execution time?**
    - What we know: `excel` 4.0.6 is verified-publisher, has a reasonable dependency graph, and is very likely still the most popular pure-Dart `.xlsx` writer, but its pub score (115/160) is meaningfully lower than every other candidate in this research and its last release predates this research by roughly two years.
    - What's unclear: Whether a newer `excel` release or a viable alternative package has appeared between this research date and actual Phase 5 execution.
-   - Recommendation: Re-run `curl -s https://pub.dev/api/packages/excel` (or equivalent) immediately before the install task executes, not just at planning time, and treat the `checkpoint:human-verify` task (see Package Legitimacy Audit) as the enforcement point for this recheck.
+   - **Disposition:** Correctly handled as an execution-time recheck rather than a planning-time decision — Plan 05-09's blocking `checkpoint:human-verify` task explicitly instructs the approver to re-check pub.dev for a newer release, a still-present verified-publisher badge, and any critical open security issues immediately before the install runs. No plan change needed; this note exists for traceability only.
 
-3. **`drift_dev` schema-dump / migration-testing coverage for the new schema version(s) this phase introduces**
+3. **(OUT OF SCOPE for this phase — confirmed, no action needed) `drift_dev` schema-dump / migration-testing coverage for the new schema version(s) this phase introduces**
    - What we know: The project already has an established, deliberate workaround (custom `tool/generate_schema_v1.dart`, documentation-only) because `drift_dev`'s own schema-dump CLI is broken against the pinned `drift 2.34.2`. `drift_dev` 2.34.5 is now available on pub.dev but was not verified against `drift 2.34.2` in this session.
    - What's unclear: Whether upgrading `drift_dev` (independent of `drift` itself, since the two have separate analyzer-version constraint chains per this project's existing pinning notes) would actually restore the official schema-dump CLI, and whether that's worth doing in this phase versus deferring.
-   - Recommendation: Out of scope for this phase's planning — flagged only so a future phase (or this phase's plan-checker) doesn't mistake the absence of migration-testing infrastructure for an oversight; it is a known, previously-accepted gap.
+   - **Disposition:** Confirmed out of scope for Phase 5 (Plan 05-03's schema migration work correctly did not attempt to fix or regenerate `tool/generate_schema_v1.dart` — see that plan's Task 2). Flagged only so a future phase doesn't mistake the absence of migration-testing infrastructure for an oversight; it is a known, previously-accepted gap, not a Phase 5 deliverable.
 
 ## Validation Architecture
 
