@@ -127,7 +127,7 @@ Plans:
   5. Local notifications work via `flutter_local_notifications` only (zero FCM/APNs); user can export all data as CSV/Excel/JSON zip with manifest, create manual backups (device/cloud/share), configure automatic backups, restore from backup with preview + explicit confirmation, and delete all local data via a typed-confirmation Danger Zone. In Local Mode, no data is ever transmitted to any server without explicit user action.
 **Plans**: 19 plans
 Plans:
-- [ ] 05-01-PLAN.md — Wave 0 test stubs (25 files across all six sub-domains)
+- [x] 05-01-PLAN.md — Wave 0 test stubs (25 files across all six sub-domains)
 - [ ] 05-02-PLAN.md — CO2 cache-path gap fix (Phase 4 deferred item folded in)
 - [ ] 05-03-PLAN.md — Schema: 5 new tables + MealEntryTable nutrient columns (schemaVersion 3→4)
 - [ ] 05-04-PLAN.md — FoodItem/MealEntry nutrient snapshot entity + repository updates
@@ -203,7 +203,7 @@ Plans:
 | 2. Food Catalog Ingest & Search | 7/7 | Complete   | 2026-07-20 |
 | 3. Barcode Scanning & CO₂ Factor Table | 5/5 | Complete   | 2026-07-22 |
 | 4. Meal Logging Core | 12/13 | In Progress|  |
-| 5. Full Local App (Local Mode Shippable) | 0/19 | Planned | - |
+| 5. Full Local App (Local Mode Shippable) | 1/19 | In Progress|  |
 | 6. Onboarding, Legal & Pre-Submission | 0/0 | Not started | - |
 | 7. Keycloak Auth + Account Mode + Sync | 0/0 | Not started | - |
 | 8. Reference Data Delivery (Full OFF Pack) | 0/0 | Not started | - |

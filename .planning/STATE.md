@@ -2,15 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
-status: verifying
-stopped_at: Phase 5 planned and verified — 19 plans, 9 waves, ready for execution
-last_updated: "2026-07-27T20:47:46.540Z"
+status: executing
+last_updated: "2026-07-27T20:58:05.305Z"
 progress:
   total_phases: 9
   completed_phases: 4
   total_plans: 51
-  completed_plans: 32
-  percent: 97
+  completed_plans: 33
+  percent: 65
 ---
 
 # STATE: CO₂ Diet
@@ -36,14 +35,14 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 04-meal-logging-core-10s-target — IN PROGRESS (12 of 13 plans done)
-- **Plan:** 04-12 complete — `meal_logging_benchmark_test.dart` (real WidgetTester-driven LOG-13 tap-to-saved benchmark, self-skips without `off_reference.sqlite`) + `offline_logging_test.dart` (runtime proof against unmocked in-memory-DB-backed repositories that core logging + custom-food/override never touch the network)
-- **Status:** Ready to execute (04-13 next — Phase 4's mandatory real-device human-verify checkpoint)
-- **Progress:** [███████████████████░] 97%
-- **v1 requirements:** 31 / 75 delivered (CO2-01, CO2-04, LEG-05, LOG-01 through LOG-12, NFR-06, PROF-01 through PROF-05, PRIV-07) — LOG-12 fully automated-proven offline-safe by Plan 04-12; LOG-13's literal "<10s, verified in user testing" requirement is only Dart-proxy-covered so far — Plan 04-13's real mid-range-device + physical-iPhone human-verify checkpoint is what actually closes it (REQUIREMENTS.md checkbox reflects the mechanical per-plan mark-complete step, not final human-verified closure)
+- **Phase:** 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable — IN PROGRESS (1 of 19 plans done)
+- **Plan:** 2 of 19 (05-01 complete — 25 Wave 0 test stubs across all six Phase 5 sub-domains, plus the two foundational Phase-4 gap-fix stubs)
+- **Status:** Ready to execute (05-02 next — CO2 cache-path gap fix, Phase 4 deferred item folded in)
+- **Progress:** [██████░░░░] 65%
+- **v1 requirements:** 31 / 75 delivered (CO2-01, CO2-04, LEG-05, LOG-01 through LOG-12, NFR-06, PROF-01 through PROF-05, PRIV-07) — Phase 4 fully closed (04-13 real-device checkpoint approved on both platforms); Phase 5's 24 requirements (NUTR-01 through AUTH-07 per 05-01 frontmatter) are test-stub-scaffolded only so far, not yet delivered — 05-01 creates zero production code
 
 ```
-[███████████████████░] 97%
+[██████░░░░] 65%
 ```
 
 ### Initialization Progress
@@ -136,10 +135,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-27T20:47:46.531Z
-**Stopped at:** Phase 5 planned and verified — 19 plans, 9 waves, ready for execution
-**Next action:** Execute Plan 04-13 — Phase 4's mandatory real-device human-verify checkpoint (mid-range Android + physical iPhone via TestFlight): literal LOG-13 <10s tap-to-saved timing and LOG-12 airplane-mode full-flow pass
-**Suggested next command:** `/gsd:execute-phase 4`
+**Last session:** 2026-07-27T20:57:43.840Z
+**Stopped at:** Plan 05-01 complete — 25 Wave 0 test stubs across all six Phase 5 sub-domains created; `flutter test test/` exits 0 (214 tests green/skipped); zero production code touched
+**Next action:** Execute Plan 05-02 — CO2 cache-path gap fix (Phase 4 deferred item folded in)
+**Suggested next command:** `/gsd:execute-phase 5`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
@@ -232,6 +231,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 04-12]: Offline test overrides appDatabaseProvider (in-memory) + offApiClientProvider (throwing mock) rather than the repository providers directly, so the real MealEntryRepository/UserFoodRepository/DAOs run unmocked
 - [Phase 04-12]: Post-mutation assertions re-read container.read(xProvider.future) instead of the synchronous .value, since ref.invalidateSelf() reruns build() asynchronously and .value can race a still-loading rebuild
 - [Phase 04-12]: meal_logging_benchmark_test.dart's Stopwatch window starts immediately before the tap on the first search-result row, not at food-search-screen entry, per this plan's task spec
+- [Phase 05-01]: Group-level skip pattern (test() and testWidgets() alike) reused verbatim from Phase 2-4 precedent for all 25 Wave 0 stubs, including testWidgets bodies wrapped inside a skipped group()
 
 ## Performance Metrics
 
@@ -259,3 +259,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 04-meal-logging-core-10s-target P09 | ~21min | 2 tasks | 4 files |
 | Phase 04-meal-logging-core-10s-target P10 | ~20min | 2 tasks | 6 files |
 | Phase 04-meal-logging-core-10s-target P12 | ~10min | 2 tasks | 2 files |
+| Phase 05 P01 | ~12min | 5 tasks | 25 files |
