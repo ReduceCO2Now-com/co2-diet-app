@@ -70,7 +70,7 @@ Requirements for initial release. Each maps to a roadmap phase.
 ### CO₂ Tracking
 
 - [x] **CO2-01**: Each food item has an associated CO₂e estimate (g CO₂e per kg); displayed with a confidence band (High / Medium / Low), never as a single false-precision number
-- [ ] **CO2-02**: System calculates CO₂e per meal, daily total, and weekly total entirely on-device — deterministic, offline, no network dependency
+- [x] **CO2-02**: System calculates CO₂e per meal, daily total, and weekly total entirely on-device — deterministic, offline, no network dependency
 - [ ] **CO2-03**: CO₂ Calculation Settings screen: user can optionally configure location (country + region), food purchasing source (supermarket / local farm / mix), shopping transport (car / public / walk/bike), cooking method (electric / gas / induction), food storage (fridge size / freezer), household size, food waste level; regional averages used as fallback for all unconfigured fields
 - [x] **CO2-04**: CO₂ values are stored per row with a `co2_methodology_version` field; when methodology is updated, the app surfaces a non-intrusive "CO₂ estimates updated with methodology v2" announcement
 - [ ] **CO2-05**: Estimate Transparency screen: for each food, user can see the CO₂e value, confidence level, contributing factors, data source, and a link to the full methodology documentation
@@ -134,7 +134,7 @@ Requirements for initial release. Each maps to a roadmap phase.
 - [ ] **NFR-02**: CO₂ information is presented as informative and useful, never political or preachy; improvements are framed as opportunities, not obligations; no letter-grades or alarm-red indicators on food choices
 - [ ] **NFR-03**: App tone is calm, supportive, trustworthy, and motivating — validated via Self-Assessment Manikin (SAM) test in user testing before launch; app must not feel stressful, judgmental, or pressuring
 - [ ] **NFR-04**: No manipulative gamification: no streak-shame, no loss-aversion notifications, no aggressive account-creation nudging in Local Mode
-- [ ] **NFR-05**: CO₂ data is presented with honest uncertainty — confidence bands and ranges, never false-precision numbers (e.g., display "~4.7 kg CO₂" or "4–5 kg CO₂", not "4.732 kg CO₂")
+- [x] **NFR-05**: CO₂ data is presented with honest uncertainty — confidence bands and ranges, never false-precision numbers (e.g., display "~4.7 kg CO₂" or "4–5 kg CO₂", not "4.732 kg CO₂")
 - [x] **NFR-06**: Food database reliability — two testable acceptance criteria before launch: (a) **Search hit rate:** given a benchmark list of ~200 commonly logged foods in the EU/German market, >90% return a usable result from the local DB without requiring an API fallback; (b) **CO₂ coverage:** >90% of products in the bundled seed DB have at least a category-average CO₂e estimate (not necessarily a product-specific LCA value)
 - [ ] **NFR-07**: Eating disorder safety nets: the app refuses to accept daily calorie targets below 1,200 kcal or goals implying BMI below 17.5 without surfacing a warning and a relevant professional resource / helpline link
 
@@ -256,7 +256,7 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | NUTR-03 | Phase 5 | Pending |
 | NUTR-04 | Phase 5 | Pending |
 | CO2-01 | Phase 3 | Complete |
-| CO2-02 | Phase 5 | Pending |
+| CO2-02 | Phase 5 | Complete |
 | CO2-03 | Phase 5 | Pending |
 | CO2-04 | Phase 1 | Complete |
 | CO2-05 | Phase 5 | Pending |
@@ -299,7 +299,7 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | NFR-02 | Phase 6 | Pending |
 | NFR-03 | Phase 6 | Pending |
 | NFR-04 | Phase 6 | Pending |
-| NFR-05 | Phase 5 | Pending |
+| NFR-05 | Phase 5 | Complete |
 | NFR-06 | Phase 2 | Complete |
 | NFR-07 | Phase 6 | Pending |
 | ACC-01 | Phase 6 | Pending |
