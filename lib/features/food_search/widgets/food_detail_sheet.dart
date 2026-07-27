@@ -141,6 +141,19 @@ class _FoodDetailContentState extends ConsumerState<_FoodDetailContent> {
 
   @override
   Widget build(BuildContext context) {
+    // Establishes a live listener on favoriteProvider for as long as this
+    // sheet is mounted. favoriteProvider is autoDispose (no `keepAlive`) —
+    // without an active watcher, Riverpod is free to dispose it between
+    // _toggleFavorite's `await toggle(...)` call and its internal
+    // `ref.invalidateSelf()`, which throws once disposed. That throw aborts
+    // _toggleFavorite before its trailing `await _loadFavoriteStatus()`
+    // runs — the write still lands (confirmed via the Favorites list) but
+    // the star icon never refreshes. Same defensive pattern as
+    // `PortionSlotForm.build`'s `ref.watch(mealEntryProvider)`. This watch
+    // matters most when the sheet is the only widget touching
+    // favoriteProvider in the tree (e.g. opened from search results, where
+    // RecentFavoritesList — which does watch it — isn't mounted).
+    ref.watch(favoriteProvider);
     final item = widget.item;
     final hasBrand = item.brand != null && item.brand!.isNotEmpty;
 
