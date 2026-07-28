@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1
 milestone_name: v1 launch
 status: executing
-last_updated: "2026-07-27T21:49:48.918Z"
+last_updated: "2026-07-28T07:58:43.485Z"
 progress:
   total_phases: 9
   completed_phases: 4
   total_plans: 51
-  completed_plans: 39
+  completed_plans: 40
   percent: 44
 ---
 
@@ -35,11 +35,11 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable — IN PROGRESS (7 of 19 plans done)
-- **Plan:** 8 of 19 (05-07 complete — WeightEntry/WeightSettings entities, IWeightRepository/WeightRepository, DI providers, WeightNotifier)
+- **Phase:** 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable — IN PROGRESS (8 of 19 plans done)
+- **Plan:** 9 of 19 (05-08 complete — fl_chart/flutter_local_notifications/timezone/flutter_timezone installed, NotificationPrefs domain layer, NotificationService, rootNavigatorKey, main.dart wiring)
 - **Status:** Ready to execute
-- **Progress:** [████████░░] 76%
-- **v1 requirements:** 34 / 75 delivered (CO2-01, CO2-02, CO2-03, CO2-04, LEG-05, LOG-01 through LOG-12, NFR-05, NFR-06, PROF-01 through PROF-05, PRIV-07) — Phase 4 fully closed (04-13 real-device checkpoint approved on both platforms); 05-02 closes the Phase-4 CO2 cache-path gap (CO2-02, NFR-05); 05-03 adds the Phase 5 Drift schema foundation (schema-only); 05-04 wires sugar/fiber/salt through FoodItem/MealEntry/repository (NUTR-01 still not fully delivered — daily-totals rollup is 05-10-PLAN.md, dashboard/insights UI later still); 05-05 adds the DAO layer for CO2 Settings/Weight/Notifications/Backup; 05-06 delivers the CO2 Settings domain layer (CO2-03 now fully delivered); 05-07 delivers the Weight Tracking domain layer (WT-01 through WT-04 still NOT fully delivered — the screen doesn't exist until 05-13, domain layer only so far; NOTIF-01, PRIV-02, PRIV-03 still not fully delivered — repository/UI plans pending); remaining Phase 5 requirements are test-stub-scaffolded only so far
+- **Progress:** [████████░░] 78%
+- **v1 requirements:** 34 / 75 delivered (CO2-01, CO2-02, CO2-03, CO2-04, LEG-05, LOG-01 through LOG-12, NFR-05, NFR-06, PROF-01 through PROF-05, PRIV-07) — Phase 4 fully closed (04-13 real-device checkpoint approved on both platforms); 05-02 closes the Phase-4 CO2 cache-path gap (CO2-02, NFR-05); 05-03 adds the Phase 5 Drift schema foundation (schema-only); 05-04 wires sugar/fiber/salt through FoodItem/MealEntry/repository (NUTR-01 still not fully delivered — daily-totals rollup is 05-10-PLAN.md, dashboard/insights UI later still); 05-05 adds the DAO layer for CO2 Settings/Weight/Notifications/Backup; 05-06 delivers the CO2 Settings domain layer (CO2-03 now fully delivered); 05-07 delivers the Weight Tracking domain layer (WT-01 through WT-04 still NOT fully delivered — the screen doesn't exist until 05-13, domain layer only so far); 05-08 installs fl_chart/flutter_local_notifications/timezone/flutter_timezone and delivers NotificationService + NotificationPrefs domain layer (NOTIF-01/02/03 still NOT fully delivered — the meal-reminder/weigh-in-reminder UI doesn't exist until 05-13/05-14/05-18, service/domain layer only so far; PRIV-02, PRIV-03 still not fully delivered — repository/UI plans pending); remaining Phase 5 requirements are test-stub-scaffolded only so far
 
 ```
 [███████░░░] 71%
@@ -135,8 +135,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-27T21:49:48.912Z
-**Stopped at:** Completed 05-07-PLAN.md -- Weight Tracking domain layer (entity/repository/DI providers/notifier) delivered
+**Last session:** 2026-07-28T07:58:43.480Z
+**Stopped at:** Completed 05-08-PLAN.md -- NotificationService, NotificationPrefs domain layer, rootNavigatorKey, main.dart wiring delivered
 **Next action:** Execute Plan 05-08
 **Suggested next command:** `/gsd:execute-phase 5`
 
@@ -243,6 +243,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 05-05]: DateTime round-trip assertions use isAtSameMomentAs, not equals -- Drift's SQLite dateTime() column deserializes to a local-time DateTime that is the same instant as a UTC input but not flagged UTC, so equals spuriously fails off-UTC machines
 - [Phase 05-06]: Co2Settings entity has no id field -- Co2SettingsRepository owns id lifecycle internally (reuse existing single row's id, or generate UUID v7 on first save)
 - [Phase 05-07]: WeightSettings has no derived pace/on-track/projection field -- CONTEXT.md explicitly rejects deriving one; saveGoal/saveReminderSettings on WeightRepository each read-modify-write the single settings row so neither ever clobbers the other's fields
+- [Phase ?]: [Phase 05-08]: notificationServiceProvider constructs its own FlutterLocalNotificationsPlugin() instance separate from main.dart's pre-runApp initialize() instance -- both share the same platform method channel, so only one initialize() call is needed globally
+- [Phase ?]: [Phase 05-08]: scheduleWeighInReminder's biweekly/monthly frequencies have no native recurrence primitive in flutter_local_notifications -- schedules only the next single occurrence each call, idempotent via the fixed notification id 200; Plan 05-18's AppLifecycleState.resumed observer keeps it fresh
 
 ## Performance Metrics
 
@@ -277,3 +279,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P05 | ~10min | 3 tasks | 9 files |
 | Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P06 | ~10min | 2 tasks | 9 files |
 | Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P07 | ~10min | 2 tasks | 9 files |
+| Phase 05 P08 | ~15min | 2 tasks | 9 files |
