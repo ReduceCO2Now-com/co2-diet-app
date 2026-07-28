@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1
 milestone_name: v1 launch
 status: executing
-last_updated: "2026-07-28T14:29:18.420Z"
+last_updated: "2026-07-28T14:50:10.415Z"
 progress:
   total_phases: 9
   completed_phases: 4
   total_plans: 51
-  completed_plans: 44
+  completed_plans: 45
   percent: 44
 ---
 
@@ -36,9 +36,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 - **Milestone:** v1 launch
 - **Phase:** 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable — IN PROGRESS (8 of 19 plans done)
-- **Plan:** 13 of 19 (05-08 complete — fl_chart/flutter_local_notifications/timezone/flutter_timezone installed, NotificationPrefs domain layer, NotificationService, rootNavigatorKey, main.dart wiring)
+- **Plan:** 14 of 19 (05-08 complete — fl_chart/flutter_local_notifications/timezone/flutter_timezone installed, NotificationPrefs domain layer, NotificationService, rootNavigatorKey, main.dart wiring)
 - **Status:** Ready to execute
-- **Progress:** [█████████░] 86%
+- **Progress:** [█████████░] 88%
 - **v1 requirements:** 34 / 75 delivered (CO2-01, CO2-02, CO2-03, CO2-04, LEG-05, LOG-01 through LOG-12, NFR-05, NFR-06, PROF-01 through PROF-05, PRIV-07) — Phase 4 fully closed (04-13 real-device checkpoint approved on both platforms); 05-02 closes the Phase-4 CO2 cache-path gap (CO2-02, NFR-05); 05-03 adds the Phase 5 Drift schema foundation (schema-only); 05-04 wires sugar/fiber/salt through FoodItem/MealEntry/repository (NUTR-01 still not fully delivered — daily-totals rollup is 05-10-PLAN.md, dashboard/insights UI later still); 05-05 adds the DAO layer for CO2 Settings/Weight/Notifications/Backup; 05-06 delivers the CO2 Settings domain layer (CO2-03 now fully delivered); 05-07 delivers the Weight Tracking domain layer (WT-01 through WT-04 still NOT fully delivered — the screen doesn't exist until 05-13, domain layer only so far); 05-08 installs fl_chart/flutter_local_notifications/timezone/flutter_timezone and delivers NotificationService + NotificationPrefs domain layer (NOTIF-01/02/03 still NOT fully delivered — the meal-reminder/weigh-in-reminder UI doesn't exist until 05-13/05-14/05-18, service/domain layer only so far; PRIV-02, PRIV-03 still not fully delivered — repository/UI plans pending); remaining Phase 5 requirements are test-stub-scaffolded only so far
 
 ```
@@ -135,8 +135,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-28T14:29:18.415Z
-**Stopped at:** Completed 05-12-PLAN.md
+**Last session:** 2026-07-28T14:50:10.410Z
+**Stopped at:** Completed 05-13-PLAN.md
 **Next action:** Execute Plan 05-08
 **Suggested next command:** `/gsd:execute-phase 5`
 
@@ -256,6 +256,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 05-12]: DataQualityIndicator built as a distinct sibling widget to ConfidenceChip (not shared) -- settings-completeness vs per-food CO2 confidence are different concepts per 05-CONTEXT.md
 - [Phase 05-12]: Co2SettingsScreen not wired into app_router.dart or Settings yet -- CO2-03 intentionally left Pending in REQUIREMENTS.md until Plan 05-18 makes the screen reachable
 - [Phase 05-12]: Widget tests set a tall test viewport (1080x4000) -- default 800x600 test surface plus Flutter's sliver-list cache-extent hides ListView items past the viewport from find.text
+- [Phase 05-13]: WeighInReminderSection's Custom-only weekday+time picker -- non-Custom frequencies use a fixed default reminder time ('09:00') with no time-picker UI; only Custom exposes user-configurable day+time
+- [Phase 05-13]: WeightChart converts every plotted entry to kg (lb * 0.453592) before plotting, since targetWeightKg is always kg and entries may be logged in either unit
+- [Phase 05-13]: WT-01 through WT-05 and NOTIF-02 left Pending in REQUIREMENTS.md -- WeightScreen is standalone/unreachable until Plan 05-18 wires it into app_router.dart and Settings
 
 ## Performance Metrics
 
@@ -295,3 +298,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P10 | 8min | 2 tasks | 4 files |
 | Phase 05 P11 | ~10min | 2 tasks | 8 files |
 | Phase 05 P12 | ~12min | 2 tasks | 3 files |
+| Phase 05 P13 | ~15min | 2 tasks | 4 files |

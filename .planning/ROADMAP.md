@@ -139,7 +139,7 @@ Plans:
 - [x] 05-10-PLAN.md — DailyTotalsCalculator + PersonalCo2MultiplierCalculator
 - [x] 05-11-PLAN.md — Dashboard widgets (metric cards, sparkline, quick insight, mode indicator, CO2 prompt)
 - [x] 05-12-PLAN.md — CO2 Calculation Settings screen
-- [ ] 05-13-PLAN.md — Weight Tracking screen (chart, goal, reminders)
+- [x] 05-13-PLAN.md — Weight Tracking screen (chart, goal, reminders)
 - [ ] 05-14-PLAN.md — Meal reminder settings section widget
 - [ ] 05-15-PLAN.md — Data Analysis screen core (breakdown, contributors, goal, trend, transparency, detailed food analysis)
 - [ ] 05-16-PLAN.md — Backup & Restore screen
@@ -203,7 +203,7 @@ Plans:
 | 2. Food Catalog Ingest & Search | 7/7 | Complete   | 2026-07-20 |
 | 3. Barcode Scanning & CO₂ Factor Table | 5/5 | Complete   | 2026-07-22 |
 | 4. Meal Logging Core | 12/13 | In Progress|  |
-| 5. Full Local App (Local Mode Shippable) | 12/19 | In Progress|  |
+| 5. Full Local App (Local Mode Shippable) | 13/19 | In Progress|  |
 | 6. Onboarding, Legal & Pre-Submission | 0/0 | Not started | - |
 | 7. Keycloak Auth + Account Mode + Sync | 0/0 | Not started | - |
 | 8. Reference Data Delivery (Full OFF Pack) | 0/0 | Not started | - |
