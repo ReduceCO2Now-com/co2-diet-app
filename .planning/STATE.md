@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1
 milestone_name: v1 launch
 status: executing
-last_updated: "2026-07-28T15:10:54.551Z"
+last_updated: "2026-07-28T15:34:52.042Z"
 progress:
   total_phases: 9
   completed_phases: 4
   total_plans: 51
-  completed_plans: 46
+  completed_plans: 47
   percent: 44
 ---
 
@@ -36,9 +36,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 - **Milestone:** v1 launch
 - **Phase:** 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable — IN PROGRESS (8 of 19 plans done)
-- **Plan:** 15 of 19 (05-08 complete — fl_chart/flutter_local_notifications/timezone/flutter_timezone installed, NotificationPrefs domain layer, NotificationService, rootNavigatorKey, main.dart wiring)
+- **Plan:** 16 of 19 (05-08 complete — fl_chart/flutter_local_notifications/timezone/flutter_timezone installed, NotificationPrefs domain layer, NotificationService, rootNavigatorKey, main.dart wiring)
 - **Status:** Ready to execute
-- **Progress:** [█████████░] 90%
+- **Progress:** [█████████░] 92%
 - **v1 requirements:** 34 / 75 delivered (CO2-01, CO2-02, CO2-03, CO2-04, LEG-05, LOG-01 through LOG-12, NFR-05, NFR-06, PROF-01 through PROF-05, PRIV-07) — Phase 4 fully closed (04-13 real-device checkpoint approved on both platforms); 05-02 closes the Phase-4 CO2 cache-path gap (CO2-02, NFR-05); 05-03 adds the Phase 5 Drift schema foundation (schema-only); 05-04 wires sugar/fiber/salt through FoodItem/MealEntry/repository (NUTR-01 still not fully delivered — daily-totals rollup is 05-10-PLAN.md, dashboard/insights UI later still); 05-05 adds the DAO layer for CO2 Settings/Weight/Notifications/Backup; 05-06 delivers the CO2 Settings domain layer (CO2-03 now fully delivered); 05-07 delivers the Weight Tracking domain layer (WT-01 through WT-04 still NOT fully delivered — the screen doesn't exist until 05-13, domain layer only so far); 05-08 installs fl_chart/flutter_local_notifications/timezone/flutter_timezone and delivers NotificationService + NotificationPrefs domain layer (NOTIF-01/02/03 still NOT fully delivered — the meal-reminder/weigh-in-reminder UI doesn't exist until 05-13/05-14/05-18, service/domain layer only so far; PRIV-02, PRIV-03 still not fully delivered — repository/UI plans pending); remaining Phase 5 requirements are test-stub-scaffolded only so far
 
 ```
@@ -135,8 +135,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-28T15:10:54.546Z
-**Stopped at:** Completed 05-14-PLAN.md
+**Last session:** 2026-07-28T15:34:52.036Z
+**Stopped at:** Completed 05-15-PLAN.md
 **Next action:** Execute Plan 05-08
 **Suggested next command:** `/gsd:execute-phase 5`
 
@@ -263,6 +263,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 05-14]: MealReminderSettingsSection stays a stateless ConsumerWidget; each of the 4 meal-slot rows is a private _MealSlotRow ConsumerStatefulWidget holding its own local pending-time + permission-denied-message state, mirroring WeighInReminderSection's (05-13) local-state pattern scaled to 4 independent rows
 - [Phase 05-14]: AppTextTheme has no bodyMd token -- bodyLg is the correct token for row-label body text (bodySm is reserved for secondary/caption text)
 - [Phase 05-14]: NOTIF-01 left Pending in REQUIREMENTS.md -- MealReminderSettingsSection is standalone/unreachable until Plan 05-18 embeds it into General Settings
+- [Phase 05-15]: AnalysisMetric is a screen-local enum, never importing/extending Dashboard's DashboardMetric (same-wave Plan 05-11, no depends_on edge)
+- [Phase 05-15]: IMealEntryRepository.getEntriesInRange(from, to) added -- no existing repository/DAO method could pool entries across multiple days; getEntriesForToday/getRecent are single-day/recency-scoped only
+- [Phase 05-15]: Weight metric mode reuses the existing WeightChart widget verbatim rather than teaching TrendSection to plot weight -- a genuinely distinct chart satisfies the must-have more directly than branching one widget's internals
+- [Phase 05-15]: GoalComparisonBar's CO2 target always renders 'no target set' -- CalcTargets.co2GTarget is never populated by TargetCalculator anywhere in the codebase, confirmed via grep, not a bug introduced here
 
 ## Performance Metrics
 
@@ -304,3 +308,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 05 P12 | ~12min | 2 tasks | 3 files |
 | Phase 05 P13 | ~15min | 2 tasks | 4 files |
 | Phase 05 P14 | 16min | 2 tasks | 4 files |
+| Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P15 | ~25min | 2 tasks | 10 files |
