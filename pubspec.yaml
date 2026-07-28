@@ -8,9 +8,18 @@ environment:
   flutter: ">=3.44.6"
 
 dependencies:
-  # archive 4.0.9 — Pure Dart GZip decompression for first-launch off_reference.sqlite.gz
-  # extraction; no FFI, no native binaries. [VERIFIED: pub.dev, loki3d.com publisher]
-  archive: 4.0.9
+  # archive 3.6.1 (downgraded from 4.0.9 during Plan 05-09 execution) — Pure Dart
+  # GZip decompression for first-launch off_reference.sqlite.gz extraction, and
+  # ZipFileEncoder/ZipDecoder for backup/export zip generation (PRIV-01/02/04);
+  # no FFI, no native binaries. [VERIFIED: pub.dev, loki3d.com publisher]
+  # PINNED at 3.6.1 (not 4.0.9): `excel` 4.0.6 hard-depends on `archive ^3.6.1`
+  # and calls archive APIs (`ZipDecoder.decodeBuffer`, `InputStream`) that were
+  # renamed/removed in archive 4.0.0 — the two cannot coexist in this project.
+  # 3.6.1 is the last 3.x release and keeps every API this codebase actually
+  # uses (`GZipDecoder.decodeBytes`, `ZipFileEncoder.open/addArchiveFile/close`,
+  # `ZipDecoder.decodeBytes`, `ArchiveFile.string`) unchanged from 4.0.9 — see
+  # 05-09-SUMMARY.md Deviations for the full compatibility check.
+  archive: 3.6.1
   # app_settings 8.0.3 — Deep-link to OS Settings app for permission-denied recovery.
   # AppSettings.openAppSettings() handles iOS/Android platform difference.
   # [VERIFIED: pub.dev 2026-07-21, 160/160 score]
@@ -79,6 +88,28 @@ dependencies:
   # (github.com/tjarvstrand/flutter_timezone), human-approved per Plan 05-08's
   # blocking package-legitimacy checkpoint]
   flutter_timezone: ^5.1.0
+  # share_plus 13.3.0 — hands the generated backup/export zip to the OS share
+  # sheet (PRIV-02). [VERIFIED: pub.dev 2026-07-27, 150/160 score, BSD-3,
+  # verified publisher fluttercommunity.dev (github.com/fluttercommunity/
+  # plus_plugins), human-approved per Plan 05-09's blocking package-legitimacy
+  # checkpoint]
+  share_plus: ^13.3.0
+  # csv 8.0.0 — encodes selected export categories to CSV (PRIV-01).
+  # [VERIFIED: pub.dev 2026-07-27, 150/160 score, MIT, zero dependencies,
+  # github.com/close2/csv, human-approved per Plan 05-09's blocking
+  # package-legitimacy checkpoint]
+  csv: ^8.0.0
+  # excel 4.0.6 — encodes selected export categories to genuine .xlsx
+  # (PRIV-01); the only Dart-ecosystem package producing real .xlsx rather
+  # than CSV-with-.xlsx-extension. [VERIFIED: pub.dev 2026-07-27, 115/160
+  # score (lower — last published 2024-08-20, no newer release since),
+  # verified publisher justkawal.dev (github.com/justkawal/excel), explicitly
+  # re-verified and human-approved per Plan 05-09's blocking
+  # package-legitimacy checkpoint, which paid special attention to this
+  # package's staleness signal. Forces `archive` to be pinned at 3.6.1 (see
+  # that dependency's comment above) — excel 4.0.6 depends on `archive
+  # ^3.6.1` and does not support archive 4.x.]
+  excel: 4.0.6
 
 dev_dependencies:
   # build_runner 2.15.1 used (not 2.15.2) — 2.15.2 requires analyzer >=13.3 which

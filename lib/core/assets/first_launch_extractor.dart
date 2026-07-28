@@ -56,7 +56,10 @@ Future<String> ensureOffReferenceDb() async {
 
   // Decompress using the archive package GZipDecoder (pure Dart, no FFI).
   final compressed = byteData.buffer.asUint8List();
-  final decompressed = const GZipDecoder().decodeBytes(compressed);
+  // archive 3.6.1's GZipDecoder has no explicit const constructor (unlike
+  // 4.0.9's) — see pubspec.yaml's `archive` comment for why this project is
+  // pinned to 3.6.1 (Plan 05-09's excel compatibility requirement).
+  final decompressed = GZipDecoder().decodeBytes(compressed);
 
   // Write decompressed bytes, then stamp the version so future launches skip
   // re-extraction until _offRefVersion is bumped again.
