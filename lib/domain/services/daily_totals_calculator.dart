@@ -1,5 +1,6 @@
 import 'package:co2diet/domain/entities/meal_entry.dart';
 import 'package:co2diet/domain/entities/portion_unit.dart';
+import 'package:co2diet/domain/services/personal_co2_multiplier_calculator.dart';
 import 'package:flutter/foundation.dart';
 
 /// Energy-per-gram constants reused from `TargetCalculator`'s existing
