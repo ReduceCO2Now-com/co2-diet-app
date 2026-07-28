@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1
 milestone_name: v1 launch
 status: executing
-last_updated: "2026-07-28T16:03:52.580Z"
+last_updated: "2026-07-28T16:40:15.720Z"
 progress:
   total_phases: 9
   completed_phases: 4
   total_plans: 51
-  completed_plans: 48
+  completed_plans: 49
   percent: 44
 ---
 
@@ -36,9 +36,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 - **Milestone:** v1 launch
 - **Phase:** 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable — IN PROGRESS (8 of 19 plans done)
-- **Plan:** 17 of 19 (05-08 complete — fl_chart/flutter_local_notifications/timezone/flutter_timezone installed, NotificationPrefs domain layer, NotificationService, rootNavigatorKey, main.dart wiring)
+- **Plan:** 18 of 19 (05-08 complete — fl_chart/flutter_local_notifications/timezone/flutter_timezone installed, NotificationPrefs domain layer, NotificationService, rootNavigatorKey, main.dart wiring)
 - **Status:** Ready to execute
-- **Progress:** [█████████░] 94%
+- **Progress:** [██████████] 96%
 - **v1 requirements:** 34 / 75 delivered (CO2-01, CO2-02, CO2-03, CO2-04, LEG-05, LOG-01 through LOG-12, NFR-05, NFR-06, PROF-01 through PROF-05, PRIV-07) — Phase 4 fully closed (04-13 real-device checkpoint approved on both platforms); 05-02 closes the Phase-4 CO2 cache-path gap (CO2-02, NFR-05); 05-03 adds the Phase 5 Drift schema foundation (schema-only); 05-04 wires sugar/fiber/salt through FoodItem/MealEntry/repository (NUTR-01 still not fully delivered — daily-totals rollup is 05-10-PLAN.md, dashboard/insights UI later still); 05-05 adds the DAO layer for CO2 Settings/Weight/Notifications/Backup; 05-06 delivers the CO2 Settings domain layer (CO2-03 now fully delivered); 05-07 delivers the Weight Tracking domain layer (WT-01 through WT-04 still NOT fully delivered — the screen doesn't exist until 05-13, domain layer only so far); 05-08 installs fl_chart/flutter_local_notifications/timezone/flutter_timezone and delivers NotificationService + NotificationPrefs domain layer (NOTIF-01/02/03 still NOT fully delivered — the meal-reminder/weigh-in-reminder UI doesn't exist until 05-13/05-14/05-18, service/domain layer only so far; PRIV-02, PRIV-03 still not fully delivered — repository/UI plans pending); remaining Phase 5 requirements are test-stub-scaffolded only so far
 
 ```
@@ -135,8 +135,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-28T16:03:52.574Z
-**Stopped at:** Completed 05-16-PLAN.md
+**Last session:** 2026-07-28T16:40:15.714Z
+**Stopped at:** Completed 05-17-PLAN.md
 **Next action:** Execute Plan 05-08
 **Suggested next command:** `/gsd:execute-phase 5`
 
@@ -270,6 +270,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 05-16]: BackupNotifier.pendingRestoreFile getter bridges pickAndPreviewRestoreFile()'s RestorePreview?-only return and applyRestore(File zip)'s explicit-file signature for the choose/confirm restore UI flow
 - [Phase 05-16]: BackupExportService.clearAllLocalData() deliberately excludes UserFoodCacheTable (shared OFF cache, not personal data) and ConsentRecordsTable (legal consent audit trail) from the Danger Zone wipe
 - [Phase 05-16]: SharePlatform.instance mocked once process-wide via MockPlatformInterfaceMixin + reset() between tests -- SharePlus.instance is static final and permanently binds to whichever SharePlatform.instance was set at its first access
+- [Phase 05-17]: MealEntry has no persisted category-tag snapshot field -- ImprovementOpportunityFinder infers a co2_factors category via documented keyword substring matching on productNameSnapshot rather than a schema change
+- [Phase 05-17]: Substitution clusters tiered en:beef/en:lamb-and-goat/en:pork -> [en:poultry, en:fishes, en:legumes]; en:poultry -> [en:fishes, en:legumes]; en:fishes -> [en:legumes]; legumes has no key (already lowest tier)
+- [Phase 05-17]: InsightsTimelineRuleEngine.evaluate takes an optional proteinTargetG param -- protein rule never fires without a set target, avoiding a fabricated threshold
+- [Phase 05-17]: CO2-06/INS-03 left Pending in REQUIREMENTS.md -- DataAnalysisScreen still unreachable from app_router.dart/Dashboard until Plan 05-18
 
 ## Performance Metrics
 
@@ -313,3 +317,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 05 P14 | 16min | 2 tasks | 4 files |
 | Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P15 | ~25min | 2 tasks | 10 files |
 | Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P16 | ~22min | 2 tasks | 7 files |
+| Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P17 | ~20min | 2 tasks | 9 files |
