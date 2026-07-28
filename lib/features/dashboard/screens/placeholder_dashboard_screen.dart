@@ -9,9 +9,11 @@ import 'package:co2diet/domain/services/daily_totals_calculator.dart';
 import 'package:co2diet/domain/services/personal_co2_multiplier_calculator.dart';
 import 'package:co2diet/features/co2_settings/providers/co2_settings_notifier.dart';
 import 'package:co2diet/features/dashboard/widgets/co2_profile_prompt_card.dart';
+import 'package:co2diet/features/dashboard/widgets/macro_split_bar.dart';
 import 'package:co2diet/features/dashboard/widgets/meal_entry_row.dart';
 import 'package:co2diet/features/dashboard/widgets/metric_card.dart';
 import 'package:co2diet/features/dashboard/widgets/mode_indicator.dart';
+import 'package:co2diet/features/dashboard/widgets/nutrient_totals_row.dart';
 import 'package:co2diet/features/dashboard/widgets/quick_insight_line.dart';
 import 'package:co2diet/features/dashboard/widgets/trend_sparkline.dart';
 import 'package:co2diet/features/food_search/widgets/food_detail_sheet.dart';
@@ -310,6 +312,14 @@ class _PlaceholderDashboardScreenState
                     ),
                 ],
               ),
+              const SizedBox(height: AppSpacing.stackGap),
+              // NUTR-04: macro split (protein/carbs/fat as % of calories).
+              MacroSplitBar(split: todayTotals.macroSplit),
+              const SizedBox(height: AppSpacing.stackGap),
+              // NUTR-01: the four daily-total nutrients with no other
+              // aggregate-level display surface (calories/protein already
+              // shown above via MetricCard).
+              NutrientTotalsRow(totals: todayTotals),
               const SizedBox(height: AppSpacing.stackGap),
               Consumer(
                 builder: (context, ref, _) {

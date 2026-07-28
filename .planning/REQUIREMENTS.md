@@ -62,10 +62,10 @@ Requirements for initial release. Each maps to a roadmap phase.
 
 ### Nutrition Tracking
 
-- [ ] **NUTR-01**: System tracks per-meal and daily totals: calories, protein, carbohydrates, fat, sugar, fiber, sodium
+- [x] **NUTR-01**: System tracks per-meal and daily totals: calories, protein, carbohydrates, fat, sugar, fiber, sodium
 - [x] **NUTR-02**: Dashboard shows calories consumed vs. target with remaining calories prominently displayed
 - [x] **NUTR-03**: Dashboard shows protein consumed vs. target
-- [ ] **NUTR-04**: Macro split (protein/carbs/fat) is viewable from the Dashboard or Data Analysis screen
+- [x] **NUTR-04**: Macro split (protein/carbs/fat) is viewable from the Dashboard or Data Analysis screen
 
 ### CO₂ Tracking
 
@@ -251,10 +251,10 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | LOG-11 | Phase 4 | Complete |
 | LOG-12 | Phase 4 | Complete |
 | LOG-13 | Phase 4 | Complete |
-| NUTR-01 | Phase 5 | Pending |
+| NUTR-01 | Phase 5 | Complete |
 | NUTR-02 | Phase 5 | Complete |
 | NUTR-03 | Phase 5 | Complete |
-| NUTR-04 | Phase 5 | Pending |
+| NUTR-04 | Phase 5 | Complete |
 | CO2-01 | Phase 3 | Complete |
 | CO2-02 | Phase 5 | Complete |
 | CO2-03 | Phase 5 | Complete |

@@ -13,7 +13,9 @@ import 'package:co2diet/domain/repositories/i_co2_settings_repository.dart';
 import 'package:co2diet/domain/repositories/i_meal_entry_repository.dart';
 import 'package:co2diet/domain/repositories/i_profile_repository.dart';
 import 'package:co2diet/features/dashboard/screens/placeholder_dashboard_screen.dart';
+import 'package:co2diet/features/dashboard/widgets/macro_split_bar.dart';
 import 'package:co2diet/features/dashboard/widgets/metric_card.dart';
+import 'package:co2diet/features/dashboard/widgets/nutrient_totals_row.dart';
 import 'package:co2diet/features/dashboard/widgets/trend_sparkline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,6 +36,12 @@ MealEntry _buildEntry(
   double calories100g = 200,
   double co2e100g = 2.5,
   double quantity = 150,
+  double? protein100g,
+  double? carbs100g,
+  double? fat100g,
+  double? sugar100g,
+  double? fiber100g,
+  double? salt100g,
 }) => MealEntry(
   id: id,
   mealSlot: slot,
@@ -43,6 +51,12 @@ MealEntry _buildEntry(
   unit: PortionUnit.g,
   productNameSnapshot: 'Test Food $id',
   calories100gSnapshot: calories100g,
+  protein100gSnapshot: protein100g,
+  carbs100gSnapshot: carbs100g,
+  fat100gSnapshot: fat100g,
+  sugar100gSnapshot: sugar100g,
+  fiber100gSnapshot: fiber100g,
+  saltSnapshot: salt100g,
   co2e100gSnapshot: co2e100g,
   loggedAt: DateTime(2026, 7, 24, 12),
   logDate: '2026-07-24',
@@ -197,6 +211,164 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('data-analysis:co2'), findsOneWidget);
+      },
+    );
+  });
+
+  group('MacroSplitBar and NutrientTotalsRow (NUTR-04/NUTR-01 gap fix)', () {
+    Widget wrap(Widget dashboard) {
+      final router = GoRouter(
+        initialLocation: '/dashboard',
+        routes: [
+          GoRoute(path: '/dashboard', builder: (context, state) => dashboard),
+          GoRoute(
+            path: '/data-analysis',
+            builder: (context, state) => const Text('data-analysis'),
+          ),
+          GoRoute(
+            path: '/co2-settings',
+            builder: (context, state) => const Text('co2-settings'),
+          ),
+        ],
+      );
+      return MaterialApp.router(routerConfig: router);
+    }
+
+    testWidgets(
+      'Dashboard renders MacroSplitBar and NutrientTotalsRow with the '
+      "day's aggregated totals",
+      (tester) async {
+        tester.view.physicalSize = const Size(1080, 4000);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        final mockRepo = _MockMealEntryRepository();
+        when(mockRepo.getEntriesForToday).thenAnswer(
+          (_) async => [
+            // 150g @ carbs/sugar/fiber/salt-per-100g below -> scaled *1.5
+            _buildEntry(
+              'e1',
+              MealSlot.breakfast,
+              protein100g: 10,
+              carbs100g: 20,
+              fat100g: 4,
+              sugar100g: 8,
+              fiber100g: 2,
+              salt100g: 1,
+            ),
+          ],
+        );
+        when(
+          () => mockRepo.getEntriesInRange(any(), any()),
+        ).thenAnswer((_) async => []);
+
+        final mockProfileRepo = _MockProfileRepository();
+        when(mockProfileRepo.getProfile).thenAnswer((_) async => null);
+
+        final mockCo2SettingsRepo = _MockCo2SettingsRepository();
+        when(
+          mockCo2SettingsRepo.getSettings,
+        ).thenAnswer((_) async => const Co2Settings());
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              mealEntryRepositoryProvider.overrideWithValue(mockRepo),
+              profileRepositoryProvider.overrideWithValue(mockProfileRepo),
+              co2SettingsRepositoryProvider.overrideWithValue(
+                mockCo2SettingsRepo,
+              ),
+            ],
+            child: wrap(const PlaceholderDashboardScreen()),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // NUTR-04: macro split bar is rendered (non-null split, since
+        // protein/carbs/fat are all provided above). Scoped to
+        // MacroSplitBar's own subtree -- 'Protein'/'Carbs' otherwise
+        // collide with the CO2/calories/protein MetricCard label and
+        // NutrientTotalsRow's own 'Carbs' label respectively.
+        final macroSplitBar = find.byType(MacroSplitBar);
+        expect(macroSplitBar, findsOneWidget);
+        expect(
+          find.descendant(
+            of: macroSplitBar,
+            matching: find.textContaining('Protein'),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.descendant(
+            of: macroSplitBar,
+            matching: find.textContaining('Carbs'),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.descendant(
+            of: macroSplitBar,
+            matching: find.textContaining('Fat'),
+          ),
+          findsOneWidget,
+        );
+
+        // NUTR-01: sugar/fiber/salt daily totals (150g * per-100g values).
+        expect(find.byType(NutrientTotalsRow), findsOneWidget);
+        expect(find.text('12g'), findsOneWidget); // sugar: 8 * 1.5
+        expect(find.text('3g'), findsOneWidget); // fiber: 2 * 1.5 (rounds)
+        expect(find.text('2g'), findsOneWidget); // salt: 1 * 1.5 (rounds)
+      },
+    );
+
+    testWidgets(
+      'NutrientTotalsRow shows dashes when no entries have been logged',
+      (tester) async {
+        tester.view.physicalSize = const Size(1080, 4000);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        final mockRepo = _MockMealEntryRepository();
+        when(mockRepo.getEntriesForToday).thenAnswer((_) async => []);
+        when(
+          () => mockRepo.getEntriesInRange(any(), any()),
+        ).thenAnswer((_) async => []);
+
+        final mockProfileRepo = _MockProfileRepository();
+        when(mockProfileRepo.getProfile).thenAnswer((_) async => null);
+
+        final mockCo2SettingsRepo = _MockCo2SettingsRepository();
+        when(
+          mockCo2SettingsRepo.getSettings,
+        ).thenAnswer((_) async => const Co2Settings());
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              mealEntryRepositoryProvider.overrideWithValue(mockRepo),
+              profileRepositoryProvider.overrideWithValue(mockProfileRepo),
+              co2SettingsRepositoryProvider.overrideWithValue(
+                mockCo2SettingsRepo,
+              ),
+            ],
+            child: wrap(const PlaceholderDashboardScreen()),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('No macro data yet today'), findsOneWidget);
+        // Scoped to NutrientTotalsRow specifically -- the CO2/calories/
+        // protein MetricCards also render '—' for their own null values,
+        // which isn't what this assertion is checking.
+        expect(
+          find.descendant(
+            of: find.byType(NutrientTotalsRow),
+            matching: find.text('—'),
+          ),
+          findsNWidgets(4), // carbs/sugar/fiber/salt
+        );
       },
     );
   });
