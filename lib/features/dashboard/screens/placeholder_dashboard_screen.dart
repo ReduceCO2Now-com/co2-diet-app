@@ -303,6 +303,7 @@ class _PlaceholderDashboardScreenState
                               DashboardMetric.protein => 'g',
                             },
                             isEmphasized: metric == emphasized,
+                            isApproximate: metric == DashboardMetric.co2,
                           ),
                         ),
                       ),

@@ -1,5 +1,6 @@
 import 'package:co2diet/core/theme/spacing_tokens.dart';
 import 'package:co2diet/domain/services/improvement_opportunity_finder.dart';
+import 'package:co2diet/features/barcode_scan/utils/co2_formatter.dart';
 import 'package:flutter/material.dart';
 
 /// Renders [ImprovementOpportunityFinder]'s suggestions (CO2-06) as
@@ -35,7 +36,10 @@ class ImprovementOpportunities extends StatelessWidget {
                 child: Text(
                   "Replacing today's ${opportunity.originalName} with "
                   '${opportunity.alternativeName} would save approximately '
-                  '${opportunity.deltaKg.toStringAsPrecision(2)} kg CO2 '
+                  // formatCo2Approx never returns null here -- deltaKg is
+                  // always non-null and > 0 per
+                  // ImprovementOpportunity's documented contract.
+                  '${formatCo2Approx(opportunity.deltaKg)} kg CO2 '
                   'today.',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),

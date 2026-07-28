@@ -1,6 +1,7 @@
 import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/domain/entities/meal_entry.dart';
 import 'package:co2diet/domain/entities/portion_unit.dart';
+import 'package:co2diet/features/barcode_scan/utils/co2_formatter.dart';
 import 'package:flutter/material.dart';
 
 /// Expands in place under a `MealEntryRow`-shaped header (name + quantity/
@@ -30,6 +31,16 @@ class _DetailedFoodAnalysisPanelState
 
   static String _formatValue(double? value, String unit) =>
       value == null ? '—' : '${value.toStringAsFixed(1)}$unit';
+
+  /// CO2e-specific formatter (NFR-05): unlike [_formatValue]'s plain
+  /// `toStringAsFixed(1)` (appropriate for measured macro/nutrient label
+  /// data), CO2e is an LCA-model estimate -- routes through
+  /// [formatCo2Approx] for the same `~`-prefixed, 1-2-significant-figure
+  /// convention every other CO2 display in the app uses.
+  static String _formatCo2Value(double? value) {
+    final approx = formatCo2Approx(value);
+    return approx == null ? '—' : '$approx kg';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +134,8 @@ class _DetailedFoodAnalysisPanelState
                 'CO₂e',
                 scaled.co2e,
                 entry.co2e100gSnapshot,
-                ' kg',
+                '',
+                isCo2: true,
               ),
             ],
           ),
@@ -137,8 +149,9 @@ class _DetailedFoodAnalysisPanelState
     String label,
     double? perServing,
     double? per100g,
-    String unit,
-  ) {
+    String unit, {
+    bool isCo2 = false,
+  }) {
     final labelStyle = textTheme.bodySmall?.copyWith(
       color: AppColors.onSurfaceVariant,
     );
@@ -151,7 +164,9 @@ class _DetailedFoodAnalysisPanelState
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 2),
           child: Text(
-            _formatValue(perServing, unit),
+            isCo2
+                ? _formatCo2Value(perServing)
+                : _formatValue(perServing, unit),
             textAlign: TextAlign.end,
             style: textTheme.bodySmall,
           ),
@@ -159,7 +174,7 @@ class _DetailedFoodAnalysisPanelState
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 2),
           child: Text(
-            _formatValue(per100g, unit),
+            isCo2 ? _formatCo2Value(per100g) : _formatValue(per100g, unit),
             textAlign: TextAlign.end,
             style: textTheme.bodySmall,
           ),

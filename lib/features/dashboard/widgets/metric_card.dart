@@ -1,4 +1,5 @@
 import 'package:co2diet/core/theme/color_tokens.dart';
+import 'package:co2diet/features/barcode_scan/utils/co2_formatter.dart';
 import 'package:flutter/material.dart';
 
 /// A single Dashboard metric summary card (DASH-01/04/05/06): shows
@@ -21,6 +22,7 @@ class MetricCard extends StatelessWidget {
     required this.target,
     required this.unit,
     this.isEmphasized = false,
+    this.isApproximate = false,
     super.key,
   });
 
@@ -40,10 +42,22 @@ class MetricCard extends StatelessWidget {
   /// and a primary-accent border when `true`.
   final bool isEmphasized;
 
+  /// Whether [value] is an LCA-model CO2 estimate rather than a directly
+  /// logged/measured quantity (NFR-05) -- routes the value display through
+  /// [formatCo2Approx]'s `~`-prefixed, 1-2-significant-figure convention
+  /// instead of [_formatNumber]'s plain fixed-decimal formatting. Set by
+  /// the Dashboard for the CO2 metric card only; calories/protein cards
+  /// leave this `false`.
+  final bool isApproximate;
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final valueText = value == null ? '—' : _formatNumber(value!);
+    final valueText = value == null
+        ? '—'
+        : (isApproximate
+              ? formatCo2Approx(value) ?? '—'
+              : _formatNumber(value!));
     final progress = (value != null && target != null && target! > 0)
         ? (value! / target!).clamp(0.0, 1.0)
         : null;
