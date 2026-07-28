@@ -1,25 +1,152 @@
+import 'package:co2diet/core/di/weight_providers.dart';
+import 'package:co2diet/domain/entities/weight_entry.dart';
+import 'package:co2diet/domain/entities/weight_settings.dart';
+import 'package:co2diet/domain/repositories/i_weight_repository.dart';
+import 'package:co2diet/features/weight/widgets/weight_chart.dart';
+import 'package:co2diet/features/weight/widgets/weight_entry_form.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+/// In-memory fake repository -- mirrors `_FakeCo2SettingsRepository`'s
+/// precedent (Plan 05-12): saved values are reflected on the next rebuild,
+/// which a mocktail Mock would require per-call stubbing to achieve.
+class _FakeWeightRepository implements IWeightRepository {
+  final List<WeightEntry> _entries = [];
+  WeightSettings _settings = const WeightSettings();
+
+  @override
+  Future<WeightEntry> logWeight(WeightEntry draft) async {
+    final saved = draft.copyWith(id: 'w${_entries.length + 1}');
+    _entries.add(saved);
+    return saved;
+  }
+
+  @override
+  Future<List<WeightEntry>> getEntriesInRange(WeightRange range) async =>
+      List.of(_entries);
+
+  @override
+  Future<void> deleteEntry(String id) async =>
+      _entries.removeWhere((e) => e.id == id);
+
+  @override
+  Future<WeightSettings> getSettings() async => _settings;
+
+  @override
+  Future<void> saveGoal({
+    double? targetWeightKg,
+    DateTime? targetDate,
+  }) async {
+    _settings = _settings.copyWith(
+      targetWeightKg: targetWeightKg,
+      targetDate: targetDate,
+    );
+  }
+
+  @override
+  Future<void> saveReminderSettings({
+    required String frequency,
+    required bool enabled,
+    int? weekday,
+    String? time,
+  }) async {
+    _settings = _settings.copyWith(
+      reminderFrequency: frequency,
+      reminderEnabled: enabled,
+      reminderWeekday: weekday,
+      reminderTime: time,
+    );
+  }
+}
+
+Widget _buildTestable(IWeightRepository repo, Widget child) {
+  return ProviderScope(
+    overrides: [weightRepositoryProvider.overrideWithValue(repo)],
+    child: MaterialApp(home: Scaffold(body: child)),
+  );
+}
+
 void main() {
-  group(
-    'WeightScreen',
-    skip: 'WeightScreen not yet implemented',
-    () {
-      testWidgets(
-        'logging a weight entry appends a point to the chart',
-        (tester) async {},
+  testWidgets(
+    'logging a weight entry appends a point to the chart',
+    (tester) async {
+      final repo = _FakeWeightRepository();
+      await tester.pumpWidget(
+        _buildTestable(
+          repo,
+          Builder(
+            builder: (context) => Column(
+              children: [
+                const WeightChart(),
+                ElevatedButton(
+                  onPressed: () => showModalBottomSheet<void>(
+                    context: context,
+                    builder: (_) => const WeightEntryForm(),
+                  ),
+                  child: const Text('Open form'),
+                ),
+              ],
+            ),
+          ),
+        ),
       );
+      await tester.pumpAndSettle();
 
-      testWidgets(
-        'goal line renders as a dashed horizontal line with no '
-        'pace/projection text anywhere nearby',
-        (tester) async {},
-      );
+      final before = tester.widget<LineChart>(find.byType(LineChart));
+      expect(before.data.lineBarsData.first.spots, isEmpty);
 
-      testWidgets(
-        'reminder frequency Custom reveals a weekday + time picker',
-        (tester) async {},
-      );
+      await tester.tap(find.text('Open form'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextFormField).first, '80');
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+
+      final after = tester.widget<LineChart>(find.byType(LineChart));
+      expect(after.data.lineBarsData.first.spots, hasLength(1));
     },
+  );
+
+  testWidgets(
+    'goal line renders as a dashed horizontal line with no '
+    'pace/projection text anywhere nearby',
+    (tester) async {
+      final repoNoGoal = _FakeWeightRepository();
+      await tester.pumpWidget(
+        _buildTestable(repoNoGoal, const WeightChart()),
+      );
+      await tester.pumpAndSettle();
+
+      var chart = tester.widget<LineChart>(find.byType(LineChart));
+      expect(chart.data.extraLinesData.horizontalLines, isEmpty);
+
+      final repoWithGoal = _FakeWeightRepository();
+      await repoWithGoal.saveGoal(targetWeightKg: 75);
+      await tester.pumpWidget(
+        _buildTestable(repoWithGoal, const WeightChart()),
+      );
+      await tester.pumpAndSettle();
+
+      chart = tester.widget<LineChart>(find.byType(LineChart));
+      expect(chart.data.extraLinesData.horizontalLines, hasLength(1));
+
+      final line = chart.data.extraLinesData.horizontalLines.first;
+      expect(line.dashArray, isNotNull);
+      expect(line.label.labelResolver(line), 'Goal: 75.0 kg');
+
+      // No pace/projection text anywhere in the widget tree.
+      expect(find.textContaining('pace'), findsNothing);
+      expect(find.textContaining('projection'), findsNothing);
+      expect(find.textContaining('on track'), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'reminder frequency Custom reveals a weekday + time picker '
+    '(WeightScreen assembly lands in Task 2 of this plan)',
+    (tester) async {},
+    skip: true,
   );
 }
