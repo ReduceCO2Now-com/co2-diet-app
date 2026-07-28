@@ -144,7 +144,7 @@ Plans:
 - [x] 05-15-PLAN.md — Data Analysis screen core (breakdown, contributors, goal, trend, transparency, detailed food analysis)
 - [x] 05-16-PLAN.md — Backup & Restore screen
 - [x] 05-17-PLAN.md — Improvement Opportunities + Insights Timeline
-- [ ] 05-18-PLAN.md — Final integration: router wiring, Dashboard assembly, Settings entry points
+- [x] 05-18-PLAN.md — Final integration: router wiring, Dashboard assembly, Settings entry points
 - [ ] 05-19-PLAN.md — Offline-proof test + NFR-05 audit + full regression
 **UI hint**: yes
 
@@ -203,7 +203,7 @@ Plans:
 | 2. Food Catalog Ingest & Search | 7/7 | Complete   | 2026-07-20 |
 | 3. Barcode Scanning & CO₂ Factor Table | 5/5 | Complete   | 2026-07-22 |
 | 4. Meal Logging Core | 12/13 | In Progress|  |
-| 5. Full Local App (Local Mode Shippable) | 17/19 | In Progress|  |
+| 5. Full Local App (Local Mode Shippable) | 18/19 | In Progress|  |
 | 6. Onboarding, Legal & Pre-Submission | 0/0 | Not started | - |
 | 7. Keycloak Auth + Account Mode + Sync | 0/0 | Not started | - |
 | 8. Reference Data Delivery (Full OFF Pack) | 0/0 | Not started | - |

@@ -63,62 +63,62 @@ Requirements for initial release. Each maps to a roadmap phase.
 ### Nutrition Tracking
 
 - [ ] **NUTR-01**: System tracks per-meal and daily totals: calories, protein, carbohydrates, fat, sugar, fiber, sodium
-- [ ] **NUTR-02**: Dashboard shows calories consumed vs. target with remaining calories prominently displayed
-- [ ] **NUTR-03**: Dashboard shows protein consumed vs. target
+- [x] **NUTR-02**: Dashboard shows calories consumed vs. target with remaining calories prominently displayed
+- [x] **NUTR-03**: Dashboard shows protein consumed vs. target
 - [ ] **NUTR-04**: Macro split (protein/carbs/fat) is viewable from the Dashboard or Data Analysis screen
 
 ### CO₂ Tracking
 
 - [x] **CO2-01**: Each food item has an associated CO₂e estimate (g CO₂e per kg); displayed with a confidence band (High / Medium / Low), never as a single false-precision number
-- [ ] **CO2-02**: System calculates CO₂e per meal, daily total, and weekly total entirely on-device — deterministic, offline, no network dependency
-- [ ] **CO2-03**: CO₂ Calculation Settings screen: user can optionally configure location (country + region), food purchasing source (supermarket / local farm / mix), shopping transport (car / public / walk/bike), cooking method (electric / gas / induction), food storage (fridge size / freezer), household size, food waste level; regional averages used as fallback for all unconfigured fields
+- [x] **CO2-02**: System calculates CO₂e per meal, daily total, and weekly total entirely on-device — deterministic, offline, no network dependency
+- [x] **CO2-03**: CO₂ Calculation Settings screen: user can optionally configure location (country + region), food purchasing source (supermarket / local farm / mix), shopping transport (car / public / walk/bike), cooking method (electric / gas / induction), food storage (fridge size / freezer), household size, food waste level; regional averages used as fallback for all unconfigured fields
 - [x] **CO2-04**: CO₂ values are stored per row with a `co2_methodology_version` field; when methodology is updated, the app surfaces a non-intrusive "CO₂ estimates updated with methodology v2" announcement
-- [ ] **CO2-05**: Estimate Transparency screen: for each food, user can see the CO₂e value, confidence level, contributing factors, data source, and a link to the full methodology documentation
-- [ ] **CO2-06**: Improvement Opportunities: the app suggests non-judgmental sustainable alternatives with a quantified CO₂ impact delta (e.g., "Replacing today's beef meal with chicken would save approximately 1.2 kg CO₂"); suggestions are optional and never shown unsolicited on every screen
+- [x] **CO2-05**: Estimate Transparency screen: for each food, user can see the CO₂e value, confidence level, contributing factors, data source, and a link to the full methodology documentation
+- [x] **CO2-06**: Improvement Opportunities: the app suggests non-judgmental sustainable alternatives with a quantified CO₂ impact delta (e.g., "Replacing today's beef meal with chicken would save approximately 1.2 kg CO₂"); suggestions are optional and never shown unsolicited on every screen
 
 ### Dashboard
 
-- [ ] **DASH-01**: Dashboard is the default entry screen after onboarding; shows today's CO₂ total, calories consumed, and protein consumed — each with target comparison
-- [ ] **DASH-02**: Dashboard shows quick-log buttons for Breakfast, Lunch, Dinner, and Snack; "+ Quick Add Food" secondary shortcut
-- [ ] **DASH-03**: Dashboard shows today's meal list with swipe-to-edit and duplicate actions
-- [ ] **DASH-04**: Dashboard shows a 7-day trend chart (lightweight, embedded)
-- [ ] **DASH-05**: Dashboard shows a contextual quick insight line (e.g., "Lunch contributed most CO₂ today")
-- [ ] **DASH-06**: Dashboard shows mode indicator (Local Mode: "Stored on this device" / Account Mode: "Synced across devices")
-- [ ] **DASH-07**: Dashboard empty state: "No meals yet → Start logging"
-- [ ] **DASH-08**: Tapping any Dashboard metric (CO₂, Calories, Protein, Weekly Trend) opens the Data Analysis screen for that metric
+- [x] **DASH-01**: Dashboard is the default entry screen after onboarding; shows today's CO₂ total, calories consumed, and protein consumed — each with target comparison
+- [x] **DASH-02**: Dashboard shows quick-log buttons for Breakfast, Lunch, Dinner, and Snack; "+ Quick Add Food" secondary shortcut
+- [x] **DASH-03**: Dashboard shows today's meal list with swipe-to-edit and duplicate actions
+- [x] **DASH-04**: Dashboard shows a 7-day trend chart (lightweight, embedded)
+- [x] **DASH-05**: Dashboard shows a contextual quick insight line (e.g., "Lunch contributed most CO₂ today")
+- [x] **DASH-06**: Dashboard shows mode indicator (Local Mode: "Stored on this device" / Account Mode: "Synced across devices")
+- [x] **DASH-07**: Dashboard empty state: "No meals yet → Start logging"
+- [x] **DASH-08**: Tapping any Dashboard metric (CO₂, Calories, Protein, Weekly Trend) opens the Data Analysis screen for that metric
 
 ### Insights
 
-- [ ] **INS-01**: Data Analysis screen accessible by tapping any Dashboard metric; shows: today's breakdown by meal (stacked bar), largest contributors (ranked list), goal comparison (progress bar + dynamic message), 7-day and 30-day switchable rolling trend (30-day rolling trend is the v1 time-range maximum — no separate calendar-month aggregate view is required for v1), Improvement Opportunities, detailed food analysis (expandable, per-serving + per-100g), Estimate Transparency, Insights Timeline
-- [ ] **INS-02**: Data Analysis screen shows CO₂ estimate with methodology explanation and confidence band (honest uncertainty, not false precision)
-- [ ] **INS-03**: Insights Timeline: chronological feed of observed patterns (e.g., "High-CO₂ evenings noticed", "Low protein on weekdays")
+- [x] **INS-01**: Data Analysis screen accessible by tapping any Dashboard metric; shows: today's breakdown by meal (stacked bar), largest contributors (ranked list), goal comparison (progress bar + dynamic message), 7-day and 30-day switchable rolling trend (30-day rolling trend is the v1 time-range maximum — no separate calendar-month aggregate view is required for v1), Improvement Opportunities, detailed food analysis (expandable, per-serving + per-100g), Estimate Transparency, Insights Timeline
+- [x] **INS-02**: Data Analysis screen shows CO₂ estimate with methodology explanation and confidence band (honest uncertainty, not false precision)
+- [x] **INS-03**: Insights Timeline: chronological feed of observed patterns (e.g., "High-CO₂ evenings noticed", "Low protein on weekdays")
 - [ ] **INS-04**: All Insights views work fully offline using locally stored data
 
 ### Weight Tracking
 
-- [ ] **WT-01**: User can log weight (value, unit kg/lb, date, optional note); entries stored locally
-- [ ] **WT-02**: User can view weight history with an interactive trend chart (7d / 30d / 90d / 1yr / all-time filter)
-- [ ] **WT-03**: User can set an optional weight goal (target weight + target date); progress shown on trend chart
-- [ ] **WT-04**: User can configure weigh-in reminders (frequency, day)
-- [ ] **WT-05**: Weight Tracking is accessible from Profile / Settings (primary location); whether it is also linked or natively rendered under Insights tab is an **open design decision — to be resolved in Phase 3**
+- [x] **WT-01**: User can log weight (value, unit kg/lb, date, optional note); entries stored locally
+- [x] **WT-02**: User can view weight history with an interactive trend chart (7d / 30d / 90d / 1yr / all-time filter)
+- [x] **WT-03**: User can set an optional weight goal (target weight + target date); progress shown on trend chart
+- [x] **WT-04**: User can configure weigh-in reminders (frequency, day)
+- [x] **WT-05**: Weight Tracking is accessible from Profile / Settings (primary location); whether it is also linked or natively rendered under Insights tab is an **open design decision — to be resolved in Phase 3**
 
 ### Privacy & Data
 
-- [ ] **PRIV-01**: User can export all personal data (CSV, Excel, JSON) by selectable category; delivered as a single zip archive with a manifest.json
-- [ ] **PRIV-02**: User can create a manual backup (save to device, save to cloud/Files, or share)
-- [ ] **PRIV-03**: User can configure automatic backups with configurable frequency and destination
-- [ ] **PRIV-04**: User can restore from backup with a preview of what will be restored and an explicit confirmation step before any data is overwritten
+- [x] **PRIV-01**: User can export all personal data (CSV, Excel, JSON) by selectable category; delivered as a single zip archive with a manifest.json
+- [x] **PRIV-02**: User can create a manual backup (save to device, save to cloud/Files, or share)
+- [x] **PRIV-03**: User can configure automatic backups with configurable frequency and destination
+- [x] **PRIV-04**: User can restore from backup with a preview of what will be restored and an explicit confirmation step before any data is overwritten
 - [ ] **PRIV-05**: User can permanently delete their account and all associated data; deletion completes within the legally required timeframe; Keycloak user record is deleted in the same operation; required by App Store (since June 2022) and GDPR Art. 17
 - [ ] **PRIV-06**: User can exercise full GDPR rights from the Legal & Privacy hub: access data, rectify data, data portability, and consent withdrawal
 - [x] **PRIV-07**: Application contains zero third-party analytics SDKs, advertising SDKs, or behavioral tracking SDKs; compliance verified by an automated dependency audit run in CI (hardcoded blocklist) and an Exodus Privacy scan on every release build
 - [ ] **PRIV-08**: In Local Mode, no data is ever transmitted to any server without explicit user action
-- [ ] **PRIV-09**: User can delete all local data (Danger Zone; requires typed confirmation before executing)
+- [x] **PRIV-09**: User can delete all local data (Danger Zone; requires typed confirmation before executing)
 
 ### Notifications
 
-- [ ] **NOTIF-01**: User can enable, disable, and configure meal reminders (time + frequency)
-- [ ] **NOTIF-02**: User can enable, disable, and configure weigh-in reminders (frequency + day)
-- [ ] **NOTIF-03**: All notifications are delivered via local scheduling (flutter_local_notifications); zero FCM / APNs server push — no server-side notification infrastructure required
+- [x] **NOTIF-01**: User can enable, disable, and configure meal reminders (time + frequency)
+- [x] **NOTIF-02**: User can enable, disable, and configure weigh-in reminders (frequency + day)
+- [x] **NOTIF-03**: All notifications are delivered via local scheduling (flutter_local_notifications); zero FCM / APNs server push — no server-side notification infrastructure required
 
 ### Legal & Transparency
 
@@ -252,44 +252,44 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | LOG-12 | Phase 4 | Complete |
 | LOG-13 | Phase 4 | Complete |
 | NUTR-01 | Phase 5 | Pending |
-| NUTR-02 | Phase 5 | Pending |
-| NUTR-03 | Phase 5 | Pending |
+| NUTR-02 | Phase 5 | Complete |
+| NUTR-03 | Phase 5 | Complete |
 | NUTR-04 | Phase 5 | Pending |
 | CO2-01 | Phase 3 | Complete |
-| CO2-02 | Phase 5 | Pending |
-| CO2-03 | Phase 5 | Pending |
+| CO2-02 | Phase 5 | Complete |
+| CO2-03 | Phase 5 | Complete |
 | CO2-04 | Phase 1 | Complete |
-| CO2-05 | Phase 5 | Pending |
-| CO2-06 | Phase 5 | Pending |
-| DASH-01 | Phase 5 | Pending |
-| DASH-02 | Phase 5 | Pending |
-| DASH-03 | Phase 5 | Pending |
-| DASH-04 | Phase 5 | Pending |
-| DASH-05 | Phase 5 | Pending |
-| DASH-06 | Phase 5 | Pending |
-| DASH-07 | Phase 5 | Pending |
-| DASH-08 | Phase 5 | Pending |
-| INS-01 | Phase 5 | Pending |
-| INS-02 | Phase 5 | Pending |
-| INS-03 | Phase 5 | Pending |
+| CO2-05 | Phase 5 | Complete |
+| CO2-06 | Phase 5 | Complete |
+| DASH-01 | Phase 5 | Complete |
+| DASH-02 | Phase 5 | Complete |
+| DASH-03 | Phase 5 | Complete |
+| DASH-04 | Phase 5 | Complete |
+| DASH-05 | Phase 5 | Complete |
+| DASH-06 | Phase 5 | Complete |
+| DASH-07 | Phase 5 | Complete |
+| DASH-08 | Phase 5 | Complete |
+| INS-01 | Phase 5 | Complete |
+| INS-02 | Phase 5 | Complete |
+| INS-03 | Phase 5 | Complete |
 | INS-04 | Phase 5 | Pending |
-| WT-01 | Phase 5 | Pending |
-| WT-02 | Phase 5 | Pending |
-| WT-03 | Phase 5 | Pending |
-| WT-04 | Phase 5 | Pending |
-| WT-05 | Phase 5 | Pending |
-| PRIV-01 | Phase 5 | Pending |
-| PRIV-02 | Phase 5 | Pending |
-| PRIV-03 | Phase 5 | Pending |
-| PRIV-04 | Phase 5 | Pending |
+| WT-01 | Phase 5 | Complete |
+| WT-02 | Phase 5 | Complete |
+| WT-03 | Phase 5 | Complete |
+| WT-04 | Phase 5 | Complete |
+| WT-05 | Phase 5 | Complete |
+| PRIV-01 | Phase 5 | Complete |
+| PRIV-02 | Phase 5 | Complete |
+| PRIV-03 | Phase 5 | Complete |
+| PRIV-04 | Phase 5 | Complete |
 | PRIV-05 | Phase 7 | Pending |
 | PRIV-06 | Phase 6 | Pending |
 | PRIV-07 | Phase 1 | Complete |
 | PRIV-08 | Phase 5 | Pending |
-| PRIV-09 | Phase 5 | Pending |
-| NOTIF-01 | Phase 5 | Pending |
-| NOTIF-02 | Phase 5 | Pending |
-| NOTIF-03 | Phase 5 | Pending |
+| PRIV-09 | Phase 5 | Complete |
+| NOTIF-01 | Phase 5 | Complete |
+| NOTIF-02 | Phase 5 | Complete |
+| NOTIF-03 | Phase 5 | Complete |
 | LEG-01 | Phase 6 | Pending |
 | LEG-02 | Phase 6 | Pending |
 | LEG-03 | Phase 6 | Pending |

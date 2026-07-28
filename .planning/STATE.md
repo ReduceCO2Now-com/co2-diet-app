@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1
 milestone_name: v1 launch
 status: executing
-last_updated: "2026-07-28T16:40:15.720Z"
+last_updated: "2026-07-28T20:00:57.523Z"
 progress:
   total_phases: 9
   completed_phases: 4
   total_plans: 51
-  completed_plans: 49
+  completed_plans: 50
   percent: 44
 ---
 
@@ -36,9 +36,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 - **Milestone:** v1 launch
 - **Phase:** 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable — IN PROGRESS (8 of 19 plans done)
-- **Plan:** 18 of 19 (05-08 complete — fl_chart/flutter_local_notifications/timezone/flutter_timezone installed, NotificationPrefs domain layer, NotificationService, rootNavigatorKey, main.dart wiring)
+- **Plan:** 19 of 19 (05-08 complete — fl_chart/flutter_local_notifications/timezone/flutter_timezone installed, NotificationPrefs domain layer, NotificationService, rootNavigatorKey, main.dart wiring)
 - **Status:** Ready to execute
-- **Progress:** [██████████] 96%
+- **Progress:** [██████████] 98%
 - **v1 requirements:** 34 / 75 delivered (CO2-01, CO2-02, CO2-03, CO2-04, LEG-05, LOG-01 through LOG-12, NFR-05, NFR-06, PROF-01 through PROF-05, PRIV-07) — Phase 4 fully closed (04-13 real-device checkpoint approved on both platforms); 05-02 closes the Phase-4 CO2 cache-path gap (CO2-02, NFR-05); 05-03 adds the Phase 5 Drift schema foundation (schema-only); 05-04 wires sugar/fiber/salt through FoodItem/MealEntry/repository (NUTR-01 still not fully delivered — daily-totals rollup is 05-10-PLAN.md, dashboard/insights UI later still); 05-05 adds the DAO layer for CO2 Settings/Weight/Notifications/Backup; 05-06 delivers the CO2 Settings domain layer (CO2-03 now fully delivered); 05-07 delivers the Weight Tracking domain layer (WT-01 through WT-04 still NOT fully delivered — the screen doesn't exist until 05-13, domain layer only so far); 05-08 installs fl_chart/flutter_local_notifications/timezone/flutter_timezone and delivers NotificationService + NotificationPrefs domain layer (NOTIF-01/02/03 still NOT fully delivered — the meal-reminder/weigh-in-reminder UI doesn't exist until 05-13/05-14/05-18, service/domain layer only so far; PRIV-02, PRIV-03 still not fully delivered — repository/UI plans pending); remaining Phase 5 requirements are test-stub-scaffolded only so far
 
 ```
@@ -135,8 +135,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-28T16:40:15.714Z
-**Stopped at:** Completed 05-17-PLAN.md
+**Last session:** 2026-07-28T20:00:57.517Z
+**Stopped at:** Completed 05-18-PLAN.md
 **Next action:** Execute Plan 05-08
 **Suggested next command:** `/gsd:execute-phase 5`
 
@@ -274,6 +274,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 05-17]: Substitution clusters tiered en:beef/en:lamb-and-goat/en:pork -> [en:poultry, en:fishes, en:legumes]; en:poultry -> [en:fishes, en:legumes]; en:fishes -> [en:legumes]; legumes has no key (already lowest tier)
 - [Phase 05-17]: InsightsTimelineRuleEngine.evaluate takes an optional proteinTargetG param -- protein rule never fires without a set target, avoiding a fabricated threshold
 - [Phase 05-17]: CO2-06/INS-03 left Pending in REQUIREMENTS.md -- DataAnalysisScreen still unreachable from app_router.dart/Dashboard until Plan 05-18
+- [Phase 05-18]: QuickInsightLine's 'most notable metric' selection uses largest single-meal-slot-share fraction across CO2/calories/protein (not per-metric target deviation) -- CO2 has no numeric target anywhere in this codebase (co2GTarget never populated), so this uniformly covers all three metrics per CONTEXT.md and matches the literal 'Lunch contributed most CO2 today' example
+- [Phase 05-18]: Co2DietApp's WidgetsBindingObserver reads WeightState.settings via .value (not .valueOrNull, which doesn't exist in this project's pinned Riverpod 3.3.2 per the existing [Phase 01-04] decision) -- re-arms the weigh-in reminder on every AppLifecycleState.resumed in addition to Plan 05-13's screen-open re-arm
+- [Phase 05-18]: PlaceholderDashboardScreen and Co2DietApp both converted from ConsumerWidget to ConsumerStatefulWidget to hold session-only local UI state (sparkline metric selection, CO2-prompt dismissal, lifecycle observer) rather than introducing new Riverpod providers -- mirrors WeighInReminderSection/MealReminderSettingsSection's established local-widget-state convention
+- [Phase 05-18]: Every slot's quick-log button (Breakfast/Lunch/Dinner/Snack) always renders regardless of that slot's entry count; only the slot section header above the meal list is conditionally hidden when empty -- existing Phase 4 tests asserting slot-name absence for empty slots needed updating to findsOneWidget (button-only) vs findsNWidgets(2) (button+header)
 
 ## Performance Metrics
 
@@ -318,3 +322,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P15 | ~25min | 2 tasks | 10 files |
 | Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P16 | ~22min | 2 tasks | 7 files |
 | Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P17 | ~20min | 2 tasks | 9 files |
+| Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P18 | ~50min | 4 tasks | 11 files |
