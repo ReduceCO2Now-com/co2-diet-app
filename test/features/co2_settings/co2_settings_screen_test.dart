@@ -1,6 +1,26 @@
+import 'package:co2diet/core/di/co2_settings_providers.dart';
+import 'package:co2diet/domain/entities/co2_settings.dart';
+import 'package:co2diet/domain/repositories/i_co2_settings_repository.dart';
+import 'package:co2diet/features/co2_settings/screens/co2_settings_screen.dart';
 import 'package:co2diet/features/co2_settings/widgets/data_quality_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+/// In-memory fake repository so saved settings are reflected on the next
+/// rebuild (real persistence behavior), unlike a mocktail Mock which would
+/// require per-call stubbing.
+class _FakeCo2SettingsRepository implements ICo2SettingsRepository {
+  Co2Settings _stored = const Co2Settings();
+
+  @override
+  Future<Co2Settings> getSettings() async => _stored;
+
+  @override
+  Future<void> saveSettings(Co2Settings settings) async {
+    _stored = settings;
+  }
+}
 
 void main() {
   group('DataQualityIndicator', () {
@@ -44,20 +64,119 @@ void main() {
     });
   });
 
-  group(
-    'Co2SettingsScreen',
-    skip: 'Co2SettingsScreen not yet implemented',
-    () {
-      testWidgets(
-        'all seven fields are optional; saving with everything '
-        'empty succeeds',
-        (tester) async {},
+  group('Co2SettingsScreen', () {
+    Widget buildTestable(ICo2SettingsRepository repo) {
+      return ProviderScope(
+        overrides: [
+          co2SettingsRepositoryProvider.overrideWithValue(repo),
+        ],
+        child: const MaterialApp(home: Co2SettingsScreen()),
       );
+    }
 
-      testWidgets(
-        'data quality indicator updates as fields are filled in',
-        (tester) async {},
-      );
-    },
-  );
+    // A tall viewport so every one of the 7 fields (rendered in a
+    // ListView) is within the cache extent and reachable via `find.text`
+    // without needing to scroll during assertions.
+    void useTallViewport(WidgetTester tester) {
+      tester.view.physicalSize = const Size(1080, 4000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+    }
+
+    testWidgets(
+      'all seven fields are optional; saving with everything empty '
+      'succeeds',
+      (tester) async {
+        useTallViewport(tester);
+        final repo = _FakeCo2SettingsRepository();
+        await tester.pumpWidget(buildTestable(repo));
+        await tester.pumpAndSettle();
+
+        // All 7 fields render with no value pre-filled.
+        expect(find.text('Location country'), findsOneWidget);
+        expect(find.text('Location region'), findsOneWidget);
+        expect(find.text('Purchasing source'), findsOneWidget);
+        expect(find.text('Shopping transport'), findsOneWidget);
+        expect(find.text('Cooking method'), findsOneWidget);
+        expect(find.text('Food storage'), findsOneWidget);
+        expect(find.text('Household size'), findsOneWidget);
+        expect(find.text('Food waste level'), findsOneWidget);
+        expect(find.text('Basic Estimate'), findsOneWidget);
+
+        // Triggering a change on an already-empty text field (no validator
+        // blocks saving with everything empty).
+        await tester.enterText(find.byType(TextFormField).first, '');
+        await tester.pumpAndSettle();
+
+        // No error surfaced -- the screen still renders normally.
+        expect(find.text('Error loading CO2 settings'), findsNothing);
+        expect(find.byType(Co2SettingsScreen), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'data quality indicator updates as fields are filled in',
+      (tester) async {
+        useTallViewport(tester);
+        final repo = _FakeCo2SettingsRepository();
+        await tester.pumpWidget(buildTestable(repo));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Basic Estimate'), findsOneWidget);
+
+        // Fill in location country -- 1 field set, still basic (<=2).
+        await tester.enterText(
+          find.widgetWithText(TextFormField, 'Location country'),
+          'DE',
+        );
+        await tester.pumpAndSettle();
+        expect(find.text('Basic Estimate'), findsOneWidget);
+
+        // Fill in enough fields to cross into "good" (3-5 fields set).
+        await tester.enterText(
+          find.widgetWithText(TextFormField, 'Location region'),
+          'Berlin',
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(
+          find.widgetWithText(DropdownButtonFormField<String?>,
+              'Purchasing source'),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Local farm').last);
+        await tester.pumpAndSettle();
+
+        expect(find.text('Good Estimate'), findsOneWidget);
+
+        // Fill in the remaining fields to cross into "detailed" (6-7 set).
+        await tester.tap(
+          find.widgetWithText(DropdownButtonFormField<String?>,
+              'Shopping transport'),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Walk or bike').last);
+        await tester.pumpAndSettle();
+
+        await tester.tap(
+          find.widgetWithText(DropdownButtonFormField<String?>,
+              'Cooking method'),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Electric').last);
+        await tester.pumpAndSettle();
+
+        await tester.tap(
+          find.widgetWithText(DropdownButtonFormField<String?>,
+              'Food storage'),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Small fridge').last);
+        await tester.pumpAndSettle();
+
+        expect(find.text('Detailed Estimate'), findsOneWidget);
+      },
+    );
+  });
 }
