@@ -1,0 +1,203 @@
+// Plan 05-18 Dashboard-assembly wiring: goal-to-emphasis mapping, the
+// QuickInsightLine "largest single-slot share" selection helper, and the
+// metric-card/chart-tap-to-Data-Analysis navigation behavior (DASH-08).
+import 'package:co2diet/core/di/co2_settings_providers.dart';
+import 'package:co2diet/core/di/meal_logging_providers.dart';
+import 'package:co2diet/core/di/providers.dart';
+import 'package:co2diet/domain/entities/co2_settings.dart';
+import 'package:co2diet/domain/entities/meal_entry.dart';
+import 'package:co2diet/domain/entities/meal_slot.dart';
+import 'package:co2diet/domain/entities/portion_unit.dart';
+import 'package:co2diet/domain/entities/user_profile.dart';
+import 'package:co2diet/domain/repositories/i_co2_settings_repository.dart';
+import 'package:co2diet/domain/repositories/i_meal_entry_repository.dart';
+import 'package:co2diet/domain/repositories/i_profile_repository.dart';
+import 'package:co2diet/features/dashboard/screens/placeholder_dashboard_screen.dart';
+import 'package:co2diet/features/dashboard/widgets/metric_card.dart';
+import 'package:co2diet/features/dashboard/widgets/trend_sparkline.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mocktail/mocktail.dart';
+
+class _MockMealEntryRepository extends Mock implements IMealEntryRepository {}
+
+class _MockProfileRepository extends Mock implements IProfileRepository {}
+
+class _MockCo2SettingsRepository extends Mock
+    implements ICo2SettingsRepository {}
+
+MealEntry _buildEntry(
+  String id,
+  MealSlot slot, {
+  double calories100g = 200,
+  double co2e100g = 2.5,
+  double quantity = 150,
+}) => MealEntry(
+  id: id,
+  mealSlot: slot,
+  foodRef: '1234567890123',
+  foodRefSource: 'off_ref',
+  quantity: quantity,
+  unit: PortionUnit.g,
+  productNameSnapshot: 'Test Food $id',
+  calories100gSnapshot: calories100g,
+  co2e100gSnapshot: co2e100g,
+  loggedAt: DateTime(2026, 7, 24, 12),
+  logDate: '2026-07-24',
+);
+
+void main() {
+  group('emphasizedMetricFor', () {
+    test('reduce_co2 emphasizes CO2', () {
+      expect(emphasizedMetricFor('reduce_co2'), DashboardMetric.co2);
+    });
+
+    test('lose_weight emphasizes calories', () {
+      expect(emphasizedMetricFor('lose_weight'), DashboardMetric.calories);
+    });
+
+    test('gain_muscle emphasizes protein', () {
+      expect(emphasizedMetricFor('gain_muscle'), DashboardMetric.protein);
+    });
+
+    test('unrecognized/null goal falls back to calories', () {
+      expect(emphasizedMetricFor(null), DashboardMetric.calories);
+      expect(emphasizedMetricFor('something_else'), DashboardMetric.calories);
+    });
+  });
+
+  group('orderedMetrics', () {
+    test('places the emphasized metric first', () {
+      expect(
+        orderedMetrics(DashboardMetric.protein).first,
+        DashboardMetric.protein,
+      );
+      expect(orderedMetrics(DashboardMetric.co2).first, DashboardMetric.co2);
+    });
+
+    test('always contains all three metrics exactly once', () {
+      final ordered = orderedMetrics(DashboardMetric.calories);
+      expect(ordered.toSet(), DashboardMetric.values.toSet());
+      expect(ordered.length, 3);
+    });
+  });
+
+  group('computeQuickInsight', () {
+    test('returns null when there are no entries today', () {
+      expect(computeQuickInsight([]), isNull);
+    });
+
+    test(
+      'names the slot contributing the largest single-slot share of a '
+      'metric',
+      () {
+        // Breakfast alone contributes a much higher CO2 total than lunch,
+        // making it the "largest single-meal share" of today's CO2.
+        final entries = [
+          _buildEntry(
+            'e1',
+            MealSlot.breakfast,
+            co2e100g: 20,
+            calories100g: 100,
+          ),
+          _buildEntry('e2', MealSlot.lunch, co2e100g: 1, calories100g: 100),
+        ];
+
+        final insight = computeQuickInsight(entries);
+
+        expect(insight, isNotNull);
+        expect(insight, contains('Breakfast'));
+      },
+    );
+  });
+
+  group('Dashboard screen assembly (Plan 05-18)', () {
+    Widget wrap(Widget dashboard) {
+      final router = GoRouter(
+        initialLocation: '/dashboard',
+        routes: [
+          GoRoute(path: '/dashboard', builder: (context, state) => dashboard),
+          GoRoute(
+            path: '/data-analysis',
+            builder: (context, state) =>
+                Text('data-analysis:${state.uri.queryParameters['metric']}'),
+          ),
+        ],
+      );
+      return MaterialApp.router(routerConfig: router);
+    }
+
+    Future<void> pumpDashboard(WidgetTester tester) async {
+      // Tall test viewport, matching this suite's other Dashboard tests --
+      // the composed header (mode indicator/metric cards/sparkline/quick
+      // insight) plus a full slot-grouped meal list needs more vertical
+      // space than the default 800x600 test surface.
+      tester.view.physicalSize = const Size(1080, 4000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final mockRepo = _MockMealEntryRepository();
+      when(mockRepo.getEntriesForToday).thenAnswer(
+        (_) async => [_buildEntry('e1', MealSlot.breakfast)],
+      );
+      when(
+        () => mockRepo.getEntriesInRange(any(), any()),
+      ).thenAnswer((_) async => []);
+
+      final mockProfileRepo = _MockProfileRepository();
+      when(mockProfileRepo.getProfile).thenAnswer(
+        (_) async => const UserProfile(id: 'p1', goal: 'reduce_co2'),
+      );
+
+      final mockCo2SettingsRepo = _MockCo2SettingsRepository();
+      when(
+        mockCo2SettingsRepo.getSettings,
+      ).thenAnswer((_) async => const Co2Settings());
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            mealEntryRepositoryProvider.overrideWithValue(mockRepo),
+            profileRepositoryProvider.overrideWithValue(mockProfileRepo),
+            co2SettingsRepositoryProvider.overrideWithValue(
+              mockCo2SettingsRepo,
+            ),
+          ],
+          child: wrap(const PlaceholderDashboardScreen()),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets(
+      'tapping the CO2 metric card pushes /data-analysis?metric=co2',
+      (tester) async {
+        await pumpDashboard(tester);
+
+        final co2Card = find.byWidgetPredicate(
+          (widget) => widget is MetricCard && widget.label == 'CO₂',
+        );
+        expect(co2Card, findsOneWidget);
+        await tester.tap(co2Card);
+        await tester.pumpAndSettle();
+
+        expect(find.text('data-analysis:co2'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'tapping the trend sparkline pushes /data-analysis?metric=<selected>',
+      (tester) async {
+        await pumpDashboard(tester);
+
+        await tester.tap(find.byType(TrendSparkline));
+        await tester.pumpAndSettle();
+
+        expect(find.text('data-analysis:co2'), findsOneWidget);
+      },
+    );
+  });
+}

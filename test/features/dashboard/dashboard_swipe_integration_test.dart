@@ -4,11 +4,16 @@
 // rather than a single teleporting tester.drag() call — closer to what a
 // real finger produces, and closer to production structure than
 // meal_entry_row_test.dart's bare single-widget host.
+import 'package:co2diet/core/di/co2_settings_providers.dart';
 import 'package:co2diet/core/di/meal_logging_providers.dart';
+import 'package:co2diet/core/di/providers.dart';
+import 'package:co2diet/domain/entities/co2_settings.dart';
 import 'package:co2diet/domain/entities/meal_entry.dart';
 import 'package:co2diet/domain/entities/meal_slot.dart';
 import 'package:co2diet/domain/entities/portion_unit.dart';
+import 'package:co2diet/domain/repositories/i_co2_settings_repository.dart';
 import 'package:co2diet/domain/repositories/i_meal_entry_repository.dart';
+import 'package:co2diet/domain/repositories/i_profile_repository.dart';
 import 'package:co2diet/features/dashboard/screens/placeholder_dashboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,6 +22,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockMealEntryRepository extends Mock implements IMealEntryRepository {}
+
+class _MockProfileRepository extends Mock implements IProfileRepository {}
+
+class _MockCo2SettingsRepository extends Mock
+    implements ICo2SettingsRepository {}
 
 MealEntry _buildEntry(String id, MealSlot slot) => MealEntry(
   id: id,
@@ -55,6 +65,16 @@ void main() {
     '(ListView + multiple rows) reveals Edit/Duplicate/Delete via a '
     'realistic incremental drag',
     (tester) async {
+      // Tall test viewport -- the default 800x600 test surface plus
+      // Flutter's sliver-list cache-extent would otherwise hide the
+      // dinner-slot row past the now-larger composed Dashboard header
+      // (mode indicator, metric cards, sparkline, quick insight) added in
+      // Plan 05-18. Same precedent as Plan 05-12's Co2SettingsScreen tests.
+      tester.view.physicalSize = const Size(1080, 4000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
       final mockRepo = _MockMealEntryRepository();
       when(mockRepo.getEntriesForToday).thenAnswer(
         (_) async => [
@@ -63,10 +83,27 @@ void main() {
           _buildEntry('e3', MealSlot.dinner),
         ],
       );
+      when(
+        () => mockRepo.getEntriesInRange(any(), any()),
+      ).thenAnswer((_) async => []);
+
+      final mockProfileRepo = _MockProfileRepository();
+      when(mockProfileRepo.getProfile).thenAnswer((_) async => null);
+
+      final mockCo2SettingsRepo = _MockCo2SettingsRepository();
+      when(
+        mockCo2SettingsRepo.getSettings,
+      ).thenAnswer((_) async => const Co2Settings());
 
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [mealEntryRepositoryProvider.overrideWithValue(mockRepo)],
+          overrides: [
+            mealEntryRepositoryProvider.overrideWithValue(mockRepo),
+            profileRepositoryProvider.overrideWithValue(mockProfileRepo),
+            co2SettingsRepositoryProvider.overrideWithValue(
+              mockCo2SettingsRepo,
+            ),
+          ],
           child: const MaterialApp(home: PlaceholderDashboardScreen()),
         ),
       );
