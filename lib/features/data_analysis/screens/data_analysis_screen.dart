@@ -1,14 +1,19 @@
 import 'dart:async';
 
+import 'package:co2diet/core/di/app_providers.dart';
 import 'package:co2diet/core/di/meal_logging_providers.dart';
 import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/core/theme/spacing_tokens.dart';
 import 'package:co2diet/core/theme/text_tokens.dart';
 import 'package:co2diet/domain/services/daily_totals_calculator.dart';
+import 'package:co2diet/domain/services/improvement_opportunity_finder.dart';
+import 'package:co2diet/domain/services/insights_timeline_rule_engine.dart';
 import 'package:co2diet/features/data_analysis/widgets/analysis_metric.dart';
 import 'package:co2diet/features/data_analysis/widgets/detailed_food_analysis_panel.dart';
 import 'package:co2diet/features/data_analysis/widgets/estimate_transparency_panel.dart';
 import 'package:co2diet/features/data_analysis/widgets/goal_comparison_bar.dart';
+import 'package:co2diet/features/data_analysis/widgets/improvement_opportunities.dart';
+import 'package:co2diet/features/data_analysis/widgets/insights_timeline.dart';
 import 'package:co2diet/features/data_analysis/widgets/ranked_contributors_list.dart';
 import 'package:co2diet/features/data_analysis/widgets/today_breakdown_bar_chart.dart';
 import 'package:co2diet/features/data_analysis/widgets/trend_section.dart';
@@ -20,6 +25,13 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// CO2-06 invariant: `ImprovementOpportunities` and `InsightsTimeline`
+// (imported above) are never imported by, or referenced from, anything
+// under `lib/features/dashboard/` -- verified by grep and by
+// `improvement_opportunities_test.dart`'s dedicated widget-tree assertion
+// against `PlaceholderDashboardScreen`. Both widgets are wired exclusively
+// into this screen's `_NutritionBody`, below.
+
 /// One-shot trailing-7-day pooled [DailyTotals] (today inclusive), powering
 /// [WeeklyTotalSummary] (CO2-02's explicit "weekly total" success
 /// criterion) -- deliberately a second, distinct
@@ -27,16 +39,47 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// breakdown, never derived from or reusing that result.
 final FutureProvider<DailyTotals> _weeklyTotalsProvider =
     FutureProvider.autoDispose<DailyTotals>((ref) async {
-  final repo = ref.watch(mealEntryRepositoryProvider);
-  final now = DateTime.now();
-  final from = DateTime(
-    now.year,
-    now.month,
-    now.day,
-  ).subtract(const Duration(days: 6));
-  final entries = await repo.getEntriesInRange(from, now);
-  return DailyTotalsCalculator.compute(entries);
-});
+      final repo = ref.watch(mealEntryRepositoryProvider);
+      final now = DateTime.now();
+      final from = DateTime(
+        now.year,
+        now.month,
+        now.day,
+      ).subtract(const Duration(days: 6));
+      final entries = await repo.getEntriesInRange(from, now);
+      return DailyTotalsCalculator.compute(entries);
+    });
+
+/// One-shot Improvement Opportunities (CO2-06) computed over today's
+/// entries via [ImprovementOpportunityFinder] (injected through
+/// [improvementOpportunityFinderProvider]).
+final FutureProvider<List<ImprovementOpportunity>>
+_improvementOpportunitiesProvider =
+    FutureProvider.autoDispose<List<ImprovementOpportunity>>((ref) async {
+      final todayEntries = await ref.watch(mealEntryProvider.future);
+      final finder = ref.watch(improvementOpportunityFinderProvider);
+      return finder.findOpportunities(todayEntries);
+    });
+
+/// One-shot Insights Timeline (INS-03) computed over a trailing-7-day
+/// pooled entry query via [InsightsTimelineRuleEngine] -- a second,
+/// distinct trailing-7-day query from [_weeklyTotalsProvider]'s, since the
+/// rule engine needs the raw per-entry list (not a pre-aggregated total)
+/// to group by weekday/dinner-slot.
+final FutureProvider<List<String>> _insightsTimelineProvider =
+    FutureProvider.autoDispose<List<String>>((ref) async {
+      final repo = ref.watch(mealEntryRepositoryProvider);
+      final now = DateTime.now();
+      final from = DateTime(
+        now.year,
+        now.month,
+        now.day,
+      ).subtract(const Duration(days: 6));
+      final entries = await repo.getEntriesInRange(from, now);
+      final targets = ref.watch(profileProvider).value?.targets;
+      const engine = InsightsTimelineRuleEngine();
+      return engine.evaluate(entries, proteinTargetG: targets?.proteinGTarget);
+    });
 
 /// Formats [date] as a `yyyy-MM-dd` logical log date, matching
 /// `MealEntryRepository`'s established `_formatLogDate` convention.
@@ -48,13 +91,14 @@ String _logDateOf(DateTime date) =>
 /// The Data Analysis screen (INS-01/INS-02): today's stacked-bar meal
 /// breakdown, an explicit weekly total, ranked Largest Contributors, a
 /// goal-comparison progress bar, an independently-toggleable metric x
-/// range trend chart, an aggregate Estimate Transparency panel, and a
-/// per-entry expandable Detailed Food Analysis list -- plus the Weight
-/// metric entry (WT-05).
+/// range trend chart, an aggregate Estimate Transparency panel, a
+/// per-entry expandable Detailed Food Analysis list, Improvement
+/// Opportunities (CO2-06), and the Insights Timeline (INS-03) -- plus the
+/// Weight metric entry (WT-05).
 ///
 /// Not yet wired into `app_router.dart` or reachable from the Dashboard --
-/// Plan 05-18 adds the route and Dashboard-tap wiring. Plan 05-17 (next
-/// wave) adds Improvement Opportunities and the Insights Timeline into
+/// Plan 05-18 adds the route and Dashboard-tap wiring. Plan 05-17 adds
+/// Improvement Opportunities and the Insights Timeline into
 /// this same screen file.
 class DataAnalysisScreen extends ConsumerWidget {
   /// Creates the [DataAnalysisScreen] pre-set to [initialMetric].
@@ -199,6 +243,10 @@ class _NutritionBody extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final entriesAsync = ref.watch(mealEntryProvider);
     final weeklyTotalsAsync = ref.watch(_weeklyTotalsProvider);
+    final improvementOpportunitiesAsync = ref.watch(
+      _improvementOpportunitiesProvider,
+    );
+    final insightsTimelineAsync = ref.watch(_insightsTimelineProvider);
     final targets = ref.watch(profileProvider).value?.targets;
 
     return entriesAsync.when(
@@ -275,6 +323,32 @@ class _NutritionBody extends ConsumerWidget {
             const SizedBox(height: AppSpacing.stackGap),
             for (final entry in todayEntries)
               DetailedFoodAnalysisPanel(entry: entry),
+            const SizedBox(height: AppSpacing.lg),
+
+            // CO2-06: rendered ONLY here, inside Data Analysis -- never the
+            // Dashboard, never a notification.
+            const Text(
+              'Improvement opportunities',
+              style: AppTextTheme.titleMd,
+            ),
+            const SizedBox(height: AppSpacing.stackGap),
+            improvementOpportunitiesAsync.when(
+              loading: () => const SizedBox.shrink(),
+              error: (e, st) => const SizedBox.shrink(),
+              data: (opportunities) =>
+                  ImprovementOpportunities(opportunities: opportunities),
+            ),
+            const SizedBox(height: AppSpacing.lg),
+
+            // INS-03: small fixed rule set, never a forced/fabricated line.
+            const Text('Insights timeline', style: AppTextTheme.titleMd),
+            const SizedBox(height: AppSpacing.stackGap),
+            insightsTimelineAsync.when(
+              loading: () => const SizedBox.shrink(),
+              error: (e, st) => const SizedBox.shrink(),
+              data: (observations) =>
+                  InsightsTimeline(observations: observations),
+            ),
           ],
         );
       },

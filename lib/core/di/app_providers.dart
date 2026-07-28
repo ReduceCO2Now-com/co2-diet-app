@@ -9,6 +9,7 @@ import 'package:co2diet/data/local/daos/food_catalog_dao.dart';
 import 'package:co2diet/data/remote/off_api_client.dart';
 import 'package:co2diet/data/repositories/food_catalog_repository.dart';
 import 'package:co2diet/domain/repositories/i_food_catalog_repository.dart';
+import 'package:co2diet/domain/services/improvement_opportunity_finder.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_providers.g.dart';
@@ -57,4 +58,15 @@ IFoodCatalogRepository foodCatalogRepository(Ref ref) {
     ref.watch(foodCatalogDaoProvider),
     ref.watch(offApiClientProvider),
   );
+}
+
+/// Provides the [ImprovementOpportunityFinder] (CO2-06) for the Data
+/// Analysis screen's Improvement Opportunities section.
+///
+/// keepAlive: true — mirrors [foodCatalogDaoProvider]'s convention; this
+/// service is stateless and cheap to keep alive rather than reconstruct on
+/// every Data Analysis screen visit.
+@Riverpod(keepAlive: true)
+ImprovementOpportunityFinder improvementOpportunityFinder(Ref ref) {
+  return ImprovementOpportunityFinder(ref.watch(foodCatalogDaoProvider));
 }

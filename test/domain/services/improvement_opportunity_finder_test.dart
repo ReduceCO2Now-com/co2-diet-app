@@ -51,9 +51,7 @@ void main() {
           () => mockDao.getCo2ForCategory('en:legumes'),
         ).thenAnswer((_) async => 0.5);
 
-        final result = await finder.findOpportunities([
-          _entry(productName: 'Beef Steak', co2e100g: 4, quantity: 300),
-        ]);
+        final result = await finder.findOpportunities([_entry()]);
 
         expect(result, hasLength(1));
         final suggestion = result.single;
@@ -72,9 +70,7 @@ void main() {
           () => mockDao.getCo2ForCategory(any()),
         ).thenAnswer((_) async => 0.1);
 
-        final result = await finder.findOpportunities([
-          _entry(productName: 'Beef Steak', co2e100g: 4, quantity: 300),
-        ]);
+        final result = await finder.findOpportunities([_entry()]);
 
         expect(result, hasLength(1));
         // Alternative must be one of the hand-authored cluster members --
@@ -96,31 +92,34 @@ void main() {
 
         // Below the significant-CO2 threshold (small quantity, low co2e).
         final result = await finder.findOpportunities([
-          _entry(productName: 'Beef Steak', co2e100g: 0.5, quantity: 50),
+          _entry(co2e100g: 0.5, quantity: 50),
         ]);
 
         expect(result, isEmpty);
       },
     );
 
-    test('returns no suggestions when the entry has no known category', () async {
-      when(
-        () => mockDao.getCo2ForCategory(any()),
-      ).thenAnswer((_) async => 0.1);
+    test(
+      'returns no suggestions when the entry has no known category',
+      () async {
+        when(
+          () => mockDao.getCo2ForCategory(any()),
+        ).thenAnswer((_) async => 0.1);
 
-      final result = await finder.findOpportunities([
-        _entry(productName: 'Mystery Snack Bar', co2e100g: 4, quantity: 300),
-      ]);
+        final result = await finder.findOpportunities([
+          _entry(productName: 'Mystery Snack Bar'),
+        ]);
 
-      expect(result, isEmpty);
-    });
+        expect(result, isEmpty);
+      },
+    );
 
     test(
       'legumes/plant-protein entries (already lowest-CO2 tier) never '
       'produce a suggestion',
       () async {
         final result = await finder.findOpportunities([
-          _entry(productName: 'Lentil Soup', co2e100g: 4, quantity: 300),
+          _entry(productName: 'Lentil Soup'),
         ]);
 
         expect(result, isEmpty);

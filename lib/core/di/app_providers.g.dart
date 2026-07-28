@@ -224,3 +224,72 @@ final class FoodCatalogRepositoryProvider
 
 String _$foodCatalogRepositoryHash() =>
     r'1aa1b2d661ec9c3b52a32a97ae3dd8fa7a31166f';
+
+/// Provides the [ImprovementOpportunityFinder] (CO2-06) for the Data
+/// Analysis screen's Improvement Opportunities section.
+///
+/// keepAlive: true — mirrors [foodCatalogDaoProvider]'s convention; this
+/// service is stateless and cheap to keep alive rather than reconstruct on
+/// every Data Analysis screen visit.
+
+@ProviderFor(improvementOpportunityFinder)
+final improvementOpportunityFinderProvider =
+    ImprovementOpportunityFinderProvider._();
+
+/// Provides the [ImprovementOpportunityFinder] (CO2-06) for the Data
+/// Analysis screen's Improvement Opportunities section.
+///
+/// keepAlive: true — mirrors [foodCatalogDaoProvider]'s convention; this
+/// service is stateless and cheap to keep alive rather than reconstruct on
+/// every Data Analysis screen visit.
+
+final class ImprovementOpportunityFinderProvider
+    extends
+        $FunctionalProvider<
+          ImprovementOpportunityFinder,
+          ImprovementOpportunityFinder,
+          ImprovementOpportunityFinder
+        >
+    with $Provider<ImprovementOpportunityFinder> {
+  /// Provides the [ImprovementOpportunityFinder] (CO2-06) for the Data
+  /// Analysis screen's Improvement Opportunities section.
+  ///
+  /// keepAlive: true — mirrors [foodCatalogDaoProvider]'s convention; this
+  /// service is stateless and cheap to keep alive rather than reconstruct on
+  /// every Data Analysis screen visit.
+  ImprovementOpportunityFinderProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'improvementOpportunityFinderProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$improvementOpportunityFinderHash();
+
+  @$internal
+  @override
+  $ProviderElement<ImprovementOpportunityFinder> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  ImprovementOpportunityFinder create(Ref ref) {
+    return improvementOpportunityFinder(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ImprovementOpportunityFinder value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ImprovementOpportunityFinder>(value),
+    );
+  }
+}
+
+String _$improvementOpportunityFinderHash() =>
+    r'2dace756851d689e7c53f41c43a6c04e7c2d7c57';

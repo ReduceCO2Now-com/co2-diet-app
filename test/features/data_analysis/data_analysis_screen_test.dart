@@ -1,6 +1,8 @@
+import 'package:co2diet/core/di/app_providers.dart';
 import 'package:co2diet/core/di/meal_logging_providers.dart';
 import 'package:co2diet/core/di/providers.dart';
 import 'package:co2diet/core/di/weight_providers.dart';
+import 'package:co2diet/data/local/daos/food_catalog_dao.dart';
 import 'package:co2diet/domain/entities/favorite.dart';
 import 'package:co2diet/domain/entities/meal_entry.dart';
 import 'package:co2diet/domain/entities/meal_slot.dart';
@@ -12,10 +14,13 @@ import 'package:co2diet/domain/repositories/i_meal_entry_repository.dart';
 import 'package:co2diet/domain/repositories/i_profile_repository.dart';
 import 'package:co2diet/domain/repositories/i_weight_repository.dart';
 import 'package:co2diet/domain/services/daily_totals_calculator.dart';
+import 'package:co2diet/domain/services/improvement_opportunity_finder.dart';
 import 'package:co2diet/features/data_analysis/screens/data_analysis_screen.dart';
 import 'package:co2diet/features/data_analysis/widgets/analysis_metric.dart';
 import 'package:co2diet/features/data_analysis/widgets/estimate_transparency_panel.dart';
 import 'package:co2diet/features/data_analysis/widgets/goal_comparison_bar.dart';
+import 'package:co2diet/features/data_analysis/widgets/improvement_opportunities.dart';
+import 'package:co2diet/features/data_analysis/widgets/insights_timeline.dart';
 import 'package:co2diet/features/data_analysis/widgets/ranked_contributors_list.dart';
 import 'package:co2diet/features/data_analysis/widgets/today_breakdown_bar_chart.dart';
 import 'package:co2diet/features/data_analysis/widgets/trend_section.dart';
@@ -25,6 +30,16 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+/// Mocktail double for [FoodCatalogDao] -- mirrors
+/// `custom_food_form_test.dart`'s established `_MockFoodCatalogDao`
+/// precedent. Used only to back [improvementOpportunityFinderProvider]'s
+/// override below so widget tests never open a real `AppDatabase`
+/// (05-17: this screen's Improvement Opportunities section resolves
+/// through `foodCatalogDaoProvider` -> `appDatabaseProvider`, neither of
+/// which this file otherwise overrides).
+class _MockFoodCatalogDao extends Mock implements FoodCatalogDao {}
 
 /// In-memory fake -- mirrors `weight_screen_test.dart`'s
 /// `_FakeWeightRepository` precedent: a full [IMealEntryRepository]
@@ -165,12 +180,20 @@ Widget _buildTestable({
   required Widget child,
   IWeightRepository? weightRepo,
 }) {
+  final mockFoodCatalogDao = _MockFoodCatalogDao();
+  when(
+    () => mockFoodCatalogDao.getCo2ForCategory(any()),
+  ).thenAnswer((_) async => null);
+
   return ProviderScope(
     overrides: [
       mealEntryRepositoryProvider.overrideWithValue(
         _FakeMealEntryRepository(entries),
       ),
       profileRepositoryProvider.overrideWithValue(_FakeProfileRepository()),
+      improvementOpportunityFinderProvider.overrideWithValue(
+        ImprovementOpportunityFinder(mockFoodCatalogDao),
+      ),
       if (weightRepo != null)
         weightRepositoryProvider.overrideWithValue(weightRepo),
     ],
@@ -357,6 +380,30 @@ void main() {
         expect(find.byType(RankedContributorsList), findsOneWidget);
         expect(find.byType(GoalComparisonBar), findsOneWidget);
         expect(find.textContaining('This week'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'wires ImprovementOpportunities and InsightsTimeline into the '
+      'screen body (CO2-06/INS-03)',
+      (tester) async {
+        _useTallViewport(tester);
+        final entries = [
+          _entry(id: '1', calories: 300, co2e: 1.2, confidenceBand: 'high'),
+        ];
+
+        await tester.pumpWidget(
+          _buildTestable(
+            entries: entries,
+            child: const DataAnalysisScreen(
+              initialMetric: AnalysisMetric.calories,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.byType(ImprovementOpportunities), findsOneWidget);
+        expect(find.byType(InsightsTimeline), findsOneWidget);
       },
     );
 
