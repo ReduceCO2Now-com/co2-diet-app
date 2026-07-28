@@ -6,9 +6,40 @@ import 'package:co2diet/domain/entities/notification_prefs.dart';
 import 'package:co2diet/domain/repositories/i_notification_prefs_repository.dart';
 import 'package:co2diet/domain/services/notification_service.dart';
 import 'package:co2diet/features/notifications/providers/notification_prefs_notifier.dart';
+import 'package:co2diet/features/notifications/widgets/meal_reminder_settings_section.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+
+/// In-memory fake repository -- mirrors `_FakeWeightRepository`'s
+/// precedent (Plan 05-13): a saved value is reflected on the next
+/// `getPrefs()` call, which a mocktail `Mock` would require per-call
+/// stubbing to achieve across the widget tree's multiple rows.
+class _FakeNotificationPrefsRepository implements INotificationPrefsRepository {
+  NotificationPrefs _prefs = const NotificationPrefs();
+
+  @override
+  Future<NotificationPrefs> getPrefs() async => _prefs;
+
+  @override
+  Future<void> savePrefs(NotificationPrefs prefs) async => _prefs = prefs;
+}
+
+Widget _buildTestable(
+  INotificationPrefsRepository repo,
+  NotificationService service,
+) {
+  return ProviderScope(
+    overrides: [
+      notificationPrefsRepositoryProvider.overrideWithValue(repo),
+      notificationServiceProvider.overrideWithValue(service),
+    ],
+    child: const MaterialApp(
+      home: Scaffold(body: MealReminderSettingsSection()),
+    ),
+  );
+}
 
 class _MockNotificationPrefsRepository extends Mock
     implements INotificationPrefsRepository {}
@@ -187,21 +218,82 @@ void main() {
     );
   });
 
-  group(
-    'Meal reminder settings section',
-    skip: 'meal reminder settings UI not yet implemented',
-    () {
-      testWidgets(
-        'each of the four meal slots has an independent enable '
-        'toggle and time picker',
-        (tester) async {},
-      );
+  group('Meal reminder settings section', () {
+    testWidgets(
+      'each of the four meal slots has an independent enable '
+      'toggle and time picker',
+      (tester) async {
+        final repo = _FakeNotificationPrefsRepository();
+        final service = _MockNotificationService();
+        when(
+          service.requestPermissionIfNeeded,
+        ).thenAnswer((_) async => true);
+        when(
+          () => service.scheduleMealReminder(any(), any()),
+        ).thenAnswer((_) async => true);
+        when(
+          () => service.cancelMealReminder(any()),
+        ).thenAnswer((_) async {});
 
-      testWidgets(
-        'toggling a reminder on when permission is denied reverts '
-        'the toggle and shows an Open Settings link',
-        (tester) async {},
-      );
-    },
-  );
+        await tester.pumpWidget(_buildTestable(repo, service));
+        await tester.pumpAndSettle();
+
+        expect(find.text('Breakfast'), findsOneWidget);
+        expect(find.text('Lunch'), findsOneWidget);
+        expect(find.text('Dinner'), findsOneWidget);
+        expect(find.text('Snack'), findsOneWidget);
+        expect(find.byType(Switch), findsNWidgets(4));
+
+        // MealSlot.values order: breakfast, lunch, dinner, snack. Toggle
+        // only Lunch's switch on; the other three rows stay off and
+        // remain independently controllable.
+        final switches = find.byType(Switch);
+        await tester.tap(switches.at(1));
+        await tester.pumpAndSettle();
+
+        expect(tester.widget<Switch>(switches.at(0)).value, isFalse);
+        expect(tester.widget<Switch>(switches.at(1)).value, isTrue);
+        expect(tester.widget<Switch>(switches.at(2)).value, isFalse);
+        expect(tester.widget<Switch>(switches.at(3)).value, isFalse);
+
+        verify(
+          () => service.scheduleMealReminder(MealSlot.lunch, any()),
+        ).called(1);
+      },
+    );
+
+    testWidgets(
+      'toggling a reminder on when permission is denied reverts '
+      'the toggle and shows an Open Settings link',
+      (tester) async {
+        final repo = _FakeNotificationPrefsRepository();
+        final service = _MockNotificationService();
+        when(
+          service.requestPermissionIfNeeded,
+        ).thenAnswer((_) async => false);
+
+        await tester.pumpWidget(_buildTestable(repo, service));
+        await tester.pumpAndSettle();
+
+        final switches = find.byType(Switch);
+        // Toggle Breakfast (first row) on -- permission will be denied.
+        await tester.tap(switches.at(0));
+        await tester.pumpAndSettle();
+
+        expect(tester.widget<Switch>(switches.at(0)).value, isFalse);
+        expect(
+          find.textContaining('Notifications are disabled'),
+          findsOneWidget,
+        );
+        expect(find.text('Open Settings'), findsOneWidget);
+
+        // Only the denied row shows the recovery link -- the other three
+        // rows are untouched.
+        expect(
+          find.textContaining('Notifications are disabled'),
+          findsNWidgets(1),
+        );
+      },
+    );
+  });
 }

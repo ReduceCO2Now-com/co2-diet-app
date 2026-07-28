@@ -57,8 +57,7 @@ class NotificationPrefsNotifier extends _$NotificationPrefsNotifier {
     }
 
     final current = state.value ?? await future;
-    final resolvedTime =
-        time ?? current.timeFor(slot) ?? _defaultReminderTime;
+    final resolvedTime = time ?? current.timeFor(slot) ?? _defaultReminderTime;
     final updated = _withSlot(current, slot, enabled, resolvedTime);
 
     await ref.read(notificationPrefsRepositoryProvider).savePrefs(updated);
