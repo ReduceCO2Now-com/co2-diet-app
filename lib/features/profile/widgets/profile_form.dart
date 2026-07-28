@@ -39,8 +39,16 @@ class ProfileForm extends StatelessWidget {
         const SizedBox(height: AppSpacing.stackGap),
 
         // Age
+        //
+        // No value-derived key here (deliberately) -- keying a TextFormField
+        // by its own current value causes Flutter to treat it as a brand
+        // new widget on every keystroke (auto-save -> provider rebuild ->
+        // key changes -> Element destroyed/recreated), which drops focus
+        // and dismisses the keyboard after every character. This screen
+        // only ever mounts once `profile` has already loaded (behind
+        // `profileAsync.when(data: ...)`), so `initialValue` is correct at
+        // first build and never needs a forced remount afterward.
         TextFormField(
-          key: ValueKey('age-${p?.age}'),
           initialValue: p?.age?.toString() ?? '',
           keyboardType: TextInputType.number,
           decoration: const InputDecoration(
@@ -293,7 +301,6 @@ class _HeightField extends StatelessWidget {
         children: [
           Expanded(
             child: TextFormField(
-              key: ValueKey('height-ft-$feet'),
               initialValue: feet?.toString() ?? '',
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
@@ -314,7 +321,6 @@ class _HeightField extends StatelessWidget {
           const SizedBox(width: AppSpacing.sm),
           Expanded(
             child: TextFormField(
-              key: ValueKey('height-in-$inches'),
               initialValue: inches?.toString() ?? '',
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
@@ -338,7 +344,6 @@ class _HeightField extends StatelessWidget {
 
     // Metric
     return TextFormField(
-      key: ValueKey('height-cm-$heightCm'),
       initialValue: heightCm?.toStringAsFixed(0) ?? '',
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       decoration: const InputDecoration(
@@ -372,7 +377,6 @@ class _WeightField extends StatelessWidget {
     if (units == 'imperial') {
       final weightLb = weightKg != null ? weightKg! / 0.453592 : null;
       return TextFormField(
-        key: ValueKey('weight-lb-$weightLb'),
         initialValue: weightLb?.toStringAsFixed(1) ?? '',
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
         decoration: const InputDecoration(
@@ -388,7 +392,6 @@ class _WeightField extends StatelessWidget {
 
     // Metric
     return TextFormField(
-      key: ValueKey('weight-kg-$weightKg'),
       initialValue: weightKg?.toStringAsFixed(1) ?? '',
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       decoration: const InputDecoration(

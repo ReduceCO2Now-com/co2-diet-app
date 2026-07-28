@@ -146,8 +146,13 @@ class _GoalFieldsState extends ConsumerState<_GoalFields> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // No value-derived key (deliberately) -- keying a TextFormField by
+        // its own current value causes Flutter to treat it as a brand new
+        // widget on every keystroke (auto-save -> provider rebuild -> key
+        // changes -> Element destroyed/recreated), dropping focus and
+        // dismissing the keyboard after every character. See profile_form
+        // .dart/co2_settings_screen.dart's identical fix.
         TextFormField(
-          key: ValueKey('target-weight-${widget.settings.targetWeightKg}'),
           initialValue:
               widget.settings.targetWeightKg?.toStringAsFixed(1) ?? '',
           keyboardType: const TextInputType.numberWithOptions(decimal: true),

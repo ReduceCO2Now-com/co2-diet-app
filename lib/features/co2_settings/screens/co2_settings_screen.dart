@@ -84,8 +84,17 @@ class _Co2SettingsBody extends StatelessWidget {
         const SizedBox(height: AppSpacing.md),
 
         // Location country
+        //
+        // No value-derived keys on any field in this screen (deliberately):
+        // keying a field by its own current value causes Flutter to treat
+        // it as a brand new widget on every change (auto-save -> provider
+        // rebuild -> key changes -> Element destroyed/recreated), which
+        // drops focus/dismisses the keyboard after every typed character
+        // on the two TextFormFields below. This screen only ever mounts
+        // once `settings` has already loaded (behind
+        // `settingsAsync.when(data: ...)`), so `initialValue` is correct
+        // at first build and never needs a forced remount afterward.
         TextFormField(
-          key: ValueKey('location-country-${settings.locationCountry}'),
           initialValue: settings.locationCountry ?? '',
           decoration: const InputDecoration(labelText: 'Location country'),
           onChanged: (raw) => onChanged(
@@ -98,7 +107,6 @@ class _Co2SettingsBody extends StatelessWidget {
 
         // Location region
         TextFormField(
-          key: ValueKey('location-region-${settings.locationRegion}'),
           initialValue: settings.locationRegion ?? '',
           decoration: const InputDecoration(labelText: 'Location region'),
           onChanged: (raw) => onChanged(
@@ -111,7 +119,6 @@ class _Co2SettingsBody extends StatelessWidget {
 
         // Purchasing source
         DropdownButtonFormField<String?>(
-          key: ValueKey('purchasing-source-${settings.purchasingSource}'),
           initialValue: settings.purchasingSource,
           decoration: const InputDecoration(labelText: 'Purchasing source'),
           items: const [
@@ -127,7 +134,6 @@ class _Co2SettingsBody extends StatelessWidget {
 
         // Shopping transport
         DropdownButtonFormField<String?>(
-          key: ValueKey('shopping-transport-${settings.shoppingTransport}'),
           initialValue: settings.shoppingTransport,
           decoration: const InputDecoration(labelText: 'Shopping transport'),
           items: const [
@@ -149,7 +155,6 @@ class _Co2SettingsBody extends StatelessWidget {
 
         // Cooking method
         DropdownButtonFormField<String?>(
-          key: ValueKey('cooking-method-${settings.cookingMethod}'),
           initialValue: settings.cookingMethod,
           decoration: const InputDecoration(labelText: 'Cooking method'),
           items: const [
@@ -165,7 +170,6 @@ class _Co2SettingsBody extends StatelessWidget {
 
         // Food storage
         DropdownButtonFormField<String?>(
-          key: ValueKey('food-storage-${settings.foodStorage}'),
           initialValue: settings.foodStorage,
           decoration: const InputDecoration(labelText: 'Food storage'),
           items: const [
@@ -186,7 +190,6 @@ class _Co2SettingsBody extends StatelessWidget {
 
         // Household size
         TextFormField(
-          key: ValueKey('household-size-${settings.householdSize}'),
           initialValue: settings.householdSize?.toString() ?? '',
           keyboardType: TextInputType.number,
           decoration: const InputDecoration(labelText: 'Household size'),
@@ -198,7 +201,6 @@ class _Co2SettingsBody extends StatelessWidget {
 
         // Food waste level
         DropdownButtonFormField<String?>(
-          key: ValueKey('food-waste-level-${settings.foodWasteLevel}'),
           initialValue: settings.foodWasteLevel,
           decoration: const InputDecoration(labelText: 'Food waste level'),
           items: const [

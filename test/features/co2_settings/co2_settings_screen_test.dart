@@ -178,5 +178,52 @@ void main() {
         expect(find.text('Detailed Estimate'), findsOneWidget);
       },
     );
+
+    testWidgets(
+      'Location country field survives an onChanged-driven rebuild '
+      '(regression: value-tied key bug)',
+      (tester) async {
+        // Regression test for a real device-testing-only bug: every field
+        // in this screen was keyed by its own current value
+        // (`ValueKey('location-country-${settings.locationCountry}')`
+        // etc.), so the auto-save round-trip (onChanged -> saveSettings ->
+        // provider rebuild -> new key) made Flutter tear down and recreate
+        // the field's Element on every keystroke, dropping focus and
+        // dismissing the keyboard. `enterText` alone (used elsewhere in
+        // this file) never caught this since it sets the whole value in
+        // one shot -- this test instead asserts the EditableTextState
+        // identity survives the exact onChanged->rebuild cycle a real
+        // keystroke triggers.
+        useTallViewport(tester);
+        final repo = _FakeCo2SettingsRepository();
+        await tester.pumpWidget(buildTestable(repo));
+        await tester.pumpAndSettle();
+
+        final field = find.widgetWithText(TextFormField, 'Location country');
+        final stateBefore = tester.state<EditableTextState>(
+          find.descendant(of: field, matching: find.byType(EditableText)),
+        );
+
+        await tester.enterText(field, 'D');
+        await tester.pump();
+
+        final stateAfter = tester.state<EditableTextState>(
+          find.descendant(
+            of: find.widgetWithText(TextFormField, 'Location country'),
+            matching: find.byType(EditableText),
+          ),
+        );
+
+        expect(
+          identical(stateBefore, stateAfter),
+          isTrue,
+          reason:
+              'Location country TextFormField was remounted (new '
+              'EditableTextState) when its own value changed -- this is '
+              'exactly the bug that dropped focus/dismissed the keyboard '
+              'after every keystroke on real devices.',
+        );
+      },
+    );
   });
 }

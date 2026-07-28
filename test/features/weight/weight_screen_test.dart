@@ -178,4 +178,65 @@ void main() {
       expect(find.text('Time'), findsOneWidget);
     },
   );
+
+  testWidgets(
+    'Target weight field survives an onChanged-driven rebuild '
+    '(regression: value-tied key bug)',
+    (tester) async {
+      // Regression test for a real device-testing-only bug: this field was
+      // keyed by its own current value
+      // (`ValueKey('target-weight-${widget.settings.targetWeightKg}')`), so
+      // the auto-save round-trip (onChanged -> saveGoal -> provider
+      // rebuild -> new key) made Flutter tear down and recreate the
+      // field's Element on every keystroke, dropping focus and dismissing
+      // the keyboard. `enterText` alone (used elsewhere in this file)
+      // never caught this since it sets the whole value in one shot --
+      // this test instead asserts the EditableTextState identity survives
+      // the exact onChanged->rebuild cycle a real keystroke triggers.
+      tester.view.physicalSize = const Size(1080, 4000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final repo = _FakeWeightRepository();
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [weightRepositoryProvider.overrideWithValue(repo)],
+          child: const MaterialApp(home: WeightScreen()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final targetWeightField = find.widgetWithText(
+        TextFormField,
+        'Target weight',
+      );
+      final stateBefore = tester.state<EditableTextState>(
+        find.descendant(
+          of: targetWeightField,
+          matching: find.byType(EditableText),
+        ),
+      );
+
+      await tester.enterText(targetWeightField, '7');
+      await tester.pump();
+
+      final stateAfter = tester.state<EditableTextState>(
+        find.descendant(
+          of: find.widgetWithText(TextFormField, 'Target weight'),
+          matching: find.byType(EditableText),
+        ),
+      );
+
+      expect(
+        identical(stateBefore, stateAfter),
+        isTrue,
+        reason:
+            'Target weight TextFormField was remounted (new '
+            'EditableTextState) when its own value changed -- this is '
+            'exactly the bug that dropped focus/dismissed the keyboard '
+            'after every keystroke on real devices.',
+      );
+    },
+  );
 }
