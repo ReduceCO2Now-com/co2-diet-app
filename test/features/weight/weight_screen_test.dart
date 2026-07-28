@@ -2,6 +2,7 @@ import 'package:co2diet/core/di/weight_providers.dart';
 import 'package:co2diet/domain/entities/weight_entry.dart';
 import 'package:co2diet/domain/entities/weight_settings.dart';
 import 'package:co2diet/domain/repositories/i_weight_repository.dart';
+import 'package:co2diet/features/weight/screens/weight_screen.dart';
 import 'package:co2diet/features/weight/widgets/weight_chart.dart';
 import 'package:co2diet/features/weight/widgets/weight_entry_form.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -144,9 +145,37 @@ void main() {
   );
 
   testWidgets(
-    'reminder frequency Custom reveals a weekday + time picker '
-    '(WeightScreen assembly lands in Task 2 of this plan)',
-    (tester) async {},
-    skip: true,
+    'reminder frequency Custom reveals a weekday + time picker',
+    (tester) async {
+      // Tall viewport so the whole ListView (chart, goal, reminders,
+      // best-practices) is within cache extent -- mirrors Plan 05-12's
+      // Co2SettingsScreen test precedent.
+      tester.view.physicalSize = const Size(1080, 4000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final repo = _FakeWeightRepository();
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [weightRepositoryProvider.overrideWithValue(repo)],
+          child: const MaterialApp(home: WeightScreen()),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Day of week'), findsNothing);
+      expect(find.text('Time'), findsNothing);
+
+      await tester.tap(
+        find.widgetWithText(DropdownButtonFormField<String>, 'Frequency'),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Custom').last);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Day of week'), findsOneWidget);
+      expect(find.text('Time'), findsOneWidget);
+    },
   );
 }
