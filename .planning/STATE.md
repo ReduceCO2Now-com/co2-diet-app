@@ -1,15 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1
-milestone_name: v1 launch
-status: verifying
-last_updated: "2026-07-28T20:30:00.616Z"
+milestone: v1.1
+milestone_name: milestone
+status: planning
+stopped_at: Completed 05-19-PLAN.md
+last_updated: "2026-07-28T20:57:47.544Z"
 progress:
   total_phases: 9
   completed_phases: 5
   total_plans: 51
   completed_plans: 51
-  percent: 56
+  percent: 100
 ---
 
 # STATE: CO₂ Diet
@@ -37,7 +38,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - **Milestone:** v1 launch
 - **Phase:** 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable — IN PROGRESS (8 of 19 plans done)
 - **Plan:** 19 of 19 (05-08 complete — fl_chart/flutter_local_notifications/timezone/flutter_timezone installed, NotificationPrefs domain layer, NotificationService, rootNavigatorKey, main.dart wiring)
-- **Status:** Phase complete — ready for verification
+- **Status:** Ready to plan
 - **Progress:** [██████████] 100%
 - **v1 requirements:** 34 / 75 delivered (CO2-01, CO2-02, CO2-03, CO2-04, LEG-05, LOG-01 through LOG-12, NFR-05, NFR-06, PROF-01 through PROF-05, PRIV-07) — Phase 4 fully closed (04-13 real-device checkpoint approved on both platforms); 05-02 closes the Phase-4 CO2 cache-path gap (CO2-02, NFR-05); 05-03 adds the Phase 5 Drift schema foundation (schema-only); 05-04 wires sugar/fiber/salt through FoodItem/MealEntry/repository (NUTR-01 still not fully delivered — daily-totals rollup is 05-10-PLAN.md, dashboard/insights UI later still); 05-05 adds the DAO layer for CO2 Settings/Weight/Notifications/Backup; 05-06 delivers the CO2 Settings domain layer (CO2-03 now fully delivered); 05-07 delivers the Weight Tracking domain layer (WT-01 through WT-04 still NOT fully delivered — the screen doesn't exist until 05-13, domain layer only so far); 05-08 installs fl_chart/flutter_local_notifications/timezone/flutter_timezone and delivers NotificationService + NotificationPrefs domain layer (NOTIF-01/02/03 still NOT fully delivered — the meal-reminder/weigh-in-reminder UI doesn't exist until 05-13/05-14/05-18, service/domain layer only so far; PRIV-02, PRIV-03 still not fully delivered — repository/UI plans pending); remaining Phase 5 requirements are test-stub-scaffolded only so far
 

@@ -203,7 +203,7 @@ Plans:
 | 2. Food Catalog Ingest & Search | 7/7 | Complete   | 2026-07-20 |
 | 3. Barcode Scanning & CO₂ Factor Table | 5/5 | Complete   | 2026-07-22 |
 | 4. Meal Logging Core | 12/13 | In Progress|  |
-| 5. Full Local App (Local Mode Shippable) | 19/19 | Complete   | 2026-07-28 |
+| 5. Full Local App (Local Mode Shippable) | 19/19 | Complete    | 2026-07-28 |
 | 6. Onboarding, Legal & Pre-Submission | 0/0 | Not started | - |
 | 7. Keycloak Auth + Account Mode + Sync | 0/0 | Not started | - |
 | 8. Reference Data Delivery (Full OFF Pack) | 0/0 | Not started | - |

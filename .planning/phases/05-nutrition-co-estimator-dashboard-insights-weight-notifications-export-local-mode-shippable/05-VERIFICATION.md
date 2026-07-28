@@ -1,26 +1,17 @@
 ---
 phase: 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable
-verified: 2026-07-28T20:35:39Z
-status: gaps_found
-score: 33/35 must-haves verified
+verified: 2026-07-28T23:10:00Z
+status: passed
+score: 35/35 must-haves verified
 overrides_applied: 0
-gaps:
-  - truth: "NUTR-04: Macro split (protein/carbs/fat) is viewable from the Dashboard or Data Analysis screen"
-    status: failed
-    reason: "MacroSplitBar widget was built (05-11) and DailyTotals.macroSplit is computed correctly (05-10), but the widget is never imported or rendered by any screen. Confirmed independently: grep for 'MacroSplitBar'/'macro_split_bar' across lib/ shows it only appears in its own definition file; grep for 'macroSplit' shows only the getter definition (daily_totals_calculator.dart) and the widget's own doc comment — zero call sites."
-    artifacts:
-      - path: "lib/features/dashboard/widgets/macro_split_bar.dart"
-        issue: "Widget exists and is well-formed, but is never imported by placeholder_dashboard_screen.dart or data_analysis_screen.dart"
-    missing:
-      - "Import and render MacroSplitBar (fed by DailyTotals.macroSplit) in either PlaceholderDashboardScreen or DataAnalysisScreen"
-  - truth: "NUTR-01: System tracks per-meal and daily totals: calories, protein, carbohydrates, fat, sugar, fiber, sodium"
-    status: partial
-    reason: "Per-meal totals for all 7 fields ARE viewable (DetailedFoodAnalysisPanel in Data Analysis shows calories/protein/carbs/fat/sugar/fiber/salt per logged entry, per-serving and per-100g). DailyTotalsCalculator.compute() also correctly aggregates all 7 fields with honest null-handling (never fabricates 0). However, at the DAILY AGGREGATE level only calories and protein are ever surfaced to the user (Dashboard MetricCards, Data Analysis AnalysisMetric enum only has co2/calories/protein/weight — no carbs/sugar/fiber/sodium daily-total display anywhere). Confirmed independently via grep: zero references to 'totals.carbs'/'totals.sugar'/'totals.fiber'/'totals.salt' (or todayTotals./dayTotals. equivalents) exist anywhere in lib/. This matches REQUIREMENTS.md's own current 'Pending' status for NUTR-01 (line 254), which is consistent with — not contradicted by — this independent finding."
-    artifacts:
-      - path: "lib/domain/services/daily_totals_calculator.dart"
-        issue: "Computes carbs/sugar/fiber/salt daily totals correctly but no UI consumer reads those 4 fields at the aggregate level"
-    missing:
-      - "A daily-total display surface for carbs (already partially covered via macroSplit, itself unwired) and sugar/fiber/sodium (no aggregate display exists at all, not even an unwired widget)"
+re_verification:
+  previous_status: gaps_found
+  previous_score: 33/35
+  gaps_closed:
+    - "NUTR-04: Macro split (protein/carbs/fat) is viewable from the Dashboard or Data Analysis screen"
+    - "NUTR-01: System tracks per-meal and daily totals: calories, protein, carbohydrates, fat, sugar, fiber, sodium"
+  gaps_remaining: []
+  regressions: []
 deferred: []
 human_verification: []
 ---
@@ -28,126 +19,131 @@ human_verification: []
 # Phase 5: Nutrition, CO₂ Estimator, Dashboard, Insights, Weight, Notifications, Export — Local Mode Shippable Verification Report
 
 **Phase Goal:** Complete the full local-mode app: nutrition + CO₂ tracking, dashboard, insights, weight tracking, local notifications, and export/backup — so Local Mode is a shippable product independent of any backend.
-**Verified:** 2026-07-28T20:35:39Z
-**Status:** gaps_found
-**Re-verification:** No — initial verification
+**Verified:** 2026-07-28T23:10:00Z
+**Status:** passed
+**Re-verification:** Yes — after gap closure (commit `d06a3a6`)
 
 ## Goal Achievement
 
-### Observable Truths (ROADMAP Success Criteria + derived requirement truths)
+### Gap Closure Verification (this pass's focus)
+
+Both previously-FAILED items were independently re-verified against source, not the SUMMARY/commit description:
+
+**1. NUTR-04 — MacroSplitBar wiring**
+
+- `lib/features/dashboard/screens/placeholder_dashboard_screen.dart` imports `MacroSplitBar` (line 12) and renders `MacroSplitBar(split: todayTotals.macroSplit)` unconditionally inside `_buildBody` (line 317).
+- `_buildBody` is not dead code: it is passed as the `data:` callback of `entriesAsync.when(...)` inside `build()` (line 250), which is the widget actually returned by `PlaceholderDashboardScreen`'s `State.build`. This is the live Dashboard route (`/dashboard`, the app's default post-onboarding screen, unchanged since Phase 1).
+- `todayTotals` (line 262) is the same `DailyTotalsCalculator.compute(entries, co2Multiplier: co2Multiplier)` object already feeding the (previously-verified) `MetricCard`s — no separate/parallel computation, no divergence risk.
+- `MacroSplitBar` itself (`lib/features/dashboard/widgets/macro_split_bar.dart`) is substantive: renders a real 3-segment proportional bar + legend when `split` is non-null, and an explicit "No macro data yet today" message (not a fabricated bar) when `split` is null.
+- Confirmed via grep: `MacroSplitBar` now has a non-test call site (previously zero).
+
+**2. NUTR-01 — daily aggregate totals for carbs/sugar/fiber/sodium**
+
+- New widget `lib/features/dashboard/widgets/nutrient_totals_row.dart` (`NutrientTotalsRow`) reads `totals.carbs`, `totals.sugar`, `totals.fiber`, `totals.salt` directly off the same pre-computed `DailyTotals` (no recomputation — confirmed by reading the constructor: `NutrientTotalsRow({required this.totals})`, and the call site `NutrientTotalsRow(totals: todayTotals)`).
+- Each `_NutrientStat` shows `'—'` when the field is `null` and `'${grams!.round()}g'` otherwise — matches this codebase's "never fabricate 0" convention, confirmed by reading the source, not merely trusting the docstring's claim.
+- Wired into the same live `_buildBody` path as `MacroSplitBar` (line 322), immediately below it.
+- Combined with calories/protein already shown via `MetricCard` and per-meal detail already shown via `DetailedFoodAnalysisPanel` (Data Analysis), all 7 nutrients now have both per-meal and daily-aggregate UI surfaces. NUTR-01 is fully satisfied.
+
+**3. Test evidence (independently executed, not trusted from SUMMARY)**
+
+`test/features/dashboard/dashboard_composition_test.dart` group `'MacroSplitBar and NutrientTotalsRow (NUTR-04/NUTR-01 gap fix)'` (2 new widget tests, read in full):
+- Pumps the real `PlaceholderDashboardScreen` (not a stripped-down harness) with mocked repositories returning one meal entry with protein/carbs/fat/sugar/fiber/salt-per-100g set, quantity 150g (1.5x scale factor).
+- Asserts `find.byType(MacroSplitBar)` renders with `Protein`/`Carbs`/`Fat` legend text present (scoped via `find.descendant` to avoid collision with `MetricCard`'s own "Protein" label).
+- Asserts `find.byType(NutrientTotalsRow)` renders scaled values: `'12g'` (sugar 8×1.5), `'3g'` (fiber 2×1.5 rounded), `'2g'` (salt 1×1.5 rounded) — genuine scaling math verified, not just presence.
+- A second test verifies the honest-null path: zero entries logged → `'No macro data yet today'` text present, and exactly 4 `'—'` dashes inside `NutrientTotalsRow` (carbs/sugar/fiber/salt) — confirms no fabricated zeros when nothing is logged.
+- Ran `flutter test` directly (not re-reading a prior report): **362 passed, 0 failed, 9 skipped** (same 9 pre-existing env-dependent skips as the initial verification pass — `BarcodeScanNotifier not yet implemented` x4, `OFF_REF_PATH` x4, plus 1 pre-existing — none newly introduced). The 2 new tests above are included in the +2 delta from the prior pass's 360.
+
+**4. REQUIREMENTS.md update verified**
+
+`grep -n "NUTR-01\|NUTR-04" .planning/REQUIREMENTS.md` confirms both the checklist items (lines 65, 68) and the traceability table rows (lines 254, 257) now read "Complete" — consistent with, not merely asserted by, the codebase evidence above.
+
+### Regression / Scope Check (verifying no other requirement has the same "built but unreachable" pattern)
+
+Ran a systematic orphan scan across every widget file under `lib/features/*/widgets/`: for each file's primary class, searched all of `lib/` (excluding the widget's own file) for any reference. **Zero orphan candidates found** — every widget in `dashboard/`, `data_analysis/`, `weight/`, `backup/`, `co2_settings/`, and other Phase 5 feature directories has at least one non-self call site. This directly re-checks the same class of gap (domain logic/widget built, never rendered) that produced both original failures, across the full remaining Phase 5 surface — not just the two items that were reported.
+
+No new anti-patterns (TODO/FIXME/XXX/TBD/HACK/PLACEHOLDER/"not yet implemented") were introduced by the gap-closure commit — confirmed by reading both new/changed files (`placeholder_dashboard_screen.dart` diff, `nutrient_totals_row.dart` in full) directly.
+
+### Observable Truths (ROADMAP Success Criteria + derived requirement truths) — full re-check
 
 | # | Truth | Status | Evidence |
 |---|-------|--------|----------|
-| 1 | Dashboard is default post-onboarding screen; shows today's CO₂/calories/protein w/ target comparison, quick-log B/L/D/S + Quick Add, meal list w/ swipe-to-edit+duplicate, 7-day trend, quick insight, mode indicator, empty state; every metric tap opens Data Analysis for that metric | VERIFIED | `lib/features/dashboard/screens/placeholder_dashboard_screen.dart` composes ModeIndicator, 3 MetricCards (goal-emphasized ordering), TrendSparkline (fl_chart, metric-switchable), QuickInsightLine, per-slot quick-log buttons + Quick Add, meal list (`MealEntryRow` uses `Slidable` w/ Edit/Duplicate/Delete actions), empty state ("No meals logged yet"), and `context.push('/data-analysis?metric=...')` on every metric card + sparkline tap. Router confirms `/dashboard` is the default branch (unchanged from Phase 1-4). |
-| 2 | CO₂ Estimator runs entirely on-device (deterministic/offline), calculates per-meal/daily/weekly totals; CO2 Calculation Settings screen (optional fields, regional-average fallback); Estimate Transparency (value+confidence+factors+source+methodology link); Improvement Opportunities (non-judgmental, quantified delta) | VERIFIED | `DailyTotalsCalculator`/`PersonalCo2MultiplierCalculator` are pure Dart, no I/O (confirmed via `offline_phase5_test.dart`, 9/9 passing incl. static source scan for `OffApiClient`/`Connectivity(`). `Co2SettingsScreen` (05-12): all 7 fields optional, `DataQualityIndicator` live-updates, auto-saves. Estimate Transparency: Phase 3's `ConfidenceChip`/`ConfidenceExplanationSheet`/`MethodologyScreen` (per-food) + Phase 5's `EstimateTransparencyPanel` (aggregate confidence-mix, documented in 05-CONTEXT.md as an intentional enrichment, not a replacement). `ImprovementOpportunityFinder`: cluster-based substitutions with quantified CO2 delta, rendered only inside `DataAnalysisScreen` (verified by grep — zero references anywhere under `lib/features/dashboard/`). |
-| 3 | Data Analysis screen: today's breakdown by meal, largest contributors, goal comparison w/ dynamic message, switchable 7d/30d trend, Improvement Opportunities, expandable per-serving+per-100g detail, Estimate Transparency, Insights Timeline — fully offline | VERIFIED | `data_analysis_screen.dart` imports and composes `TodayBreakdownBarChart` (real fl_chart `BarChartRodStackItem` stacked bar, confirmed in source), `WeeklyTotalSummary`, `RankedContributorsList`, `GoalComparisonBar`, `TrendSection` (metric x range independently toggleable), `ImprovementOpportunities`, `InsightsTimeline`, `DetailedFoodAnalysisPanel`, `EstimateTransparencyPanel`. `initialMetric` pre-set via `?metric=` query param (co2/calories/protein/weight), weight branch sources `WeightChart` instead of nutrition data. No `OffApiClient`/`Connectivity` reference found. |
-| 4 | Weight tracking: log weight (value/unit/date/note), interactive 7d/30d/90d/1yr/all trend chart, optional goal w/ progress on chart, weigh-in reminder config; primarily under Profile/Settings | VERIFIED | `WeightScreen`/`WeightChart`/`WeightEntryForm`/`WeighInReminderSection` (05-13). `WeightChart` has `ButtonSegment`s for `sevenDay`/`thirtyDay`/`ninetyDay`/`oneYear`/`all`. Goal renders as a static `ExtraLinesData.horizontalLines` reference line (no "on pace"/projection text, matching the explicit must-have). `/weight-tracking` route reachable from `SettingsScreen` ("Weight Tracking" ListTile). |
-| 5 | Local notifications via flutter_local_notifications only (zero FCM/APNs); export CSV/Excel/JSON zip+manifest; manual backup (device/cloud/share); automatic backup config; restore w/ preview+confirmation; Danger Zone typed-confirmation delete; no data transmitted without explicit action | VERIFIED | `pubspec.yaml` pins `flutter_local_notifications: ^22.2.0`; `NotificationService.zonedSchedule` uses named params only, `AndroidScheduleMode.inexactAllowWhileIdle` (never exact/alarmClock). `BackupExportService.exportData` builds a zip w/ `manifest.json` (`formatVersion`), CSV/Excel(.xlsx)/JSON per category; `BackupRestoreScreen` offers Off/Daily/Weekly automatic backups, `file_selector`'s `openFile` for restore-from-anywhere, preview-then-confirm restore flow, and `DangerZoneSection` gates its delete button on exact-match `'DELETE'` text. `offline_phase5_test.dart` proves no network path exists in any Phase 5 service (9/9 tests pass, incl. static-source scan). |
+| 1 | Dashboard is default post-onboarding screen; shows today's CO₂/calories/protein w/ target comparison, quick-log B/L/D/S + Quick Add, meal list w/ swipe-to-edit+duplicate, 7-day trend, quick insight, mode indicator, empty state; every metric tap opens Data Analysis for that metric | ✓ VERIFIED | Unchanged from prior pass, plus now also renders macro split + 4-nutrient row, all fed by the same `todayTotals`. |
+| 2 | CO₂ Estimator runs entirely on-device, calculates per-meal/daily/weekly totals; CO2 Calculation Settings; Estimate Transparency; Improvement Opportunities | ✓ VERIFIED | Unchanged from prior pass — no code in this area was touched by the gap-closure commit. |
+| 3 | Data Analysis screen: full composition, fully offline | ✓ VERIFIED | Unchanged from prior pass. |
+| 4 | Weight tracking: full feature set | ✓ VERIFIED | Unchanged from prior pass. |
+| 5 | Local notifications, export/backup/restore, Danger Zone, no unsanctioned network transmission | ✓ VERIFIED | Unchanged from prior pass; `offline_phase5_test.dart` still 9/9 (re-run as part of the full 362-test suite). |
+| 6 | NUTR-01: daily aggregate totals for all 7 nutrients viewable | ✓ VERIFIED (was FAILED) | `NutrientTotalsRow` + `MetricCard`s cover all 7 fields at the daily-aggregate level; see Gap Closure Verification above. |
+| 7 | NUTR-04: macro split viewable from Dashboard or Data Analysis | ✓ VERIFIED (was FAILED) | `MacroSplitBar` rendered in the live Dashboard build path; see Gap Closure Verification above. |
 
-**Score:** 3/5 fully clean roadmap criteria (criteria 1, 3, 4, 5 fully verified; criterion 2 verified for CO2 but NUTR-04's macro-split sub-clause and NUTR-01's full 7-field daily-total sub-clause are gaps — see Requirements Coverage below for the granular per-requirement breakdown, which is the more precise unit of truth for this phase).
+**Score:** 5/5 roadmap criteria fully clean; both prior granular requirement-level gaps (NUTR-01, NUTR-04) now closed. All 35 in-scope requirement IDs Complete.
 
 ### Required Artifacts
 
 | Artifact | Expected | Status | Details |
 |----------|----------|--------|---------|
-| `lib/domain/services/daily_totals_calculator.dart` | NUTR-01/02/03/04, CO2-02 aggregation, never fabricates 0 | ✓ VERIFIED | All 7 nutrient fields + co2e computed with null-safe `sumField`; `macroSplit` getter present and correct (4/4/9 kcal/g constants, null when all three inputs null) |
-| `lib/domain/services/personal_co2_multiplier_calculator.dart` | Personal multiplier, applied once at aggregate level | ✓ VERIFIED | Confirmed via `daily_totals_calculator_test.dart` "applies the personal CO2 multiplier only to the aggregate total, never per-entry" — passing |
-| `lib/features/dashboard/widgets/macro_split_bar.dart` | NUTR-04 macro-split visualization, rendered on Dashboard or Data Analysis | ⚠️ ORPHANED | Widget exists, is substantive (renders `MacroSplit`, empty-state aware per its own SUMMARY claim), but zero import/render call sites found anywhere in `lib/` |
-| `lib/features/co2_settings/screens/co2_settings_screen.dart` | 7 optional fields, Data Quality Indicator, auto-save | ✓ VERIFIED | Wired via `/co2-settings` route + Settings entry point |
-| `lib/features/data_analysis/screens/data_analysis_screen.dart` | Full Data Analysis composition | ✓ VERIFIED | Wired via `/data-analysis` route w/ query-param pre-set, reachable from Dashboard taps |
-| `lib/features/weight/screens/weight_screen.dart` | Weight logging/chart/goal/reminders | ✓ VERIFIED | Wired via `/weight-tracking` route + Settings entry point |
-| `lib/domain/services/notification_service.dart` | Local scheduling, named-params v22.2.0 API, JIT permission | ✓ VERIFIED | Confirmed via source read + passing `notification_service_test.dart` |
-| `lib/domain/services/backup_export_service.dart` | Export/backup/restore, zip-slip guard, offline-only | ✓ VERIFIED | Confirmed via source structure + `backup_export_service_test.dart` |
-| `lib/features/backup/screens/backup_restore_screen.dart` | Full Backup & Restore UI | ✓ VERIFIED | Wired via `/backup-restore` route + Settings entry point |
-| `test/core/offline_phase5_test.dart` | Runtime proof of AUTH-07/PRIV-08 across all Phase 5 code paths | ✓ VERIFIED | Executed directly: 9/9 tests pass (see Probe Execution below) |
+| `lib/features/dashboard/widgets/macro_split_bar.dart` | NUTR-04 macro-split visualization, rendered on Dashboard or Data Analysis | ✓ VERIFIED | Now imported + rendered in `placeholder_dashboard_screen.dart`; substantive render logic + honest null-state, confirmed WIRED via grep and via passing widget test. |
+| `lib/features/dashboard/widgets/nutrient_totals_row.dart` (new) | NUTR-01 daily-aggregate display for carbs/sugar/fiber/salt | ✓ VERIFIED | New file, substantive (dash-if-null per-field rendering), rendered in `placeholder_dashboard_screen.dart` immediately after `MacroSplitBar`, confirmed via passing widget test with real scaling math assertions. |
+| `lib/features/dashboard/screens/placeholder_dashboard_screen.dart` | Compose both new widgets into the live Dashboard build path | ✓ VERIFIED | Both widgets added inside `_buildBody`, which is the `data:` callback of the screen's actual `entriesAsync.when(...)` — confirmed reachable, not a dead branch. |
+| All other Phase 5 artifacts (unchanged since prior pass) | — | ✓ VERIFIED (carried forward) | No regressions found; full suite green; orphan re-scan found zero new or pre-existing unwired widgets. |
 
 ### Key Link Verification
 
 | From | To | Via | Status | Details |
 |------|-----|-----|--------|---------|
-| `placeholder_dashboard_screen.dart` | `/data-analysis` route | `context.push('/data-analysis?metric=...')` | WIRED | Confirmed on metric-card tap and sparkline tap |
-| `app_router.dart` | `Co2SettingsScreen`/`WeightScreen`/`DataAnalysisScreen`/`BackupRestoreScreen` | 4 new `GoRoute`s | WIRED | All 4 routes present, `data-analysis` correctly parses `?metric=` query param w/ safe fallback |
-| `settings_screen.dart` | `/co2-settings`, `/weight-tracking`, `/backup-restore` | `ListTile.onTap` → `context.push` | WIRED | All 3 present |
-| `settings_screen.dart` | `MealReminderSettingsSection` | Embedded widget | WIRED | Confirmed in `SettingsScreen.build` |
-| `data_analysis_screen.dart` | `ImprovementOpportunities`/`InsightsTimeline` | Rendered only inside this screen's body | WIRED (and correctly NOT wired into Dashboard) | Confirmed via grep — zero references under `lib/features/dashboard/`, matching CO2-06's "never Dashboard/notification" invariant |
-| `weigh_in_reminder_section.dart`/`meal_reminder_settings_section.dart` | `NotificationService.schedule*` | Direct calls | WIRED | Confirmed in source |
-| `backup_restore_screen.dart` | `BackupExportService`/`file_selector` | `exportData`/`createBackup`/`previewRestore`/`applyRestore`, `openFile` | WIRED | Confirmed in source |
-| **`macro_split_bar.dart`** | **Dashboard or Data Analysis screen** | **(none)** | **NOT WIRED** | No import found in either screen — the artifact is orphaned |
+| `placeholder_dashboard_screen.dart` | `macro_split_bar.dart` | `import` + `MacroSplitBar(split: todayTotals.macroSplit)` at line 317 | ✓ WIRED | Confirmed by direct source read; was NOT_WIRED in prior pass. |
+| `placeholder_dashboard_screen.dart` | `nutrient_totals_row.dart` | `import` + `NutrientTotalsRow(totals: todayTotals)` at line 322 | ✓ WIRED | New link; confirmed by direct source read. |
+| `_buildBody` | `entriesAsync.when(data: _buildBody)` | Direct callback reference in `build()` | ✓ WIRED | Confirms the build path rendering both widgets is the screen's actual live output, not orphaned dead code. |
+| All other Phase 5 key links (unchanged) | — | — | ✓ WIRED (carried forward) | No regressions. |
 
 ### Data-Flow Trace (Level 4)
 
 | Artifact | Data Variable | Source | Produces Real Data | Status |
 |----------|---------------|--------|---------------------|--------|
-| `MetricCard` (CO2/Calories/Protein) | `todayTotals.{co2e,calories,protein}` | `DailyTotalsCalculator.compute(entries, co2Multiplier: ...)` over `mealEntryProvider` (real Drift-backed repo) | Yes | ✓ FLOWING |
-| `TrendSparkline` | `sevenDaySpots(sevenDayEntries)` | `_sevenDayEntriesProvider` → `mealEntryRepositoryProvider.getEntriesInRange` | Yes | ✓ FLOWING |
-| `WeeklyTotalSummary` | `_weeklyTotalsProvider` | `DailyTotalsCalculator.compute` over a real trailing-7-day repo query | Yes | ✓ FLOWING |
-| `EstimateTransparencyPanel` | `entries` (today's) | `mealEntryProvider` | Yes | ✓ FLOWING |
-| `MacroSplitBar` | `DailyTotals.macroSplit` | N/A — no call site exists to trace | N/A | ✗ DISCONNECTED (never invoked) |
+| `MacroSplitBar` | `todayTotals.macroSplit` | `DailyTotalsCalculator.compute(entries, co2Multiplier: ...)` over live `mealEntryProvider` (real Drift-backed repo in production; mocked repo in test) | Yes | ✓ FLOWING |
+| `NutrientTotalsRow` | `todayTotals.{carbs,sugar,fiber,salt}` | Same `DailyTotalsCalculator.compute` call — no separate/duplicate computation | Yes | ✓ FLOWING |
 
 ### Behavioral Spot-Checks
 
 | Behavior | Command | Result | Status |
 |----------|---------|--------|--------|
-| Full test suite green | `flutter test` | 360 passed, 0 failed, 9 skipped (pre-existing env-dependent skips: `BarcodeScanNotifier not yet implemented` x4, `OFF_REF_PATH` x4 — none introduced by Phase 5) | ✓ PASS |
-| No debt markers in Phase-5-touched `lib/` files | grep TODO/FIXME/XXX/TBD/HACK/PLACEHOLDER across all `files_modified` lib paths from all 19 PLAN.md frontmatters | zero matches | ✓ PASS |
-| Notification API uses named params + inexact schedule mode | grep `zonedSchedule`/`androidScheduleMode` in `notification_service.dart` | `notificationDetails:` named param; `AndroidScheduleMode.inexactAllowWhileIdle` used in both call sites | ✓ PASS |
-| NFR-05: no raw CO2 float formatting | grep `toStringAsFixed` in data_analysis/dashboard widgets, cross-checked against CO2 fields | All `toStringAsFixed` call sites format macro/nutrient grams (not CO2); CO2 values route through `formatCo2Approx`/`formatCo2Display` | ✓ PASS |
+| Full test suite green after gap closure | `flutter test` | 362 passed, 0 failed, 9 skipped (same pre-existing skips as prior pass; +2 tests from the gap-closure commit) | ✓ PASS |
+| MacroSplitBar has a non-test call site (grep) | `grep -rn "MacroSplitBar(" lib/` | `placeholder_dashboard_screen.dart` line 317 | ✓ PASS |
+| No orphaned widgets remain anywhere in `lib/features/*/widgets/` | Systematic per-widget-class cross-reference scan (see Regression Check above) | 0 orphan candidates found | ✓ PASS |
+| No new debt markers introduced by the gap-closure commit | Direct read of both changed/new files | None found | ✓ PASS |
 
 ### Probe Execution
 
 | Probe | Command | Result | Status |
 |-------|---------|--------|--------|
-| `test/core/offline_phase5_test.dart` (AUTH-07/PRIV-08 runtime proof) | `flutter test test/core/offline_phase5_test.dart` | 9/9 tests passed, including the static-source-scan assertion for zero `OffApiClient`/`Connectivity(` references in all 6 new Phase 5 domain-service files | PASS |
+| `test/core/offline_phase5_test.dart` (AUTH-07/PRIV-08 runtime proof) | `flutter test test/core/offline_phase5_test.dart` (re-run as part of full suite) | 9/9 passed | PASS |
 
 ### Requirements Coverage
 
-| Requirement | Source Plan(s) | Description | Status | Evidence |
-|-------------|-----------------|--------------|--------|----------|
-| NUTR-01 | 05-01,03,04,10 | System tracks per-meal and daily totals (7 fields) | ✗ **BLOCKED (partial)** | Per-meal: yes (DetailedFoodAnalysisPanel). Daily aggregate: only calories/protein surfaced; carbs/sugar/fiber/sodium computed but never displayed at aggregate level. Matches REQUIREMENTS.md's own "Pending" status — confirmed independently, not merely trusted. |
-| NUTR-02 | 05-10,11 | Dashboard shows calories vs target, remaining prominent | ✓ SATISFIED | `MetricCard` w/ `target: targets?.kcalTarget` |
-| NUTR-03 | 05-10,11 | Dashboard shows protein vs target | ✓ SATISFIED | `MetricCard` w/ `target: targets?.proteinGTarget` |
-| NUTR-04 | 05-10,11 | Macro split viewable from Dashboard or Data Analysis | ✗ **BLOCKED** | `MacroSplitBar` built but never wired into either screen — confirmed independently (see Gaps) |
-| CO2-02 | 05-02,10,15 | On-device deterministic per-meal/daily/weekly CO2 totals | ✓ SATISFIED | `DailyTotalsCalculator` + `WeeklyTotalSummary`, offline-proof passing |
-| CO2-03 | 05-03,05,06,12 | CO2 Calculation Settings screen, optional fields, regional fallback | ✓ SATISFIED | `Co2SettingsScreen`, all fields optional, auto-save confirmed |
-| CO2-05 | 05-15 | Estimate Transparency: value+confidence+factors+source+methodology link | ✓ SATISFIED | Phase 3 per-food `ConfidenceChip`/`ConfidenceExplanationSheet`/`MethodologyScreen` + Phase 5 aggregate `EstimateTransparencyPanel` (documented design split in 05-CONTEXT.md/05-RESEARCH.md) |
-| CO2-06 | 05-17 | Improvement Opportunities, non-judgmental, quantified delta, not unsolicited | ✓ SATISFIED | `ImprovementOpportunityFinder`, cluster-bounded, Data-Analysis-only (verified no Dashboard reference) |
-| DASH-01 to 08 | 05-11,18 | Full Dashboard composition | ✓ SATISFIED | See Observable Truth #1 |
-| INS-01 to 04 | 05-15,17 | Full Data Analysis + Insights Timeline, offline | ✓ SATISFIED | See Observable Truth #3 |
-| WT-01 to 05 | 05-07,13 | Weight logging/chart/goal/reminders/placement | ✓ SATISFIED | See Observable Truth #4 |
-| NOTIF-01 to 03 | 05-08,13,14 | Meal + weigh-in reminders, local-only | ✓ SATISFIED | See Behavioral Spot-Checks |
-| PRIV-01 to 04,08,09 | 05-09,16 | Export/backup/restore/Danger Zone, offline-only | ✓ SATISFIED | See Observable Truth #5 |
-| AUTH-07 | 05-19 (invariant since Phase 1) | Local Mode never contacts backend w/o explicit action | ✓ SATISFIED | `offline_phase5_test.dart` passing |
-| NFR-05 | 05-19 audit | Honest uncertainty, no false-precision CO2 numbers | ✓ SATISFIED | See Behavioral Spot-Checks |
+All 35 in-scope requirement IDs (NUTR-01–04, CO2-02/03/05/06, DASH-01–08, INS-01–04, WT-01–05, NOTIF-01–03, PRIV-01–04/08/09, AUTH-07, NFR-05) confirmed `Complete` in `.planning/REQUIREMENTS.md`'s traceability table, matching the codebase evidence gathered in both this pass and the initial pass. NUTR-01 and NUTR-04 are the only two that changed status since the initial verification; all others were already Complete and unaffected by the gap-closure commit (confirmed no other lines changed in `git show d06a3a6 -- .planning/REQUIREMENTS.md` besides the two requirement rows and checklist items).
 
-**Orphaned requirement found:** `PROF-06` ("CO₂ profile factors live in CO₂ Calculation Settings — not Profile Setup; all fields optional; regional averages fallback") is mapped to Phase 5 in REQUIREMENTS.md's traceability table (line 240) and is currently marked "Pending," but **PROF-06 does not appear in ROADMAP.md's Phase 5 requirements list** (the phase's official `Requirements:` line) **and is not claimed by any of the 19 PLAN.md files' `requirements:` frontmatter**. Independently verified: PROF-06's literal text is functionally identical to CO2-03 (already implemented and marked Complete) — `Co2SettingsScreen` (05-12) holds all 7 CO2 profile factors, and `lib/features/profile/widgets/profile_form.dart` was confirmed to contain none of them (no location/purchasing/transport/cooking/storage/household/waste fields in Profile Setup). This is a REQUIREMENTS.md bookkeeping gap, not a functional gap — the underlying behavior PROF-06 describes is real and working. Flagging for requirements-doc cleanup (either mark PROF-06 Complete referencing CO2-03's implementation, or remove the stale Phase-5 mapping) rather than as a phase-blocking gap, since it was never part of this phase's committed scope.
+**Non-blocking bookkeeping note (carried forward, unchanged):** `PROF-06` remains orphaned in REQUIREMENTS.md's Phase 5 mapping (marked "Pending," not in ROADMAP's official Phase 5 requirement list, not claimed by any 05-*-PLAN.md). Its underlying functionality is fully implemented via CO2-03 (`Co2SettingsScreen`). This does not block phase completion — flagged for requirements-doc cleanup only, same as the initial verification pass.
 
 ### Anti-Patterns Found
 
-None. Scanned all `files_modified` paths declared across all 19 `05-*-PLAN.md` frontmatter blocks for `TODO|FIXME|XXX|TBD|HACK|PLACEHOLDER|placeholder|coming soon|not yet implemented|not available` — zero matches in any `lib/` file. `deferred-items.md` documents 24 pre-existing `flutter analyze` info-level lint issues from Phases 2-4, explicitly out of scope for Phase 5 (confirmed as pre-existing, not new).
+None. Read both files touched by the gap-closure commit (`placeholder_dashboard_screen.dart` diff, `nutrient_totals_row.dart` in full) directly — no TODO/FIXME/XXX/TBD/HACK/PLACEHOLDER, no fabricated-zero patterns, no empty handlers.
 
 ### Human Verification Required
 
-None. All must-haves for this phase are either mechanically verifiable (source inspection, grep, test execution) or already covered by the passing `offline_phase5_test.dart` runtime proof. Visual/UX-tone items (SAM test, non-judgmental copy audit, accessibility) are explicitly scoped to Phase 6 per ROADMAP.md's Coverage Notes and are out of scope here.
+None. All must-haves are mechanically verifiable via source inspection, grep, and passing automated tests (including the two new widget tests that pump the real screen and assert genuine scaled-value rendering, not just presence).
 
 ### Gaps Summary
 
-Two requirement-level gaps block a clean "goal achieved" verdict, both sharing the same root cause: **domain-layer computation was built correctly, but the corresponding UI wiring was never added**, and both were already flagged by the executor mid-phase (05-18-SUMMARY.md, 05-19-SUMMARY.md) rather than hidden:
+Both gaps from the initial verification pass are closed:
 
-1. **NUTR-04** — `MacroSplitBar` (protein/carbs/fat proportional bar) was built in Plan 05-11 specifically to satisfy NUTR-04, but neither `PlaceholderDashboardScreen` (05-18's Dashboard-assembly task) nor `DataAnalysisScreen` (05-15/05-17) ever imports or renders it. Confirmed independently via exhaustive grep — this is not merely trusting the SUMMARY's own admission.
+1. **NUTR-04** — `MacroSplitBar` is now imported and rendered in `PlaceholderDashboardScreen`'s live build path, fed by the same `todayTotals.macroSplit` already computed for the dashboard's metric cards. Confirmed WIRED via direct source read and a passing widget test that asserts the rendered legend text.
 
-2. **NUTR-01** — A previously unflagged, closely related gap discovered during this verification: while calories and protein daily totals ARE surfaced (Dashboard MetricCards), and per-meal detail for all 7 fields IS surfaced (Data Analysis's DetailedFoodAnalysisPanel), the daily-aggregate totals for carbohydrates, sugar, fiber, and sodium are computed by `DailyTotalsCalculator` but have **zero UI consumer at the aggregate level** — not even an unwired widget exists for sugar/fiber/sodium (unlike NUTR-04, where at least the widget exists). This independently explains why REQUIREMENTS.md's traceability table still shows NUTR-01 as "Pending" (line 254) — that tracking status is correct, not a bookkeeping oversight, and this verification confirms it rather than taking it on faith.
+2. **NUTR-01** — The new `NutrientTotalsRow` widget closes the previously-missing daily-aggregate display for carbs/sugar/fiber/salt, reusing the same pre-computed `DailyTotals` object (no recomputation risk), with honest dash-for-null rendering confirmed both by source read and by a widget test asserting exactly 4 dashes when no entries exist.
 
-No other requirement in this phase's scope exhibited the same "built but not reachable" pattern — CO2-03, CO2-05, CO2-06, DASH-01–08, INS-01–04, WT-01–05, NOTIF-01–03, and PRIV-01–04/08/09 were all traced end-to-end from domain layer through to a reachable route/screen/settings entry point, with passing tests and a green full-suite regression (360 passed, 0 failed).
+A regression/scope re-check (systematic orphan scan across every widget in every Phase 5 feature directory) found no other instance of the "built but unreachable" pattern anywhere else in the phase's scope. The full test suite is green (362 passed, 0 failed, 9 pre-existing skips, +2 new tests from this fix). REQUIREMENTS.md accurately reflects both flips to Complete. The phase goal — a complete, shippable Local Mode app — is now fully achieved with no outstanding gaps.
 
-A **separate, non-blocking bookkeeping issue** was also found: `PROF-06` is orphaned in REQUIREMENTS.md's Phase 5 mapping (not in ROADMAP's official Phase 5 requirement list, not claimed by any plan) despite its underlying functionality being fully implemented via CO2-03. This does not block phase completion but should be cleaned up in REQUIREMENTS.md.
-
-**Recommended next step:** A small, targeted follow-up plan (or a 05-gaps closure plan) that:
-- Imports and renders `MacroSplitBar` in either the Dashboard (near the metric cards) or Data Analysis screen (near the goal comparison), fed by `DailyTotals.macroSplit`.
-- Adds a daily-aggregate display for carbs/sugar/fiber/sodium (could reuse/extend `MacroSplitBar` for carbs since it's already macro-based, and add a compact "Other nutrients" row/panel for sugar/fiber/sodium) somewhere in Data Analysis, since Dashboard is intentionally kept minimal per 05-CONTEXT.md's Dashboard Composition notes.
-- Once wired, flips NUTR-01 and NUTR-04 to Complete in REQUIREMENTS.md.
-- Optionally reconciles the PROF-06 orphaned-requirement bookkeeping gap.
+The previously-noted non-blocking `PROF-06` bookkeeping issue remains open but does not affect this phase's pass/fail status (it was never part of this phase's committed scope, per ROADMAP.md and the plan frontmatter).
 
 ---
 
-_Verified: 2026-07-28T20:35:39Z_
+_Verified: 2026-07-28T23:10:00Z_
 _Verifier: Claude (gsd-verifier)_
