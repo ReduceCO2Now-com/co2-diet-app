@@ -123,6 +123,12 @@ dependencies:
   # RESEARCH.md. No network I/O in its dependency graph. Human-approved
   # per Plan 05-16's blocking package-legitimacy checkpoint.]
   file_selector: ^1.1.0
+  # collection 1.19.1 — official dart-lang team package (was already a
+  # transitive dependency of flutter_test/analyzer tooling); declared
+  # directly per very_good_analysis depend_on_referenced_packages rule.
+  # `firstWhereOrNull` powers this plan's safe-fallback query-param parsing
+  # for `/data-analysis?metric=` and `/food-search?slot=` (T-05-18-01).
+  collection: ^1.19.1
 
 dev_dependencies:
   # build_runner 2.15.1 used (not 2.15.2) — 2.15.2 requires analyzer >=13.3 which

@@ -1,3 +1,4 @@
+import 'package:co2diet/domain/entities/meal_slot.dart';
 import 'package:co2diet/features/food_search/providers/food_search_notifier.dart';
 import 'package:co2diet/features/food_search/providers/food_search_state.dart';
 import 'package:co2diet/features/food_search/widgets/api_loading_banner.dart';
@@ -24,8 +25,15 @@ import 'package:go_router/go_router.dart';
 ///   - Network error → [NoResultsVariant.networkError] with retry button
 ///   - API call in flight (AsyncLoading) → [ApiLoadingBanner]
 class FoodSearchScreen extends ConsumerStatefulWidget {
-  /// Creates the [FoodSearchScreen].
-  const FoodSearchScreen({super.key});
+  /// Creates the [FoodSearchScreen], optionally pre-set to [initialSlot].
+  const FoodSearchScreen({this.initialSlot, super.key});
+
+  /// The meal slot to pre-fill in `PortionSlotForm` once a search result is
+  /// tapped, or `null` to let the existing time-of-day auto-detect apply
+  /// (`detectMealSlotForTime`, unchanged) -- shared by the Dashboard's
+  /// per-slot quick-log buttons and a meal-reminder notification tap
+  /// (`/food-search?slot=<slot>`).
+  final MealSlot? initialSlot;
 
   @override
   ConsumerState<FoodSearchScreen> createState() => _FoodSearchScreenState();
@@ -121,7 +129,11 @@ class _FoodSearchScreenState extends ConsumerState<FoodSearchScreen> {
           separatorBuilder: (context, index) => const Divider(height: 1),
           itemBuilder: (context, i) => FoodResultRow(
             item: items[i],
-            onTap: () => showFoodDetailSheet(context, items[i]),
+            onTap: () => showFoodDetailSheet(
+              context,
+              items[i],
+              initialSlot: widget.initialSlot,
+            ),
           ),
         ),
       FoodSearchOfflineNoResults() => NoResultsWidget(
