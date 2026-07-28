@@ -173,6 +173,37 @@ class MealEntryDao extends DatabaseAccessor<AppDatabase>
     }
   }
 
+  /// Returns all non-deleted entries logged between [fromLogDate] and
+  /// [toLogDate] (inclusive, by logical log date), pooled across days.
+  ///
+  /// Added for Plan 05-15 (Data Analysis)'s weekly-total (CO2-02) and 7d/30d
+  /// trend views -- Phase 4 only needed day-scoped ([getEntriesForToday])
+  /// and recency-scoped ([getRecent]) reads. `log_date` string comparison
+  /// (not a SQL date function) matches [insertOrMerge]'s established
+  /// convention -- `yyyy-MM-dd` strings sort identically to their
+  /// chronological order.
+  Future<List<MealEntryRow>> getEntriesInRange(
+    String fromLogDate,
+    String toLogDate,
+  ) async {
+    try {
+      final rows = await customSelect(
+        'SELECT * FROM meal_entry_table '
+        'WHERE log_date >= ? AND log_date <= ? AND deleted_at IS NULL '
+        'ORDER BY log_date, logged_at',
+        variables: [
+          Variable.withString(fromLogDate),
+          Variable.withString(toLogDate),
+        ],
+        readsFrom: {mealEntryTable},
+      ).get();
+      return rows.map((row) => mealEntryTable.map(row.data)).toList();
+    } on Exception catch (e) {
+      debugPrint('[MealEntryDao] getEntriesInRange error: $e');
+      rethrow;
+    }
+  }
+
   /// Returns the entry with [id], or null if none exists.
   Future<MealEntryRow?> getById(String id) =>
       (select(mealEntryTable)..where((t) => t.id.equals(id)))

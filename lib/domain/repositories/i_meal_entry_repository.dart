@@ -23,6 +23,13 @@ abstract interface class IMealEntryRepository {
   /// `foodRef` + `foodRefSource`, most-recent-first.
   Future<List<MealEntry>> getRecent({int limit = 15});
 
+  /// Returns all non-deleted entries logged between [from] and [to]
+  /// (inclusive, by logical log date), pooled across days -- powers the
+  /// Data Analysis screen's weekly-total (CO2-02) and 7d/30d trend views
+  /// (Plan 05-15), which need multi-day aggregation that
+  /// [getEntriesForToday]'s single-day scope cannot provide.
+  Future<List<MealEntry>> getEntriesInRange(DateTime from, DateTime to);
+
   /// Updates slot/quantity/unit on an existing row identified by
   /// `updated.id`. Does NOT touch the snapshot fields (snapshot, not
   /// reference — a slot/quantity/unit edit must never silently rewrite

@@ -90,6 +90,23 @@ final class MealEntryRepository implements IMealEntryRepository {
   }
 
   @override
+  Future<List<MealEntry>> getEntriesInRange(DateTime from, DateTime to) async {
+    final rows = await _dao.getEntriesInRange(
+      _formatLogDate(from),
+      _formatLogDate(to),
+    );
+    return rows.map(MealEntry.fromRow).toList();
+  }
+
+  /// Formats [date] as a `yyyy-MM-dd` logical log date, matching
+  /// [getEntriesForToday]'s inline equivalent and the meal-logging feature's
+  /// established `_formatLogDate` convention.
+  String _formatLogDate(DateTime date) =>
+      '${date.year.toString().padLeft(4, '0')}-'
+      '${date.month.toString().padLeft(2, '0')}-'
+      '${date.day.toString().padLeft(2, '0')}';
+
+  @override
   Future<MealEntry> editEntry(MealEntry updated) async {
     await _dao.updateSlotQuantityUnit(
       id: updated.id,
