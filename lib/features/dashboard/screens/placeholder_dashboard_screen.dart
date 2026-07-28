@@ -8,6 +8,7 @@ import 'package:co2diet/domain/entities/meal_slot.dart';
 import 'package:co2diet/domain/services/daily_totals_calculator.dart';
 import 'package:co2diet/domain/services/personal_co2_multiplier_calculator.dart';
 import 'package:co2diet/features/co2_settings/providers/co2_settings_notifier.dart';
+import 'package:co2diet/features/dashboard/widgets/co2_profile_prompt_card.dart';
 import 'package:co2diet/features/dashboard/widgets/meal_entry_row.dart';
 import 'package:co2diet/features/dashboard/widgets/metric_card.dart';
 import 'package:co2diet/features/dashboard/widgets/mode_indicator.dart';
@@ -180,6 +181,18 @@ class _PlaceholderDashboardScreenState
   // "session-only UI selection" precedent.
   DashboardMetric _selectedTrendMetric = DashboardMetric.co2;
 
+  // Session-only dismissal (not persisted) for the "Complete your CO2
+  // profile" prompt card -- reappears next cold start, acceptable for a
+  // low-priority nudge (CONTEXT.md's explicit bottom-placement decision).
+  bool _co2PromptDismissed = false;
+
+  void _openFoodSearch({MealSlot? slot}) {
+    final path = slot == null
+        ? '/food-search'
+        : '/food-search?slot=${slot.name}';
+    unawaited(context.push(path));
+  }
+
   void _editEntry(MealEntry entry) {
     unawaited(
       showFoodDetailSheet(
@@ -317,11 +330,51 @@ class _PlaceholderDashboardScreenState
               ),
               const SizedBox(height: AppSpacing.stackGap),
               QuickInsightLine(insightText: computeQuickInsight(entries)),
+              const SizedBox(height: AppSpacing.stackGap),
+              _buildQuickLogRow(),
             ],
           ),
         ),
         const SizedBox(height: AppSpacing.stackGap),
         ..._buildMealListSection(entries),
+        const SizedBox(height: AppSpacing.stackGap),
+        Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.containerMargin,
+          ),
+          child: Co2ProfilePromptCard(
+            show:
+                !_co2PromptDismissed &&
+                (co2Settings?.dataQuality ?? 'basic') == 'basic',
+            onDismiss: () => setState(() => _co2PromptDismissed = true),
+            onTap: () => context.push('/co2-settings'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Per-slot quick-log buttons (Breakfast/Lunch/Dinner/Snack) plus a
+  /// "+ Quick Add Food" secondary shortcut (DASH-02). Each pushes
+  /// `/food-search?slot=<slot>`; Quick Add omits the query param entirely so
+  /// the existing time-of-day auto-detect applies -- CONTEXT.md: "behaves
+  /// exactly like the per-slot quick-log buttons... editable inside the
+  /// sheet."
+  Widget _buildQuickLogRow() {
+    return Wrap(
+      spacing: AppSpacing.base,
+      runSpacing: AppSpacing.base,
+      children: [
+        for (final slot in MealSlot.values)
+          FilledButton.tonal(
+            onPressed: () => _openFoodSearch(slot: slot),
+            child: Text(slot.displayLabel),
+          ),
+        OutlinedButton.icon(
+          onPressed: _openFoodSearch,
+          icon: const Icon(Icons.add),
+          label: const Text('Quick Add Food'),
+        ),
       ],
     );
   }

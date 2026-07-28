@@ -7,11 +7,16 @@
 // mealEntryRepositoryProvider mocked — same override pattern as
 // test/features/food_search/portion_slot_form_test.dart.
 
+import 'package:co2diet/core/di/co2_settings_providers.dart';
 import 'package:co2diet/core/di/meal_logging_providers.dart';
+import 'package:co2diet/core/di/providers.dart';
+import 'package:co2diet/domain/entities/co2_settings.dart';
 import 'package:co2diet/domain/entities/meal_entry.dart';
 import 'package:co2diet/domain/entities/meal_slot.dart';
 import 'package:co2diet/domain/entities/portion_unit.dart';
+import 'package:co2diet/domain/repositories/i_co2_settings_repository.dart';
 import 'package:co2diet/domain/repositories/i_meal_entry_repository.dart';
+import 'package:co2diet/domain/repositories/i_profile_repository.dart';
 import 'package:co2diet/features/dashboard/screens/placeholder_dashboard_screen.dart';
 import 'package:co2diet/features/dashboard/widgets/meal_entry_row.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +26,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockMealEntryRepository extends Mock implements IMealEntryRepository {}
+
+class _MockProfileRepository extends Mock implements IProfileRepository {}
+
+class _MockCo2SettingsRepository extends Mock
+    implements ICo2SettingsRepository {}
 
 MealEntry _buildEntry({
   String id = 'entry-1',
@@ -112,23 +122,54 @@ void main() {
     testWidgets('a slot with zero entries hides its header entirely', (
       tester,
     ) async {
+      // Tall test viewport -- Plan 05-18's composed header (mode
+      // indicator/metric cards/sparkline/quick insight/quick-log row)
+      // needs more vertical space than the default 800x600 test surface
+      // (05-12 precedent).
+      tester.view.physicalSize = const Size(1080, 4000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
       final mockRepo = _MockMealEntryRepository();
       when(
         mockRepo.getEntriesForToday,
       ).thenAnswer((_) async => [_buildEntry()]);
+      when(
+        () => mockRepo.getEntriesInRange(any(), any()),
+      ).thenAnswer((_) async => []);
+
+      final mockProfileRepo = _MockProfileRepository();
+      when(mockProfileRepo.getProfile).thenAnswer((_) async => null);
+
+      final mockCo2SettingsRepo = _MockCo2SettingsRepository();
+      when(
+        mockCo2SettingsRepo.getSettings,
+      ).thenAnswer((_) async => const Co2Settings());
 
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [mealEntryRepositoryProvider.overrideWithValue(mockRepo)],
+          overrides: [
+            mealEntryRepositoryProvider.overrideWithValue(mockRepo),
+            profileRepositoryProvider.overrideWithValue(mockProfileRepo),
+            co2SettingsRepositoryProvider.overrideWithValue(
+              mockCo2SettingsRepo,
+            ),
+          ],
           child: const MaterialApp(home: PlaceholderDashboardScreen()),
         ),
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Lunch'), findsOneWidget);
-      expect(find.text('Breakfast'), findsNothing);
-      expect(find.text('Dinner'), findsNothing);
-      expect(find.text('Snack'), findsNothing);
+      // Every slot's quick-log button always renders one "<Slot>" text
+      // regardless of that slot's entry count (DASH-02) -- the section
+      // *header* is the thing that's conditionally hidden. A slot with
+      // entries therefore has 2 matches (button + header); an empty slot
+      // has exactly 1 (button only).
+      expect(find.text('Lunch'), findsNWidgets(2));
+      expect(find.text('Breakfast'), findsOneWidget);
+      expect(find.text('Dinner'), findsOneWidget);
+      expect(find.text('Snack'), findsOneWidget);
     });
   });
 }

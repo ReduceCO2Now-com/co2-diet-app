@@ -200,4 +200,125 @@ void main() {
       },
     );
   });
+
+  group('Co2ProfilePromptCard gating (Plan 05-18)', () {
+    Widget wrap(Widget dashboard) {
+      final router = GoRouter(
+        initialLocation: '/dashboard',
+        routes: [
+          GoRoute(path: '/dashboard', builder: (context, state) => dashboard),
+          GoRoute(
+            path: '/data-analysis',
+            builder: (context, state) => const Text('data-analysis'),
+          ),
+          GoRoute(
+            path: '/co2-settings',
+            builder: (context, state) => const Text('co2-settings'),
+          ),
+        ],
+      );
+      return MaterialApp.router(routerConfig: router);
+    }
+
+    Future<void> pumpDashboard(
+      WidgetTester tester, {
+      required Co2Settings co2Settings,
+    }) async {
+      tester.view.physicalSize = const Size(1080, 4000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final mockRepo = _MockMealEntryRepository();
+      when(mockRepo.getEntriesForToday).thenAnswer((_) async => []);
+      when(
+        () => mockRepo.getEntriesInRange(any(), any()),
+      ).thenAnswer((_) async => []);
+
+      final mockProfileRepo = _MockProfileRepository();
+      when(mockProfileRepo.getProfile).thenAnswer((_) async => null);
+
+      final mockCo2SettingsRepo = _MockCo2SettingsRepository();
+      when(
+        mockCo2SettingsRepo.getSettings,
+      ).thenAnswer((_) async => co2Settings);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            mealEntryRepositoryProvider.overrideWithValue(mockRepo),
+            profileRepositoryProvider.overrideWithValue(mockProfileRepo),
+            co2SettingsRepositoryProvider.overrideWithValue(
+              mockCo2SettingsRepo,
+            ),
+          ],
+          child: wrap(const PlaceholderDashboardScreen()),
+        ),
+      );
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets(
+      'shown when dataQuality is basic (no settings saved yet)',
+      (tester) async {
+        await pumpDashboard(tester, co2Settings: const Co2Settings());
+
+        expect(
+          find.text('Complete your CO₂ profile for better estimates'),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets('hidden when dataQuality is good or detailed', (
+      tester,
+    ) async {
+      await pumpDashboard(
+        tester,
+        co2Settings: const Co2Settings(
+          locationCountry: 'DE',
+          purchasingSource: 'local_farm',
+          shoppingTransport: 'walk_bike',
+          cookingMethod: 'induction',
+        ),
+      );
+
+      expect(
+        find.text('Complete your CO₂ profile for better estimates'),
+        findsNothing,
+      );
+    });
+
+    testWidgets('dismissing the card hides it for the rest of the session', (
+      tester,
+    ) async {
+      await pumpDashboard(tester, co2Settings: const Co2Settings());
+
+      expect(
+        find.text('Complete your CO₂ profile for better estimates'),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.byTooltip('Dismiss'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Complete your CO₂ profile for better estimates'),
+        findsNothing,
+      );
+    });
+
+    testWidgets('tapping the card body navigates to /co2-settings', (
+      tester,
+    ) async {
+      await pumpDashboard(tester, co2Settings: const Co2Settings());
+
+      await tester.tap(
+        find.text('Complete your CO₂ profile for better estimates'),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('co2-settings'), findsOneWidget);
+    });
+  });
 }
