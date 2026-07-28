@@ -76,6 +76,63 @@ class MealEntryDao extends DatabaseAccessor<AppDatabase>
     }
   }
 
+  /// Returns every non-deleted entry ever logged, ordered oldest-first.
+  ///
+  /// Added for `BackupExportService`'s full-data export/backup
+  /// (PRIV-01/02) — Phase 4 only needed day-scoped ([getEntriesForToday])
+  /// and recency-scoped ([getRecent]) reads.
+  Future<List<MealEntryRow>> getAllEntries() async {
+    try {
+      final rows = await customSelect(
+        'SELECT * FROM meal_entry_table '
+        'WHERE deleted_at IS NULL ORDER BY logged_at ASC',
+        readsFrom: {mealEntryTable},
+      ).get();
+      return rows.map((row) => mealEntryTable.map(row.data)).toList();
+    } on Exception catch (e) {
+      debugPrint('[MealEntryDao] getAllEntries error: $e');
+      rethrow;
+    }
+  }
+
+  /// Bulk-restores [rows] verbatim (insert-or-update on PK), for
+  /// `BackupExportService.applyRestore`.
+  ///
+  /// Unlike [insertOrMerge], this never merges quantities across
+  /// matching entries — a restore re-creates exactly the rows a prior
+  /// export/backup captured, byte-for-byte.
+  Future<void> restoreEntries(List<MealEntryRow> rows) async {
+    if (rows.isEmpty) return;
+    try {
+      await batch((b) {
+        b.insertAllOnConflictUpdate(
+          mealEntryTable,
+          rows.map((r) => r.toCompanion(false)).toList(),
+        );
+      });
+    } on Exception catch (e) {
+      debugPrint('[MealEntryDao] restoreEntries error: $e');
+      rethrow;
+    }
+  }
+
+  /// Bulk-restores [rows] verbatim (insert-or-update on PK), for
+  /// `BackupExportService.applyRestore`.
+  Future<void> restoreFavorites(List<FavoriteRow> rows) async {
+    if (rows.isEmpty) return;
+    try {
+      await batch((b) {
+        b.insertAllOnConflictUpdate(
+          favoriteTable,
+          rows.map((r) => r.toCompanion(false)).toList(),
+        );
+      });
+    } on Exception catch (e) {
+      debugPrint('[MealEntryDao] restoreFavorites error: $e');
+      rethrow;
+    }
+  }
+
   /// Returns all non-deleted entries logged for [logDate], ordered by
   /// meal slot then logged-at time.
   Future<List<MealEntryRow>> getEntriesForToday(String logDate) async {

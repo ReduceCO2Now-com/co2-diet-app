@@ -122,6 +122,31 @@ class UserFoodDao extends DatabaseAccessor<AppDatabase>
     }
   }
 
+  /// Bulk-restores [rows] verbatim (insert-or-update on PK), for
+  /// `BackupExportService.applyRestore`.
+  ///
+  /// Deliberately bypasses [insert]'s required-field guard — a row
+  /// captured by a prior export/backup already satisfied that guard once,
+  /// and re-validating would only reject a restore that would otherwise
+  /// succeed if any field happened to be legitimately blank at export
+  /// time (never the case for `name`/`calories`, but this keeps restore
+  /// a pure verbatim reconstruction rather than a second validation
+  /// pass).
+  Future<void> restoreCustomFoods(List<UserFoodRow> rows) async {
+    if (rows.isEmpty) return;
+    try {
+      await batch((b) {
+        b.insertAllOnConflictUpdate(
+          userFoodTable,
+          rows.map((r) => r.toCompanion(false)).toList(),
+        );
+      });
+    } on Exception catch (e) {
+      debugPrint('[UserFoodDao] restoreCustomFoods error: $e');
+      rethrow;
+    }
+  }
+
   /// Returns all non-deleted rows sorted alphabetically by `name`
   /// (case-insensitive), optionally filtered to names containing
   /// [filter] (also case-insensitive).

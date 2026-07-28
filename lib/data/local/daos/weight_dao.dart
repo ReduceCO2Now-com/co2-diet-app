@@ -65,6 +65,23 @@ class WeightDao extends DatabaseAccessor<AppDatabase> with _$WeightDaoMixin {
     }
   }
 
+  /// Bulk-restores [rows] verbatim (insert-or-update on PK), for
+  /// `BackupExportService.applyRestore`.
+  Future<void> restoreEntries(List<WeightEntryRow> rows) async {
+    if (rows.isEmpty) return;
+    try {
+      await batch((b) {
+        b.insertAllOnConflictUpdate(
+          weightEntryTable,
+          rows.map((r) => r.toCompanion(false)).toList(),
+        );
+      });
+    } on Exception catch (e) {
+      debugPrint('[WeightDao] restoreEntries error: $e');
+      rethrow;
+    }
+  }
+
   /// Hard-deletes the weigh-in with [id].
   ///
   /// Deviation from the `SyncSafeTable` soft-delete convention: a
