@@ -17,6 +17,10 @@ Also addressed from the plan-checker's warnings:
 - **CO2-02's "weekly total" must be explicitly computed and displayed somewhere** (Data Analysis screen is the natural home) — day-by-day trend charts alone don't satisfy "daily / weekly totals" from ROADMAP.md's success criteria.
 - **`PersonalCo2MultiplierCalculator` giving 3 of 7 CONTEXT.md-listed settings factors (location, storage, household size) no numeric effect** in the first cut is accepted as-is for v1 — confirmed acceptable rather than requiring all 7 factors to produce a distinguishable numeric contribution, consistent with the app's no-false-precision principle (don't fabricate a number when there's no defensible way to compute one yet). Document this narrowing explicitly in code comments rather than treating it as silently-decided scope reduction.
 
+### Execution-time package decision (2026-07-28)
+
+- **`excel` (not `excel_plus`) is locked in for Plan 05-09's Excel export.** Compared directly at Wave 4's package-legitimacy checkpoint: `excel` (justkawal.dev) is stale on pub.dev (v4.0.6, released 2024-08-20, pub score 115/160, 147 open issues) but has real production mileage (1,240 likes, 481 GitHub stars, not discontinued/replaced). `excel_plus` (almasum.dev) has a perfect pub score (160/160) and a very recent release, but its GitHub repo is only ~3.5 months old with 4 stars and 43 likes — too thin a track record for a component that generates user data exports, despite its "faster drop-in replacement" self-description. **Decision: keep `excel`.** Plan 05-09's own package-legitimacy checkpoint does not need to re-litigate this comparison — proceed directly with `excel` when that checkpoint is reached, noting this prior decision.
+
 </planning_addendum>
 
 <domain>
