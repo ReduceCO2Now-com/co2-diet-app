@@ -13,6 +13,14 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_router.g.dart';
 
+/// Global navigator key captured once at app start so non-widget code (the
+/// `NotificationService`'s tap handler, which runs with no `BuildContext`
+/// and no Riverpod `ref` -- see RESEARCH.md Pattern 4) can still navigate.
+///
+/// Passed into [GoRouter]'s `navigatorKey` below; consumed via
+/// `rootNavigatorKey.currentState?.context`.
+final rootNavigatorKey = GlobalKey<NavigatorState>();
+
 /// Bottom navigation shell that wraps the three main branches.
 class AppShell extends StatelessWidget {
   /// Creates [AppShell] with the given [StatefulNavigationShell].
@@ -62,6 +70,7 @@ class AppShell extends StatelessWidget {
 @Riverpod(keepAlive: true)
 GoRouter appRouter(Ref ref) {
   return GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: '/profile',
     routes: [
       // Top-level route — covers the bottom nav bar (not nested in the shell).

@@ -141,3 +141,80 @@ final class NotificationPrefsRepositoryProvider
 
 String _$notificationPrefsRepositoryHash() =>
     r'bd86dbc12357dfe2c08e6a5ebaceb492b161f8b5';
+
+/// Provides the single authoritative [NotificationService] instance.
+///
+/// keepAlive: true — the service wraps a live [FlutterLocalNotificationsPlugin]
+/// registration (`onDidReceiveNotificationResponse` is set once via
+/// `initialize()` in `main.dart`) and must persist for the full app
+/// lifetime. This is the ONE place `NotificationService` is constructed —
+/// every later plan (05-13, 05-14, 05-18) consumes it via
+/// `ref.read(notificationServiceProvider)` / `ref.watch(...)`; none of them
+/// may declare a competing provider for it.
+
+@ProviderFor(notificationService)
+final notificationServiceProvider = NotificationServiceProvider._();
+
+/// Provides the single authoritative [NotificationService] instance.
+///
+/// keepAlive: true — the service wraps a live [FlutterLocalNotificationsPlugin]
+/// registration (`onDidReceiveNotificationResponse` is set once via
+/// `initialize()` in `main.dart`) and must persist for the full app
+/// lifetime. This is the ONE place `NotificationService` is constructed —
+/// every later plan (05-13, 05-14, 05-18) consumes it via
+/// `ref.read(notificationServiceProvider)` / `ref.watch(...)`; none of them
+/// may declare a competing provider for it.
+
+final class NotificationServiceProvider
+    extends
+        $FunctionalProvider<
+          NotificationService,
+          NotificationService,
+          NotificationService
+        >
+    with $Provider<NotificationService> {
+  /// Provides the single authoritative [NotificationService] instance.
+  ///
+  /// keepAlive: true — the service wraps a live [FlutterLocalNotificationsPlugin]
+  /// registration (`onDidReceiveNotificationResponse` is set once via
+  /// `initialize()` in `main.dart`) and must persist for the full app
+  /// lifetime. This is the ONE place `NotificationService` is constructed —
+  /// every later plan (05-13, 05-14, 05-18) consumes it via
+  /// `ref.read(notificationServiceProvider)` / `ref.watch(...)`; none of them
+  /// may declare a competing provider for it.
+  NotificationServiceProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'notificationServiceProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$notificationServiceHash();
+
+  @$internal
+  @override
+  $ProviderElement<NotificationService> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  NotificationService create(Ref ref) {
+    return notificationService(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(NotificationService value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<NotificationService>(value),
+    );
+  }
+}
+
+String _$notificationServiceHash() =>
+    r'fef1de0f52c3705f4d53793e276614864862bc29';
