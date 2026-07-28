@@ -27,7 +27,9 @@ import 'package:co2diet/data/local/daos/backup_metadata_dao.dart';
 import 'package:co2diet/data/repositories/backup_metadata_repository.dart';
 import 'package:co2diet/domain/services/backup_export_service.dart';
 import 'package:co2diet/features/backup/providers/backup_notifier.dart';
+import 'package:co2diet/features/backup/screens/backup_restore_screen.dart';
 import 'package:file_selector/file_selector.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -300,33 +302,195 @@ void main() {
     );
   });
 
-  group(
-    'BackupRestoreScreen',
-    skip: 'BackupRestoreScreen not yet implemented',
-    () {
-      testWidgets(
-        'Danger Zone delete button stays disabled until the exact '
-        'word DELETE is typed',
-        (tester) async {},
-      );
+  group('BackupRestoreScreen', () {
+    late _MockBackupMetadataDao mockDao;
+    late _MockBackupExportService mockService;
 
-      testWidgets(
-        'Restore Data opens a real OS file picker and can import a '
-        "backup zip from outside the app's own documents directory",
-        (tester) async {},
+    setUp(() {
+      mockDao = _MockBackupMetadataDao();
+      mockService = _MockBackupExportService();
+      when(
+        () => mockDao.getMetadata(),
+      ).thenAnswer((_) async => _buildMetadataRow());
+      when(() => mockService.storageStatus()).thenAnswer(
+        (_) async => {for (final c in ExportCategory.values) c: 0},
       );
+    });
 
-      testWidgets(
-        'Restore requires an explicit confirmation step after '
-        'showing the preview',
-        (tester) async {},
+    Widget buildTestable({FilePickerFn? filePicker}) {
+      return ProviderScope(
+        overrides: [
+          backupMetadataRepositoryProvider.overrideWithValue(
+            BackupMetadataRepository(mockDao),
+          ),
+          backupExportServiceProvider.overrideWith(
+            (ref) async => mockService,
+          ),
+          if (filePicker != null)
+            filePickerProvider.overrideWithValue(filePicker),
+        ],
+        child: const MaterialApp(home: BackupRestoreScreen()),
       );
+    }
 
-      testWidgets(
-        'Privacy & Ownership statement discloses that shared '
-        'backups are not encrypted by the app',
-        (tester) async {},
-      );
-    },
-  );
+    void setTallViewport(WidgetTester tester) {
+      // Tall viewport so every section (Storage Status through Danger
+      // Zone) is within cache extent -- mirrors Co2SettingsScreen/
+      // WeightScreen's established test precedent.
+      tester.view.physicalSize = const Size(1080, 6000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+    }
+
+    testWidgets(
+      'Danger Zone delete button stays disabled until the exact '
+      'word DELETE is typed',
+      (tester) async {
+        setTallViewport(tester);
+        await tester.pumpWidget(buildTestable());
+        await tester.pumpAndSettle();
+
+        final deleteButtonFinder = find.widgetWithText(
+          FilledButton,
+          'Delete all local data',
+        );
+        expect(
+          tester.widget<FilledButton>(deleteButtonFinder).onPressed,
+          isNull,
+        );
+
+        await tester.enterText(
+          find.widgetWithText(TextField, 'Type DELETE to confirm'),
+          'DELET',
+        );
+        await tester.pumpAndSettle();
+        expect(
+          tester.widget<FilledButton>(deleteButtonFinder).onPressed,
+          isNull,
+        );
+
+        await tester.enterText(
+          find.widgetWithText(TextField, 'Type DELETE to confirm'),
+          'DELETE',
+        );
+        await tester.pumpAndSettle();
+        expect(
+          tester.widget<FilledButton>(deleteButtonFinder).onPressed,
+          isNotNull,
+        );
+      },
+    );
+
+    testWidgets(
+      'Restore Data opens a real OS file picker and can import a '
+      "backup zip from outside the app's own documents directory",
+      (tester) async {
+        setTallViewport(tester);
+        const preview = RestorePreview(
+          formatVersion: 1,
+          backupDate: null,
+          categoryRowCounts: {ExportCategory.mealEntries: 5},
+        );
+        when(
+          () => mockService.previewRestore(any()),
+        ).thenAnswer((_) async => preview);
+
+        await tester.pumpWidget(
+          buildTestable(
+            filePicker: ({acceptedTypeGroups = const <XTypeGroup>[]}) async =>
+                XFile('/fake/outside/backup.zip'),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('This backup will restore:'), findsNothing);
+
+        await tester.tap(find.text('Choose backup file'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('This backup will restore:'), findsOneWidget);
+        expect(find.textContaining('Meal entries: 5 row(s)'), findsOneWidget);
+        expect(find.text('Confirm Restore'), findsOneWidget);
+        verify(() => mockService.previewRestore(any())).called(1);
+      },
+    );
+
+    testWidgets(
+      'a cancelled file pick leaves the screen unchanged with no error',
+      (tester) async {
+        setTallViewport(tester);
+
+        await tester.pumpWidget(
+          buildTestable(
+            filePicker: ({acceptedTypeGroups = const <XTypeGroup>[]}) async =>
+                null,
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('Choose backup file'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('This backup will restore:'), findsNothing);
+        expect(find.text('Confirm Restore'), findsNothing);
+        verifyNever(() => mockService.previewRestore(any()));
+      },
+    );
+
+    testWidgets(
+      'Restore requires an explicit confirmation step after '
+      'showing the preview',
+      (tester) async {
+        setTallViewport(tester);
+        const preview = RestorePreview(
+          formatVersion: 1,
+          backupDate: null,
+          categoryRowCounts: {ExportCategory.mealEntries: 5},
+        );
+        when(
+          () => mockService.previewRestore(any()),
+        ).thenAnswer((_) async => preview);
+        when(() => mockService.applyRestore(any())).thenAnswer((_) async {});
+
+        await tester.pumpWidget(
+          buildTestable(
+            filePicker: ({acceptedTypeGroups = const <XTypeGroup>[]}) async =>
+                XFile('/fake/outside/backup.zip'),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('Choose backup file'));
+        await tester.pumpAndSettle();
+
+        // Restoring is not applied until "Confirm Restore" is tapped.
+        verifyNever(() => mockService.applyRestore(any()));
+
+        await tester.tap(find.text('Confirm Restore'));
+        await tester.pumpAndSettle();
+
+        verify(() => mockService.applyRestore(any())).called(1);
+        // Preview clears once the restore has been applied.
+        expect(find.text('Confirm Restore'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'Privacy & Ownership statement discloses that shared '
+      'backups are not encrypted by the app',
+      (tester) async {
+        setTallViewport(tester);
+        await tester.pumpWidget(buildTestable());
+        await tester.pumpAndSettle();
+
+        expect(
+          find.textContaining(
+            'Exports and backups are not encrypted by this app.',
+          ),
+          findsOneWidget,
+        );
+      },
+    );
+  });
 }
