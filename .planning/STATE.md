@@ -3,12 +3,12 @@ gsd_state_version: 1.0
 milestone: v1
 milestone_name: v1 launch
 status: executing
-last_updated: "2026-07-28T08:49:55.805Z"
+last_updated: "2026-07-28T08:57:02.319Z"
 progress:
   total_phases: 9
   completed_phases: 4
   total_plans: 51
-  completed_plans: 41
+  completed_plans: 42
   percent: 44
 ---
 
@@ -36,9 +36,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 - **Milestone:** v1 launch
 - **Phase:** 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable — IN PROGRESS (8 of 19 plans done)
-- **Plan:** 10 of 19 (05-08 complete — fl_chart/flutter_local_notifications/timezone/flutter_timezone installed, NotificationPrefs domain layer, NotificationService, rootNavigatorKey, main.dart wiring)
+- **Plan:** 11 of 19 (05-08 complete — fl_chart/flutter_local_notifications/timezone/flutter_timezone installed, NotificationPrefs domain layer, NotificationService, rootNavigatorKey, main.dart wiring)
 - **Status:** Ready to execute
-- **Progress:** [████████░░] 80%
+- **Progress:** [████████░░] 82%
 - **v1 requirements:** 34 / 75 delivered (CO2-01, CO2-02, CO2-03, CO2-04, LEG-05, LOG-01 through LOG-12, NFR-05, NFR-06, PROF-01 through PROF-05, PRIV-07) — Phase 4 fully closed (04-13 real-device checkpoint approved on both platforms); 05-02 closes the Phase-4 CO2 cache-path gap (CO2-02, NFR-05); 05-03 adds the Phase 5 Drift schema foundation (schema-only); 05-04 wires sugar/fiber/salt through FoodItem/MealEntry/repository (NUTR-01 still not fully delivered — daily-totals rollup is 05-10-PLAN.md, dashboard/insights UI later still); 05-05 adds the DAO layer for CO2 Settings/Weight/Notifications/Backup; 05-06 delivers the CO2 Settings domain layer (CO2-03 now fully delivered); 05-07 delivers the Weight Tracking domain layer (WT-01 through WT-04 still NOT fully delivered — the screen doesn't exist until 05-13, domain layer only so far); 05-08 installs fl_chart/flutter_local_notifications/timezone/flutter_timezone and delivers NotificationService + NotificationPrefs domain layer (NOTIF-01/02/03 still NOT fully delivered — the meal-reminder/weigh-in-reminder UI doesn't exist until 05-13/05-14/05-18, service/domain layer only so far; PRIV-02, PRIV-03 still not fully delivered — repository/UI plans pending); remaining Phase 5 requirements are test-stub-scaffolded only so far
 
 ```
@@ -135,8 +135,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-28T08:49:55.799Z
-**Stopped at:** Completed 05-09-PLAN.md -- BackupExportService (export/backup/restore, zip-slip guard), share_plus/csv/excel installed, archive downgraded to 3.6.1
+**Last session:** 2026-07-28T08:57:02.313Z
+**Stopped at:** Completed 05-10-PLAN.md -- DailyTotalsCalculator + PersonalCo2MultiplierCalculator (pure-Dart aggregation/settings services, domain layer only, no UI consumer yet)
 **Next action:** Execute Plan 05-08
 **Suggested next command:** `/gsd:execute-phase 5`
 
@@ -249,6 +249,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 05-09]: csv 8.0.0's actual public API is CsvEncoder, not ListToCsvConverter (removed in a prior major version) -- BackupExportService uses const CsvEncoder().convert(rows)
 - [Phase 05-09]: Every Drift row round-trips through a custom _BackupValueSerializer (BigInt->String, DateTime->ISO8601) for JSON export/restore -- drift's default ValueSerializer passes BigInt through unconverted, which jsonEncode cannot serialize, and every sync-safe row's hlcMillis column is a BigInt
 - [Phase 05-09]: MealEntryDao.getAllEntries/restoreEntries/restoreFavorites, UserFoodDao.restoreCustomFoods, WeightDao.restoreEntries added -- no existing DAO exposed an all-rows read or a verbatim bulk restore-write; export/restore cannot function without them
+- [Phase 05-10]: DailyTotalsCalculator filters to entry.unit.isWeightBased before scaling -- piece/cup/portion entries excluded from every numeric total, matching Phase 04-10's MealEntryRow/RecentRow precedent
+- [Phase 05-10]: PersonalCo2MultiplierCalculator's 4 active factors use additive percentage deltas clamped to [0.7, 1.3]; foodStorage/householdSize/location intentionally produce no numeric effect in v1, documented via a permanent code comment per 05-CONTEXT.md's locked Planning Addendum decision (not a TODO)
 
 ## Performance Metrics
 
@@ -285,3 +287,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P07 | ~10min | 2 tasks | 9 files |
 | Phase 05 P08 | ~15min | 2 tasks | 9 files |
 | Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P09 | ~35min | 2 tasks | 10 files |
+| Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P10 | 8min | 2 tasks | 4 files |

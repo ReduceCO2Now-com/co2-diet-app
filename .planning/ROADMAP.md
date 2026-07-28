@@ -136,7 +136,7 @@ Plans:
 - [x] 05-07-PLAN.md — Weight Tracking domain (entity, repository, notifier, DI)
 - [x] 05-08-PLAN.md — Package installs (fl_chart, flutter_local_notifications, timezone, flutter_timezone) + NotificationService
 - [x] 05-09-PLAN.md — Package installs (share_plus, csv, excel) + BackupExportService
-- [ ] 05-10-PLAN.md — DailyTotalsCalculator + PersonalCo2MultiplierCalculator
+- [x] 05-10-PLAN.md — DailyTotalsCalculator + PersonalCo2MultiplierCalculator
 - [ ] 05-11-PLAN.md — Dashboard widgets (metric cards, sparkline, quick insight, mode indicator, CO2 prompt)
 - [ ] 05-12-PLAN.md — CO2 Calculation Settings screen
 - [ ] 05-13-PLAN.md — Weight Tracking screen (chart, goal, reminders)
@@ -203,7 +203,7 @@ Plans:
 | 2. Food Catalog Ingest & Search | 7/7 | Complete   | 2026-07-20 |
 | 3. Barcode Scanning & CO₂ Factor Table | 5/5 | Complete   | 2026-07-22 |
 | 4. Meal Logging Core | 12/13 | In Progress|  |
-| 5. Full Local App (Local Mode Shippable) | 9/19 | In Progress|  |
+| 5. Full Local App (Local Mode Shippable) | 10/19 | In Progress|  |
 | 6. Onboarding, Legal & Pre-Submission | 0/0 | Not started | - |
 | 7. Keycloak Auth + Account Mode + Sync | 0/0 | Not started | - |
 | 8. Reference Data Delivery (Full OFF Pack) | 0/0 | Not started | - |
