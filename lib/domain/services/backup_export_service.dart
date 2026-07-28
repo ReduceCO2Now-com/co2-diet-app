@@ -343,6 +343,49 @@ class BackupExportService {
     return _restorePreviewFromManifest(manifest);
   }
 
+  /// Returns the current row count per [ExportCategory] (Current Storage
+  /// Status card). Reuses [_readCategoryRows] — acceptable cost for a
+  /// settings screen, not a hot path.
+  Future<Map<ExportCategory, int>> storageStatus() async {
+    final counts = <ExportCategory, int>{};
+    for (final category in ExportCategory.values) {
+      final rows = await _readCategoryRows(category);
+      counts[category] = rows.length;
+    }
+    return counts;
+  }
+
+  /// Permanently deletes every row of the user's own personal data
+  /// (Danger Zone, PRIV-09) inside a single transaction.
+  ///
+  /// Deliberately excludes two tables:
+  ///   - `UserFoodCacheTable` — a shared Open Food Facts API-response
+  ///     cache, not personal data; wiping it would only force redundant
+  ///     re-fetches, not protect privacy.
+  ///   - `ConsentRecordsTable` — an append-only legal consent audit
+  ///     trail; deleting it would destroy the record that consent was
+  ///     ever given/withdrawn, which this app needs to retain independent
+  ///     of a data wipe.
+  ///
+  /// Every other locally-stored personal-data table is truncated:
+  /// profile, meal entries, favorites, custom foods/overrides, weigh-ins,
+  /// weight goal/reminder settings, CO2 settings, notification
+  /// preferences, and backup metadata.
+  Future<void> clearAllLocalData() async {
+    final db = mealEntryDao.attachedDatabase;
+    await db.transaction(() async {
+      await db.delete(db.mealEntryTable).go();
+      await db.delete(db.favoriteTable).go();
+      await db.delete(db.userFoodTable).go();
+      await db.delete(db.weightEntryTable).go();
+      await db.delete(db.weightSettingsTable).go();
+      await db.delete(db.co2SettingsTable).go();
+      await db.delete(db.notificationPrefsTable).go();
+      await db.delete(db.backupMetadataTable).go();
+      await db.delete(db.userProfileTable).go();
+    });
+  }
+
   /// Restores every category referenced by [zip]'s manifest.
   ///
   /// Every `ArchiveFile.name` in the zip is validated to resolve within
