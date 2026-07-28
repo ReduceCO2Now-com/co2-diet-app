@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1
 milestone_name: v1 launch
-status: executing
-last_updated: "2026-07-28T20:00:57.523Z"
+status: verifying
+last_updated: "2026-07-28T20:30:00.616Z"
 progress:
   total_phases: 9
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 51
-  completed_plans: 50
-  percent: 44
+  completed_plans: 51
+  percent: 56
 ---
 
 # STATE: CO₂ Diet
@@ -37,8 +37,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - **Milestone:** v1 launch
 - **Phase:** 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable — IN PROGRESS (8 of 19 plans done)
 - **Plan:** 19 of 19 (05-08 complete — fl_chart/flutter_local_notifications/timezone/flutter_timezone installed, NotificationPrefs domain layer, NotificationService, rootNavigatorKey, main.dart wiring)
-- **Status:** Ready to execute
-- **Progress:** [██████████] 98%
+- **Status:** Phase complete — ready for verification
+- **Progress:** [██████████] 100%
 - **v1 requirements:** 34 / 75 delivered (CO2-01, CO2-02, CO2-03, CO2-04, LEG-05, LOG-01 through LOG-12, NFR-05, NFR-06, PROF-01 through PROF-05, PRIV-07) — Phase 4 fully closed (04-13 real-device checkpoint approved on both platforms); 05-02 closes the Phase-4 CO2 cache-path gap (CO2-02, NFR-05); 05-03 adds the Phase 5 Drift schema foundation (schema-only); 05-04 wires sugar/fiber/salt through FoodItem/MealEntry/repository (NUTR-01 still not fully delivered — daily-totals rollup is 05-10-PLAN.md, dashboard/insights UI later still); 05-05 adds the DAO layer for CO2 Settings/Weight/Notifications/Backup; 05-06 delivers the CO2 Settings domain layer (CO2-03 now fully delivered); 05-07 delivers the Weight Tracking domain layer (WT-01 through WT-04 still NOT fully delivered — the screen doesn't exist until 05-13, domain layer only so far); 05-08 installs fl_chart/flutter_local_notifications/timezone/flutter_timezone and delivers NotificationService + NotificationPrefs domain layer (NOTIF-01/02/03 still NOT fully delivered — the meal-reminder/weigh-in-reminder UI doesn't exist until 05-13/05-14/05-18, service/domain layer only so far; PRIV-02, PRIV-03 still not fully delivered — repository/UI plans pending); remaining Phase 5 requirements are test-stub-scaffolded only so far
 
 ```
@@ -135,8 +135,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-28T20:00:57.517Z
-**Stopped at:** Completed 05-18-PLAN.md
+**Last session:** 2026-07-28T20:30:00.610Z
+**Stopped at:** Completed 05-19-PLAN.md
 **Next action:** Execute Plan 05-08
 **Suggested next command:** `/gsd:execute-phase 5`
 
@@ -278,6 +278,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 05-18]: Co2DietApp's WidgetsBindingObserver reads WeightState.settings via .value (not .valueOrNull, which doesn't exist in this project's pinned Riverpod 3.3.2 per the existing [Phase 01-04] decision) -- re-arms the weigh-in reminder on every AppLifecycleState.resumed in addition to Plan 05-13's screen-open re-arm
 - [Phase 05-18]: PlaceholderDashboardScreen and Co2DietApp both converted from ConsumerWidget to ConsumerStatefulWidget to hold session-only local UI state (sparkline metric selection, CO2-prompt dismissal, lifecycle observer) rather than introducing new Riverpod providers -- mirrors WeighInReminderSection/MealReminderSettingsSection's established local-widget-state convention
 - [Phase 05-18]: Every slot's quick-log button (Breakfast/Lunch/Dinner/Snack) always renders regardless of that slot's entry count; only the slot section header above the meal list is conditionally hidden when empty -- existing Phase 4 tests asserting slot-name absence for empty slots needed updating to findsOneWidget (button-only) vs findsNWidgets(2) (button+header)
+- [Phase 05-19]: formatCo2Approx extracted from formatCo2Display so callers composing their own unit text reuse the ~-prefixed rounding convention without inheriting the per-kg-of-product 'kg CO2e/kg' suffix
+- [Phase 05-19]: offline_phase5_test.dart proves AUTH-07/PRIV-08/INS-04 by direct-constructing every new Phase 5 service/repository with zero offApiClientProvider/connectivity_plus mocks -- an accidental network call would surface as MissingPluginException rather than being silently swallowed
 
 ## Performance Metrics
 
@@ -323,3 +325,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P16 | ~22min | 2 tasks | 7 files |
 | Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P17 | ~20min | 2 tasks | 9 files |
 | Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P18 | ~50min | 4 tasks | 11 files |
+| Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P19 | ~20min | 2 tasks | 6 files |

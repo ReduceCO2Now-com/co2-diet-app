@@ -30,7 +30,7 @@ Requirements for initial release. Each maps to a roadmap phase.
 - [ ] **AUTH-04**: User can reset password via a secure email link
 - [ ] **AUTH-05**: Apple Sign-in via Keycloak Identity Provider (mandatory on iOS per App Store Guideline 4.8; Keycloak handles the Apple IdP flow — no native Apple Sign-in SDK on the Flutter client)
 - [ ] **AUTH-06**: Google Sign-in via Keycloak Identity Provider
-- [ ] **AUTH-07**: Local Mode: full app access with zero server account; all data stored on-device; app never contacts the backend in Local Mode without explicit user action
+- [x] **AUTH-07**: Local Mode: full app access with zero server account; all data stored on-device; app never contacts the backend in Local Mode without explicit user action
 - [ ] **AUTH-08**: User can upgrade from Local Mode to Account Mode at any time without losing any local data; all local data is synced to the backend on upgrade
 - [ ] **AUTH-09**: Account Mode users get cross-device sync via self-hosted backend (Spring Boot + PostgreSQL + Keycloak); sync is background/transparent
 - [ ] **AUTH-10**: All auth is implemented via Keycloak OIDC + PKCE — no Firebase Authentication, no Supabase Auth
@@ -92,7 +92,7 @@ Requirements for initial release. Each maps to a roadmap phase.
 - [x] **INS-01**: Data Analysis screen accessible by tapping any Dashboard metric; shows: today's breakdown by meal (stacked bar), largest contributors (ranked list), goal comparison (progress bar + dynamic message), 7-day and 30-day switchable rolling trend (30-day rolling trend is the v1 time-range maximum — no separate calendar-month aggregate view is required for v1), Improvement Opportunities, detailed food analysis (expandable, per-serving + per-100g), Estimate Transparency, Insights Timeline
 - [x] **INS-02**: Data Analysis screen shows CO₂ estimate with methodology explanation and confidence band (honest uncertainty, not false precision)
 - [x] **INS-03**: Insights Timeline: chronological feed of observed patterns (e.g., "High-CO₂ evenings noticed", "Low protein on weekdays")
-- [ ] **INS-04**: All Insights views work fully offline using locally stored data
+- [x] **INS-04**: All Insights views work fully offline using locally stored data
 
 ### Weight Tracking
 
@@ -111,7 +111,7 @@ Requirements for initial release. Each maps to a roadmap phase.
 - [ ] **PRIV-05**: User can permanently delete their account and all associated data; deletion completes within the legally required timeframe; Keycloak user record is deleted in the same operation; required by App Store (since June 2022) and GDPR Art. 17
 - [ ] **PRIV-06**: User can exercise full GDPR rights from the Legal & Privacy hub: access data, rectify data, data portability, and consent withdrawal
 - [x] **PRIV-07**: Application contains zero third-party analytics SDKs, advertising SDKs, or behavioral tracking SDKs; compliance verified by an automated dependency audit run in CI (hardcoded blocklist) and an Exodus Privacy scan on every release build
-- [ ] **PRIV-08**: In Local Mode, no data is ever transmitted to any server without explicit user action
+- [x] **PRIV-08**: In Local Mode, no data is ever transmitted to any server without explicit user action
 - [x] **PRIV-09**: User can delete all local data (Danger Zone; requires typed confirmation before executing)
 
 ### Notifications
@@ -228,7 +228,7 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | AUTH-04 | Phase 7 | Pending |
 | AUTH-05 | Phase 7 | Pending |
 | AUTH-06 | Phase 7 | Pending |
-| AUTH-07 | Phase 5 | Pending |
+| AUTH-07 | Phase 5 | Complete |
 | AUTH-08 | Phase 7 | Pending |
 | AUTH-09 | Phase 7 | Pending |
 | AUTH-10 | Phase 7 | Pending |
@@ -272,7 +272,7 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | INS-01 | Phase 5 | Complete |
 | INS-02 | Phase 5 | Complete |
 | INS-03 | Phase 5 | Complete |
-| INS-04 | Phase 5 | Pending |
+| INS-04 | Phase 5 | Complete |
 | WT-01 | Phase 5 | Complete |
 | WT-02 | Phase 5 | Complete |
 | WT-03 | Phase 5 | Complete |
@@ -285,7 +285,7 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | PRIV-05 | Phase 7 | Pending |
 | PRIV-06 | Phase 6 | Pending |
 | PRIV-07 | Phase 1 | Complete |
-| PRIV-08 | Phase 5 | Pending |
+| PRIV-08 | Phase 5 | Complete |
 | PRIV-09 | Phase 5 | Complete |
 | NOTIF-01 | Phase 5 | Complete |
 | NOTIF-02 | Phase 5 | Complete |

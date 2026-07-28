@@ -19,7 +19,7 @@
 - [x] **Phase 2: Food Catalog Ingest & Search** — OFF seed DB ingest, FTS5 index, bundled starter pack, search UI + API fallback, benchmarked <1s on low-end Android (completed 2026-07-20)
 - [x] **Phase 3: Barcode Scanning & CO₂ Factor Table** — mobile_scanner integration, real-device barcode verification, product-to-CO₂ factor prototype, custom-food fallback (completed 2026-07-22)
 - [x] **Phase 4: Meal Logging Core** — Breakfast/Lunch/Dinner/Snack slots, portion units, Recent, Favorites, Custom foods, personal overrides, edit/delete/duplicate, offline-first, <10s meal-log verified (completed 2026-07-27)
-- [ ] **Phase 5: Nutrition, CO₂ Estimator, Dashboard, Insights, Weight, Notifications, Export/Backup** — full local app; CO₂ Estimator + Transparency + Improvement Opportunities; Insights (7d/30d); Weight tracking; local notifications; Export (CSV/Excel/JSON); Backup/Restore. **Local Mode shippable here.**
+- [x] **Phase 5: Nutrition, CO₂ Estimator, Dashboard, Insights, Weight, Notifications, Export/Backup** — full local app; CO₂ Estimator + Transparency + Improvement Opportunities; Insights (7d/30d); Weight tracking; local notifications; Export (CSV/Excel/JSON); Backup/Restore. **Local Mode shippable here.** (completed 2026-07-28)
 - [ ] **Phase 6: Onboarding, Legal Consent, Legal Hub, ED Safety Nets, Accessibility & Pre-Submission** — Splash → Welcome → Legal Consent → Mode Choice → Profile → Carousel; timestamped consent records; Legal Hub (Terms/Privacy/Disclaimer/Impressum); ED safety nets; PrivacyManifest/Data Safety; a11y audit; equal-weight Mode Choice audit; SAM test
 - [ ] **Phase 7: Keycloak Auth + Account Mode + Sync** — flutter_appauth OIDC/PKCE, Apple + Google IdPs, email/password + reset, Local→Account upgrade, outbox drainer + delta pull LWW-by-HLC, GDPR endpoints (export/delete), sync status UI
 - [ ] **Phase 8: Reference Data Delivery (Full OFF Pack)** — on-demand ~300–800MB OFF pack via CDN, delta refresh, methodology-version announcement flow
@@ -145,7 +145,7 @@ Plans:
 - [x] 05-16-PLAN.md — Backup & Restore screen
 - [x] 05-17-PLAN.md — Improvement Opportunities + Insights Timeline
 - [x] 05-18-PLAN.md — Final integration: router wiring, Dashboard assembly, Settings entry points
-- [ ] 05-19-PLAN.md — Offline-proof test + NFR-05 audit + full regression
+- [x] 05-19-PLAN.md — Offline-proof test + NFR-05 audit + full regression
 **UI hint**: yes
 
 ### Phase 6: Onboarding, Legal Consent, Legal Hub, ED Safety Nets, Accessibility & Pre-Submission
@@ -203,7 +203,7 @@ Plans:
 | 2. Food Catalog Ingest & Search | 7/7 | Complete   | 2026-07-20 |
 | 3. Barcode Scanning & CO₂ Factor Table | 5/5 | Complete   | 2026-07-22 |
 | 4. Meal Logging Core | 12/13 | In Progress|  |
-| 5. Full Local App (Local Mode Shippable) | 18/19 | In Progress|  |
+| 5. Full Local App (Local Mode Shippable) | 19/19 | Complete   | 2026-07-28 |
 | 6. Onboarding, Legal & Pre-Submission | 0/0 | Not started | - |
 | 7. Keycloak Auth + Account Mode + Sync | 0/0 | Not started | - |
 | 8. Reference Data Delivery (Full OFF Pack) | 0/0 | Not started | - |
