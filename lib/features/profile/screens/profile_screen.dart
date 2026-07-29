@@ -44,18 +44,30 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   Widget _buildBody(UserProfile? profile) {
     // Detect locale on first build — apply imperial default for US users.
-    // Only fires when no explicit units preference has been saved.
-    if (profile == null || profile.units == 'metric') {
+    //
+    // Only fires for a genuinely brand-new profile (`profile == null`, no
+    // row exists in the DB yet) -- NOT `profile.units == 'metric'`, which
+    // was the original (buggy) condition. `'metric'` is UserProfile's own
+    // default value, so once any field is saved (creating a real row with
+    // units: 'metric'), that condition is permanently true: every build
+    // scheduled another updateField write, which triggered a rebuild,
+    // which scheduled another write -- an infinite auto-save loop for any
+    // non-US-locale user (this app's entire target market is EU/Germany).
+    // Real-device testing traced a Profile-screen crash
+    // (`_dependents.isEmpty` framework assertion when opening the target-
+    // override dialog) back to this: the dialog's `showDialog(context:
+    // context, ...)` anchors on ProfileScreen's own Element, which this
+    // loop was tearing down and rebuilding at high frequency underneath
+    // it.
+    if (profile == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         final detectedUnits = ProfileNotifier.setLocaleUnits(context);
-        if (profile == null || profile.units == 'metric') {
-          unawaited(
-            ref
-                .read(profileProvider.notifier)
-                .updateField((p) => p.copyWith(units: detectedUnits)),
-          );
-        }
+        unawaited(
+          ref
+              .read(profileProvider.notifier)
+              .updateField((p) => p.copyWith(units: detectedUnits)),
+        );
       });
     }
 
