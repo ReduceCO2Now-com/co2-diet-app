@@ -1,6 +1,7 @@
 import 'package:co2diet/core/di/weight_providers.dart';
 import 'package:co2diet/domain/entities/weight_entry.dart';
 import 'package:co2diet/domain/entities/weight_settings.dart';
+import 'package:co2diet/domain/entities/weight_unit.dart';
 import 'package:co2diet/domain/repositories/i_weight_repository.dart';
 import 'package:co2diet/features/weight/screens/weight_screen.dart';
 import 'package:co2diet/features/weight/widgets/weight_chart.dart';
@@ -25,8 +26,14 @@ class _FakeWeightRepository implements IWeightRepository {
   }
 
   @override
-  Future<List<WeightEntry>> getEntriesInRange(WeightRange range) async =>
-      List.of(_entries);
+  Future<List<WeightEntry>> getEntriesInRange(WeightRange range) async {
+    // Mirrors the real WeightRepository/WeightDao's actual date-bound
+    // filtering (WeightRangeResolution.startDate) -- a range-blind fake
+    // here would silently mask a real range-filtering bug in the app.
+    final from = range.startDate(DateTime.now());
+    if (from == null) return List.of(_entries);
+    return _entries.where((e) => !e.loggedAt.isBefore(from)).toList();
+  }
 
   @override
   Future<void> deleteEntry(String id) async =>
@@ -141,6 +148,76 @@ void main() {
       expect(find.textContaining('pace'), findsNothing);
       expect(find.textContaining('projection'), findsNothing);
       expect(find.textContaining('on track'), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'range segmented button (7d/30d/90d/1yr/all) actually changes which '
+    'entries the chart plots (UAT Test 4: user reported the chart stays '
+    'static when switching ranges)',
+    (tester) async {
+      final now = DateTime.now();
+      final repo = _FakeWeightRepository()
+        .._entries.addAll([
+          WeightEntry(
+            id: 'a',
+            value: 80,
+            unit: WeightUnit.kg,
+            loggedAt: now.subtract(const Duration(days: 3)),
+          ),
+          WeightEntry(
+            id: 'b',
+            value: 79,
+            unit: WeightUnit.kg,
+            loggedAt: now.subtract(const Duration(days: 20)),
+          ),
+          WeightEntry(
+            id: 'c',
+            value: 78,
+            unit: WeightUnit.kg,
+            loggedAt: now.subtract(const Duration(days: 60)),
+          ),
+          WeightEntry(
+            id: 'd',
+            value: 77,
+            unit: WeightUnit.kg,
+            loggedAt: now.subtract(const Duration(days: 200)),
+          ),
+          WeightEntry(
+            id: 'e',
+            value: 76,
+            unit: WeightUnit.kg,
+            loggedAt: now.subtract(const Duration(days: 400)),
+          ),
+        ]);
+
+      await tester.pumpWidget(_buildTestable(repo, const WeightChart()));
+      await tester.pumpAndSettle();
+
+      List<Object?> spots() =>
+          tester.widget<LineChart>(find.byType(LineChart)).data
+              .lineBarsData
+              .first
+              .spots;
+
+      // Default range is Month (30d) -- entries a+b (3 and 20 days ago).
+      expect(spots(), hasLength(2));
+
+      await tester.tap(find.text('Week'));
+      await tester.pumpAndSettle();
+      expect(spots(), hasLength(1)); // only a (3 days ago)
+
+      await tester.tap(find.text('3 Months'));
+      await tester.pumpAndSettle();
+      expect(spots(), hasLength(3)); // a+b+c (adds 60 days ago)
+
+      await tester.tap(find.text('Year'));
+      await tester.pumpAndSettle();
+      expect(spots(), hasLength(4)); // a+b+c+d (adds 200 days ago)
+
+      await tester.tap(find.text('All'));
+      await tester.pumpAndSettle();
+      expect(spots(), hasLength(5)); // a+b+c+d+e (adds 400 days ago)
     },
   );
 

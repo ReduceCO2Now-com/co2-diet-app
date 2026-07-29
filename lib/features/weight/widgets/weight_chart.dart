@@ -16,7 +16,7 @@ double _valueInKg(WeightEntry entry) =>
 /// Interactive multi-range weight-history chart (WT-02) with an optional
 /// static goal reference line (WT-03).
 ///
-/// Range tabs (7d/30d/90d/1yr/all, defaulting to 30d) re-query
+/// Range tabs (Week/Month/3 Months/Year/All, defaulting to Month) re-query
 /// `WeightNotifier.entriesForRange` and re-plot. Uses RESEARCH.md Pattern 3
 /// verbatim: `ExtraLinesData.horizontalLines` draws the dashed
 /// target-weight line, `LineTouchData.touchTooltipData` shows values on
@@ -74,11 +74,14 @@ class _WeightChartState extends ConsumerState<WeightChart> {
       children: [
         SegmentedButton<WeightRange>(
           segments: const [
-            ButtonSegment(value: WeightRange.sevenDay, label: Text('7d')),
-            ButtonSegment(value: WeightRange.thirtyDay, label: Text('30d')),
-            ButtonSegment(value: WeightRange.ninetyDay, label: Text('90d')),
-            ButtonSegment(value: WeightRange.oneYear, label: Text('1yr')),
-            ButtonSegment(value: WeightRange.all, label: Text('all')),
+            ButtonSegment(value: WeightRange.sevenDay, label: Text('Week')),
+            ButtonSegment(value: WeightRange.thirtyDay, label: Text('Month')),
+            ButtonSegment(
+              value: WeightRange.ninetyDay,
+              label: Text('3 Months'),
+            ),
+            ButtonSegment(value: WeightRange.oneYear, label: Text('Year')),
+            ButtonSegment(value: WeightRange.all, label: Text('All')),
           ],
           selected: {_selectedRange},
           showSelectedIcon: false,
