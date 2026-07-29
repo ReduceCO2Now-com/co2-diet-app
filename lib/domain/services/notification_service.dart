@@ -2,10 +2,13 @@ import 'dart:async';
 
 import 'package:co2diet/core/router/app_router.dart';
 import 'package:co2diet/domain/entities/meal_slot.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
 /// Route-prefix allowlist for notification-tap deep links.
@@ -51,6 +54,22 @@ class NotificationService {
   /// [requestPermissionIfNeeded], called explicitly by a settings toggle
   /// handler (built in Plans 05-13/05-14/05-18).
   Future<void> initialize() async {
+    tz_data.initializeTimeZones();
+    try {
+      final deviceTimezone = await FlutterTimezone.getLocalTimezone();
+      tz.setLocalLocation(tz.getLocation(deviceTimezone.identifier));
+    } on Exception catch (e) {
+      // Falls back to UTC (tz_data.initializeTimeZones()'s own default --
+      // see timezone package's env.dart) on simulators/platforms without a
+      // native flutter_timezone implementation, or an unrecognized IANA
+      // identifier. Wrong-but-initialized beats uninitialized: an
+      // uninitialized tz.local throws LateInitializationError the moment
+      // any reminder is scheduled (not a PlatformException, so it isn't
+      // caught by scheduleMealReminder/scheduleWeighInReminder's own
+      // try/catch), silently preventing every reminder from ever firing.
+      debugPrint('[NotificationService] Falling back to UTC timezone: $e');
+    }
+
     const androidSettings = AndroidInitializationSettings(
       '@mipmap/ic_launcher',
     );
