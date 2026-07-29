@@ -40,8 +40,20 @@ class ProfileNotifier extends _$ProfileNotifier {
   }
 
   /// Persists [profile] to storage and re-runs build() to recompute targets.
+  ///
+  /// Deliberately does NOT set `state = AsyncValue.loading()` before the
+  /// write (unlike a typical explicit-submit save flow): this method is
+  /// called from `ProfileForm`'s auto-save `onChanged` on every single
+  /// keystroke. Forcing a loading state here made `ProfileScreen`'s
+  /// `.when(loading: ...)` branch swap the entire body out for a spinner
+  /// on every keystroke -- tearing down and rebuilding the whole
+  /// `ProfileForm` (not just one field) regardless of any per-field key
+  /// fix, which is what caused the intermittent (timing-dependent on how
+  /// fast the write completes) focus/keyboard loss survivors reported
+  /// even after the per-field `ValueKey` fix. Mirrors `WeightNotifier`'s
+  /// `saveGoal`/`saveReminderSettings`, which never transition through an
+  /// explicit loading state for the same reason.
   Future<void> saveProfile(UserProfile profile) async {
-    state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       await ref.read(profileRepositoryProvider).saveProfile(profile);
       return profile;

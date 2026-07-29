@@ -25,8 +25,17 @@ class Co2SettingsNotifier extends _$Co2SettingsNotifier {
 
   /// Persists [settings] to storage and re-runs build() so the notifier
   /// reflects the freshly saved state.
+  ///
+  /// Deliberately does NOT set `state = AsyncValue.loading()` before the
+  /// write -- this method fires on every keystroke via this screen's
+  /// auto-save `onChanged`. Forcing a loading state here made the screen's
+  /// `.when(loading: ...)` branch swap the entire body out for a spinner
+  /// on every keystroke, which is what caused intermittent focus/keyboard
+  /// loss even after the per-field `ValueKey` fix (see `ProfileNotifier
+  /// .saveProfile`'s identical fix/explanation). Mirrors `WeightNotifier`'s
+  /// save methods, which never transition through an explicit loading
+  /// state for the same reason.
   Future<void> saveSettings(Co2Settings settings) async {
-    state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       await ref.read(co2SettingsRepositoryProvider).saveSettings(settings);
       return settings;

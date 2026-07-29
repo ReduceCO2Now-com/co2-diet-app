@@ -154,5 +154,52 @@ void main() {
         expect(refreshed, saved);
       },
     );
+
+    test(
+      'saveSettings never emits an AsyncLoading state (regression: '
+      'auto-save-on-keystroke must not swap the whole screen to a '
+      'spinner)',
+      () async {
+        // Regression test for a real device-testing-only bug: saveSettings
+        // used to set `state = const AsyncValue.loading()` before the
+        // write completed. Since Co2SettingsScreen gates its body on
+        // `.when(loading: () => CircularProgressIndicator(), data: ...)`,
+        // and this method fires on every single keystroke via the
+        // screen's auto-save onChanged, that loading state made the
+        // *entire* screen body (every field, not just one) get torn down
+        // and rebuilt on every keystroke -- an even more severe version
+        // of the per-field ValueKey bug, and the reason focus/keyboard
+        // loss persisted intermittently even after that fix (timing-
+        // dependent on how fast the write actually completes).
+        when(() => mockRepo.getSettings())
+            .thenAnswer((_) async => const Co2Settings());
+        when(() => mockRepo.saveSettings(any())).thenAnswer((_) async {});
+
+        final container = _makeContainer(mockRepo);
+        await _waitForData(container);
+
+        final emitted = <AsyncValue<Co2Settings>>[];
+        final sub = container.listen<AsyncValue<Co2Settings>>(
+          co2SettingsProvider,
+          (prev, next) => emitted.add(next),
+        );
+        addTearDown(sub.close);
+
+        final notifier = container.read(co2SettingsProvider.notifier);
+        await notifier.saveSettings(
+          const Co2Settings(locationCountry: 'D'),
+        );
+
+        expect(
+          emitted.whereType<AsyncLoading<Co2Settings>>(),
+          isEmpty,
+          reason:
+              'saveSettings emitted an AsyncLoading state mid-save -- this '
+              'would swap the whole Co2SettingsScreen body to a spinner on '
+              'every keystroke, dropping focus regardless of any '
+              'per-field key fix.',
+        );
+      },
+    );
   });
 }
