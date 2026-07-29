@@ -148,14 +148,15 @@ skipped: 0
   debug_session: ""
 
 - truth: "Tapping an empty (dash) target value on the Profile screen does not crash the app"
-  status: failed
-  reason: "User reported (both Android Tab S7 FE and iOS iPhone): Profile screen shows '—' for calories/protein/carbs/fat targets even though Dashboard correctly computes and shows real values for the same underlying data. Tapping any of the empty target fields on Profile crashes the entire app -- confirmed reproducible on both devices/platforms."
+  status: resolved
+  reason: "User reported (both Android Tab S7 FE and iOS iPhone): tapping Calories/Protein/Carbs/Fat in the Daily Targets section (shown as '—', 'Add height and weight to see targets') crashes the entire app -- confirmed reproducible on both devices/platforms. User captured the real crash log: \"package:flutter/src/widgets/framework.dart': Failed assertion: line 6268 pos 12: '_dependents.isEmpty': is not true\" -- a Flutter Element-lifecycle assertion, not a Dart null-deref."
   severity: blocker
   test: null
-  root_cause: "UNKNOWN -- explicitly deferred. User is capturing the real crash log (adb logcat on Android / Xcode console on iOS) before any fix is attempted, since a full-app crash should not be diagnosed by guessing. TargetDisplayCard/_showOverrideDialog's tap handler in profile_screen.dart was inspected and shows no obvious unguarded null-dereference, so the actual cause needs the stack trace -- static review was not sufficient here. Also unexplained: why the SAME profile.targets data would render populated on Dashboard's MetricCard 'of X' suffix but empty on Profile's TargetDisplayCard, since both read the same profileProvider -- worth checking whether Dashboard is actually reading a different value (e.g. today's consumed totals) rather than the same target field, which may mean this is not actually a data inconsistency at all and just an independent crash."
+  root_cause: "ProfileScreen._buildBody's locale-detection effect had a broken guard: `if (profile == null || profile.units == 'metric')` scheduled a postFrameCallback that called updateField(...) -- but 'metric' is UserProfile's own default value, so once ANY field was ever saved (creating a real DB row with units: 'metric'), this condition was permanently true. Every build scheduled another auto-save write, which triggered a rebuild via ref.invalidateSelf(), which scheduled another write -- an infinite loop, silently running on every non-US-locale device (this app's entire target market is EU/Germany) since Phase 1. Opening the target-override dialog via `showDialog(context: context, ...)` anchors on ProfileScreen's own Element; with that Element being torn down and rebuilt at high frequency underneath the dialog's route insertion, the framework's InheritedElement dependent-tracking got left in an inconsistent state, tripping the `_dependents.isEmpty` assertion on unmount. This is very likely also a contributing factor to bugs 1+2 above (extra background rebuild churn on top of the keystroke-driven ones), though the Daily Targets tap was the only path that actually crashed outright."
   artifacts:
     - path: "lib/features/profile/screens/profile_screen.dart"
-      issue: "_showOverrideDialog / TargetDisplayCard onTap -- exact failure point unknown pending crash log"
-  missing:
-    - "Real crash log/stack trace from adb logcat (Android) or Xcode console (iOS)"
+      issue: "_buildBody's locale-detection guard checked profile.units == 'metric' instead of only profile == null -- fixed"
+  missing: []
+  fix_commit: "c6697a3"
+  fix_verification: "flutter analyze clean, full suite (369 tests) green. No new widget test added for the infinite-loop/crash itself (would require a fake clock or frame-count assertion harness beyond this session's scope) -- flagged as a follow-up; real-device re-confirmation still outstanding, same as bugs 1+2 above."
   debug_session: ""
