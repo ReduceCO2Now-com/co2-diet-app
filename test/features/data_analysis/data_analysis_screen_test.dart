@@ -30,6 +30,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/intl.dart';
 import 'package:mocktail/mocktail.dart';
 
 /// Mocktail double for [FoodCatalogDao] -- mirrors
@@ -271,6 +272,69 @@ void main() {
         expect(chart.data.barGroups, hasLength(4));
       },
     );
+
+    testWidgets(
+      'renders Y-axis labels that do not visually collide when the tallest '
+      "bar's value isn't an exact multiple of the label interval "
+      '(UAT bug #2a: Galaxy Tab S7 FE report of overlapping/out-of-order '
+      'Y-axis labels)',
+      (tester) async {
+        // 850 is deliberately not a clean multiple of fl_chart's computed
+        // interval (200) -- this is what makes fl_chart force an extra,
+        // out-of-sequence label at the exact max value on top of the last
+        // regular interval label.
+        final entries = [
+          _entry(id: '1', slot: MealSlot.breakfast, calories: 620),
+          _entry(id: '2', calories: 850),
+          _entry(id: '3', slot: MealSlot.dinner, calories: 700),
+          _entry(id: '4', slot: MealSlot.snack, calories: 150),
+        ];
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: TodayBreakdownBarChart(
+                entries: entries,
+                metric: AnalysisMetric.calories,
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Y-axis labels are the numeric Text widgets fl_chart renders in
+        // the narrow reserved-size column on the left edge of the chart
+        // (x < 40) -- distinct from the "Breakfast"/"Lunch"/etc. bottom
+        // slot labels, which sit much further right and lower.
+        final numericLabelCenters = <double, String>{};
+        for (final text in tester.widgetList<Text>(find.byType(Text))) {
+          final data = text.data;
+          if (data == null || !RegExp(r'^\d+$').hasMatch(data)) continue;
+          final rect = tester.getRect(find.byWidget(text));
+          if (rect.left >= 40) continue;
+          numericLabelCenters[rect.center.dy] = data;
+        }
+
+        // Two distinct Y-axis labels whose vertical centers land within one
+        // text-line's height of each other read as visually overlapping/
+        // out-of-order to a real user, even if their layout boxes don't
+        // literally intersect.
+        const minReadableGapPx = 20.0;
+        final centers = numericLabelCenters.keys.toList()..sort();
+        for (var i = 1; i < centers.length; i++) {
+          final gap = centers[i] - centers[i - 1];
+          expect(
+            gap,
+            greaterThanOrEqualTo(minReadableGapPx),
+            reason:
+                'Y-axis labels "${numericLabelCenters[centers[i - 1]]}" and '
+                '"${numericLabelCenters[centers[i]]}" are only '
+                '${gap.toStringAsFixed(1)}px apart (center-to-center) -- '
+                'they will visually overlap.',
+          );
+        }
+      },
+    );
   });
 
   group('WeeklyTotalSummary', () {
@@ -323,6 +387,47 @@ void main() {
 
       expect(titles, ['Burger', 'Apple', 'Carrot']);
     });
+  });
+
+  group('TrendSection', () {
+    testWidgets(
+      'X-axis shows real day labels, not raw decimal FlSpot indices '
+      '(UAT bug #2b: Galaxy Tab S7 FE report of "0.5, 1.5" etc. on the '
+      'trend chart X-axis)',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: TrendSection(
+                initialMetric: AnalysisMetric.calories,
+                fetchSpots: ({required metric, required rangeDays}) async => [
+                  for (var i = 0; i < rangeDays; i++)
+                    FlSpot(i.toDouble(), (i + 1) * 100.0),
+                ],
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // No axis label anywhere should be a raw decimal FlSpot index
+        // (e.g. "0.5", "1.5") -- that's the literal bug the user reported.
+        final decimalIndexLabel = find.byWidgetPredicate(
+          (widget) =>
+              widget is Text &&
+              widget.data != null &&
+              RegExp(r'^\d+\.\d$').hasMatch(widget.data!),
+        );
+        expect(decimalIndexLabel, findsNothing);
+
+        // The most recent data point (today) must render as a real day
+        // label -- not asserting exact string across all environments,
+        // just that today's weekday abbreviation appears somewhere.
+        final today = DateTime.now();
+        final todayLabel = DateFormat('E').format(today);
+        expect(find.text(todayLabel), findsWidgets);
+      },
+    );
   });
 
   group('EstimateTransparencyPanel', () {

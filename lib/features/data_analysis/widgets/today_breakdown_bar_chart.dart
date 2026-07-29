@@ -101,7 +101,18 @@ class TodayBreakdownBarChart extends StatelessWidget {
           barGroups: barGroups,
           titlesData: FlTitlesData(
             leftTitles: const AxisTitles(
-              sideTitles: SideTitles(showTitles: true, reservedSize: 36),
+              // maxIncluded: false -- without this, fl_chart always forces
+              // an extra label at the exact max data value in addition to
+              // its regular interval-spaced labels. When the max isn't a
+              // clean multiple of the interval (e.g. 850 with a 200
+              // interval), that extra label lands almost on top of the
+              // last regular one, rendering as overlapping/out-of-order
+              // text (UAT bug #2a).
+              sideTitles: SideTitles(
+                showTitles: true,
+                reservedSize: 36,
+                maxIncluded: false,
+              ),
             ),
             rightTitles: const AxisTitles(),
             topTitles: const AxisTitles(),

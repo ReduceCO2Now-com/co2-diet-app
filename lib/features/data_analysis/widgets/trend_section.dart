@@ -3,6 +3,7 @@ import 'package:co2diet/features/data_analysis/widgets/analysis_metric.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 /// Fetches [rangeDays] worth of daily [FlSpot] data for [metric]. The
 /// screen assembling [TrendSection] owns the actual query (against
@@ -79,6 +80,22 @@ class _TrendSectionState extends ConsumerState<TrendSection> {
     _refetch();
   }
 
+  /// Maps a spot's FlSpot.x index back to the calendar date it represents.
+  ///
+  /// Mirrors `_fetchTrendSpots`' construction (`DataAnalysisScreen`):
+  /// index 0 is the oldest day in the range, index `rangeDays - 1` is
+  /// today. [TrendSection] never sees the raw dates itself (spots arrive
+  /// pre-flattened to `FlSpot`s via [TrendSpotFetcher]), so this
+  /// reconstructs the same day from today's date and the index alone.
+  DateTime _dateForIndex(int index) {
+    final today = DateTime.now();
+    return DateTime(
+      today.year,
+      today.month,
+      today.day,
+    ).subtract(Duration(days: _selectedRangeDays - 1 - index));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -141,6 +158,36 @@ class _TrendSectionState extends ConsumerState<TrendSection> {
                             ),
                           )
                           .toList(),
+                    ),
+                  ),
+                  titlesData: FlTitlesData(
+                    rightTitles: const AxisTitles(),
+                    topTitles: const AxisTitles(),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 28,
+                        interval: _selectedRangeDays <= 7
+                            ? 1
+                            : (_selectedRangeDays / 6).ceilToDouble(),
+                        getTitlesWidget: (value, meta) {
+                          final index = value.round();
+                          if (index < 0 || index >= _selectedRangeDays) {
+                            return const SizedBox.shrink();
+                          }
+                          final date = _dateForIndex(index);
+                          final label = _selectedRangeDays <= 7
+                              ? DateFormat('E').format(date)
+                              : DateFormat('d/M').format(date);
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 4),
+                            child: Text(
+                              label,
+                              style: Theme.of(context).textTheme.labelSmall,
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ),
