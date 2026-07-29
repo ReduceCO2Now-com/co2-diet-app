@@ -3,7 +3,7 @@ status: testing
 phase: 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable
 source: 05-01-SUMMARY.md through 05-19-SUMMARY.md
 started: "2026-07-28T21:04:00.346Z"
-updated: "2026-07-29T09:51:49.738Z"
+updated: "2026-07-29T10:05:00.000Z"
 ---
 
 ## Current Test
@@ -12,8 +12,8 @@ updated: "2026-07-29T09:51:49.738Z"
 number: 4
 name: Weight Tracking — logging and chart interaction (fl_chart touch/drag)
 expected: |
-  From Settings, tap "Weight Tracking". Log a weigh-in (value, kg/lb toggle, optional note) — it should appear in the history chart immediately. The chart defaults to a 30-day view; tapping the 7d/30d/90d/1yr/all segmented buttons should switch the visible range. **Touch and drag your finger across the chart line** — you should see a tooltip/marker following your finger showing the value at that point (this is the fl_chart interaction that can't be verified by an automated test). If you set a weight goal (target weight + date), a horizontal dashed reference line should appear on the chart at the target weight — with no "on pace" projection text, just the line.
-awaiting: user response
+  From Settings, tap "Weight Tracking". Log a weigh-in (value, kg/lb toggle, optional note) — it should appear in the history chart immediately. The chart defaults to a 30-day view; tapping the Week/Month/3 Months/Year/All segmented buttons should switch the visible range. **Touch and drag your finger across the chart line** — you should see a tooltip/marker following your finger showing the value at that point (this is the fl_chart interaction that can't be verified by an automated test). If you set a weight goal (target weight + date), a horizontal dashed reference line should appear on the chart at the target weight — with no "on pace" projection text, just the line.
+awaiting: "user clarification -- do any of your logged weigh-ins actually span more than 7 days apart? And: does dragging your finger across the chart line show a value tooltip?"
 
 ## Tests
 
@@ -50,8 +50,11 @@ note: "RESOLVED 2026-07-29: user confirmed on Android Tab S7 FE -- both chart bu
 
 ### 4. Weight Tracking — logging and chart interaction (fl_chart touch/drag)
 expected: |
-  From Settings, tap "Weight Tracking". Log a weigh-in (value, kg/lb toggle, optional note) — it should appear in the history chart immediately. The chart defaults to a 30-day view; tapping the 7d/30d/90d/1yr/all segmented buttons should switch the visible range. **Touch and drag your finger across the chart line** — you should see a tooltip/marker following your finger showing the value at that point (this is the fl_chart interaction that can't be verified by an automated test). If you set a weight goal (target weight + date), a horizontal dashed reference line should appear on the chart at the target weight — with no "on pace" projection text, just the line.
-result: [pending]
+  From Settings, tap "Weight Tracking". Log a weigh-in (value, kg/lb toggle, optional note) — it should appear in the history chart immediately. The chart defaults to a 30-day view; tapping the Week/Month/3 Months/Year/All segmented buttons should switch the visible range. **Touch and drag your finger across the chart line** — you should see a tooltip/marker following your finger showing the value at that point (this is the fl_chart interaction that can't be verified by an automated test). If you set a weight goal (target weight + date), a horizontal dashed reference line should appear on the chart at the target weight — with no "on pace" projection text, just the line.
+result: issue
+reported: "(1) Log weigh-in: PASS. (2) Range switching (7d/30d/90d/1yr/all buttons): FAIL reported -- tapping between ranges appeared to do nothing, chart stayed static. (3) Goal reference line: user could not find it, asked whether it's actually implemented -- confused it with the separate 'Best Practices' text note. (4) UX: range labels ('7d/30d/90d/1yr/all') read as too technical."
+severity: minor
+note: "(3) NOT A BUG -- confirmed directly from the user's own screenshot: the dashed 'Goal: 83.0 kg' line IS present and rendering correctly at the target weight. (4) FIXED, commit 3d8cf19 -- relabeled to Week/Month/3 Months/Year/All. (2) INVESTIGATED, no code bug found: fixed a real gap in the test fake (_FakeWeightRepository.getEntriesInRange previously ignored its own range parameter -- a latent test-quality issue, not a production bug) and added a widget test with entries spread across all five range windows (3/20/60/200/400 days ago); it passes against unmodified production code -- the select->refetch->rerender pipeline and the DAO's SQL date-bound query both work correctly. Root cause of the on-device symptom is very likely that all of this fresh test device's logged entries fall within the same short window (a brand-new install has no old weigh-ins to show a difference against), compounded by the chart having no visible axis/date labels at all (titlesData: show: false) to signal that anything changed. Needs the user to confirm: do any logged weigh-ins span more than 7 days apart? If yes and the chart still doesn't change, this reopens as a real bug. (Touch-and-drag tooltip interaction not yet confirmed either way.)"
 
 ### 5. Meal reminder notification — actually fires and is tappable
 expected: |
@@ -82,8 +85,8 @@ result: [pending]
 
 total: 9
 passed: 3
-issues: 0
-pending: 6
+issues: 1
+pending: 5
 skipped: 0
 
 ## Gaps
@@ -148,6 +151,19 @@ skipped: 0
     - "iOS iPhone re-confirmation -- resolved on Android Tab S7 FE only so far, original report was cross-device"
   fix_commit: "1f58cf1 (bug 1), 147f1f1 (bug 2)"
   fix_verification: "Bug 1: regression tests (test/features/profile/profile_form_test.dart, extended co2_settings_screen_test.dart/weight_screen_test.dart) assert EditableTextState identity survives an onChanged-driven rebuild. Bug 2: regression tests (test/features/profile/profile_notifier_test.dart [new], extended co2_settings_notifier_test.dart) assert saveProfile/saveSettings never emit an AsyncLoading state. Both sets of tests independently verified to actually fail against their respective pre-fix code via temporary git stash, then confirmed passing after restore. Full suite (369 tests) green, flutter analyze clean. Real-device re-confirmed on Android Tab S7 FE 2026-07-29 (fast typing, no drops); iOS still outstanding."
+  debug_session: ""
+
+- truth: "Weight Tracking's chart range selector uses plain-language labels, not raw technical values"
+  status: resolved
+  reason: "User reported (Galaxy Tab S7 FE): range selector labels ('7d/30d/90d/1yr/all') read as too technical/unprofessional for end users."
+  severity: minor
+  test: 4
+  root_cause: "Cosmetic only -- ButtonSegment labels used the WeightRange enum's shorthand names verbatim instead of user-facing copy."
+  artifacts:
+    - path: "lib/features/weight/widgets/weight_chart.dart"
+      issue: "Segmented button labels were '7d'/'30d'/'90d'/'1yr'/'all'"
+  missing: []
+  fix_commit: "3d8cf19"
   debug_session: ""
 
 - truth: "Tapping an empty (dash) target value on the Profile screen does not crash the app"
