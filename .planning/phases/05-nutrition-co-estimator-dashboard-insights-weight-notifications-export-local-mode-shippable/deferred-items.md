@@ -138,3 +138,31 @@ and the current leading untested candidate).
 requirement — see `ROADMAP.md`'s Phase 5 requirement list. It is Phase 1
 functionality that already shipped; Phase 5's goal-verification and
 checkpoint do not depend on the Daily Targets override dialog working.
+
+## From Phase 5 real-device UAT — Weight chart has no visible axis labels
+
+**Status: deferred as minor polish, 2026-07-29.** Flagged by the user
+during Test 4 (Weight Tracking) as a non-blocking note, not a bug —
+explicitly not requesting a fix now.
+
+**Where:** `lib/features/weight/widgets/weight_chart.dart` — the
+`LineChart`'s `titlesData: const FlTitlesData(show: false)` hides all
+axis labels entirely (no dates on the X-axis, no kg/lb values on the
+Y-axis).
+
+**Why it's not urgent:** the underlying data and interactions are all
+correct and user-confirmed working (range switching, touch-and-drag
+tooltip, goal reference line) — this is purely a readability polish
+item. It did cause some confusion during UAT (Test 4's range-switching
+concern was partly this: with axis labels hidden, there was no visual
+way to confirm a range change actually took effect even when the
+underlying data was identical across ranges for otherwise-legitimate
+reasons).
+
+**Suggested future fix:** add a minimal `titlesData` config (mirroring
+`today_breakdown_bar_chart.dart`/`trend_section.dart`'s already-fixed
+patterns elsewhere in Data Analysis) — Y-axis kg/lb value labels and
+X-axis date labels for the visible range, formatted appropriately per
+range length (e.g. day-of-week for 7d, date for longer ranges, matching
+`trend_section.dart`'s established `DateFormat('E')`/`DateFormat('d/M')`
+convention from this same session).

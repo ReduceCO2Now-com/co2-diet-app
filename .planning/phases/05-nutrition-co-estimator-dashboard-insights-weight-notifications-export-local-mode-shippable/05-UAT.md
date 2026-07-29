@@ -3,17 +3,17 @@ status: testing
 phase: 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable
 source: 05-01-SUMMARY.md through 05-19-SUMMARY.md
 started: "2026-07-28T21:04:00.346Z"
-updated: "2026-07-29T10:05:00.000Z"
+updated: "2026-07-29T15:44:42.107Z"
 ---
 
 ## Current Test
 <!-- OVERWRITE each test - shows where we are -->
 
-number: 4
-name: Weight Tracking — logging and chart interaction (fl_chart touch/drag)
+number: 5
+name: Meal reminder notification — actually fires and is tappable
 expected: |
-  From Settings, tap "Weight Tracking". Log a weigh-in (value, kg/lb toggle, optional note) — it should appear in the history chart immediately. The chart defaults to a 30-day view; tapping the Week/Month/3 Months/Year/All segmented buttons should switch the visible range. **Touch and drag your finger across the chart line** — you should see a tooltip/marker following your finger showing the value at that point (this is the fl_chart interaction that can't be verified by an automated test). If you set a weight goal (target weight + date), a horizontal dashed reference line should appear on the chart at the target weight — with no "on pace" projection text, just the line.
-awaiting: "user clarification -- do any of your logged weigh-ins actually span more than 7 days apart? And: does dragging your finger across the chart line show a value tooltip?"
+  In Weight Tracking or Settings, find "Meal Reminders" and enable one slot (e.g. Lunch) with a time 1-2 minutes in the future. Grant the notification permission if prompted (should only ask now, not earlier). Background the app (press home / switch apps) and wait. **The notification should actually arrive at the OS level** at the scheduled time. Tapping it should open the app directly into food search with that meal slot pre-selected (not just the Dashboard).
+awaiting: user response
 
 ## Tests
 
@@ -51,10 +51,10 @@ note: "RESOLVED 2026-07-29: user confirmed on Android Tab S7 FE -- both chart bu
 ### 4. Weight Tracking — logging and chart interaction (fl_chart touch/drag)
 expected: |
   From Settings, tap "Weight Tracking". Log a weigh-in (value, kg/lb toggle, optional note) — it should appear in the history chart immediately. The chart defaults to a 30-day view; tapping the Week/Month/3 Months/Year/All segmented buttons should switch the visible range. **Touch and drag your finger across the chart line** — you should see a tooltip/marker following your finger showing the value at that point (this is the fl_chart interaction that can't be verified by an automated test). If you set a weight goal (target weight + date), a horizontal dashed reference line should appear on the chart at the target weight — with no "on pace" projection text, just the line.
-result: issue
+result: pass
 reported: "(1) Log weigh-in: PASS. (2) Range switching (7d/30d/90d/1yr/all buttons): FAIL reported -- tapping between ranges appeared to do nothing, chart stayed static. (3) Goal reference line: user could not find it, asked whether it's actually implemented -- confused it with the separate 'Best Practices' text note. (4) UX: range labels ('7d/30d/90d/1yr/all') read as too technical."
 severity: minor
-note: "(3) NOT A BUG -- confirmed directly from the user's own screenshot: the dashed 'Goal: 83.0 kg' line IS present and rendering correctly at the target weight. (4) FIXED, commit 3d8cf19 -- relabeled to Week/Month/3 Months/Year/All. (2) INVESTIGATED, no code bug found: fixed a real gap in the test fake (_FakeWeightRepository.getEntriesInRange previously ignored its own range parameter -- a latent test-quality issue, not a production bug) and added a widget test with entries spread across all five range windows (3/20/60/200/400 days ago); it passes against unmodified production code -- the select->refetch->rerender pipeline and the DAO's SQL date-bound query both work correctly. Root cause of the on-device symptom is very likely that all of this fresh test device's logged entries fall within the same short window (a brand-new install has no old weigh-ins to show a difference against), compounded by the chart having no visible axis/date labels at all (titlesData: show: false) to signal that anything changed. Needs the user to confirm: do any logged weigh-ins span more than 7 days apart? If yes and the chart still doesn't change, this reopens as a real bug. (Touch-and-drag tooltip interaction not yet confirmed either way.)"
+note: "RESOLVED 2026-07-29, all four findings closed: (2) confirmed correct -- user's test data was all within one week, so every range genuinely returned identical data; not a bug. (3) confirmed not a bug -- goal line was always rendering correctly. (4) FIXED, commit 3d8cf19 -- relabeled to Week/Month/3 Months/Year/All. Touch-and-drag tooltip also confirmed working. Non-blocking polish item logged in deferred-items.md: the chart has no visible axis/date labels at all, making it harder to read at a glance despite the underlying data/interaction being correct."
 
 ### 5. Meal reminder notification — actually fires and is tappable
 expected: |
@@ -84,9 +84,9 @@ result: [pending]
 ## Summary
 
 total: 9
-passed: 3
-issues: 1
-pending: 5
+passed: 4
+issues: 0
+pending: 4
 skipped: 0
 
 ## Gaps
