@@ -57,6 +57,10 @@ class NotificationService {
     tz_data.initializeTimeZones();
     try {
       final deviceTimezone = await FlutterTimezone.getLocalTimezone();
+      debugPrint(
+        '[NotificationService] flutter_timezone reports device timezone: '
+        '"${deviceTimezone.identifier}"',
+      );
       tz.setLocalLocation(tz.getLocation(deviceTimezone.identifier));
     } on Exception catch (e) {
       // Falls back to UTC (tz_data.initializeTimeZones()'s own default --
@@ -69,6 +73,11 @@ class NotificationService {
       // try/catch), silently preventing every reminder from ever firing.
       debugPrint('[NotificationService] Falling back to UTC timezone: $e');
     }
+    debugPrint(
+      '[NotificationService] tz.local resolved to: "${tz.local.name}" '
+      '(current offset ${tz.TZDateTime.now(tz.local).timeZoneOffset}, '
+      'device DateTime.now() offset ${DateTime.now().timeZoneOffset})',
+    );
 
     const androidSettings = AndroidInitializationSettings(
       '@mipmap/ic_launcher',
@@ -145,12 +154,25 @@ class NotificationService {
   /// permission-denied UX.
   Future<bool> scheduleMealReminder(MealSlot slot, String time) async {
     final parsed = _parseTime(time);
-    if (parsed == null) return false;
+    if (parsed == null) {
+      debugPrint(
+        '[NotificationService] scheduleMealReminder(${slot.name}, "$time") '
+        '-- unparseable time, aborting before reaching the plugin',
+      );
+      return false;
+    }
+
+    final scheduledDate = _nextInstanceOfTime(parsed.$1, parsed.$2);
+    debugPrint(
+      '[NotificationService] scheduleMealReminder(${slot.name}, "$time") '
+      '-- id ${_mealSlotNotificationId(slot)}, resolved scheduledDate: '
+      '$scheduledDate (tz.local: "${tz.local.name}")',
+    );
 
     try {
       await _plugin.zonedSchedule(
         id: _mealSlotNotificationId(slot),
-        scheduledDate: _nextInstanceOfTime(parsed.$1, parsed.$2),
+        scheduledDate: scheduledDate,
         notificationDetails: const NotificationDetails(
           android: AndroidNotificationDetails(
             _mealChannelId,
@@ -163,9 +185,23 @@ class NotificationService {
         title: '${slot.displayLabel} reminder',
         payload: '/food-search?slot=${slot.name}',
       );
+      debugPrint(
+        '[NotificationService] scheduleMealReminder(${slot.name}) -- '
+        'zonedSchedule returned successfully',
+      );
       return true;
-    } on PlatformException {
+    } on PlatformException catch (e) {
+      debugPrint(
+        '[NotificationService] scheduleMealReminder(${slot.name}) -- '
+        'PlatformException: $e',
+      );
       return false;
+    } on Object catch (e, st) {
+      debugPrint(
+        '[NotificationService] scheduleMealReminder(${slot.name}) -- '
+        'UNEXPECTED non-PlatformException error, rethrowing: $e\n$st',
+      );
+      rethrow;
     }
   }
 
@@ -209,6 +245,12 @@ class NotificationService {
     final scheduledDate = weekday != null
         ? _nextInstanceOfWeekdayTime(weekday, hour, minute)
         : _nextInstanceOfTime(hour, minute);
+    debugPrint(
+      '[NotificationService] scheduleWeighInReminder(frequency: '
+      '$frequency, time: "$time", weekday: $weekday) -- id '
+      '$_weighInNotificationId, resolved scheduledDate: $scheduledDate '
+      '(tz.local: "${tz.local.name}")',
+    );
 
     try {
       await _plugin.zonedSchedule(
@@ -228,9 +270,23 @@ class NotificationService {
         title: 'Time for your weigh-in',
         payload: '/weight-tracking',
       );
+      debugPrint(
+        '[NotificationService] scheduleWeighInReminder -- zonedSchedule '
+        'returned successfully',
+      );
       return true;
-    } on PlatformException {
+    } on PlatformException catch (e) {
+      debugPrint(
+        '[NotificationService] scheduleWeighInReminder -- '
+        'PlatformException: $e',
+      );
       return false;
+    } on Object catch (e, st) {
+      debugPrint(
+        '[NotificationService] scheduleWeighInReminder -- UNEXPECTED '
+        'non-PlatformException error, rethrowing: $e\n$st',
+      );
+      rethrow;
     }
   }
 
