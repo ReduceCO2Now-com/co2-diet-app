@@ -3,7 +3,7 @@ status: testing
 phase: 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable
 source: 05-01-SUMMARY.md through 05-19-SUMMARY.md
 started: "2026-07-28T21:04:00.346Z"
-updated: "2026-07-28T22:41:18.059Z"
+updated: "2026-07-29T08:19:50.399Z"
 ---
 
 ## Current Test
@@ -125,21 +125,26 @@ skipped: 0
   debug_session: ""
 
 - truth: "Typing into a text field (CO2 Settings location/region, Profile Setup age/height/weight, Weight Tracking goal) does not lose focus or dismiss the keyboard"
-  status: resolved
-  reason: "User reported (both Android Tab S7 FE and iOS iPhone): typing a single character causes the field to lose focus and the keyboard to dismiss, on both CO2 Calculation Settings AND Profile Setup, requiring a re-tap after every keystroke. Cross-screen, cross-platform -- confirmed shared root cause."
+  status: partial
+  reason: "User reported (both Android Tab S7 FE and iOS iPhone): typing a single character causes the field to lose focus and the keyboard to dismiss, on both CO2 Calculation Settings AND Profile Setup, requiring a re-tap after every keystroke. After the first fix (commit 1f58cf1), user reported the bug was only PARTIALLY improved -- keyboard/focus still jumped and broke intermittently on real devices despite the fix and passing tests. A second, deeper root cause was then found and fixed (commit 147f1f1) -- see below. Not yet re-confirmed live on-device after the second fix; keeping this as 'partial' rather than re-declaring 'resolved' until the user actually verifies it on real hardware, since this exact bug was already prematurely marked resolved once."
   severity: major
   test: 2
-  root_cause: "Three screens keyed their TextFormFields by the field's OWN current value (e.g. `ValueKey('age-${p?.age}')`, `ValueKey('location-country-${settings.locationCountry}')`, `ValueKey('target-weight-${widget.settings.targetWeightKg}')`). Every keystroke fires onChanged -> auto-save -> provider rebuild -> the key changes -> Flutter tears down and recreates the field's Element/State instead of updating it in place, dropping focus and the keyboard. `enterText`-based widget tests never caught this because `enterText` sets the whole value in one call rather than simulating a real keystroke-by-keystroke rebuild cycle."
+  root_cause: "Two distinct, stacked bugs, both now addressed:\n(1) [fix_commit 1f58cf1] Three screens keyed their TextFormFields by the field's OWN current value (e.g. `ValueKey('age-${p?.age}')`, `ValueKey('location-country-${settings.locationCountry}')`, `ValueKey('target-weight-${widget.settings.targetWeightKg}')`). Every keystroke fires onChanged -> auto-save -> provider rebuild -> the key changes -> Flutter tears down and recreates the field's Element/State instead of updating it in place. `enterText`-based widget tests never caught this because `enterText` sets the whole value in one call rather than simulating a real keystroke-by-keystroke rebuild cycle.\n(2) [fix_commit 147f1f1, found only after the user reported the first fix was incomplete] `ProfileNotifier.saveProfile` and `Co2SettingsNotifier.saveSettings` both set `state = const AsyncValue.loading()` synchronously before every write. Since `ProfileScreen`/`Co2SettingsScreen` gate their entire body on `.when(loading: () => CircularProgressIndicator(), data: ...)`, and these methods fire on every keystroke, this tore out and rebuilt the WHOLE screen body (not just one field) on every keystroke -- a strictly worse version of bug (1) that (1)'s per-field key fix could never have addressed, since the whole ancestor subtree was being replaced regardless of any child widget's own key. This explains why the symptom was 'intermittent' post-(1)-fix: whether the user actually perceives/experiences the drop depends on how fast the write + rebuild completes relative to the next frame, which varies with real-device timing (I/O latency, GC pauses, thermal state) -- not reproducible deterministically, which is exactly why `Widget`-level regression tests for (1) alone didn't catch it. `WeightNotifier.saveGoal`/`saveReminderSettings` (same phase, Plan 05-07/05-13) never had this pattern, which is consistent with Weight's target-weight field not being re-reported as still-broken."
   artifacts:
     - path: "lib/features/profile/widgets/profile_form.dart"
-      issue: "Value-tied ValueKey on Age, Height (cm/ft/in), and Weight (kg/lb) TextFormFields"
+      issue: "(1) Value-tied ValueKey on Age, Height (cm/ft/in), and Weight (kg/lb) TextFormFields -- fixed"
     - path: "lib/features/co2_settings/screens/co2_settings_screen.dart"
-      issue: "Value-tied ValueKey on all 8 fields (2 TextFormFields + 6 DropdownButtonFormFields)"
+      issue: "(1) Value-tied ValueKey on all 8 fields (2 TextFormFields + 6 DropdownButtonFormFields) -- fixed"
     - path: "lib/features/weight/screens/weight_screen.dart"
-      issue: "Value-tied ValueKey on the Target weight TextFormField"
-  missing: []
-  fix_commit: "1f58cf1"
-  fix_verification: "Regression tests added (test/features/profile/profile_form_test.dart, extended test/features/co2_settings/co2_settings_screen_test.dart and test/features/weight/weight_screen_test.dart) asserting EditableTextState identity survives an onChanged-driven rebuild. Verified the tests actually fail against the pre-fix code via a temporary git stash of the fix, then confirmed they pass after restoring it. Full suite (366 tests) green, flutter analyze clean."
+      issue: "(1) Value-tied ValueKey on the Target weight TextFormField -- fixed"
+    - path: "lib/features/profile/providers/profile_notifier.dart"
+      issue: "(2) saveProfile set state = AsyncValue.loading() before every auto-save write -- fixed"
+    - path: "lib/features/co2_settings/providers/co2_settings_notifier.dart"
+      issue: "(2) saveSettings set state = AsyncValue.loading() before every auto-save write -- fixed"
+  missing:
+    - "Live on-device re-test after fix (2) -- not yet performed"
+  fix_commit: "1f58cf1 (bug 1), 147f1f1 (bug 2)"
+  fix_verification: "Bug 1: regression tests (test/features/profile/profile_form_test.dart, extended co2_settings_screen_test.dart/weight_screen_test.dart) assert EditableTextState identity survives an onChanged-driven rebuild. Bug 2: regression tests (test/features/profile/profile_notifier_test.dart [new], extended co2_settings_notifier_test.dart) assert saveProfile/saveSettings never emit an AsyncLoading state. Both sets of tests independently verified to actually fail against their respective pre-fix code via temporary git stash, then confirmed passing after restore. Full suite (369 tests) green, flutter analyze clean. Real-device re-confirmation still outstanding."
   debug_session: ""
 
 - truth: "Tapping an empty (dash) target value on the Profile screen does not crash the app"
