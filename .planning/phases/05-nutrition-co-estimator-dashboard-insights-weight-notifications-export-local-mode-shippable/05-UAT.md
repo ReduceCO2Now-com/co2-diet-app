@@ -101,27 +101,29 @@ skipped: 0
   debug_session: ""
 
 - truth: "Today's breakdown stacked bar chart (Data Analysis) renders Y-axis labels legibly"
-  status: failed
-  reason: "User reported (Galaxy Tab S7 FE): Y-axis labels overlapping/stacking on top of each other, out of order."
+  status: partial
+  reason: "User reported (Galaxy Tab S7 FE): Y-axis labels overlapping/stacking on top of each other, out of order. Fix applied and regression-tested (reproduced failing against pre-fix code, verified passing after), but not yet re-confirmed on a real device -- keeping 'partial' rather than 'resolved' per this session's established discipline (see bug #3)."
   severity: major
   test: 3
-  root_cause: ""
+  root_cause: "fl_chart's InheritedElement-unrelated SideTitles.maxIncluded defaults to true, which forces an extra axis label at the exact max data value in addition to the regular interval-spaced labels. When the max isn't a clean multiple of the computed interval (e.g. a 850 kcal tallest bar against a 200 interval), that forced extra label (850) lands almost on top of the last regular label (800) -- center-to-center distance of ~12px against a ~47px gap between the regular labels, confirmed via widget-test rect inspection."
   artifacts:
     - path: "lib/features/data_analysis/widgets/today_breakdown_bar_chart.dart"
-      issue: "Likely fl_chart BarChart titlesData/leftTitles getTitlesWidget missing interval/reservedSize/rotation config, causing label collisions"
+      issue: "leftTitles.SideTitles had no maxIncluded: false, so fl_chart's default forced-max-label behavior collided with the last regular interval label"
   missing: []
+  fix_commit: "c3cbd84"
   debug_session: ""
 
 - truth: "Trend chart (Data Analysis) X-axis shows real date/day labels, not raw numeric indices"
-  status: failed
-  reason: "User reported (Galaxy Tab S7 FE): X-axis shows decimal increments (0.5, 1.5, etc.) instead of actual dates or days of the week, making the trend chart unreadable as a time-series view."
+  status: partial
+  reason: "User reported (Galaxy Tab S7 FE): X-axis shows decimal increments (0.5, 1.5, etc.) instead of actual dates or days of the week, making the trend chart unreadable as a time-series view. Fix applied and regression-tested (reproduced failing against pre-fix code, verified passing after), but not yet re-confirmed on a real device -- keeping 'partial' rather than 'resolved' per this session's established discipline (see bug #3)."
   severity: major
   test: 3
-  root_cause: ""
+  root_cause: "LineChartData never set titlesData at all, so fl_chart used its entirely default axis config on all four sides (left/top/right/bottom all showing titles). With no bottomTitles.getTitlesWidget override, fl_chart's default title renderer shows the raw FlSpot.x value itself using its own auto-picked, non-integer interval (confirmed via widget test: exact values '0, 0.5, 1, 1.5, ... 6' rendered on both the top AND bottom edges) -- there was no date mapping anywhere, and the same broken labels were duplicated on the (also unreported, un-hidden) top axis."
   artifacts:
     - path: "lib/features/data_analysis/widgets/trend_section.dart"
-      issue: "fl_chart bottomTitles getTitlesWidget likely returning the raw FlSpot x-index (double) instead of mapping it to a formatted date/day label"
+      issue: "No titlesData/bottomTitles.getTitlesWidget config existed at all -- not a misconfiguration of an existing getTitlesWidget as originally hypothesized, but a complete absence of one"
   missing: []
+  fix_commit: "c3cbd84"
   debug_session: ""
 
 - truth: "Typing into a text field (CO2 Settings location/region, Profile Setup age/height/weight, Weight Tracking goal) does not lose focus or dismiss the keyboard"
