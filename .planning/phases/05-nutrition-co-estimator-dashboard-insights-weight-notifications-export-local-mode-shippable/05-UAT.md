@@ -3,16 +3,18 @@ status: testing
 phase: 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable
 source: 05-01-SUMMARY.md through 05-19-SUMMARY.md
 started: "2026-07-28T21:04:00.346Z"
-updated: "2026-07-29T15:44:42.107Z"
+updated: "2026-07-29T16:03:46.424Z"
 ---
 
 ## Current Test
 <!-- OVERWRITE each test - shows where we are -->
 
-number: 5
-name: Meal reminder notification — actually fires and is tappable
+number: 6
+name: "Weigh-in reminder — scheduling, firing, and re-arming (retest alongside Test 5's meal reminder — same fix, commit 025bc55)"
 expected: |
-  In Weight Tracking or Settings, find "Meal Reminders" and enable one slot (e.g. Lunch) with a time 1-2 minutes in the future. Grant the notification permission if prompted (should only ask now, not earlier). Background the app (press home / switch apps) and wait. **The notification should actually arrive at the OS level** at the scheduled time. Tapping it should open the app directly into food search with that meal slot pre-selected (not just the Dashboard).
+  In Weight Tracking's Reminders section, set a weigh-in reminder to "Custom" with a specific day-of-week + time (or Weekly, for a faster test). Confirm it fires as a real OS notification at the scheduled time. Then: background the app and bring it back to the foreground at least once before the next occurrence — the reminder should still be scheduled to fire again (this exercises the app-lifecycle re-arm logic that keeps Biweekly/Monthly reminders alive beyond their first fire, not just Weekly).
+
+  Also retest Test 5 (meal reminder) at the same time: enable a meal-slot reminder 1-2 minutes out and confirm it now actually fires and is tappable. Both share the exact same root cause and fix (timezone database was never initialized), so one retest pass can confirm both.
 awaiting: user response
 
 ## Tests
@@ -59,7 +61,10 @@ note: "RESOLVED 2026-07-29, all four findings closed: (2) confirmed correct -- u
 ### 5. Meal reminder notification — actually fires and is tappable
 expected: |
   In Weight Tracking or Settings, find "Meal Reminders" and enable one slot (e.g. Lunch) with a time 1-2 minutes in the future. Grant the notification permission if prompted (should only ask now, not earlier). Background the app (press home / switch apps) and wait. **The notification should actually arrive at the OS level** at the scheduled time. Tapping it should open the app directly into food search with that meal slot pre-selected (not just the Dashboard).
-result: [pending]
+result: issue
+reported: "User confirmed reminder time was set correctly (24-hour format, verified against device clock), OS-level notification permission granted, battery optimization not restricting the app -- ruling out user/device-settings error. Neither the meal reminder NOR the weigh-in reminder (Test 6) fired after waiting past the scheduled time with the app backgrounded."
+severity: blocker
+note: "FIXED, commit 025bc55 -- see Gaps below for root cause. Same fix covers Test 6's weigh-in reminder (identical root cause, identical code path) -- ask the user to retest both together. Not yet re-confirmed on a real device."
 
 ### 6. Weigh-in reminder — scheduling, firing, and re-arming
 expected: |
@@ -85,7 +90,7 @@ result: [pending]
 
 total: 9
 passed: 4
-issues: 0
+issues: 1
 pending: 4
 skipped: 0
 
@@ -102,6 +107,20 @@ skipped: 0
       issue: "Missing compileOptions.isCoreLibraryDesugaringEnabled = true and missing coreLibraryDesugaring dependency"
   missing: []
   fix_commit: "08e7bc1"
+  debug_session: ""
+
+- truth: "Meal and weigh-in reminders actually fire as real OS notifications at their scheduled time"
+  status: partial
+  reason: "User confirmed reminder time set correctly, OS notification permission granted, battery optimization not restricting the app -- ruling out user/device error. Neither the meal reminder (Test 5) nor the weigh-in reminder (Test 6) ever fired. Fix applied and regression-tested, but not yet re-confirmed on a real device -- keeping 'partial' rather than 'resolved' per this session's established discipline."
+  severity: blocker
+  test: 5
+  root_cause: "NotificationService.initialize() never called tz_data.initializeTimeZones()/tz.setLocalLocation(...), despite its own doc comment claiming it configures timezone/flutter_timezone. The `timezone` package's `tz.local` getter reads a package-global `late Location _local` field with NO default/initializer (confirmed via package source, timezone-0.11.1/lib/src/env.dart) -- the very first read of it throws `LateInitializationError`. Both scheduleMealReminder and scheduleWeighInReminder compute `scheduledDate: _nextInstanceOfTime(...)` (which reads tz.local) as part of the same try block that calls the plugin's zonedSchedule, but their catch clauses only handle `PlatformException` -- a `LateInitializationError` is not one, so it propagates uncaught out of NotificationPrefsNotifier.setSlotEnabled / the weigh-in reminder's scheduling call with no user-visible error. The toggle silently fails to actually schedule anything, with nothing in the UI to indicate it. flutter_timezone was already a human-approved dependency installed in Plan 05-08 for exactly this purpose (per its own pubspec.yaml comment: 'reads the device's IANA timezone name at runtime to feed timezone package's setLocalLocation'), but was never actually imported or called anywhere in the codebase."
+  artifacts:
+    - path: "lib/domain/services/notification_service.dart"
+      issue: "initialize() never called tz_data.initializeTimeZones()/tz.setLocalLocation() despite its own doc comment claiming it does"
+  missing: []
+  fix_commit: "025bc55"
+  fix_verification: "Reproduced first in a widget test deliberately isolated from the existing notification_service_test.dart (whose setUpAll pre-seeds tz.setLocalLocation in its own setUpAll, masking this exact gap for every other test in that file) -- test/domain/services/notification_service_timezone_test.dart confirmed scheduleMealReminder throws LateInitializationError against current code. Fixed by calling tz_data.initializeTimeZones() then resolving+setting the device's real IANA timezone via FlutterTimezone.getLocalTimezone(), with a graceful UTC fallback (via initializeTimeZones()'s own default) if the platform channel is unavailable (e.g. simulators). A second test confirms the real device-timezone path actually sets tz.local correctly, not just the fallback. Full suite (376 tests) green, flutter analyze clean. Real-device re-confirmation still outstanding -- ask the user to retest both Test 5 (meal reminder) and Test 6 (weigh-in reminder) together, since this single fix covers both."
   debug_session: ""
 
 - truth: "Today's breakdown stacked bar chart (Data Analysis) renders Y-axis labels legibly"
