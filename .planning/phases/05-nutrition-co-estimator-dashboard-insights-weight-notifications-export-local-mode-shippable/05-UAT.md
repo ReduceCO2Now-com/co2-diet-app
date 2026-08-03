@@ -1,23 +1,48 @@
 ---
-status: complete
+status: testing
 phase: 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable
 source: 05-01-SUMMARY.md through 05-19-SUMMARY.md
 started: "2026-07-28T21:04:00.346Z"
-updated: "2026-08-03T14:35:00.000Z"
+updated: "2026-08-03T15:00:00.000Z"
+platforms_completed: [android]
+current_platform: ios
 ---
 
 ## Current Test
 <!-- OVERWRITE each test - shows where we are -->
 
-number: 9
-name: Danger Zone — typed confirmation gate
+platform: iOS (iPhone)
+number: 1
+name: Dashboard — general composition
 expected: |
-  In Backup & Restore's Danger Zone section, start the "delete all local data" flow. The delete action should stay disabled until you type the exact word "DELETE" into a confirmation field — no accidental one-tap deletion possible.
-result: pass — UAT complete, 9/9 tests passing on Android (Tab S7 FE). iOS re-confirmation of bug #3 (text-field focus loss) remains a non-blocking, nice-to-have per its Gaps entry.
+  Open the app to the Dashboard (default landing screen). You should see, top to bottom:
+  - Mode indicator ("Stored on this device" for Local Mode)
+  - Three metric cards (CO2 / Calories / Protein), each showing a value vs. target (or "—" if not yet computable) — whichever metric matches your Profile goal is visually larger/emphasized and shown first
+  - A macro split bar (protein/carbs/fat as a colored percentage bar with a legend) below the metric cards
+  - A compact row of four stats: Carbs / Sugar / Fiber / Salt totals in grams (or "—" for any not yet logged)
+  - A 7-day trend sparkline with a CO2/Calories/Protein segmented toggle
+  - A one-line "quick insight" sentence (e.g. "Breakfast contributed most CO2 today") once you've logged something
+  - Breakfast/Lunch/Dinner/Snack quick-log buttons + a "+ Quick Add Food" button
+  - Today's logged meals grouped by slot below that
+  Tapping any metric card or the trend sparkline should navigate to the Data Analysis screen for that metric.
+awaiting: user response
 
-## Tests
+## Android Pass (Tab S7 FE) — complete, 9/9
 
-### 1. Dashboard — general composition
+This section is the historical record of the Android UAT pass, run
+2026-07-28 through 2026-08-03. All findings below are Android-confirmed
+only. An independent iOS pass (below) is now running against the same
+9-test script per the project's standing rule (established in Phase 3's
+camera-permission crash, which real-device iOS testing caught and
+Android testing had missed) that no platform is assumed to work just
+because the other one does — this is especially true for Phase 5's
+notification system, which uses entirely different OS-level APIs on
+each platform (UNUserNotificationCenter on iOS vs. AlarmManager on
+Android).
+
+### Tests
+
+#### 1. Dashboard — general composition
 expected: |
   Open the app to the Dashboard (default landing screen). You should see, top to bottom:
   - Mode indicator ("Stored on this device" for Local Mode)
@@ -32,7 +57,7 @@ expected: |
 result: pass
 notes: "User also explored Data Analysis (reached via metric-card tap) and found two fl_chart rendering bugs there -- logged against Test 3 below rather than here, since Test 1's own scope (Dashboard composition) was fully confirmed working. Metric cards, macro split, nutrient stat row, meal logging, CO2 Calculation Settings, and Weight Tracking were also spot-checked in passing and matched expected behavior."
 
-### 2. CO2 Calculation Settings screen
+#### 2. CO2 Calculation Settings screen
 expected: |
   From Settings, tap "CO2 Calculation Settings" ("Personalize your CO2 footprint estimate"). You should see optional fields for location (country + region), food purchasing source, shopping transport, cooking method, food storage, household size, and food waste level — all optional, auto-saving as you fill them in (no explicit Save button required to persist). A "Data Quality" indicator (Basic/Good/Detailed) should update as you fill in more fields. Going back to the Dashboard, if data quality was Basic, you should have seen a dismissible "Complete your CO2 profile for better estimates" card near the bottom of the Dashboard that links back to this screen.
 result: pass
@@ -40,7 +65,7 @@ reported: "Originally passed (fields present, auto-save persisted, data quality 
 severity: major
 note: "RESOLVED 2026-07-29: user confirmed on Android Tab S7 FE -- fast typing across Profile/CO2 Settings/Weight fields, no focus drops. Both stacked root causes (commits 1f58cf1, 147f1f1) confirmed fixed together. iOS iPhone re-confirmation still outstanding (bug was originally reported cross-device) -- not re-tested there yet."
 
-### 3. Data Analysis screen — general
+#### 3. Data Analysis screen — general
 expected: |
   Tap any Dashboard metric card to open Data Analysis. You should see: today's breakdown by meal as an actual stacked bar chart (not a plain list) with colored segments per macro/CO2 contribution, an explicit "this week" total figure, a ranked list of today's largest contributors for the metric you entered on, a goal-comparison progress bar with a message, independently switchable Metric (CO2/Calories/Protein) and Range (7d/30d) trend toggles, an expandable per-food detail panel (tap a food to see per-serving + per-100g values), an "Estimate Transparency" section explaining the CO2 confidence mix, an "Improvement Opportunities" section suggesting a lower-CO2 swap with a quantified kg CO2 delta (only if you've logged something CO2-heavy), and an "Insights Timeline" section with any detected patterns (may be empty if you don't have enough history yet).
 result: pass
@@ -48,7 +73,7 @@ reported: "Already found during Test 1 exploration: (1) today's-breakdown bar ch
 severity: major
 note: "RESOLVED 2026-07-29: user confirmed on Android Tab S7 FE -- both chart bugs fixed (no Y-axis overlap, X-axis shows proper dates, commit c3cbd84). Supplementary scope also confirmed: weekly total, Largest Contributors re-ranks correctly by metric, independent Metric+Range toggles both work, expandable food detail shows per-serving and per-100g, Estimate Transparency shows the aggregate confidence breakdown, Improvement Opportunities and Insights Timeline both present. No issues found on the remaining scope."
 
-### 4. Weight Tracking — logging and chart interaction (fl_chart touch/drag)
+#### 4. Weight Tracking — logging and chart interaction (fl_chart touch/drag)
 expected: |
   From Settings, tap "Weight Tracking". Log a weigh-in (value, kg/lb toggle, optional note) — it should appear in the history chart immediately. The chart defaults to a 30-day view; tapping the Week/Month/3 Months/Year/All segmented buttons should switch the visible range. **Touch and drag your finger across the chart line** — you should see a tooltip/marker following your finger showing the value at that point (this is the fl_chart interaction that can't be verified by an automated test). If you set a weight goal (target weight + date), a horizontal dashed reference line should appear on the chart at the target weight — with no "on pace" projection text, just the line.
 result: pass
@@ -56,7 +81,7 @@ reported: "(1) Log weigh-in: PASS. (2) Range switching (7d/30d/90d/1yr/all butto
 severity: minor
 note: "RESOLVED 2026-07-29, all four findings closed: (2) confirmed correct -- user's test data was all within one week, so every range genuinely returned identical data; not a bug. (3) confirmed not a bug -- goal line was always rendering correctly. (4) FIXED, commit 3d8cf19 -- relabeled to Week/Month/3 Months/Year/All. Touch-and-drag tooltip also confirmed working. Non-blocking polish item logged in deferred-items.md: the chart has no visible axis/date labels at all, making it harder to read at a glance despite the underlying data/interaction being correct."
 
-### 5. Meal reminder notification — actually fires and is tappable
+#### 5. Meal reminder notification — actually fires and is tappable
 expected: |
   In Weight Tracking or Settings, find "Meal Reminders" and enable one slot (e.g. Lunch) with a time 1-2 minutes in the future. Grant the notification permission if prompted (should only ask now, not earlier). Background the app (press home / switch apps) and wait. **The notification should actually arrive at the OS level** at the scheduled time. Tapping it should open the app directly into food search with that meal slot pre-selected (not just the Dashboard).
 result: pass
@@ -64,31 +89,31 @@ reported: "User confirmed reminder time was set correctly (24-hour format, verif
 severity: blocker
 note: "RESOLVED 2026-08-03, user-confirmed on Tab S7 FE: all four meal-slot reminders (Breakfast/Lunch/Dinner/Snack) and the weigh-in reminder now fire correctly, on time, and tap-through works. Three stacked root causes fixed in sequence -- see the Gaps entry for the full chain (timezone init 025bc55, missing manifest receivers + exact-alarm scheduling 973a9eb). Real-device evidence at every step, not static analysis alone."
 
-### 6. Weigh-in reminder — scheduling, firing, and re-arming
+#### 6. Weigh-in reminder — scheduling, firing, and re-arming
 expected: |
   In Weight Tracking's Reminders section, set a weigh-in reminder to "Custom" with a specific day-of-week + time (or Weekly, for a faster test). Confirm it fires as a real OS notification at the scheduled time. Then: background the app and bring it back to the foreground at least once before the next occurrence — the reminder should still be scheduled to fire again (this exercises the app-lifecycle re-arm logic that keeps Biweekly/Monthly reminders alive beyond their first fire, not just Weekly).
 result: pass
 note: "RESOLVED 2026-08-03, user-confirmed on Tab S7 FE alongside Test 5 -- fires correctly, tap-through works. Same fix, same commits (025bc55, 973a9eb) as Test 5. Re-arm-after-foreground behavior not separately called out by the user as an issue; treating as confirmed since the underlying scheduling mechanism (identical code path, Plan 05-18's AppLifecycleState.resumed observer) is unchanged by this session's fixes and was never itself in question."
 
-### 7. Backup & Restore — Create Backup (share_plus native share sheet)
+#### 7. Backup & Restore — Create Backup (share_plus native share sheet)
 expected: |
   From Settings, tap "Backup & Restore". You should see Current Storage Status (record counts), Create Backup, Automatic Backups (Off/Daily/Weekly), Export Data, Restore Data, a Privacy & Ownership statement explicitly stating backups are NOT encrypted, and a Danger Zone. Tap "Create backup" — **the native OS share sheet should open** (not an in-app dialog) with a real backup archive file attached, ready to send to Files/Drive/AirDrop/etc. Do the same for "Share export" under Export Data.
 result: pass
 note: "RESOLVED 2026-08-03, user-confirmed on Tab S7 FE after a clean rebuild: exported Profile CSV contains only meaningful fields (age, gender, heightCm, weightKG, etc.) -- all 6 internal sync columns (hlcMillis, hlcCounter, hlcNodeId, dirty, deletedAt, id) confirmed gone from the real exported file, not just asserted in unit tests. User additionally spot-checked Weight and Meal Entries exports -- same clean result, no internal sync columns, only meaningful data -- confirming the fix holds universally across categories, not just Profile. Fix (commit 8545e1e) fully closed."
 
-### 8. Backup & Restore — Restore Data (file_selector native document picker)
+#### 8. Backup & Restore — Restore Data (file_selector native document picker)
 expected: |
   In Backup & Restore's "Restore Data" section, tap "Choose backup file" — **the native OS document/file picker should open** (not an in-app file browser), and you should be able to navigate to and select a backup file from anywhere on the device (e.g. one you saved via Test 7, ideally from a location outside the app's own folder, like Files or Downloads). After selecting one, a preview of what will be restored should appear before you tap "Confirm Restore" — nothing should be overwritten until you explicitly confirm.
 result: pass
 note: "RESOLVED 2026-08-03 -- NOT a bug. Initial report: restore preview showed only 'Meal entries: 15 row(s)', missing Profile/Weight/etc. despite real data existing. Investigated both hypotheses (backup genuinely missing categories vs. preview UI only reading one category): a diagnostic multi-category createBackup() -> previewRestore() round trip proved both the manifest and the preview logic correctly include all 7 ExportCategory entries with accurate row counts, and the screen's rendering (backup_restore_screen.dart:308) is an unfiltered loop over every entry -- no filtering bug anywhere in the code. Root cause of the original report: the zip picked for the test was a STALE backup created earlier in the session, before Profile/Weight/etc. had any real data yet -- at that point in the session only Meal entries genuinely existed, so the preview was accurately reporting an empty-elsewhere backup, not silently dropping categories. User confirmed: a freshly-created backup now correctly shows all categories in the restore preview. A permanent regression test (createBackup's restore preview lists all 7 ExportCategory values) was added as a guard regardless, since this class of bug (partial-category leak) is exactly the kind Phase 5's UAT has been catching all session."
 
-### 9. Danger Zone — typed confirmation gate
+#### 9. Danger Zone — typed confirmation gate
 expected: |
   In Backup & Restore's Danger Zone section, start the "delete all local data" flow. The delete action should stay disabled until you type the exact word "DELETE" into a confirmation field — no accidental one-tap deletion possible.
 result: pass
 note: "CONFIRMED 2026-08-03 on Tab S7 FE: delete action stayed disabled until 'DELETE' was typed exactly, and deletion completed successfully once confirmed, with all data removed as expected."
 
-## Summary
+### Android Summary
 
 total: 9
 passed: 9
@@ -96,7 +121,81 @@ issues: 0
 pending: 0
 skipped: 0
 
-## Gaps
+## iOS Pass (iPhone) — in progress
+
+Same 9-test script as the Android pass above, run independently on a
+real iPhone. Every test needs its own real-device confirmation here —
+an Android pass is not evidence of iOS correctness, especially for
+Test 5/6 (notifications, which use `UNUserNotificationCenter` on iOS vs.
+`AlarmManager` on Android — genuinely different OS subsystems, not a
+shared code path) and Test 2 (text-field focus loss, which was
+originally reported cross-device but only re-confirmed on Android).
+
+### Tests
+
+#### 1. Dashboard — general composition
+expected: |
+  Open the app to the Dashboard (default landing screen). You should see, top to bottom:
+  - Mode indicator ("Stored on this device" for Local Mode)
+  - Three metric cards (CO2 / Calories / Protein), each showing a value vs. target (or "—" if not yet computable) — whichever metric matches your Profile goal is visually larger/emphasized and shown first
+  - A macro split bar (protein/carbs/fat as a colored percentage bar with a legend) below the metric cards
+  - A compact row of four stats: Carbs / Sugar / Fiber / Salt totals in grams (or "—" for any not yet logged)
+  - A 7-day trend sparkline with a CO2/Calories/Protein segmented toggle
+  - A one-line "quick insight" sentence (e.g. "Breakfast contributed most CO2 today") once you've logged something
+  - Breakfast/Lunch/Dinner/Snack quick-log buttons + a "+ Quick Add Food" button
+  - Today's logged meals grouped by slot below that
+  Tapping any metric card or the trend sparkline should navigate to the Data Analysis screen for that metric.
+result: [pending]
+
+#### 2. CO2 Calculation Settings screen
+expected: |
+  From Settings, tap "CO2 Calculation Settings" ("Personalize your CO2 footprint estimate"). You should see optional fields for location (country + region), food purchasing source, shopping transport, cooking method, food storage, household size, and food waste level — all optional, auto-saving as you fill them in (no explicit Save button required to persist). A "Data Quality" indicator (Basic/Good/Detailed) should update as you fill in more fields. Going back to the Dashboard, if data quality was Basic, you should have seen a dismissible "Complete your CO2 profile for better estimates" card near the bottom of the Dashboard that links back to this screen. **Also re-confirm the text-field focus-loss fix here** (typing into location/region fields character-by-character) — this bug was originally reported on iOS too, and has only been re-confirmed on Android so far.
+result: [pending]
+
+#### 3. Data Analysis screen — general
+expected: |
+  Tap any Dashboard metric card to open Data Analysis. You should see: today's breakdown by meal as an actual stacked bar chart (not a plain list) with colored segments per macro/CO2 contribution, an explicit "this week" total figure, a ranked list of today's largest contributors for the metric you entered on, a goal-comparison progress bar with a message, independently switchable Metric (CO2/Calories/Protein) and Range (7d/30d) trend toggles, an expandable per-food detail panel (tap a food to see per-serving + per-100g values), an "Estimate Transparency" section explaining the CO2 confidence mix, an "Improvement Opportunities" section suggesting a lower-CO2 swap with a quantified kg CO2 delta (only if you've logged something CO2-heavy), and an "Insights Timeline" section with any detected patterns (may be empty if you don't have enough history yet).
+result: [pending]
+
+#### 4. Weight Tracking — logging and chart interaction (fl_chart touch/drag)
+expected: |
+  From Settings, tap "Weight Tracking". Log a weigh-in (value, kg/lb toggle, optional note) — it should appear in the history chart immediately. The chart defaults to a 30-day view; tapping the Week/Month/3 Months/Year/All segmented buttons should switch the visible range. **Touch and drag your finger across the chart line** — you should see a tooltip/marker following your finger showing the value at that point. If you set a weight goal (target weight + date), a horizontal dashed reference line should appear on the chart at the target weight. **Also re-confirm the text-field focus-loss fix on the goal's target-weight field.**
+result: [pending]
+
+#### 5. Meal reminder notification — actually fires and is tappable
+expected: |
+  In Weight Tracking or Settings, find "Meal Reminders" and enable one slot (e.g. Lunch) with a time 1-2 minutes in the future. Grant the notification permission if prompted. Background the app and wait. **The notification should actually arrive at the OS level** (via `UNUserNotificationCenter` on iOS — a completely different scheduling subsystem than Android's `AlarmManager`, so this is a genuinely independent test, not a re-confirmation) at the scheduled time. Tapping it should open the app directly into food search with that meal slot pre-selected.
+result: [pending]
+
+#### 6. Weigh-in reminder — scheduling, firing, and re-arming
+expected: |
+  In Weight Tracking's Reminders section, set a weigh-in reminder to "Custom" with a specific day-of-week + time (or Weekly, for a faster test). Confirm it fires as a real OS notification at the scheduled time. Then background the app and bring it back to the foreground at least once before the next occurrence — the reminder should still be scheduled to fire again.
+result: [pending]
+
+#### 7. Backup & Restore — Create Backup (share_plus native share sheet)
+expected: |
+  From Settings, tap "Backup & Restore". Tap "Create backup" — **the native OS share sheet should open** (not an in-app dialog) with a real backup archive file attached. Do the same for "Share export" under Export Data, and spot-check that an exported CSV/JSON file contains only meaningful fields (no `hlcMillis`/`hlcCounter`/`hlcNodeId`/`dirty`/`deletedAt`/`id` columns) — this was a real bug found and fixed on Android this session.
+result: [pending]
+
+#### 8. Backup & Restore — Restore Data (file_selector native document picker)
+expected: |
+  In Backup & Restore's "Restore Data" section, tap "Choose backup file" — **the native OS document/file picker should open**, and you should be able to select a backup file from anywhere on the device. After selecting one, a preview of what will be restored should appear (all categories with real data, not just one) before you tap "Confirm Restore" — nothing should be overwritten until you explicitly confirm.
+result: [pending]
+
+#### 9. Danger Zone — typed confirmation gate
+expected: |
+  In Backup & Restore's Danger Zone section, start the "delete all local data" flow. The delete action should stay disabled until you type the exact word "DELETE" into a confirmation field.
+result: [pending]
+
+### iOS Summary
+
+total: 9
+passed: 0
+issues: 0
+pending: 9
+skipped: 0
+
+## Gaps (cross-platform — add `platform:` to new entries found during the iOS pass)
 
 - truth: "Android build succeeds with flutter_local_notifications installed"
   status: resolved
