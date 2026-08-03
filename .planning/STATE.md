@@ -3,14 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: planning
-stopped_at: Phase 5 real-device UAT complete (Android 9/9, iOS 9/9) — ready to plan Phase 6
-last_updated: "2026-08-03T15:37:58.016Z"
+stopped_at: Phase 6 context gathered
+last_updated: "2026-08-03T21:41:40.479Z"
 progress:
   total_phases: 9
   completed_phases: 5
   total_plans: 51
   completed_plans: 51
-  percent: 100
 ---
 
 # STATE: CO₂ Diet
@@ -136,8 +135,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-08-03T15:37:58.016Z
-**Stopped at:** Phase 5's real-device UAT pass complete on both platforms (Android 9/9, iOS 9/9) — see `.planning/phases/05-.../05-UAT.md` and its `.continue-here.md` for full detail. No open gaps remain for Phase 5.
+**Last session:** 2026-08-03T21:41:40.470Z
+**Stopped at:** Phase 6 context gathered
 **Next action:** Start Phase 6 (Onboarding, Legal Consent, Legal Hub, ED Safety Nets, Accessibility & Pre-Submission) — no CONTEXT.md exists for it yet.
 **Suggested next command:** `/gsd:discuss-phase 6`
 
