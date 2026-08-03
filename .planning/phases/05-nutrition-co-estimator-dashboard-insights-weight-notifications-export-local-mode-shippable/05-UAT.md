@@ -3,7 +3,7 @@ status: testing
 phase: 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable
 source: 05-01-SUMMARY.md through 05-19-SUMMARY.md
 started: "2026-07-28T21:04:00.346Z"
-updated: "2026-08-03T15:20:00.000Z"
+updated: "2026-08-03T15:45:00.000Z"
 platforms_completed: [android]
 current_platform: ios
 ---
@@ -162,17 +162,19 @@ reported: "Enabled Lunch reminder ~2 min out on iPhone, permission granted, back
 severity: blocker
 note: "UNDER INVESTIGATION 2026-08-03. Code-read comparison of scheduleMealReminder() vs scheduleWeighInReminder() (notification_service.dart) found NO divergence that would explain a meal-specific iOS failure: both call the same requestPermissionIfNeeded() (general notification permission -- identical for both), both pass DarwinNotificationDetails() with all-default fields (no interruptionLevel/categoryIdentifier set, so no extra 'time-sensitive' entitlement is being requested or would be required), both compute scheduledDate via the same _nextInstanceOfTime() (seconds always zeroed, no timing-precision divergence), both call zonedSchedule() identically except for matchDateTimeComponents (meal always DateTimeComponents.time; weigh-in uses dayOfWeekAndTime for Weekly/Custom, or null/one-shot for biweekly/monthly). Cross-referenced the actual installed plugin's iOS native source (flutter_local_notifications 22.2.0, FlutterLocalNotificationsPlugin.m ~L816-865): .time and .dayOfWeekAndTime both construct a UNCalendarNotificationTrigger with repeats:YES via the identical triggerWithDateMatchingComponents: call, differing only in which NSCalendarUnit components are included in the mask (hour+minute+second+timezone for .time; weekday+hour+minute+second+timezone for .dayOfWeekAndTime) -- structurally symmetric in the plugin's own implementation, not an asymmetry the plugin's Dart or native code introduces. No exact-alarm-equivalent permission exists on iOS to diverge on either (requestExactAlarmPermissionIfNeeded() is a no-op returning true on non-Android platforms for both). No notification-id collision (Lunch=101, weigh-in=200). No code path found that would explain why Weigh-in fires and Lunch doesn't specifically. This looks like it needs real-device evidence next, the same way Android's investigation ultimately needed adb-level evidence rather than static analysis alone -- see next_action in the phase's .continue-here.md."
 missing:
-  - "Real-device confirmation of whether scheduleMealReminder() actually reaches 'zonedSchedule returned successfully' in the debug console during a fresh repro (the existing debugPrint instrumentation at notification_service.dart:201-226 already logs this -- just needs to be watched live via `flutter run` or Xcode's console during the test)."
-  - "Confirmation of pendingNotificationRequests() content on-device right after enabling the Lunch toggle -- does iOS's UNUserNotificationCenter actually register a pending request for id 101 with the correct trigger, or does registration itself silently fail?"
-  - "Which exact weigh-in frequency was used for Test 6's passing run (Weekly/dayOfWeekAndTime vs biweekly-or-monthly/one-shot) -- determines whether the working case shares matchDateTimeComponents' repeating-trigger code path with the failing meal case, or is actually the structurally different one-shot path."
-  - "Whether iOS Focus/Do Not Disturb or per-app 'Scheduled Summary' notification delivery settings are active for this app -- a real iOS-only delivery-suppression mechanism with no Android equivalent, not yet ruled out."
+  - "~~Real-device confirmation of whether scheduleMealReminder() actually reaches 'zonedSchedule returned successfully' in the debug console during a fresh repro~~ -- DONE: confirmed via USB/flutter run console for both breakfast (id 100) and lunch (id 101) -- correct resolved scheduledDate, correct timezone (Europe/Berlin), 'zonedSchedule returned successfully', no exceptions for either. App-level scheduling code is confirmed correct; the plugin believes it registered the trigger fine. Remaining candidates narrowed to OS-level delivery: (1) granular per-app notification delivery settings (Lock Screen/Banners/Sounds, not just the base Allow-Notifications toggle), (2) Focus/Do Not Disturb, (3) USB/Xcode-debugger-attached session interfering with background delivery (this project's Phase 4 airplane-mode/Xcode precedent: testing while tethered to a debugger produced a misleading result there too)."
+  - "Confirmation of pendingNotificationRequests() content on-device right after enabling the Lunch toggle -- still open, lower priority now that the console evidence points at OS delivery rather than registration."
+  - "~~Which exact weigh-in frequency was used for Test 6's passing run~~ -- DONE: Custom (dayOfWeekAndTime), which per the native-source read shares the identical repeating-UNCalendarNotificationTrigger code path with meal's DateTimeComponents.time, just a different NSCalendarUnit component mask. Confirms general notification delivery AND repeating-trigger scheduling both work on this device -- narrows the failure specifically to something about the .time-only (no weekday) component mask, or an OS-level delivery gate that happens to only affect this reminder kind's channel/settings."
+  - "Whether iOS Focus/Do Not Disturb or per-app 'Scheduled Summary' notification delivery settings are active for this app -- Scheduled Summary confirmed absent. Focus/DND status still needs an explicit on-device check (quick Control Center glance)."
+  - "NEW: check Settings > Notifications > CO2 Diet's granular delivery options (Lock Screen / Banners / Sounds), not just the base Allow-Notifications toggle -- these can be independently disabled even when basic authorization is granted."
+  - "NEW: repeat the test fully untethered (quit flutter run / detach Xcode debugger, launch the app normally by tapping its icon, no debugger attached) to rule out the USB/Xcode-debug-session variable this project hit before in Phase 4."
 debug_session: ""
 
 #### 6. Weigh-in reminder — scheduling, firing, and re-arming
 expected: |
   In Weight Tracking's Reminders section, set a weigh-in reminder to "Custom" with a specific day-of-week + time (or Weekly, for a faster test). Confirm it fires as a real OS notification at the scheduled time. Then background the app and bring it back to the foreground at least once before the next occurrence — the reminder should still be scheduled to fire again.
 result: pass
-note: "Confirmed firing correctly on iPhone. Exact frequency configuration used for this test still needs to be recorded (Weekly/dayOfWeekAndTime vs biweekly-or-monthly/one-shot) -- see Test 5's investigation notes for why this detail matters to the meal-reminder failure."
+note: "Confirmed firing correctly on iPhone, using Custom frequency (specific day + time, dayOfWeekAndTime trigger) -- see Test 5's investigation notes for why this detail matters to the meal-reminder failure."
 
 #### 7. Backup & Restore — Create Backup (share_plus native share sheet)
 expected: |
@@ -319,4 +321,19 @@ skipped: 0
   missing: []
   fix_commit: "8545e1e"
   fix_verification: "Added includeInternalFields parameter to exportData() (default false, stripped via new _stripInternalFields() helper; createBackup() passes true). Two new regression tests in backup_export_service_test.dart: (1) confirms exportData()'s default human-facing path excludes all 6 internal columns -- verified failing against pre-fix code (row.containsKey('id') was true), then passing after the fix; (2) confirms createBackup() -> applyRestore() still round-trips a row's id/hlcMillis/hlcCounter/hlcNodeId/dirty correctly (was already passing pre-fix, stayed passing post-fix -- proves the fix doesn't break restore). Full suite (379 tests) green, flutter analyze clean. FINAL CONFIRMATION 2026-08-03: user confirmed on Tab S7 FE after a clean rebuild -- exported Profile CSV shows only meaningful fields (age, gender, heightCm, weightKG, etc.), all 6 internal sync columns confirmed gone from a real exported file, not just unit tests. User additionally spot-checked Weight and Meal Entries exports on the same device -- same clean result -- confirming the fix works universally across categories (as the code's shared _stripInternalFields() helper predicted), not just for Profile. Closed."
+  debug_session: ""
+
+- truth: "Dashboard MetricCard's value/unit/target row never overflows, regardless of screen width"
+  status: resolved
+  reason: "User reported a 28px RenderFlex overflow on a MetricCard's Row during the iOS UAT pass (Dashboard's three-card layout gives each card only a third of the screen width, and the emphasized card's larger headlineMedium font made this worse)."
+  severity: minor
+  platform: ios
+  test: null
+  root_cause: "metric_card.dart's value Row (label + value + unit + 'of {target}') had no Flexible/Expanded on any child -- Flutter lays out non-flex Row children at their full intrinsic size regardless of available width, so on narrow screens the sum could exceed the Expanded width the Dashboard's 3-card Row gives each card. First attempt (wrapping only the 'of {target}' suffix in Flexible+ellipsis) was measured (via a width sweep in a throwaway diagnostic test) to barely help -- at the exact width that reproduces the reported 28px overflow, value+unit ALONE (with no target at all) already account for 24 of those 28 pixels, so shrinking only the target suffix left the overflow essentially unchanged."
+  artifacts:
+    - path: "lib/features/dashboard/widgets/metric_card.dart"
+      issue: "Value/unit/target Row had no mechanism to shrink on narrow screens; wrapping only the least-essential text in Flexible was insufficient since the primary value+unit text was the larger contributor to the overflow"
+  missing: []
+  fix_commit: "75fd9a6"
+  fix_verification: "Wrapped the entire value/unit/target Row in FittedBox(fit: BoxFit.scaleDown, alignment: Alignment.centerLeft) instead -- scales the whole line down together when needed, so numbers are never truncated mid-digit (this codebase's numeric-display convention is 'no fake precision', which an ellipsis mid-number would violate). Verified via a width sweep (70-200px) that overflow is gone at every width tested, including well below the card's normal real-device width. New regression test (metric_card_test.dart) confirmed failing against the pre-fix code, then passing after the FittedBox fix. Full suite (381 tests) green, flutter analyze clean. Not yet re-confirmed visually on the real iPhone."
   debug_session: ""
