@@ -341,6 +341,49 @@ void main() {
     );
 
     test(
+      "createBackup's restore preview lists all 7 ExportCategory values "
+      '-- not just the ones with data -- so the Restore Data screen '
+      'never silently under-reports what a full backup actually contains',
+      () async {
+        when(() => userProfileDao.getProfile()).thenAnswer(
+          (_) async => UserProfileRow(
+            id: 'p1',
+            hlcMillis: BigInt.from(1),
+            hlcCounter: 0,
+            hlcNodeId: 'local',
+            dirty: true,
+            units: 'metric',
+            kcalIsOverridden: false,
+            proteinIsOverridden: false,
+            carbsIsOverridden: false,
+            fatIsOverridden: false,
+            co2IsOverridden: false,
+            co2MethodologyVersion: 'v1',
+            createdAt: DateTime.utc(2026),
+          ),
+        );
+        when(
+          () => weightDao.getEntriesInRange(),
+        ).thenAnswer((_) async => [_buildWeightRow()]);
+
+        final zip = await service.createBackup();
+        final preview = await service.previewRestore(zip);
+
+        expect(
+          preview.categoryRowCounts.keys.toSet(),
+          ExportCategory.values.toSet(),
+        );
+        expect(preview.categoryRowCounts[ExportCategory.profile], 1);
+        expect(preview.categoryRowCounts[ExportCategory.weightEntries], 1);
+        expect(preview.categoryRowCounts[ExportCategory.mealEntries], 0);
+        expect(preview.categoryRowCounts[ExportCategory.favorites], 0);
+        expect(preview.categoryRowCounts[ExportCategory.customFoods], 0);
+        expect(preview.categoryRowCounts[ExportCategory.co2Settings], 0);
+        expect(preview.categoryRowCounts[ExportCategory.notificationPrefs], 0);
+      },
+    );
+
+    test(
       'exportData (human-facing export) excludes internal sync-machinery '
       'columns (id/hlcMillis/hlcCounter/hlcNodeId/dirty/deletedAt) from '
       'the encoded rows',
