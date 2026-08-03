@@ -1,28 +1,20 @@
 ---
-status: testing
+status: complete
 phase: 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable
 source: 05-01-SUMMARY.md through 05-19-SUMMARY.md
 started: "2026-07-28T21:04:00.346Z"
-updated: "2026-08-03T16:25:00.000Z"
-platforms_completed: [android]
-current_platform: ios
+updated: "2026-08-03T16:45:00.000Z"
+platforms_completed: [android, ios]
 ---
 
 ## Current Test
 <!-- OVERWRITE each test - shows where we are -->
 
-platform: iOS (iPhone)
-number: 8
-name: Backup & Restore — Restore Data (file_selector native document picker)
+number: 9
+name: Danger Zone — typed confirmation gate (iOS)
 expected: |
-  Tap "Choose backup file" -- the native OS document picker should open, and a restore preview should appear before any write.
-result: fail (fix committed, not yet re-confirmed on-device -- see Test 8's `missing` note)
-awaiting: user response
-
-Tests 5, 6, 7 all confirmed passing on iOS. Tests 1-4 and 9 still
-haven't been reported on iOS (still `[pending]` below) -- the user
-jumped ahead to notifications/backup first. Circle back to those once
-Test 8 is re-confirmed.
+  In Backup & Restore's Danger Zone section, start the "delete all local data" flow. The delete action should stay disabled until you type the exact word "DELETE" into a confirmation field.
+result: pass — Phase 5's UAT pass is now COMPLETE on both platforms: 9/9 Android, 9/9 iOS.
 
 ## Android Pass (Tab S7 FE) — complete, 9/9
 
@@ -118,15 +110,18 @@ issues: 0
 pending: 0
 skipped: 0
 
-## iOS Pass (iPhone) — in progress
+## iOS Pass (iPhone) — complete, 9/9
 
 Same 9-test script as the Android pass above, run independently on a
-real iPhone. Every test needs its own real-device confirmation here —
-an Android pass is not evidence of iOS correctness, especially for
-Test 5/6 (notifications, which use `UNUserNotificationCenter` on iOS vs.
-`AlarmManager` on Android — genuinely different OS subsystems, not a
-shared code path) and Test 2 (text-field focus loss, which was
-originally reported cross-device but only re-confirmed on Android).
+real iPhone per the project's standing rule that no platform is assumed
+to work because the other one does (Phase 3's camera-permission crash
+precedent). This pass caught two real iOS-specific bugs Android testing
+could never have found: `file_selector_ios` requiring
+`uniformTypeIdentifiers` (Test 8) and a `MetricCard` layout overflow on
+narrower iPhone widths. Test 5 (meal reminders) also failed initially
+and was resolved, though its root cause was never conclusively isolated
+(see its Gaps entry) — logged honestly rather than assigning a cause
+that wasn't verified.
 
 ### Tests
 
@@ -142,22 +137,26 @@ expected: |
   - Breakfast/Lunch/Dinner/Snack quick-log buttons + a "+ Quick Add Food" button
   - Today's logged meals grouped by slot below that
   Tapping any metric card or the trend sparkline should navigate to the Data Analysis screen for that metric.
-result: [pending]
+result: pass
+note: "Confirmed on iPhone as part of the final all-9-pass confirmation 2026-08-03. No issues reported. Also where the MetricCard RenderFlex overflow (28px, fixed commit 75fd9a6) was found -- see the Gaps entry -- a minor incidental bug, not blocking this test's pass."
 
 #### 2. CO2 Calculation Settings screen
 expected: |
   From Settings, tap "CO2 Calculation Settings" ("Personalize your CO2 footprint estimate"). You should see optional fields for location (country + region), food purchasing source, shopping transport, cooking method, food storage, household size, and food waste level — all optional, auto-saving as you fill them in (no explicit Save button required to persist). A "Data Quality" indicator (Basic/Good/Detailed) should update as you fill in more fields. Going back to the Dashboard, if data quality was Basic, you should have seen a dismissible "Complete your CO2 profile for better estimates" card near the bottom of the Dashboard that links back to this screen. **Also re-confirm the text-field focus-loss fix here** (typing into location/region fields character-by-character) — this bug was originally reported on iOS too, and has only been re-confirmed on Android so far.
-result: [pending]
+result: pass
+note: "Confirmed on iPhone 2026-08-03, including the text-field focus-loss re-confirmation (commits 1f58cf1/147f1f1) -- no focus drops typing into location/region fields. Closes the last iOS-outstanding item on that Gaps entry."
 
 #### 3. Data Analysis screen — general
 expected: |
   Tap any Dashboard metric card to open Data Analysis. You should see: today's breakdown by meal as an actual stacked bar chart (not a plain list) with colored segments per macro/CO2 contribution, an explicit "this week" total figure, a ranked list of today's largest contributors for the metric you entered on, a goal-comparison progress bar with a message, independently switchable Metric (CO2/Calories/Protein) and Range (7d/30d) trend toggles, an expandable per-food detail panel (tap a food to see per-serving + per-100g values), an "Estimate Transparency" section explaining the CO2 confidence mix, an "Improvement Opportunities" section suggesting a lower-CO2 swap with a quantified kg CO2 delta (only if you've logged something CO2-heavy), and an "Insights Timeline" section with any detected patterns (may be empty if you don't have enough history yet).
-result: [pending]
+result: pass
+note: "Confirmed on iPhone as part of the final all-9-pass confirmation 2026-08-03. No issues reported."
 
 #### 4. Weight Tracking — logging and chart interaction (fl_chart touch/drag)
 expected: |
   From Settings, tap "Weight Tracking". Log a weigh-in (value, kg/lb toggle, optional note) — it should appear in the history chart immediately. The chart defaults to a 30-day view; tapping the Week/Month/3 Months/Year/All segmented buttons should switch the visible range. **Touch and drag your finger across the chart line** — you should see a tooltip/marker following your finger showing the value at that point. If you set a weight goal (target weight + date), a horizontal dashed reference line should appear on the chart at the target weight. **Also re-confirm the text-field focus-loss fix on the goal's target-weight field.**
-result: [pending]
+result: pass
+note: "Confirmed on iPhone 2026-08-03, including the target-weight field's focus-loss re-confirmation. No issues reported."
 
 #### 5. Meal reminder notification — actually fires and is tappable
 expected: |
@@ -176,29 +175,30 @@ note: "Confirmed firing correctly on iPhone, using Custom frequency (specific da
 #### 7. Backup & Restore — Create Backup (share_plus native share sheet)
 expected: |
   From Settings, tap "Backup & Restore". Tap "Create backup" — **the native OS share sheet should open** (not an in-app dialog) with a real backup archive file attached. Do the same for "Share export" under Export Data, and spot-check that an exported CSV/JSON file contains only meaningful fields (no `hlcMillis`/`hlcCounter`/`hlcNodeId`/`dirty`/`deletedAt`/`id` columns) — this was a real bug found and fixed on Android this session.
-result: [pending]
+result: pass
+note: "Confirmed on iPhone 2026-08-03. Native share sheet opens for both Create Backup and Share Export; exported file field-leak fix confirmed holding on iOS too (platform-agnostic Dart fix, as expected)."
 
 #### 8. Backup & Restore — Restore Data (file_selector native document picker)
 expected: |
   In Backup & Restore's "Restore Data" section, tap "Choose backup file" — **the native OS document/file picker should open**, and you should be able to select a backup file from anywhere on the device. After selecting one, a preview of what will be restored should appear (all categories with real data, not just one) before you tap "Confirm Restore" — nothing should be overwritten until you explicitly confirm.
-result: fail
+result: pass
 reported: "Tapping 'Choose backup file' on iPhone did not open the native document picker."
 severity: blocker
-note: "ROOT CAUSE FOUND 2026-08-03 via reading file_selector_ios's actual installed source (0.5.3+5), not guessing: _allowedUtiListFromTypeGroups reads ONLY uniformTypeIdentifiers on iOS -- it ignores XTypeGroup's `extensions` field entirely (extensions is an Android-side concern) -- and throws ArgumentError SYNCHRONOUSLY, before the picker UI is ever presented, when uniformTypeIdentifiers is empty. This app's XTypeGroup only ever set `extensions: ['zip']`; the calling code (_chooseRestoreFile in backup_restore_screen.dart) has a try/finally with no catch, so the thrown error was silently swallowed by an unawaited Future -- exactly matching 'tapping the button does nothing.' Two other theories were considered and DISPROVEN by reading source before landing on this one: (1) missing Info.plist/entitlements key -- UIDocumentPickerViewController doesn't require an NSUsageDescription-style permission gate the way camera access does, so this wasn't the same class of bug as Phase 3's camera crash despite the surface-level similarity; (2) iOS security-scoped resource access -- file_selector_ios constructs the picker with `.import` mode, which has the OS auto-copy the picked file into the app's own sandbox, so a plain dart:io File read was never actually the blocker. FIXED, commit 56eb774: added `uniformTypeIdentifiers: ['public.zip-archive']` (Apple's system UTI for .zip) to the XTypeGroup. Regression test captures the XTypeGroup actually passed to the picker and asserts uniformTypeIdentifiers is non-empty -- confirmed failing against pre-fix code, passing after. Full suite (382 tests) green, flutter analyze clean. Not yet re-confirmed on the real iPhone."
-missing:
-  - "Real-device re-confirmation on the iPhone that the picker now opens and a restore preview shows all categories correctly."
+note: "ROOT CAUSE FOUND 2026-08-03 via reading file_selector_ios's actual installed source (0.5.3+5), not guessing: _allowedUtiListFromTypeGroups reads ONLY uniformTypeIdentifiers on iOS -- it ignores XTypeGroup's `extensions` field entirely (extensions is an Android-side concern) -- and throws ArgumentError SYNCHRONOUSLY, before the picker UI is ever presented, when uniformTypeIdentifiers is empty. This app's XTypeGroup only ever set `extensions: ['zip']`; the calling code (_chooseRestoreFile in backup_restore_screen.dart) has a try/finally with no catch, so the thrown error was silently swallowed by an unawaited Future -- exactly matching 'tapping the button does nothing.' Two other theories were considered and DISPROVEN by reading source before landing on this one: (1) missing Info.plist/entitlements key -- UIDocumentPickerViewController doesn't require an NSUsageDescription-style permission gate the way camera access does, so this wasn't the same class of bug as Phase 3's camera crash despite the surface-level similarity; (2) iOS security-scoped resource access -- file_selector_ios constructs the picker with `.import` mode, which has the OS auto-copy the picked file into the app's own sandbox, so a plain dart:io File read was never actually the blocker. FIXED, commit 56eb774: added `uniformTypeIdentifiers: ['public.zip-archive']` (Apple's system UTI for .zip) to the XTypeGroup. Regression test captures the XTypeGroup actually passed to the picker and asserts uniformTypeIdentifiers is non-empty -- confirmed failing against pre-fix code, passing after. Full suite (382 tests) green, flutter analyze clean. FINAL CONFIRMATION 2026-08-03: user confirmed on iPhone -- native picker opens, restore preview shows all categories correctly, and the actual restore (Confirm Restore) succeeded. Test 8 fully closed, not just unit-verified."
+missing: []
 
 #### 9. Danger Zone — typed confirmation gate
 expected: |
   In Backup & Restore's Danger Zone section, start the "delete all local data" flow. The delete action should stay disabled until you type the exact word "DELETE" into a confirmation field.
-result: [pending]
+result: pass
+note: "Confirmed on iPhone 2026-08-03: delete stayed disabled until 'DELETE' was typed exactly, deletion worked correctly once confirmed."
 
 ### iOS Summary
 
 total: 9
-passed: 0
+passed: 9
 issues: 0
-pending: 9
+pending: 0
 skipped: 0
 
 ## Gaps (cross-platform — add `platform:` to new entries found during the iOS pass)
