@@ -213,6 +213,6 @@ skipped: 0
     - path: "lib/domain/services/backup_export_service.dart"
       issue: "exportData() had no way to exclude SyncSafeTable's internal columns (id/hlcMillis/hlcCounter/hlcNodeId/dirty/deletedAt) from the human-facing export path while still including them for createBackup()'s restore-required path"
   missing: []
-  fix_commit: "(pending -- fix implemented and tested this session, not yet committed at time of writing)"
+  fix_commit: "8545e1e"
   fix_verification: "Added includeInternalFields parameter to exportData() (default false, stripped via new _stripInternalFields() helper; createBackup() passes true). Two new regression tests in backup_export_service_test.dart: (1) confirms exportData()'s default human-facing path excludes all 6 internal columns -- verified failing against pre-fix code (row.containsKey('id') was true), then passing after the fix; (2) confirms createBackup() -> applyRestore() still round-trips a row's id/hlcMillis/hlcCounter/hlcNodeId/dirty correctly (was already passing pre-fix, stayed passing post-fix -- proves the fix doesn't break restore). Full suite (379 tests) green, flutter analyze clean. Real-device confirmation of an actual exported CSV/JSON file still outstanding -- do that as part of resuming Test 7."
   debug_session: ""
