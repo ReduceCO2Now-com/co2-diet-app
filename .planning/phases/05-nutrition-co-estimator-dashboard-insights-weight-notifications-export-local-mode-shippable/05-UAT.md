@@ -3,7 +3,7 @@ status: testing
 phase: 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable
 source: 05-01-SUMMARY.md through 05-19-SUMMARY.md
 started: "2026-07-28T21:04:00.346Z"
-updated: "2026-08-03T15:00:00.000Z"
+updated: "2026-08-03T15:20:00.000Z"
 platforms_completed: [android]
 current_platform: ios
 ---
@@ -12,20 +12,12 @@ current_platform: ios
 <!-- OVERWRITE each test - shows where we are -->
 
 platform: iOS (iPhone)
-number: 1
-name: Dashboard — general composition
+number: 5
+name: Meal reminder notification — actually fires and is tappable
 expected: |
-  Open the app to the Dashboard (default landing screen). You should see, top to bottom:
-  - Mode indicator ("Stored on this device" for Local Mode)
-  - Three metric cards (CO2 / Calories / Protein), each showing a value vs. target (or "—" if not yet computable) — whichever metric matches your Profile goal is visually larger/emphasized and shown first
-  - A macro split bar (protein/carbs/fat as a colored percentage bar with a legend) below the metric cards
-  - A compact row of four stats: Carbs / Sugar / Fiber / Salt totals in grams (or "—" for any not yet logged)
-  - A 7-day trend sparkline with a CO2/Calories/Protein segmented toggle
-  - A one-line "quick insight" sentence (e.g. "Breakfast contributed most CO2 today") once you've logged something
-  - Breakfast/Lunch/Dinner/Snack quick-log buttons + a "+ Quick Add Food" button
-  - Today's logged meals grouped by slot below that
-  Tapping any metric card or the trend sparkline should navigate to the Data Analysis screen for that metric.
-awaiting: user response
+  In Weight Tracking or Settings, find "Meal Reminders" and enable one slot (e.g. Lunch) with a time 1-2 minutes in the future. Grant the notification permission if prompted. Background the app and wait. **The notification should actually arrive at the OS level** at the scheduled time. Tapping it should open the app directly into food search with that meal slot pre-selected.
+result: fail — under investigation. Note: Tests 1-4 haven't been reported yet on iOS (still [pending] below) -- the user jumped ahead to test notifications first. Circle back to 1-4 once Test 5 is resolved.
+awaiting: user response (real-device diagnostic evidence needed -- see Test 5's `missing` list)
 
 ## Android Pass (Tab S7 FE) — complete, 9/9
 
@@ -165,12 +157,22 @@ result: [pending]
 #### 5. Meal reminder notification — actually fires and is tappable
 expected: |
   In Weight Tracking or Settings, find "Meal Reminders" and enable one slot (e.g. Lunch) with a time 1-2 minutes in the future. Grant the notification permission if prompted. Background the app and wait. **The notification should actually arrive at the OS level** (via `UNUserNotificationCenter` on iOS — a completely different scheduling subsystem than Android's `AlarmManager`, so this is a genuinely independent test, not a re-confirmation) at the scheduled time. Tapping it should open the app directly into food search with that meal slot pre-selected.
-result: [pending]
+result: fail
+reported: "Enabled Lunch reminder ~2 min out on iPhone, permission granted, backgrounded the app, waited past the scheduled time -- no notification arrived on lock screen or notification center. Weigh-in reminder (Test 6) fires correctly on the same device, suggesting this is specific to meal reminders, not a general iOS notification-infrastructure failure."
+severity: blocker
+note: "UNDER INVESTIGATION 2026-08-03. Code-read comparison of scheduleMealReminder() vs scheduleWeighInReminder() (notification_service.dart) found NO divergence that would explain a meal-specific iOS failure: both call the same requestPermissionIfNeeded() (general notification permission -- identical for both), both pass DarwinNotificationDetails() with all-default fields (no interruptionLevel/categoryIdentifier set, so no extra 'time-sensitive' entitlement is being requested or would be required), both compute scheduledDate via the same _nextInstanceOfTime() (seconds always zeroed, no timing-precision divergence), both call zonedSchedule() identically except for matchDateTimeComponents (meal always DateTimeComponents.time; weigh-in uses dayOfWeekAndTime for Weekly/Custom, or null/one-shot for biweekly/monthly). Cross-referenced the actual installed plugin's iOS native source (flutter_local_notifications 22.2.0, FlutterLocalNotificationsPlugin.m ~L816-865): .time and .dayOfWeekAndTime both construct a UNCalendarNotificationTrigger with repeats:YES via the identical triggerWithDateMatchingComponents: call, differing only in which NSCalendarUnit components are included in the mask (hour+minute+second+timezone for .time; weekday+hour+minute+second+timezone for .dayOfWeekAndTime) -- structurally symmetric in the plugin's own implementation, not an asymmetry the plugin's Dart or native code introduces. No exact-alarm-equivalent permission exists on iOS to diverge on either (requestExactAlarmPermissionIfNeeded() is a no-op returning true on non-Android platforms for both). No notification-id collision (Lunch=101, weigh-in=200). No code path found that would explain why Weigh-in fires and Lunch doesn't specifically. This looks like it needs real-device evidence next, the same way Android's investigation ultimately needed adb-level evidence rather than static analysis alone -- see next_action in the phase's .continue-here.md."
+missing:
+  - "Real-device confirmation of whether scheduleMealReminder() actually reaches 'zonedSchedule returned successfully' in the debug console during a fresh repro (the existing debugPrint instrumentation at notification_service.dart:201-226 already logs this -- just needs to be watched live via `flutter run` or Xcode's console during the test)."
+  - "Confirmation of pendingNotificationRequests() content on-device right after enabling the Lunch toggle -- does iOS's UNUserNotificationCenter actually register a pending request for id 101 with the correct trigger, or does registration itself silently fail?"
+  - "Which exact weigh-in frequency was used for Test 6's passing run (Weekly/dayOfWeekAndTime vs biweekly-or-monthly/one-shot) -- determines whether the working case shares matchDateTimeComponents' repeating-trigger code path with the failing meal case, or is actually the structurally different one-shot path."
+  - "Whether iOS Focus/Do Not Disturb or per-app 'Scheduled Summary' notification delivery settings are active for this app -- a real iOS-only delivery-suppression mechanism with no Android equivalent, not yet ruled out."
+debug_session: ""
 
 #### 6. Weigh-in reminder — scheduling, firing, and re-arming
 expected: |
   In Weight Tracking's Reminders section, set a weigh-in reminder to "Custom" with a specific day-of-week + time (or Weekly, for a faster test). Confirm it fires as a real OS notification at the scheduled time. Then background the app and bring it back to the foreground at least once before the next occurrence — the reminder should still be scheduled to fire again.
-result: [pending]
+result: pass
+note: "Confirmed firing correctly on iPhone. Exact frequency configuration used for this test still needs to be recorded (Weekly/dayOfWeekAndTime vs biweekly-or-monthly/one-shot) -- see Test 5's investigation notes for why this detail matters to the meal-reminder failure."
 
 #### 7. Backup & Restore — Create Backup (share_plus native share sheet)
 expected: |
