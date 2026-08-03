@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: planning
-stopped_at: Completed 05-19-PLAN.md
-last_updated: "2026-07-28T20:57:47.544Z"
+stopped_at: Phase 5 real-device UAT complete (Android 9/9, iOS 9/9) — ready to plan Phase 6
+last_updated: "2026-08-03T15:37:58.016Z"
 progress:
   total_phases: 9
   completed_phases: 5
@@ -15,8 +15,8 @@ progress:
 
 # STATE: CO₂ Diet
 
-**Last updated:** 2026-07-16
-**Session:** Initialization complete; roadmap created
+**Last updated:** 2026-08-03
+**Session:** Phase 5 fully verified on real hardware, both platforms — see `.planning/phases/05-.../05-UAT.md`. Ready to start Phase 6.
 
 ---
 
@@ -29,21 +29,21 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - **Sole Flutter dev:** Ali. Backend (Spring Boot + PostgreSQL + Keycloak) is a parallel workstream owned by Tomris.
 - **Package:** `com.reduceco2now.co2diet`
 - **Launch market:** EU / Germany (English-only for v1)
-- **Current focus:** Roadmap complete → Phase 1 planning next
+- **Current focus:** Phase 5 complete and verified on real hardware (both platforms) → Phase 6 next
 
 ---
 
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable — IN PROGRESS (8 of 19 plans done)
-- **Plan:** 19 of 19 (05-08 complete — fl_chart/flutter_local_notifications/timezone/flutter_timezone installed, NotificationPrefs domain layer, NotificationService, rootNavigatorKey, main.dart wiring)
-- **Status:** Ready to plan
-- **Progress:** [██████████] 100%
-- **v1 requirements:** 34 / 75 delivered (CO2-01, CO2-02, CO2-03, CO2-04, LEG-05, LOG-01 through LOG-12, NFR-05, NFR-06, PROF-01 through PROF-05, PRIV-07) — Phase 4 fully closed (04-13 real-device checkpoint approved on both platforms); 05-02 closes the Phase-4 CO2 cache-path gap (CO2-02, NFR-05); 05-03 adds the Phase 5 Drift schema foundation (schema-only); 05-04 wires sugar/fiber/salt through FoodItem/MealEntry/repository (NUTR-01 still not fully delivered — daily-totals rollup is 05-10-PLAN.md, dashboard/insights UI later still); 05-05 adds the DAO layer for CO2 Settings/Weight/Notifications/Backup; 05-06 delivers the CO2 Settings domain layer (CO2-03 now fully delivered); 05-07 delivers the Weight Tracking domain layer (WT-01 through WT-04 still NOT fully delivered — the screen doesn't exist until 05-13, domain layer only so far); 05-08 installs fl_chart/flutter_local_notifications/timezone/flutter_timezone and delivers NotificationService + NotificationPrefs domain layer (NOTIF-01/02/03 still NOT fully delivered — the meal-reminder/weigh-in-reminder UI doesn't exist until 05-13/05-14/05-18, service/domain layer only so far; PRIV-02, PRIV-03 still not fully delivered — repository/UI plans pending); remaining Phase 5 requirements are test-stub-scaffolded only so far
+- **Phase:** 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable — **COMPLETE** (19/19 plans executed, then a full real-device UAT pass on both Android and iOS: 9/9 tests passing on each — see `05-UAT.md`). Local Mode is shippable as of this phase per `ROADMAP.md`'s delivery principle.
+- **Plan:** Phase 5 fully executed and UAT-verified; no plan currently in progress.
+- **Status:** Ready to plan Phase 6
+- **Progress:** [█████░░░░] 5 of 9 phases complete
+- **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files.
 
 ```
-[███████░░░] 71%
+[█████░░░░] 55% (5/9 phases)
 ```
 
 ### Initialization Progress
@@ -136,10 +136,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-07-28T20:30:00.610Z
-**Stopped at:** Completed 05-19-PLAN.md
-**Next action:** Execute Plan 05-08
-**Suggested next command:** `/gsd:execute-phase 5`
+**Last session:** 2026-08-03T15:37:58.016Z
+**Stopped at:** Phase 5's real-device UAT pass complete on both platforms (Android 9/9, iOS 9/9) — see `.planning/phases/05-.../05-UAT.md` and its `.continue-here.md` for full detail. No open gaps remain for Phase 5.
+**Next action:** Start Phase 6 (Onboarding, Legal Consent, Legal Hub, ED Safety Nets, Accessibility & Pre-Submission) — no CONTEXT.md exists for it yet.
+**Suggested next command:** `/gsd:discuss-phase 6`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
