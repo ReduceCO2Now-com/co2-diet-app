@@ -3,7 +3,7 @@ status: testing
 phase: 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable
 source: 05-01-SUMMARY.md through 05-19-SUMMARY.md
 started: "2026-07-28T21:04:00.346Z"
-updated: "2026-08-03T12:49:39.066Z"
+updated: "2026-08-03T13:11:17.089Z"
 ---
 
 ## Current Test
@@ -201,4 +201,18 @@ skipped: 0
     - "The actual root cause -- Tooltip theory falsified; next investigation should get the FULL crash stack trace (only the assertion message was captured, not the frame list) and/or try reproducing with different preconditions (e.g. after prior navigation to/from other screens, with a keyboard already open from a previously-focused field, or via integration_test on a real/emulated device rather than a widget test, since '_dependents.isEmpty' can involve Overlay/Route timing that widget tests may not fully replicate)"
   fix_commit: "c6697a3 (real but unrelated bug, does not fix this crash)"
   fix_verification: "N/A -- root cause not found, no fix applied for the actual crash. Do not mark resolved without a test that first demonstrably fails against current code, then passes after a fix (same discipline as bugs 1+2)."
+  debug_session: ""
+
+- truth: "Exported/shared data files (CSV/Excel/JSON, all 7 ExportCategory values) contain only user-meaningful fields, not internal sync-machinery columns"
+  status: resolved
+  reason: "Found while reading backup_export_service.dart during Test 7 (Backup & Restore), not yet reported on-device. Every category's export/share (BackupNotifier.shareExport -> exportData) went through the same _readCategoryRows() as createBackup(), which called Drift's row.toJson() with no field filtering. Every export category's backing table mixes in SyncSafeTable, so every human-facing export/share -- not just Profile -- leaked 6 internal sync columns (id, hlcMillis, hlcCounter, hlcNodeId, dirty, deletedAt) that mean nothing to a person reading their own exported data."
+  severity: major
+  test: 7
+  root_cause: "_readCategoryRows() (backup_export_service.dart) returns the full Drift-generated toJson() of each category's row(s) uniformly for both exportData() (human-facing export/share) and createBackup() (full-fidelity backup, whose applyRestore()/fromJson() round trip genuinely needs every column). No distinction existed between the two call sites, so the backup-required fields leaked into every plain export too, across all 7 ExportCategory values."
+  artifacts:
+    - path: "lib/domain/services/backup_export_service.dart"
+      issue: "exportData() had no way to exclude SyncSafeTable's internal columns (id/hlcMillis/hlcCounter/hlcNodeId/dirty/deletedAt) from the human-facing export path while still including them for createBackup()'s restore-required path"
+  missing: []
+  fix_commit: "(pending -- fix implemented and tested this session, not yet committed at time of writing)"
+  fix_verification: "Added includeInternalFields parameter to exportData() (default false, stripped via new _stripInternalFields() helper; createBackup() passes true). Two new regression tests in backup_export_service_test.dart: (1) confirms exportData()'s default human-facing path excludes all 6 internal columns -- verified failing against pre-fix code (row.containsKey('id') was true), then passing after the fix; (2) confirms createBackup() -> applyRestore() still round-trips a row's id/hlcMillis/hlcCounter/hlcNodeId/dirty correctly (was already passing pre-fix, stayed passing post-fix -- proves the fix doesn't break restore). Full suite (379 tests) green, flutter analyze clean. Real-device confirmation of an actual exported CSV/JSON file still outstanding -- do that as part of resuming Test 7."
   debug_session: ""

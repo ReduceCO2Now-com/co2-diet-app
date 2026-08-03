@@ -341,6 +341,66 @@ void main() {
     );
 
     test(
+      'exportData (human-facing export) excludes internal sync-machinery '
+      'columns (id/hlcMillis/hlcCounter/hlcNodeId/dirty/deletedAt) from '
+      'the encoded rows',
+      () async {
+        when(
+          () => weightDao.getEntriesInRange(),
+        ).thenAnswer((_) async => [_buildWeightRow()]);
+
+        final zip = await service.exportData(
+          categories: {ExportCategory.weightEntries},
+          formats: {ExportFormat.json},
+        );
+
+        final archive = ZipDecoder().decodeBytes(zip.readAsBytesSync());
+        final jsonContent =
+            jsonDecode(_stringContent(archive, 'weightEntries.json'))
+                as List<dynamic>;
+        final row = jsonContent.first as Map<String, dynamic>;
+
+        expect(row.containsKey('id'), isFalse);
+        expect(row.containsKey('hlcMillis'), isFalse);
+        expect(row.containsKey('hlcCounter'), isFalse);
+        expect(row.containsKey('hlcNodeId'), isFalse);
+        expect(row.containsKey('dirty'), isFalse);
+        expect(row.containsKey('deletedAt'), isFalse);
+        // User-meaningful fields survive.
+        expect(row['value'], 70.5);
+        expect(row['unit'], 'kg');
+      },
+    );
+
+    test(
+      'createBackup retains internal sync-machinery columns so a restore '
+      'can reconstruct the original row',
+      () async {
+        final original = _buildWeightRow();
+        when(
+          () => weightDao.getEntriesInRange(),
+        ).thenAnswer((_) async => [original]);
+
+        final zip = await service.createBackup();
+        clearInteractions(weightDao);
+        when(() => weightDao.restoreEntries(any())).thenAnswer((_) async {});
+
+        await service.applyRestore(zip);
+
+        final captured = verify(
+          () => weightDao.restoreEntries(captureAny()),
+        ).captured.single as List<WeightEntryRow>;
+        expect(captured, hasLength(1));
+        expect(captured.first.id, original.id);
+        expect(captured.first.hlcMillis, original.hlcMillis);
+        expect(captured.first.hlcCounter, original.hlcCounter);
+        expect(captured.first.hlcNodeId, original.hlcNodeId);
+        expect(captured.first.dirty, original.dirty);
+        expect(captured.first.value, original.value);
+      },
+    );
+
+    test(
       'createBackup writes to the app documents directory; automatic '
       'backup frequency off/daily/weekly is honored',
       () async {

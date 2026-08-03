@@ -10,6 +10,7 @@ import 'package:co2diet/data/local/daos/notification_prefs_dao.dart';
 import 'package:co2diet/data/local/daos/user_food_dao.dart';
 import 'package:co2diet/data/local/daos/user_profile_dao.dart';
 import 'package:co2diet/data/local/daos/weight_dao.dart';
+import 'package:co2diet/data/local/mixins/sync_safe_table.dart';
 import 'package:csv/csv.dart' hide excel;
 import 'package:drift/drift.dart' show Value, ValueSerializer;
 import 'package:excel/excel.dart' as xls;
@@ -259,10 +260,20 @@ class BackupExportService {
   /// [fileNamePrefix] controls the output zip's base filename (before the
   /// timestamp + `.zip` suffix) — [createBackup] uses a different prefix
   /// than a plain user-initiated export.
+  ///
+  /// [includeInternalFields] controls whether each row's
+  /// [_internalFieldNames] (the [SyncSafeTable]-injected sync-machinery
+  /// columns) are included in the encoded output. [createBackup] passes
+  /// `true` — [applyRestore] reconstructs a full [ExportCategory] row via
+  /// `fromJson`, which requires every column to be present. A plain
+  /// human-facing export (the default, `false`) strips them: they're
+  /// meaningless to a person reading a CSV/Excel/JSON export of their own
+  /// data, and were previously leaking into every category's export file.
   Future<File> exportData({
     required Set<ExportCategory> categories,
     required Set<ExportFormat> formats,
     String fileNamePrefix = 'co2diet_export',
+    bool includeInternalFields = false,
   }) async {
     final zipPath = p.join(
       documentsDir.path,
@@ -273,7 +284,10 @@ class BackupExportService {
     final manifestFiles = <Map<String, dynamic>>[];
 
     for (final category in categories) {
-      final rows = await _readCategoryRows(category);
+      final rawRows = await _readCategoryRows(category);
+      final rows = includeInternalFields
+          ? rawRows
+          : _stripInternalFields(rawRows);
       for (final format in formats) {
         final fileName = '${category.name}.${_extensionFor(format)}';
         final bytes = _encodeRows(rows, format);
@@ -309,6 +323,7 @@ class BackupExportService {
       categories: ExportCategory.values.toSet(),
       formats: const {ExportFormat.json},
       fileNamePrefix: 'co2diet_backup',
+      includeInternalFields: true,
     );
 
     final existing = await backupMetadataDao.getMetadata();
@@ -438,6 +453,34 @@ class BackupExportService {
   // ---------------------------------------------------------------------
   // Reading categories (export)
   // ---------------------------------------------------------------------
+
+  /// The columns [SyncSafeTable] injects onto every export category's
+  /// backing table (`lib/data/local/mixins/sync_safe_table.dart`) —
+  /// internal sync machinery, not user-meaningful data. Stripped from
+  /// every human-facing export by [exportData] unless
+  /// `includeInternalFields` is set (as [createBackup] does, since
+  /// [applyRestore] needs the full row shape to reconstruct it).
+  static const _internalFieldNames = {
+    'id',
+    'hlcMillis',
+    'hlcCounter',
+    'hlcNodeId',
+    'dirty',
+    'deletedAt',
+  };
+
+  List<Map<String, dynamic>> _stripInternalFields(
+    List<Map<String, dynamic>> rows,
+  ) {
+    return [
+      for (final row in rows)
+        {
+          for (final entry in row.entries)
+            if (!_internalFieldNames.contains(entry.key))
+              entry.key: entry.value,
+        },
+    ];
+  }
 
   Future<List<Map<String, dynamic>>> _readCategoryRows(
     ExportCategory category,
