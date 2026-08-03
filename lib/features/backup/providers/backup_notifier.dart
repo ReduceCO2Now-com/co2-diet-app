@@ -75,7 +75,15 @@ class BackupNotifier extends _$BackupNotifier {
     final pick = ref.read(filePickerProvider);
     final picked = await pick(
       acceptedTypeGroups: const [
-        XTypeGroup(label: 'zip', extensions: ['zip']),
+        // `uniformTypeIdentifiers` is required for iOS -- file_selector_ios
+        // reads ONLY this field (ignores `extensions` entirely) and throws
+        // an ArgumentError before ever presenting the picker if it's empty.
+        // `public.zip-archive` is Apple's system UTI for .zip files.
+        XTypeGroup(
+          label: 'zip',
+          extensions: ['zip'],
+          uniformTypeIdentifiers: ['public.zip-archive'],
+        ),
       ],
     );
     if (picked == null) {

@@ -224,6 +224,46 @@ void main() {
     );
 
     test(
+      'pickAndPreviewRestoreFile passes a uniformTypeIdentifiers-bearing '
+      'XTypeGroup -- file_selector_ios reads ONLY this field (ignores '
+      'extensions entirely) and throws an ArgumentError before the picker '
+      'ever opens if it is empty, so this is required for iOS to work at '
+      'all, not merely nice-to-have',
+      () async {
+        when(
+          () => mockDao.getMetadata(),
+        ).thenAnswer((_) async => _buildMetadataRow());
+
+        List<XTypeGroup>? capturedGroups;
+        final container = buildContainer(
+          filePicker: ({acceptedTypeGroups = const <XTypeGroup>[]}) async {
+            capturedGroups = acceptedTypeGroups;
+            return null;
+          },
+        );
+        addTearDown(container.dispose);
+        await container.read(backupProvider.future);
+
+        await container
+            .read(backupProvider.notifier)
+            .pickAndPreviewRestoreFile();
+
+        expect(capturedGroups, isNotNull);
+        for (final group in capturedGroups!) {
+          final hasUtis = group.uniformTypeIdentifiers?.isNotEmpty ?? false;
+          expect(
+            group.allowsAny || hasUtis,
+            isTrue,
+            reason:
+                'XTypeGroup "${group.label}" has no uniformTypeIdentifiers -- '
+                'file_selector_ios would throw ArgumentError before '
+                'presenting the picker on a real iOS device',
+          );
+        }
+      },
+    );
+
+    test(
       'pickAndPreviewRestoreFile returns null and sets no pending file '
       'when the picker is cancelled',
       () async {
