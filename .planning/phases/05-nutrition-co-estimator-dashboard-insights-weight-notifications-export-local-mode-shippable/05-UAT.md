@@ -3,16 +3,16 @@ status: testing
 phase: 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable
 source: 05-01-SUMMARY.md through 05-19-SUMMARY.md
 started: "2026-07-28T21:04:00.346Z"
-updated: "2026-08-03T14:00:00.000Z"
+updated: "2026-08-03T14:20:00.000Z"
 ---
 
 ## Current Test
 <!-- OVERWRITE each test - shows where we are -->
 
-number: 8
-name: Backup & Restore — Restore Data (file_selector native document picker)
+number: 9
+name: Danger Zone — typed confirmation gate
 expected: |
-  In Backup & Restore's "Restore Data" section, tap "Choose backup file" — **the native OS document/file picker should open** (not an in-app file browser), and you should be able to navigate to and select a backup file from anywhere on the device (e.g. one you saved via Test 7, ideally from a location outside the app's own folder, like Files or Downloads). After selecting one, a preview of what will be restored should appear before you tap "Confirm Restore" — nothing should be overwritten until you explicitly confirm.
+  In Backup & Restore's Danger Zone section, start the "delete all local data" flow. The delete action should stay disabled until you type the exact word "DELETE" into a confirmation field — no accidental one-tap deletion possible.
 awaiting: user response
 
 ## Tests
@@ -79,8 +79,8 @@ note: "RESOLVED 2026-08-03, user-confirmed on Tab S7 FE after a clean rebuild: e
 ### 8. Backup & Restore — Restore Data (file_selector native document picker)
 expected: |
   In Backup & Restore's "Restore Data" section, tap "Choose backup file" — **the native OS document/file picker should open** (not an in-app file browser), and you should be able to navigate to and select a backup file from anywhere on the device (e.g. one you saved via Test 7, ideally from a location outside the app's own folder, like Files or Downloads). After selecting one, a preview of what will be restored should appear before you tap "Confirm Restore" — nothing should be overwritten until you explicitly confirm.
-result: [pending]
-reported: "User picked a backup zip (created during Test 7) and the restore preview showed only 'Meal entries: 15 row(s)' -- no Profile/Weight/CO2 Settings/Favorites/Custom Foods entries, despite real data existing in Profile and Weight from this session. Investigated both hypotheses (backup genuinely missing categories vs. preview UI only reading one category): built a diagnostic test that calls createBackup() with multi-category real data (Profile + Weight + 15 Meal entries) then decodes the resulting zip's manifest.json directly AND runs it through previewRestore() -- both show all 7 ExportCategory entries with correct row counts (profile:1, mealEntries:15, weightEntries:1, the rest:0). The service-level code (createBackup/previewRestore) and the screen's rendering (backup_restore_screen.dart:308, an unfiltered loop over every categoryRowCounts entry) are both provably correct. Leading theory: the zip picked for this test was actually a single-category 'Share export' zip (e.g. from the Weight/Meal/Profile spot-checks done right after Test 7's fix), not the actual multi-category 'Create backup' zip -- both flows produce visually similar zips, easy to mix up on a real device's Downloads/share destination. Added a permanent regression test (createBackup's restore preview lists all 7 ExportCategory values) to guard against a real future regression here. Next: retry Test 8 with a freshly-created 'Create backup' zip, double-checking its filename/timestamp before picking it in the restore picker."
+result: pass
+note: "RESOLVED 2026-08-03 -- NOT a bug. Initial report: restore preview showed only 'Meal entries: 15 row(s)', missing Profile/Weight/etc. despite real data existing. Investigated both hypotheses (backup genuinely missing categories vs. preview UI only reading one category): a diagnostic multi-category createBackup() -> previewRestore() round trip proved both the manifest and the preview logic correctly include all 7 ExportCategory entries with accurate row counts, and the screen's rendering (backup_restore_screen.dart:308) is an unfiltered loop over every entry -- no filtering bug anywhere in the code. Root cause of the original report: the zip picked for the test was a STALE backup created earlier in the session, before Profile/Weight/etc. had any real data yet -- at that point in the session only Meal entries genuinely existed, so the preview was accurately reporting an empty-elsewhere backup, not silently dropping categories. User confirmed: a freshly-created backup now correctly shows all categories in the restore preview. A permanent regression test (createBackup's restore preview lists all 7 ExportCategory values) was added as a guard regardless, since this class of bug (partial-category leak) is exactly the kind Phase 5's UAT has been catching all session."
 
 ### 9. Danger Zone — typed confirmation gate
 expected: |
