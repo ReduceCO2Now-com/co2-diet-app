@@ -49,6 +49,31 @@ void main() {
     );
 
     testWidgets(
+      'does not overflow when the card is narrower than the value+unit+'
+      'target text needs (e.g. the emphasized card on a small phone width)',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: SizedBox(
+                width: 100,
+                child: MetricCard(
+                  label: 'Calories',
+                  value: 1500,
+                  target: 2000,
+                  unit: 'kcal',
+                  isEmphasized: true,
+                ),
+              ),
+            ),
+          ),
+        );
+
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets(
       "shows '—' (no fake precision) when value or target is null",
       (tester) async {
         await tester.pumpWidget(

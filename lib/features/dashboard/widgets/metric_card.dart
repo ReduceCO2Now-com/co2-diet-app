@@ -82,30 +82,34 @@ class MetricCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(
-                valueText,
-                style:
-                    (isEmphasized
-                            ? textTheme.headlineMedium
-                            : textTheme.titleLarge)
-                        ?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(width: 4),
-              Text(unit, style: textTheme.bodySmall),
-              if (target != null) ...[
-                const SizedBox(width: 4),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
                 Text(
-                  'of ${_formatNumber(target!)}',
-                  style: textTheme.bodySmall?.copyWith(
-                    color: AppColors.onSurfaceVariant,
-                  ),
+                  valueText,
+                  style:
+                      (isEmphasized
+                              ? textTheme.headlineMedium
+                              : textTheme.titleLarge)
+                          ?.copyWith(fontWeight: FontWeight.w700),
                 ),
+                const SizedBox(width: 4),
+                Text(unit, style: textTheme.bodySmall),
+                if (target != null) ...[
+                  const SizedBox(width: 4),
+                  Text(
+                    'of ${_formatNumber(target!)}',
+                    style: textTheme.bodySmall?.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                    ),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
           if (progress != null) ...[
             const SizedBox(height: 8),
