@@ -32,10 +32,11 @@ const _defaultReminderTime = '09:00';
 /// picker shown only for Custom, and an enable toggle.
 ///
 /// Enabling the reminder for the first time calls
-/// `NotificationService.requestPermissionIfNeeded` before
-/// `scheduleWeighInReminder` -- denial reverts the toggle to off and shows
-/// an inline "Open Settings" recovery link (no full-screen block, per
-/// CONTEXT.md's lightweight permission-denied pattern).
+/// `NotificationService.requestPermissionIfNeeded` AND
+/// `requestExactAlarmPermissionIfNeeded` before `scheduleWeighInReminder`
+/// -- denial of either reverts the toggle to off and shows an inline
+/// "Open Settings" recovery link (no full-screen block, per CONTEXT.md's
+/// lightweight permission-denied pattern).
 ///
 /// `NotificationService` is obtained via
 /// `ref.read(notificationServiceProvider)` -- the single provider
@@ -108,6 +109,19 @@ class _WeighInReminderSectionState
         _enabled = false;
         _permissionDeniedMessage =
             'Notification permission denied -- open Settings to allow it.';
+      });
+      return;
+    }
+
+    final exactAlarmGranted = await notificationService
+        .requestExactAlarmPermissionIfNeeded();
+    if (!exactAlarmGranted) {
+      if (!mounted) return;
+      setState(() {
+        _enabled = false;
+        _permissionDeniedMessage =
+            'Exact-alarm permission denied -- open Settings to allow the '
+            'reminder to fire on time.';
       });
       return;
     }

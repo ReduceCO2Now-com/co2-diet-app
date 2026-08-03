@@ -33,12 +33,14 @@ class NotificationPrefsNotifier extends _$NotificationPrefsNotifier {
   /// Enables/disables the reminder for [slot], scheduled at [time]
   /// (`'HH:mm'`) when enabling.
   ///
-  /// When [enabled] is `true`, requests notification permission
-  /// just-in-time first (never during `build()`/app startup). If denied,
-  /// returns `false` immediately without persisting anything or touching
-  /// the OS scheduler -- the caller (a settings-row widget) is responsible
-  /// for reverting its own toggle UI and showing the inline "Open
-  /// Settings" recovery link in that case.
+  /// When [enabled] is `true`, requests notification permission AND
+  /// exact-alarm permission just-in-time first (never during
+  /// `build()`/app startup) -- reminders are time-anchored, so exact
+  /// scheduling is required, not optional. If either is denied, returns
+  /// `false` immediately without persisting anything or touching the OS
+  /// scheduler -- the caller (a settings-row widget) is responsible for
+  /// reverting its own toggle UI and showing the inline "Open Settings"
+  /// recovery link in that case.
   ///
   /// Otherwise (permission already granted, or [enabled] is `false`),
   /// persists the updated [NotificationPrefs] via the repository, calls
@@ -54,6 +56,10 @@ class NotificationPrefsNotifier extends _$NotificationPrefsNotifier {
     if (enabled) {
       final granted = await notificationService.requestPermissionIfNeeded();
       if (!granted) return false;
+
+      final exactAlarmGranted = await notificationService
+          .requestExactAlarmPermissionIfNeeded();
+      if (!exactAlarmGranted) return false;
     }
 
     final current = state.value ?? await future;

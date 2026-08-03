@@ -126,6 +126,9 @@ void main() {
         when(
           () => mockService.requestPermissionIfNeeded(),
         ).thenAnswer((_) async => true);
+        when(
+          () => mockService.requestExactAlarmPermissionIfNeeded(),
+        ).thenAnswer((_) async => true);
         when(() => mockRepo.savePrefs(any())).thenAnswer((_) async {});
         when(
           () => mockService.scheduleMealReminder(any(), any()),
@@ -143,6 +146,9 @@ void main() {
 
         expect(result, isTrue);
         verify(() => mockService.requestPermissionIfNeeded()).called(1);
+        verify(
+          () => mockService.requestExactAlarmPermissionIfNeeded(),
+        ).called(1);
 
         final captured = verify(
           () => mockRepo.savePrefs(captureAny()),
@@ -229,6 +235,9 @@ void main() {
           service.requestPermissionIfNeeded,
         ).thenAnswer((_) async => true);
         when(
+          service.requestExactAlarmPermissionIfNeeded,
+        ).thenAnswer((_) async => true);
+        when(
           () => service.scheduleMealReminder(any(), any()),
         ).thenAnswer((_) async => true);
         when(
@@ -282,7 +291,7 @@ void main() {
 
         expect(tester.widget<Switch>(switches.at(0)).value, isFalse);
         expect(
-          find.textContaining('Notifications are disabled'),
+          find.textContaining('Notifications or exact-alarm scheduling'),
           findsOneWidget,
         );
         expect(find.text('Open Settings'), findsOneWidget);
@@ -290,9 +299,40 @@ void main() {
         // Only the denied row shows the recovery link -- the other three
         // rows are untouched.
         expect(
-          find.textContaining('Notifications are disabled'),
+          find.textContaining('Notifications or exact-alarm scheduling'),
           findsNWidgets(1),
         );
+      },
+    );
+
+    testWidgets(
+      'toggling a reminder on when exact-alarm permission is denied (but '
+      'notification permission is granted) reverts the toggle and shows '
+      'an Open Settings link',
+      (tester) async {
+        final repo = _FakeNotificationPrefsRepository();
+        final service = _MockNotificationService();
+        when(
+          service.requestPermissionIfNeeded,
+        ).thenAnswer((_) async => true);
+        when(
+          service.requestExactAlarmPermissionIfNeeded,
+        ).thenAnswer((_) async => false);
+
+        await tester.pumpWidget(_buildTestable(repo, service));
+        await tester.pumpAndSettle();
+
+        final switches = find.byType(Switch);
+        await tester.tap(switches.at(0));
+        await tester.pumpAndSettle();
+
+        expect(tester.widget<Switch>(switches.at(0)).value, isFalse);
+        expect(
+          find.textContaining('Notifications or exact-alarm scheduling'),
+          findsOneWidget,
+        );
+        expect(find.text('Open Settings'), findsOneWidget);
+        verifyNever(() => service.scheduleMealReminder(any(), any()));
       },
     );
   });

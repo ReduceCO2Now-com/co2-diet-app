@@ -24,6 +24,16 @@
 // timezone resolution, computed scheduledDate, tz.local, and any
 // exception) -- the same log lines that fire when a user flips a
 // reminder toggle in the real app.
+//
+// IMPORTANT: this test now schedules with AndroidScheduleMode.
+// exactAllowWhileIdle, which requires the SCHEDULE_EXACT_ALARM special-
+// access permission. If it isn't already granted on the connected
+// device, requestExactAlarmPermissionIfNeeded() launches the system
+// Settings screen and BLOCKS waiting for a human to grant it and return
+// -- this test will hang in a fully unattended CI run until someone does
+// that once per device/install. After granting it once, it stays
+// granted across app restarts (not across reinstalls with a version
+// change, per Android's exact-alarm permission semantics).
 
 import 'package:co2diet/domain/entities/meal_slot.dart';
 import 'package:co2diet/domain/services/notification_service.dart';
@@ -85,6 +95,21 @@ void main() {
       final granted = await service.requestPermissionIfNeeded();
       debugPrint(
         '[integration_test] notification permission granted: $granted',
+      );
+
+      final exactAlarmGranted = await service
+          .requestExactAlarmPermissionIfNeeded();
+      debugPrint(
+        '[integration_test] exact-alarm permission granted: '
+        '$exactAlarmGranted',
+      );
+      expect(
+        exactAlarmGranted,
+        isTrue,
+        reason:
+            'Exact-alarm permission was not granted -- grant it manually '
+            'via Settings > Apps > co2diet > Alarms & reminders once, '
+            'then re-run this test.',
       );
 
       // Schedule 2 minutes out -- close enough that a human watching the

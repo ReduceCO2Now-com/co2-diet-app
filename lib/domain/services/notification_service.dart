@@ -138,6 +138,41 @@ class NotificationService {
     return result.isGranted;
   }
 
+  /// Requests the `SCHEDULE_EXACT_ALARM` special-access permission
+  /// (Android 12+) if not already granted, so meal/weigh-in reminders fire
+  /// at their exact scheduled time rather than being subject to OS-level
+  /// batching/delay.
+  ///
+  /// Same just-in-time timing as [requestPermissionIfNeeded] -- never
+  /// called by [initialize], only by a reminder toggle handler when the
+  /// user first enables a reminder. Unlike a normal permission dialog,
+  /// granting this takes the user to a system Settings screen; the
+  /// underlying plugin call awaits the user's return from that screen
+  /// before resolving, so this can be awaited exactly like a normal
+  /// permission prompt.
+  ///
+  /// Always returns `true` on iOS/other platforms (no `AndroidFlutterLocal
+  /// NotificationsPlugin` implementation to resolve) -- exact-alarm
+  /// permission is an Android-only concept.
+  Future<bool> requestExactAlarmPermissionIfNeeded() async {
+    final androidPlugin = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+    if (androidPlugin == null) return true;
+
+    final alreadyGranted =
+        await androidPlugin.canScheduleExactNotifications() ?? false;
+    if (alreadyGranted) return true;
+
+    final granted = await androidPlugin.requestExactAlarmsPermission();
+    debugPrint(
+      '[NotificationService] requestExactAlarmPermissionIfNeeded -- '
+      'granted: $granted',
+    );
+    return granted ?? false;
+  }
+
   /// Stable per-slot notification id so re-scheduling a slot's reminder
   /// replaces rather than duplicates it.
   int _mealSlotNotificationId(MealSlot slot) => 100 + slot.index;
@@ -180,7 +215,7 @@ class NotificationService {
           ),
           iOS: DarwinNotificationDetails(),
         ),
-        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         matchDateTimeComponents: DateTimeComponents.time,
         title: '${slot.displayLabel} reminder',
         payload: '/food-search?slot=${slot.name}',
@@ -263,7 +298,7 @@ class NotificationService {
           ),
           iOS: DarwinNotificationDetails(),
         ),
-        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         matchDateTimeComponents: usesWeeklyRecurrence
             ? DateTimeComponents.dayOfWeekAndTime
             : null,

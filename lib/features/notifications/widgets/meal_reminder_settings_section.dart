@@ -138,7 +138,8 @@ class _MealSlotRowState extends ConsumerState<_MealSlotRow> {
       if (!mounted) return;
       setState(() {
         _permissionDeniedMessage =
-            'Notifications are disabled -- open Settings to allow them.';
+            'Notifications or exact-alarm scheduling are disabled -- '
+            'open Settings to allow reminders to fire on time.';
       });
       return;
     }

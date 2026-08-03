@@ -1,8 +1,38 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- flutter_local_notifications (>= v16) requires the app to declare
+         RECEIVE_BOOT_COMPLETED itself so the plugin can reschedule
+         reminders after a device reboot; see the plugin's "AndroidManifest.xml
+         setup" README section. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!-- Meal/weigh-in reminders are time-anchored (e.g. "remind me at
+         12:30"), so inexact delivery undermines the feature; exact
+         alarms need this special-access permission on Android 12+.
+         Requested just-in-time via NotificationService.
+         requestExactAlarmPermissionIfNeeded(), never at app launch. -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
     <application
         android:label="co2diet"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!-- flutter_local_notifications (>= v16) no longer bundles these
+             receivers in its own manifest. Without them declared here,
+             AlarmManager has no registered component to deliver the
+             scheduled-notification broadcast to, so every meal/weigh-in
+             reminder is scheduled successfully but silently never fires.
+             (See the plugin's README "AndroidManifest.xml setup" section.) -->
+        <receiver
+            android:exported="false"
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
+        <receiver
+            android:exported="false"
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
+            </intent-filter>
+        </receiver>
         <activity
             android:name=".MainActivity"
             android:exported="true"

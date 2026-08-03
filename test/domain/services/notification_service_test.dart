@@ -31,7 +31,7 @@ void main() {
         android: AndroidNotificationDetails('fallback_channel', 'Fallback'),
       ),
     );
-    registerFallbackValue(AndroidScheduleMode.inexactAllowWhileIdle);
+    registerFallbackValue(AndroidScheduleMode.exactAllowWhileIdle);
   });
 
   late _MockFlutterLocalNotificationsPlugin mockPlugin;
@@ -67,7 +67,7 @@ void main() {
     test(
       'scheduleMealReminder calls zonedSchedule with '
       'matchDateTimeComponents: time and androidScheduleMode: '
-      'inexactAllowWhileIdle',
+      'exactAllowWhileIdle',
       () async {
         final result = await service.scheduleMealReminder(
           MealSlot.breakfast,
@@ -80,7 +80,7 @@ void main() {
             id: 100 + MealSlot.breakfast.index,
             scheduledDate: any(named: 'scheduledDate'),
             notificationDetails: any(named: 'notificationDetails'),
-            androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+            androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
             title: any(named: 'title'),
             body: any(named: 'body'),
             payload: '/food-search?slot=breakfast',
@@ -118,7 +118,7 @@ void main() {
             id: 200,
             scheduledDate: any(named: 'scheduledDate'),
             notificationDetails: any(named: 'notificationDetails'),
-            androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+            androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
             title: any(named: 'title'),
             body: any(named: 'body'),
             payload: '/weight-tracking',
