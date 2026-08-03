@@ -3,16 +3,16 @@ status: testing
 phase: 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable
 source: 05-01-SUMMARY.md through 05-19-SUMMARY.md
 started: "2026-07-28T21:04:00.346Z"
-updated: "2026-08-03T13:11:17.089Z"
+updated: "2026-08-03T14:00:00.000Z"
 ---
 
 ## Current Test
 <!-- OVERWRITE each test - shows where we are -->
 
-number: 7
-name: Backup & Restore — Create Backup (share_plus native share sheet)
+number: 8
+name: Backup & Restore — Restore Data (file_selector native document picker)
 expected: |
-  From Settings, tap "Backup & Restore". You should see Current Storage Status (record counts), Create Backup, Automatic Backups (Off/Daily/Weekly), Export Data, Restore Data, a Privacy & Ownership statement explicitly stating backups are NOT encrypted, and a Danger Zone. Tap "Create backup" — **the native OS share sheet should open** (not an in-app dialog) with a real backup archive file attached, ready to send to Files/Drive/AirDrop/etc. Do the same for "Share export" under Export Data.
+  In Backup & Restore's "Restore Data" section, tap "Choose backup file" — **the native OS document/file picker should open** (not an in-app file browser), and you should be able to navigate to and select a backup file from anywhere on the device (e.g. one you saved via Test 7, ideally from a location outside the app's own folder, like Files or Downloads). After selecting one, a preview of what will be restored should appear before you tap "Confirm Restore" — nothing should be overwritten until you explicitly confirm.
 awaiting: user response
 
 ## Tests
@@ -73,7 +73,8 @@ note: "RESOLVED 2026-08-03, user-confirmed on Tab S7 FE alongside Test 5 -- fire
 ### 7. Backup & Restore — Create Backup (share_plus native share sheet)
 expected: |
   From Settings, tap "Backup & Restore". You should see Current Storage Status (record counts), Create Backup, Automatic Backups (Off/Daily/Weekly), Export Data, Restore Data, a Privacy & Ownership statement explicitly stating backups are NOT encrypted, and a Danger Zone. Tap "Create backup" — **the native OS share sheet should open** (not an in-app dialog) with a real backup archive file attached, ready to send to Files/Drive/AirDrop/etc. Do the same for "Share export" under Export Data.
-result: [pending]
+result: pass
+note: "RESOLVED 2026-08-03, user-confirmed on Tab S7 FE after a clean rebuild: exported Profile CSV contains only meaningful fields (age, gender, heightCm, weightKG, etc.) -- all 6 internal sync columns (hlcMillis, hlcCounter, hlcNodeId, dirty, deletedAt, id) confirmed gone from the real exported file, not just asserted in unit tests. Fix (commit 8545e1e) fully closed."
 
 ### 8. Backup & Restore — Restore Data (file_selector native document picker)
 expected: |
@@ -214,5 +215,5 @@ skipped: 0
       issue: "exportData() had no way to exclude SyncSafeTable's internal columns (id/hlcMillis/hlcCounter/hlcNodeId/dirty/deletedAt) from the human-facing export path while still including them for createBackup()'s restore-required path"
   missing: []
   fix_commit: "8545e1e"
-  fix_verification: "Added includeInternalFields parameter to exportData() (default false, stripped via new _stripInternalFields() helper; createBackup() passes true). Two new regression tests in backup_export_service_test.dart: (1) confirms exportData()'s default human-facing path excludes all 6 internal columns -- verified failing against pre-fix code (row.containsKey('id') was true), then passing after the fix; (2) confirms createBackup() -> applyRestore() still round-trips a row's id/hlcMillis/hlcCounter/hlcNodeId/dirty correctly (was already passing pre-fix, stayed passing post-fix -- proves the fix doesn't break restore). Full suite (379 tests) green, flutter analyze clean. Real-device confirmation of an actual exported CSV/JSON file still outstanding -- do that as part of resuming Test 7."
+  fix_verification: "Added includeInternalFields parameter to exportData() (default false, stripped via new _stripInternalFields() helper; createBackup() passes true). Two new regression tests in backup_export_service_test.dart: (1) confirms exportData()'s default human-facing path excludes all 6 internal columns -- verified failing against pre-fix code (row.containsKey('id') was true), then passing after the fix; (2) confirms createBackup() -> applyRestore() still round-trips a row's id/hlcMillis/hlcCounter/hlcNodeId/dirty correctly (was already passing pre-fix, stayed passing post-fix -- proves the fix doesn't break restore). Full suite (379 tests) green, flutter analyze clean. FINAL CONFIRMATION 2026-08-03: user confirmed on Tab S7 FE after a clean rebuild -- exported Profile CSV shows only meaningful fields (age, gender, heightCm, weightKG, etc.), all 6 internal sync columns confirmed gone from a real exported file, not just unit tests. Closed."
   debug_session: ""
