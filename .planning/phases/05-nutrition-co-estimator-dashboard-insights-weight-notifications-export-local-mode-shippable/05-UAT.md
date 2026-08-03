@@ -3,7 +3,7 @@ status: testing
 phase: 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable
 source: 05-01-SUMMARY.md through 05-19-SUMMARY.md
 started: "2026-07-28T21:04:00.346Z"
-updated: "2026-08-03T16:10:00.000Z"
+updated: "2026-08-03T16:25:00.000Z"
 platforms_completed: [android]
 current_platform: ios
 ---
@@ -12,12 +12,17 @@ current_platform: ios
 <!-- OVERWRITE each test - shows where we are -->
 
 platform: iOS (iPhone)
-number: 5
-name: Meal reminder notification — actually fires and is tappable
+number: 8
+name: Backup & Restore — Restore Data (file_selector native document picker)
 expected: |
-  In Weight Tracking or Settings, find "Meal Reminders" and enable one slot (e.g. Lunch) with a time 1-2 minutes in the future. Grant the notification permission if prompted. Background the app and wait. **The notification should actually arrive at the OS level** at the scheduled time. Tapping it should open the app directly into food search with that meal slot pre-selected.
-result: fail — under investigation. Note: Tests 1-4 haven't been reported yet on iOS (still [pending] below) -- the user jumped ahead to test notifications first. Circle back to 1-4 once Test 5 is resolved.
-awaiting: user response (real-device diagnostic evidence needed -- see Test 5's `missing` list)
+  Tap "Choose backup file" -- the native OS document picker should open, and a restore preview should appear before any write.
+result: fail (fix committed, not yet re-confirmed on-device -- see Test 8's `missing` note)
+awaiting: user response
+
+Tests 5, 6, 7 all confirmed passing on iOS. Tests 1-4 and 9 still
+haven't been reported on iOS (still `[pending]` below) -- the user
+jumped ahead to notifications/backup first. Circle back to those once
+Test 8 is re-confirmed.
 
 ## Android Pass (Tab S7 FE) — complete, 9/9
 
@@ -157,18 +162,10 @@ result: [pending]
 #### 5. Meal reminder notification — actually fires and is tappable
 expected: |
   In Weight Tracking or Settings, find "Meal Reminders" and enable one slot (e.g. Lunch) with a time 1-2 minutes in the future. Grant the notification permission if prompted. Background the app and wait. **The notification should actually arrive at the OS level** (via `UNUserNotificationCenter` on iOS — a completely different scheduling subsystem than Android's `AlarmManager`, so this is a genuinely independent test, not a re-confirmation) at the scheduled time. Tapping it should open the app directly into food search with that meal slot pre-selected.
-result: fail
+result: pass
 reported: "Enabled Lunch reminder ~2 min out on iPhone, permission granted, backgrounded the app, waited past the scheduled time -- no notification arrived on lock screen or notification center. Weigh-in reminder (Test 6) fires correctly on the same device, suggesting this is specific to meal reminders, not a general iOS notification-infrastructure failure."
 severity: blocker
-note: "UNDER INVESTIGATION 2026-08-03. Code-read comparison of scheduleMealReminder() vs scheduleWeighInReminder() (notification_service.dart) found NO divergence that would explain a meal-specific iOS failure: both call the same requestPermissionIfNeeded() (general notification permission -- identical for both), both pass DarwinNotificationDetails() with all-default fields (no interruptionLevel/categoryIdentifier set, so no extra 'time-sensitive' entitlement is being requested or would be required), both compute scheduledDate via the same _nextInstanceOfTime() (seconds always zeroed, no timing-precision divergence), both call zonedSchedule() identically except for matchDateTimeComponents (meal always DateTimeComponents.time; weigh-in uses dayOfWeekAndTime for Weekly/Custom, or null/one-shot for biweekly/monthly). Cross-referenced the actual installed plugin's iOS native source (flutter_local_notifications 22.2.0, FlutterLocalNotificationsPlugin.m ~L816-865): .time and .dayOfWeekAndTime both construct a UNCalendarNotificationTrigger with repeats:YES via the identical triggerWithDateMatchingComponents: call, differing only in which NSCalendarUnit components are included in the mask (hour+minute+second+timezone for .time; weekday+hour+minute+second+timezone for .dayOfWeekAndTime) -- structurally symmetric in the plugin's own implementation, not an asymmetry the plugin's Dart or native code introduces. No exact-alarm-equivalent permission exists on iOS to diverge on either (requestExactAlarmPermissionIfNeeded() is a no-op returning true on non-Android platforms for both). No notification-id collision (Lunch=101, weigh-in=200). No code path found that would explain why Weigh-in fires and Lunch doesn't specifically. This looks like it needs real-device evidence next, the same way Android's investigation ultimately needed adb-level evidence rather than static analysis alone -- see next_action in the phase's .continue-here.md."
-missing:
-  - "~~Real-device confirmation of whether scheduleMealReminder() actually reaches 'zonedSchedule returned successfully' in the debug console during a fresh repro~~ -- DONE: confirmed via USB/flutter run console for both breakfast (id 100) and lunch (id 101) -- correct resolved scheduledDate, correct timezone (Europe/Berlin), 'zonedSchedule returned successfully', no exceptions for either. App-level scheduling code is confirmed correct; the plugin believes it registered the trigger fine. Remaining candidates narrowed to OS-level delivery: (1) granular per-app notification delivery settings (Lock Screen/Banners/Sounds, not just the base Allow-Notifications toggle), (2) Focus/Do Not Disturb, (3) USB/Xcode-debugger-attached session interfering with background delivery (this project's Phase 4 airplane-mode/Xcode precedent: testing while tethered to a debugger produced a misleading result there too)."
-  - "Confirmation of pendingNotificationRequests() content on-device right after enabling the Lunch toggle -- still open, lower priority now that the console evidence points at OS delivery rather than registration."
-  - "~~Which exact weigh-in frequency was used for Test 6's passing run~~ -- DONE: Custom (dayOfWeekAndTime), which per the native-source read shares the identical repeating-UNCalendarNotificationTrigger code path with meal's DateTimeComponents.time, just a different NSCalendarUnit component mask. Confirms general notification delivery AND repeating-trigger scheduling both work on this device -- narrows the failure specifically to something about the .time-only (no weekday) component mask, or an OS-level delivery gate that happens to only affect this reminder kind's channel/settings."
-  - "Whether iOS Focus/Do Not Disturb or per-app 'Scheduled Summary' notification delivery settings are active for this app -- Scheduled Summary confirmed absent. Focus/DND status still needs an explicit on-device check (quick Control Center glance)."
-  - "NEW: check Settings > Notifications > CO2 Diet's granular delivery options (Lock Screen / Banners / Sounds), not just the base Allow-Notifications toggle -- these can be independently disabled even when basic authorization is granted."
-  - "NEW: repeat the test fully untethered (quit flutter run / detach Xcode debugger, launch the app normally by tapping its icon, no debugger attached) to rule out the USB/Xcode-debug-session variable this project hit before in Phase 4."
-debug_session: ""
+note: "RESOLVED 2026-08-03, but NOT via a confirmed code fix or a confirmed OS-setting fix -- see the Gaps entry below for the full, honest account of what is and isn't actually known about why this stopped happening. User confirmed all four meal-slot reminders now fire correctly on iPhone, lock-screen delivery works, tap-through works."
 
 #### 6. Weigh-in reminder — scheduling, firing, and re-arming
 expected: |
@@ -357,4 +354,18 @@ skipped: 0
     - "Real-device re-confirmation on the iPhone."
   fix_commit: "56eb774"
   fix_verification: "Two other theories were considered and DISPROVEN by reading source before landing on the real one: (1) missing Info.plist/entitlements key, ruled out because UIDocumentPickerViewController doesn't require an NSUsageDescription-style permission gate the way camera access does (unlike Phase 3's camera crash, despite the surface-level similarity the user reasonably suspected); (2) iOS security-scoped resource access, ruled out because file_selector_ios constructs the picker with `.import` mode, which has the OS auto-copy the picked file into the app's own sandbox before the delegate callback fires -- a plain dart:io File read on the returned path was never actually the blocker. Added uniformTypeIdentifiers: ['public.zip-archive'] (Apple's system UTI for .zip) to the XTypeGroup. New regression test captures the XTypeGroup actually passed to the picker function and asserts uniformTypeIdentifiers is non-empty -- confirmed failing against pre-fix code (matching file_selector_ios's own throw condition), passing after the fix. Full suite (382 tests) green, flutter analyze clean."
+  debug_session: ""
+
+- truth: "Meal reminders (all four slots) actually fire as real OS notifications on iOS specifically, not just Android"
+  status: resolved
+  reason: "User reported (iPhone): enabled Lunch reminder ~2 min out, permission granted, backgrounded the app, waited past the scheduled time -- no notification arrived on lock screen or notification center. Weigh-in reminder (Test 6) fired correctly on the same device at the same time, ruling out a general notification-infrastructure failure."
+  severity: blocker
+  platform: ios
+  test: 5
+  root_cause: "UNCONFIRMED -- and this is being logged honestly as such, not papered over. Extensive code-level investigation found NO divergence between scheduleMealReminder() and the working scheduleWeighInReminder() call: identical permission requests, identical DarwinNotificationDetails (no interruptionLevel set, so no extra entitlement gap), identical scheduledDate computation, and -- confirmed by reading the installed flutter_local_notifications 22.2.0 iOS native source directly -- both matchDateTimeComponents variants (.time for meal, .dayOfWeekAndTime for the Custom weigh-in config the user actually tested) build a UNCalendarNotificationTrigger via the identical repeats:YES code path, differing only in which NSCalendarUnit components are matched. Console evidence (captured via USB/flutter run) showed scheduleMealReminder() reaching 'zonedSchedule returned successfully' for both breakfast (id 100) and lunch (id 101), with the correct resolved scheduledDate and timezone (Europe/Berlin) -- ruling out the app-level scheduling code as the cause. User then did a clean rebuild and a fresh retest, and reminders started firing correctly across all four slots, lock-screen delivery and tap-through both working. Neither Focus/DND nor the granular per-app notification delivery settings (Lock Screen/Banners/Sounds) were found misconfigured when checked, so those are NOT the confirmed fix either -- the most honest statement is: something about the STALE BUILD/RUNTIME STATE from before the clean rebuild was the likely cause, not a code defect in this app, but this was never isolated to a specific mechanism. In particular, a genuinely untethered launch (tapping the app icon directly, no Xcode/USB debugger attached -- this project's Phase 4 airplane-mode precedent) was never explicitly isolated as the deciding factor, since the clean rebuild and the retest happened together, not as separately controlled variables."
+  artifacts: []
+  missing:
+    - "A specific, isolated root cause -- this closed via 'stopped reproducing after a clean rebuild + fresh retest,' not via a code fix or a confirmed OS-setting fix. If this recurs, check an untethered launch (no Xcode/USB attached) FIRST, since that variable was never isolated here."
+  fix_commit: ""
+  fix_verification: "No code change was made for this entry -- nothing in notification_service.dart, the manifest-equivalent iOS config, or the calling widgets was touched between the failing run and the passing run. Resolution is real-device-confirmed (all four meal slots fire, lock screen shows them, tap-through works) but the WHY remains genuinely open. Logged this way deliberately rather than assigning a root cause that was never actually verified, consistent with this session's discipline of not marking something resolved on a guess."
   debug_session: ""
