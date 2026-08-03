@@ -3,7 +3,7 @@ status: testing
 phase: 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable
 source: 05-01-SUMMARY.md through 05-19-SUMMARY.md
 started: "2026-07-28T21:04:00.346Z"
-updated: "2026-08-03T15:45:00.000Z"
+updated: "2026-08-03T16:10:00.000Z"
 platforms_completed: [android]
 current_platform: ios
 ---
@@ -184,7 +184,12 @@ result: [pending]
 #### 8. Backup & Restore — Restore Data (file_selector native document picker)
 expected: |
   In Backup & Restore's "Restore Data" section, tap "Choose backup file" — **the native OS document/file picker should open**, and you should be able to select a backup file from anywhere on the device. After selecting one, a preview of what will be restored should appear (all categories with real data, not just one) before you tap "Confirm Restore" — nothing should be overwritten until you explicitly confirm.
-result: [pending]
+result: fail
+reported: "Tapping 'Choose backup file' on iPhone did not open the native document picker."
+severity: blocker
+note: "ROOT CAUSE FOUND 2026-08-03 via reading file_selector_ios's actual installed source (0.5.3+5), not guessing: _allowedUtiListFromTypeGroups reads ONLY uniformTypeIdentifiers on iOS -- it ignores XTypeGroup's `extensions` field entirely (extensions is an Android-side concern) -- and throws ArgumentError SYNCHRONOUSLY, before the picker UI is ever presented, when uniformTypeIdentifiers is empty. This app's XTypeGroup only ever set `extensions: ['zip']`; the calling code (_chooseRestoreFile in backup_restore_screen.dart) has a try/finally with no catch, so the thrown error was silently swallowed by an unawaited Future -- exactly matching 'tapping the button does nothing.' Two other theories were considered and DISPROVEN by reading source before landing on this one: (1) missing Info.plist/entitlements key -- UIDocumentPickerViewController doesn't require an NSUsageDescription-style permission gate the way camera access does, so this wasn't the same class of bug as Phase 3's camera crash despite the surface-level similarity; (2) iOS security-scoped resource access -- file_selector_ios constructs the picker with `.import` mode, which has the OS auto-copy the picked file into the app's own sandbox, so a plain dart:io File read was never actually the blocker. FIXED, commit 56eb774: added `uniformTypeIdentifiers: ['public.zip-archive']` (Apple's system UTI for .zip) to the XTypeGroup. Regression test captures the XTypeGroup actually passed to the picker and asserts uniformTypeIdentifiers is non-empty -- confirmed failing against pre-fix code, passing after. Full suite (382 tests) green, flutter analyze clean. Not yet re-confirmed on the real iPhone."
+missing:
+  - "Real-device re-confirmation on the iPhone that the picker now opens and a restore preview shows all categories correctly."
 
 #### 9. Danger Zone — typed confirmation gate
 expected: |
@@ -336,4 +341,20 @@ skipped: 0
   missing: []
   fix_commit: "75fd9a6"
   fix_verification: "Wrapped the entire value/unit/target Row in FittedBox(fit: BoxFit.scaleDown, alignment: Alignment.centerLeft) instead -- scales the whole line down together when needed, so numbers are never truncated mid-digit (this codebase's numeric-display convention is 'no fake precision', which an ellipsis mid-number would violate). Verified via a width sweep (70-200px) that overflow is gone at every width tested, including well below the card's normal real-device width. New regression test (metric_card_test.dart) confirmed failing against the pre-fix code, then passing after the FittedBox fix. Full suite (381 tests) green, flutter analyze clean. Not yet re-confirmed visually on the real iPhone."
+  debug_session: ""
+
+- truth: "Restore Data's 'Choose backup file' button opens the native iOS document picker"
+  status: resolved
+  reason: "User reported (iPhone): tapping 'Choose backup file' did nothing -- no picker opened."
+  severity: blocker
+  platform: ios
+  test: 8
+  root_cause: "file_selector_ios 0.5.3+5's _allowedUtiListFromTypeGroups (file_selector_ios.dart) reads ONLY XTypeGroup.uniformTypeIdentifiers on iOS -- it ignores `extensions` entirely, that field only matters on Android. When uniformTypeIdentifiers is empty/null and the group doesn't allowsAny, it throws ArgumentError synchronously, BEFORE UIDocumentPickerViewController is ever presented. This app's XTypeGroup (backup_notifier.dart's pickAndPreviewRestoreFile) only ever set extensions: ['zip'], never uniformTypeIdentifiers -- so every restore-picker invocation threw on iOS. _chooseRestoreFile() (backup_restore_screen.dart) wraps the call in try/finally with no catch, so the thrown error was silently swallowed by the unawaited Future -- exactly matching 'tapping the button does nothing, no error shown.'"
+  artifacts:
+    - path: "lib/features/backup/providers/backup_notifier.dart"
+      issue: "XTypeGroup(label: 'zip', extensions: ['zip']) never set uniformTypeIdentifiers, which iOS's file_selector implementation requires unconditionally"
+  missing:
+    - "Real-device re-confirmation on the iPhone."
+  fix_commit: "56eb774"
+  fix_verification: "Two other theories were considered and DISPROVEN by reading source before landing on the real one: (1) missing Info.plist/entitlements key, ruled out because UIDocumentPickerViewController doesn't require an NSUsageDescription-style permission gate the way camera access does (unlike Phase 3's camera crash, despite the surface-level similarity the user reasonably suspected); (2) iOS security-scoped resource access, ruled out because file_selector_ios constructs the picker with `.import` mode, which has the OS auto-copy the picked file into the app's own sandbox before the delegate callback fires -- a plain dart:io File read on the returned path was never actually the blocker. Added uniformTypeIdentifiers: ['public.zip-archive'] (Apple's system UTI for .zip) to the XTypeGroup. New regression test captures the XTypeGroup actually passed to the picker function and asserts uniformTypeIdentifiers is non-empty -- confirmed failing against pre-fix code (matching file_selector_ios's own throw condition), passing after the fix. Full suite (382 tests) green, flutter analyze clean."
   debug_session: ""
