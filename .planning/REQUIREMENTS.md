@@ -122,7 +122,7 @@ Requirements for initial release. Each maps to a roadmap phase.
 
 ### Legal & Transparency
 
-- [ ] **LEG-01**: Legal Hub is accessible within 2 taps from any screen; contains full-document screens for: Terms of Service, Privacy Policy, Health Disclaimer, Impressum
+- [x] **LEG-01**: Legal Hub is accessible within 2 taps from any screen; contains full-document screens for: Terms of Service, Privacy Policy, Health Disclaimer, Impressum
 - [x] **LEG-02**: Health Disclaimer is visible from the Legal Consent screen (before first use) and accessible from Legal Hub at any time; states the app does not provide medical advice and is not a substitute for professional dietary or medical guidance
 - [x] **LEG-03**: Impressum contains: legal entity / operator, address, contact email, responsible person, required legal disclosures under German TMG §5 / MStV §18; accessible within 2 taps
 - [ ] **LEG-04**: Open source license disclosure: all third-party library licenses and copyright notices accessible in-app
@@ -290,7 +290,7 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | NOTIF-01 | Phase 5 | Complete |
 | NOTIF-02 | Phase 5 | Complete |
 | NOTIF-03 | Phase 5 | Complete |
-| LEG-01 | Phase 6 | Pending |
+| LEG-01 | Phase 6 | Complete |
 | LEG-02 | Phase 6 | Complete |
 | LEG-03 | Phase 6 | Complete |
 | LEG-04 | Phase 1 | Pending |
