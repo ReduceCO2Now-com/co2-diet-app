@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-08-04T10:55:45.000Z"
+last_updated: "2026-08-04T11:10:48.671Z"
 progress:
   total_phases: 9
   completed_phases: 5
@@ -34,10 +34,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission — **IN PROGRESS** (8/10 plans executed). CONTEXT/RESEARCH/VALIDATION complete; 10 plans across 6 waves drafted and committed (`7b87c2e`): 06-01 (wave 0 test stubs — COMPLETE) → 06-02/06-03 (wave 1: legal docs + loader + ED safety net checker — COMPLETE) → 06-04/05/06 (wave 2: consent domain + legal doc screen + privacy manifests — COMPLETE) → 06-07/06-08 (wave 3: Legal Consent screen, Legal Hub + Consent History — COMPLETE) → 06-09 (wave 4: router/redirect/Settings integration) → 06-10 (wave 5: manual a11y/tone checkpoints). All 23 phase requirement IDs traced to a plan.
-- **Plan:** 06-08 (Wave 3: Legal Hub + Consent History screen — LEG-01/02/03 GDPR-rights explainer + PRIV-06 consent history read path) — COMPLETE. Next up: 06-09 (Wave 4: router/redirect/Settings integration).
-- **Status:** Executing Phase 6 — Wave 3 complete (06-07/06-08 done), Wave 4 next
-- **Progress:** [████████░░] 80% (8/10 plans, Phase 6)
+- **Phase:** 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission — **IN PROGRESS** (9/10 plans executed). CONTEXT/RESEARCH/VALIDATION complete; 10 plans across 6 waves drafted and committed (`7b87c2e`): 06-01 (wave 0 test stubs — COMPLETE) → 06-02/06-03 (wave 1: legal docs + loader + ED safety net checker — COMPLETE) → 06-04/05/06 (wave 2: consent domain + legal doc screen + privacy manifests — COMPLETE) → 06-07/06-08 (wave 3: Legal Consent screen, Legal Hub + Consent History — COMPLETE) → 06-09 (wave 4: router/redirect/Settings integration — COMPLETE) → 06-10 (wave 5: manual a11y/tone checkpoints). All 23 phase requirement IDs traced to a plan.
+- **Plan:** 06-09 (Wave 4: router/redirect/Settings integration — full onboarding-gated route tree wired into app_router.dart, ACC-02 text-scale clamp, Settings "Legal & Privacy" entry point, Profile Setup Continue button) — COMPLETE. Next up: 06-10 (Wave 5: manual a11y/tone checkpoints).
+- **Status:** Executing Phase 6 — Wave 4 complete (06-09 done), Wave 5 (final plan) next
+- **Progress:** [█████████░] 90% (9/10 plans, Phase 6)
 - **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files.
 
 ```
@@ -141,9 +141,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-08-04T10:55:45Z
-**Stopped at:** Plan 06-08 (Wave 3: Legal Hub + Consent History screen) executed and committed. Wave 3 complete.
-**Next action:** Execute Plan 06-09 (Wave 4: router/redirect/Settings integration)
+**Last session:** 2026-08-04T11:10:48.666Z
+**Stopped at:** Completed 06-09-PLAN.md (Wave 4: router/redirect/Settings integration)
+**Next action:** Execute Plan 06-10 (Wave 5: manual a11y/tone checkpoints) — final plan of Phase 6
 **Suggested next command:** `/gsd:execute-phase 6`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
@@ -301,6 +301,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 06-07]: LegalConsentScreen must ref.watch(consentProvider) in build() -- without an active watch, Riverpod's autoDispose tears down the notifier's Ref mid-flight during acceptConsent's multi-await chain, throwing UnmountedRefException (extends the [Phase 04-09] mealEntryProvider precedent to consentProvider)
 - [Phase 06-08]: Legal Hub → Legal Document route slugs kept snake_case (health_disclaimer) via a private _LegalDocRouteSlug extension, not LegalDocId.name -- LegalDocId.healthDisclaimer.name is camelCase (healthDisclaimer), which would have diverged from LegalConsentScreen's already-committed doc=health_disclaimer query convention that Plan 06-09's router wiring must parse uniformly
 - [Phase 06-08]: ConsentHistoryScreen uses ref.watch(consentRepositoryProvider) + a widget-level StreamBuilder rather than a dedicated @riverpod StreamProvider -- avoids an extra codegen surface for a screen with a single stream consumer
+- [Phase ?]: [Phase 06-09]: Router redirect uses onboardingGateProvider (not onboardingGateNotifierProvider as PLAN.md prose stated) -- matches the actual @riverpod-generated name, consistent with [Phase 06-05]/[Phase 06-07]'s Notifier-suffix-stripping convention
+- [Phase ?]: [Phase 06-09]: /legal-hub/document's doc= query param parsed via a private _legalDocIdFromSlug switch, not LegalDocId.values.firstWhereOrNull(name==...) as PLAN.md's prose specified -- LegalDocId.name is camelCase (healthDisclaimer) but LegalHubScreen/LegalConsentScreen already committed to the snake_case slug health_disclaimer
 
 ## Performance Metrics
 
@@ -355,3 +357,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission P06 | ~5min | 2 tasks | 2 files |
 | Phase 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission P07 | ~25min | 1 task | 3 files |
 | Phase 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission P08 | ~15min | 2 tasks | 3 files |
+| Phase 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission P09 | ~25min | 3 tasks | 8 files |

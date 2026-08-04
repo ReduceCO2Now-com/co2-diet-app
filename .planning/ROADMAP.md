@@ -168,7 +168,7 @@ Plans:
 - [x] 06-06-PLAN.md — Pre-submission artifacts: PrivacyInfo.xcprivacy + Play Data Safety draft doc
 - [x] 06-07-PLAN.md — Legal Consent screen (4 mandatory + 1 optional checkbox)
 - [x] 06-08-PLAN.md — Legal Hub + Consent History screen
-- [ ] 06-09-PLAN.md — Final integration: router wiring, onboarding redirect gate, Settings entry point, ACC-02 text-scale clamp
+- [x] 06-09-PLAN.md — Final integration: router wiring, onboarding redirect gate, Settings entry point, ACC-02 text-scale clamp
 - [ ] 06-10-PLAN.md — Accessibility & pre-launch manual verification (dark mode/color-blind/tap-target, screen-reader pass, SAM test + tone audit)
 **UI hint**: yes
 
@@ -215,7 +215,7 @@ Plans:
 | 3. Barcode Scanning & CO₂ Factor Table | 5/5 | Complete   | 2026-07-22 |
 | 4. Meal Logging Core | 12/13 | In Progress|  |
 | 5. Full Local App (Local Mode Shippable) | 19/19 | Complete    | 2026-07-28 |
-| 6. Onboarding, Legal & Pre-Submission | 8/10 | In Progress|  |
+| 6. Onboarding, Legal & Pre-Submission | 9/10 | In Progress|  |
 | 7. Keycloak Auth + Account Mode + Sync | 0/0 | Not started | - |
 | 8. Reference Data Delivery (Full OFF Pack) | 0/0 | Not started | - |
 | 9. Post-Launch Enhancements (v1.1+) | 0/0 | Not started | - |
