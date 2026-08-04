@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Apple Privacy Manifest for CO2 Diet (Runner target).
+
+  MEDIUM CONFIDENCE — drafted per 06-RESEARCH.md "Common Pitfalls #3" (iOS Required-Reason
+  API declarations). Must be re-verified against Xcode's own Privacy Report
+  (Product > Archive, Xcode 15+) before real App Store submission — that tool performs the
+  actual static analysis Apple's review uses, and is the authoritative source over this
+  best-effort draft.
+
+  Why NSPrivacyAccessedAPICategoryFileTimestamp / C617.1 is declared here:
+  This app statically links sqlite3 via drift's FFI binding directly into the main app
+  binary (not via a separate CocoaPod with its own manifest). SQLite's own C code calls
+  fstat/stat-family functions internally for file locking on its database files, which
+  Apple's static analyzer attributes to the main app binary rather than to a
+  dependency-owned manifest. C617.1 ("access file metadata... within the app container")
+  is the reason code that matches this on-device-only usage.
+
+  Why NSPrivacyAccessedAPICategoryUserDefaults is NOT redeclared here:
+  shared_preferences_foundation (the iOS backing for shared_preferences) already ships its
+  own PrivacyInfo.xcprivacy declaring that category with reason 1C8F.1 — verified directly
+  against github.com/flutter/packages this session (06-RESEARCH.md Pitfall 3). Redeclaring
+  it here would be redundant, not required.
+
+  Build-integration caveat (also unresolved by this task):
+  This file's membership in the Xcode Runner target's "Copy Bundle Resources" build phase
+  has not yet been confirmed. Xcode 15+ auto-detects .xcprivacy files placed in the target's
+  source directory in most cases, but this must be confirmed via an actual
+  `flutter build ios` plus an Xcode archive before real submission — add to the
+  pre-submission checklist, not resolved here.
+-->
+<plist version="1.0">
+<dict>
+	<key>NSPrivacyTracking</key>
+	<false/>
+	<key>NSPrivacyTrackingDomains</key>
+	<array/>
+	<key>NSPrivacyCollectedDataTypes</key>
+	<array/>
+	<key>NSPrivacyAccessedAPITypes</key>
+	<array>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryFileTimestamp</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<string>C617.1</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>
