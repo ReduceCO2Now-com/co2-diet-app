@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/core/theme/spacing_tokens.dart';
 import 'package:co2diet/core/theme/text_tokens.dart';
+import 'package:co2diet/core/widgets/ed_safety_net_dialog.dart';
 import 'package:co2diet/domain/entities/calc_targets.dart';
 import 'package:co2diet/domain/entities/user_profile.dart';
+import 'package:co2diet/domain/services/ed_safety_net_checker.dart';
 import 'package:co2diet/features/profile/providers/profile_notifier.dart';
 import 'package:co2diet/features/profile/widgets/profile_form.dart';
 import 'package:co2diet/features/profile/widgets/target_display_card.dart';
@@ -28,6 +30,13 @@ class ProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
+  /// The most recent kcal override value the user explicitly confirmed past
+  /// the ED safety-net warning. Re-saving this exact same value does not
+  /// re-trigger the modal; a different unsafe value does (06-CONTEXT.md
+  /// re-warn rule). Deliberately in-memory only — never persisted, per the
+  /// zero-analytics principle.
+  double? _lastConfirmedUnsafeKcal;
+
   @override
   Widget build(BuildContext context) {
     final profileAsync = ref.watch(profileProvider);
@@ -103,6 +112,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 onOverrideTap: (fieldName) =>
                     _showOverrideDialog(fieldName, profile),
               ),
+              const SizedBox(height: AppSpacing.md),
+              // Unconditional per 06-CONTEXT.md: no mode branching this
+              // phase, since only Local Mode exists. Phase 7 makes this
+              // conditional again once Account Mode is introduced.
+              Text(
+                'Your profile is stored only on this device.',
+                style: AppTextTheme.bodySm.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
+              ),
             ],
           ),
         ),
@@ -157,10 +176,30 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             child: const Text('Reset to calculated'),
           ),
           FilledButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
+            onPressed: () async {
               final entered = double.tryParse(controller.text);
-              if (entered == null) return;
+              if (entered == null) {
+                Navigator.of(dialogContext).pop();
+                return;
+              }
+
+              final isUnsafeKcalTarget =
+                  fieldName == 'kcalTarget' &&
+                  EdSafetyNetChecker.calorieTargetIsUnsafe(entered) &&
+                  entered != _lastConfirmedUnsafeKcal;
+
+              if (isUnsafeKcalTarget) {
+                Navigator.of(dialogContext).pop();
+                final confirmed = await showEdSafetyNetDialog(
+                  context,
+                  type: EdSafetyNetTriggerType.calorieTarget,
+                );
+                if (!mounted || !confirmed) return;
+                _lastConfirmedUnsafeKcal = entered;
+              } else {
+                Navigator.of(dialogContext).pop();
+              }
+
               unawaited(
                 ref.read(profileProvider.notifier).updateField(
                       (p) => p.copyWith(
