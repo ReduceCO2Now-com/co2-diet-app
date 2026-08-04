@@ -158,7 +158,18 @@ Plans:
   3. Legal Hub is reachable within 2 taps from any screen and contains full-document screens for Terms, Privacy Policy, Health Disclaimer, and Impressum (with legal entity, address, contact email, responsible person, and TMG §5 / MStV §18 disclosures); Health Disclaimer is also linked from the Legal Consent screen; user can exercise GDPR rights (access, rectify, portability, consent withdrawal) from the hub.
   4. ED safety nets: the app refuses daily calorie targets below 1,200 kcal or goals implying BMI below 17.5 without surfacing a warning and a professional resource / helpline link; app uses no "diagnose / treat / cure / medical" language anywhere.
   5. Accessibility audit passes: system dark mode supported on iOS and Android; text scales with Dynamic Type / font size without layout breakage; all interactive elements have VoiceOver / TalkBack labels with key flows verified by a screen-reader pass; all charts and indicators are color-blind friendly (never red/green alone); all tap targets are ≥ 44×44 pt; tone/copy validated non-judgmental and non-preachy; SAM (Self-Assessment Manikin) test conducted and app confirmed to feel calm, supportive, and non-stressful; PrivacyInfo.xcprivacy present, Play Data Safety form drafted.
-**Plans**: TBD
+**Plans**: 10 plans
+Plans:
+- [ ] 06-01-PLAN.md — Wave 0 test stubs (6 files)
+- [ ] 06-02-PLAN.md — Package installs (flutter_markdown_plus, shared_preferences, package_info_plus) + legal document drafting (Terms/Privacy/Health Disclaimer/Impressum) + LegalDocumentLoader
+- [ ] 06-03-PLAN.md — EdSafetyNetChecker + EdSafetyNetDialog + Profile/Weight screen wiring + Profile footer
+- [ ] 06-04-PLAN.md — Consent domain (repository, notifier, DI) + shared LegalDocumentScreen
+- [ ] 06-05-PLAN.md — Onboarding gate provider + Splash/Welcome/Carousel screens
+- [ ] 06-06-PLAN.md — Pre-submission artifacts: PrivacyInfo.xcprivacy + Play Data Safety draft doc
+- [ ] 06-07-PLAN.md — Legal Consent screen (4 mandatory + 1 optional checkbox)
+- [ ] 06-08-PLAN.md — Legal Hub + Consent History screen
+- [ ] 06-09-PLAN.md — Final integration: router wiring, onboarding redirect gate, Settings entry point, ACC-02 text-scale clamp
+- [ ] 06-10-PLAN.md — Accessibility & pre-launch manual verification (dark mode/color-blind/tap-target, screen-reader pass, SAM test + tone audit)
 **UI hint**: yes
 
 ### Phase 7: Keycloak Auth + Account Mode + Sync
@@ -204,7 +215,7 @@ Plans:
 | 3. Barcode Scanning & CO₂ Factor Table | 5/5 | Complete   | 2026-07-22 |
 | 4. Meal Logging Core | 12/13 | In Progress|  |
 | 5. Full Local App (Local Mode Shippable) | 19/19 | Complete    | 2026-07-28 |
-| 6. Onboarding, Legal & Pre-Submission | 0/0 | Not started | - |
+| 6. Onboarding, Legal & Pre-Submission | 0/10 | Planned | - |
 | 7. Keycloak Auth + Account Mode + Sync | 0/0 | Not started | - |
 | 8. Reference Data Delivery (Full OFF Pack) | 0/0 | Not started | - |
 | 9. Post-Launch Enhancements (v1.1+) | 0/0 | Not started | - |
