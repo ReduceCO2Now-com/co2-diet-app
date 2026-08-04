@@ -17,8 +17,8 @@ Requirements for initial release. Each maps to a roadmap phase.
 - [x] **ONBD-04**: Profile Setup screen: age, gender, height, weight, activity level, dietary preference; all fields optional; auto-saves; no blocking validation; footer adapts to mode (local: "stored only on this device" / account: "synced securely")
 - [x] **ONBD-05**: Onboarding Carousel: 3–4 slides explaining how CO₂ scoring works; swipeable; "Skip intro" link jumps to Dashboard; "Go to Dashboard" sticky button on last slide
 
-- [ ] **LEGAL-01**: Legal Consent screen presents 4 mandatory **separate** checkboxes (Terms of Service, Privacy Policy, not-medical-advice disclaimer, user-responsibility disclaimer); "Accept and Continue" button disabled until all 4 are checked; no pre-checked boxes
-- [ ] **LEGAL-02**: 16+ age verification is a 5th checkbox on the Legal Consent screen: "I confirm I am 16 or older" (self-declaration; optional but logged when checked); mechanism: **resolved — self-declaration checkbox**
+- [x] **LEGAL-01**: Legal Consent screen presents 4 mandatory **separate** checkboxes (Terms of Service, Privacy Policy, not-medical-advice disclaimer, user-responsibility disclaimer); "Accept and Continue" button disabled until all 4 are checked; no pre-checked boxes
+- [x] **LEGAL-02**: 16+ age verification is a 5th checkbox on the Legal Consent screen: "I confirm I am 16 or older" (self-declaration; optional but logged when checked); mechanism: **resolved — self-declaration checkbox**
 - [x] **LEGAL-03**: Each consent event is recorded with: timestamp (UTC), app version, policy version — stored in `consent_records` table; never deletable except on full account deletion
 - [x] **LEGAL-04**: "View Terms", "View Privacy Policy", and "View Disclaimer" links are accessible from the Legal Consent screen before accepting
 
@@ -130,7 +130,7 @@ Requirements for initial release. Each maps to a roadmap phase.
 
 ### Non-Functional Requirements (UX Tone & Behavior)
 
-- [ ] **NFR-01**: Tone is non-judgmental throughout — no "you failed" language, no guilt framing; copy follows positive recovery framing (canonical example: "Yesterday was higher than planned. That's normal. Let's continue today.")
+- [x] **NFR-01**: Tone is non-judgmental throughout — no "you failed" language, no guilt framing; copy follows positive recovery framing (canonical example: "Yesterday was higher than planned. That's normal. Let's continue today.")
 - [ ] **NFR-02**: CO₂ information is presented as informative and useful, never political or preachy; improvements are framed as opportunities, not obligations; no letter-grades or alarm-red indicators on food choices
 - [ ] **NFR-03**: App tone is calm, supportive, trustworthy, and motivating — validated via Self-Assessment Manikin (SAM) test in user testing before launch; app must not feel stressful, judgmental, or pressuring
 - [ ] **NFR-04**: No manipulative gamification: no streak-shame, no loss-aversion notifications, no aggressive account-creation nudging in Local Mode
@@ -141,10 +141,10 @@ Requirements for initial release. Each maps to a roadmap phase.
 ### Accessibility
 
 - [ ] **ACC-01**: App supports system dark mode on both iOS and Android
-- [ ] **ACC-02**: App respects system Dynamic Type / font size settings; all text scales without layout breakage
-- [ ] **ACC-03**: All interactive elements have VoiceOver (iOS) and TalkBack (Android) semantic labels; key flows verified with screen reader before launch
+- [x] **ACC-02**: App respects system Dynamic Type / font size settings; all text scales without layout breakage
+- [x] **ACC-03**: All interactive elements have VoiceOver (iOS) and TalkBack (Android) semantic labels; key flows verified with screen reader before launch
 - [ ] **ACC-04**: All charts and indicators are color-blind friendly (not relying on red/green alone)
-- [ ] **ACC-05**: All tap targets are minimum 44×44 pt throughout
+- [x] **ACC-05**: All tap targets are minimum 44×44 pt throughout
 
 ---
 
@@ -218,8 +218,8 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | ONBD-03 | Phase 6 | Complete |
 | ONBD-04 | Phase 6 | Complete |
 | ONBD-05 | Phase 6 | Complete |
-| LEGAL-01 | Phase 6 | Pending |
-| LEGAL-02 | Phase 6 | Pending |
+| LEGAL-01 | Phase 6 | Complete |
+| LEGAL-02 | Phase 6 | Complete |
 | LEGAL-03 | Phase 6 | Complete |
 | LEGAL-04 | Phase 1 | Complete |
 | AUTH-01 | Phase 7 | Pending |
@@ -295,7 +295,7 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | LEG-03 | Phase 6 | Complete |
 | LEG-04 | Phase 1 | Pending |
 | LEG-05 | Phase 3 | Complete |
-| NFR-01 | Phase 6 | Pending |
+| NFR-01 | Phase 6 | Complete |
 | NFR-02 | Phase 6 | Pending |
 | NFR-03 | Phase 6 | Pending |
 | NFR-04 | Phase 6 | Pending |
@@ -303,10 +303,10 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | NFR-06 | Phase 2 | Complete |
 | NFR-07 | Phase 6 | Complete |
 | ACC-01 | Phase 6 | Pending |
-| ACC-02 | Phase 6 | Pending |
-| ACC-03 | Phase 6 | Pending |
+| ACC-02 | Phase 6 | Complete |
+| ACC-03 | Phase 6 | Complete |
 | ACC-04 | Phase 6 | Pending |
-| ACC-05 | Phase 6 | Pending |
+| ACC-05 | Phase 6 | Complete |
 
 **Coverage:**
 - v1 requirements: 94 total
