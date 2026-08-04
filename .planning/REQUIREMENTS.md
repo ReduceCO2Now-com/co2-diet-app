@@ -109,7 +109,7 @@ Requirements for initial release. Each maps to a roadmap phase.
 - [x] **PRIV-03**: User can configure automatic backups with configurable frequency and destination
 - [x] **PRIV-04**: User can restore from backup with a preview of what will be restored and an explicit confirmation step before any data is overwritten
 - [ ] **PRIV-05**: User can permanently delete their account and all associated data; deletion completes within the legally required timeframe; Keycloak user record is deleted in the same operation; required by App Store (since June 2022) and GDPR Art. 17
-- [ ] **PRIV-06**: User can exercise full GDPR rights from the Legal & Privacy hub: access data, rectify data, data portability, and consent withdrawal
+- [x] **PRIV-06**: User can exercise full GDPR rights from the Legal & Privacy hub: access data, rectify data, data portability, and consent withdrawal
 - [x] **PRIV-07**: Application contains zero third-party analytics SDKs, advertising SDKs, or behavioral tracking SDKs; compliance verified by an automated dependency audit run in CI (hardcoded blocklist) and an Exodus Privacy scan on every release build
 - [x] **PRIV-08**: In Local Mode, no data is ever transmitted to any server without explicit user action
 - [x] **PRIV-09**: User can delete all local data (Danger Zone; requires typed confirmation before executing)
@@ -283,7 +283,7 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | PRIV-03 | Phase 5 | Complete |
 | PRIV-04 | Phase 5 | Complete |
 | PRIV-05 | Phase 7 | Pending |
-| PRIV-06 | Phase 6 | Pending |
+| PRIV-06 | Phase 6 | Complete |
 | PRIV-07 | Phase 1 | Complete |
 | PRIV-08 | Phase 5 | Complete |
 | PRIV-09 | Phase 5 | Complete |
