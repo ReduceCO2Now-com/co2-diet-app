@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-08-04T07:30:45.259Z"
+last_updated: "2026-08-04T07:39:20.693Z"
 progress:
   total_phases: 9
   completed_phases: 5
@@ -34,10 +34,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission — **IN PROGRESS** (4/10 plans executed). CONTEXT/RESEARCH/VALIDATION complete; 10 plans across 6 waves drafted and committed (`7b87c2e`): 06-01 (wave 0 test stubs — COMPLETE) → 06-02/06-03 (wave 1: legal docs + loader + ED safety net checker — COMPLETE) → 06-04/05/06 (wave 2: consent domain + legal doc screen — 06-04 COMPLETE, onboarding gate + splash/welcome/carousel, privacy manifests) → 06-07/06-08 (wave 3: Legal Consent screen, Legal Hub + Consent History) → 06-09 (wave 4: router/redirect/Settings integration) → 06-10 (wave 5: manual a11y/tone checkpoints). All 23 phase requirement IDs traced to a plan.
-- **Plan:** 06-04 (Wave 2: consent domain + legal document screen) — COMPLETE. Next up: 06-05/06-06 (rest of Wave 2).
-- **Status:** Executing Phase 6 — Wave 2 in progress (06-04 done, 06-05/06-06 next)
-- **Progress:** [████░░░░░░] 40% (4/10 plans, Phase 6)
+- **Phase:** 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission — **IN PROGRESS** (5/10 plans executed). CONTEXT/RESEARCH/VALIDATION complete; 10 plans across 6 waves drafted and committed (`7b87c2e`): 06-01 (wave 0 test stubs — COMPLETE) → 06-02/06-03 (wave 1: legal docs + loader + ED safety net checker — COMPLETE) → 06-04/05/06 (wave 2: consent domain + legal doc screen — 06-04/06-05 COMPLETE, privacy manifests still pending) → 06-07/06-08 (wave 3: Legal Consent screen, Legal Hub + Consent History) → 06-09 (wave 4: router/redirect/Settings integration) → 06-10 (wave 5: manual a11y/tone checkpoints). All 23 phase requirement IDs traced to a plan.
+- **Plan:** 06-05 (Wave 2: onboarding gate + splash/welcome/carousel screens) — COMPLETE. Next up: 06-06 (privacy manifests, rest of Wave 2).
+- **Status:** Executing Phase 6 — Wave 2 in progress (06-04/06-05 done, 06-06 next)
+- **Progress:** [█████░░░░░] 50% (5/10 plans, Phase 6)
 - **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files.
 
 ```
@@ -141,9 +141,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-08-04T07:30:45.254Z
-**Stopped at:** Plan 06-04 (Wave 2: consent domain + legal document screen) executed and committed
-**Next action:** Execute Wave 2 (Plans 06-04/05/06)
+**Last session:** 2026-08-04T07:36:55Z
+**Stopped at:** Plan 06-05 (Wave 2: onboarding gate + splash/welcome/carousel screens) executed and committed
+**Next action:** Execute Plan 06-06 (privacy manifests, last plan in Wave 2)
 **Suggested next command:** `/gsd:execute-phase 6`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
@@ -293,6 +293,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 06-03]: WeightScreen target-weight field needs a submit-in-flight guard -- Flutter's EditableText fires both onEditingComplete and onFieldSubmitted for one Done action, which would double-invoke the async ED safety-net check
 - [Phase 06-04]: ConsentEvent named distinct from Drift's generated ConsentRecord class -- mirrors MealEntry.fromRow precedent, imports row type from app_database.dart
 - [Phase 06-04]: policyVersion for every consent event is always terms.md's frontmatter version -- all 4 legal docs are drafted/versioned together as one dated bundle
+- [Phase 06-05]: Generated provider variable is onboardingGateProvider, not onboardingGateNotifierProvider -- @riverpod strips the 'Notifier' suffix from the class name (consistent with the existing [Phase 02-06] convention)
+- [Phase 06-05]: OnboardingCarouselScreen's 'Go to Dashboard' button is conditionally built (absent from the widget tree on slides 1-2), not hidden via Visibility/Offstage -- keeps widget-tree text searches accurate to "appears on slide 3 only"
 
 ## Performance Metrics
 
@@ -343,3 +345,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission P02 | ~15min | 2 tasks | 11 files |
 | Phase 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission P03 | ~15min | 3 tasks | 5 files |
 | Phase 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission P04 | ~5min | 2 tasks | 8 files |
+| Phase 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission P05 | ~15min | 3 tasks | 6 files |

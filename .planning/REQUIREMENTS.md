@@ -11,11 +11,11 @@ Requirements for initial release. Each maps to a roadmap phase.
 
 ### Onboarding & Legal
 
-- [ ] **ONBD-01**: App displays Splash screen (2–3 second load, centered logo + tagline, auto-advances to Welcome)
-- [ ] **ONBD-02**: Welcome screen shows equal-weight "Get Started" and "Use Without Account" CTAs (no hierarchy bias between paths)
-- [ ] **ONBD-03**: Account / Local Mode choice screen shows two equal-weight cards — no "Recommended" badge on either (design intent; audit against live-build bias before launch)
+- [x] **ONBD-01**: App displays Splash screen (2–3 second load, centered logo + tagline, auto-advances to Welcome)
+- [x] **ONBD-02**: Welcome screen shows equal-weight "Get Started" and "Use Without Account" CTAs (no hierarchy bias between paths)
+- [x] **ONBD-03**: Account / Local Mode choice screen shows two equal-weight cards — no "Recommended" badge on either (design intent; audit against live-build bias before launch)
 - [x] **ONBD-04**: Profile Setup screen: age, gender, height, weight, activity level, dietary preference; all fields optional; auto-saves; no blocking validation; footer adapts to mode (local: "stored only on this device" / account: "synced securely")
-- [ ] **ONBD-05**: Onboarding Carousel: 3–4 slides explaining how CO₂ scoring works; swipeable; "Skip intro" link jumps to Dashboard; "Go to Dashboard" sticky button on last slide
+- [x] **ONBD-05**: Onboarding Carousel: 3–4 slides explaining how CO₂ scoring works; swipeable; "Skip intro" link jumps to Dashboard; "Go to Dashboard" sticky button on last slide
 
 - [ ] **LEGAL-01**: Legal Consent screen presents 4 mandatory **separate** checkboxes (Terms of Service, Privacy Policy, not-medical-advice disclaimer, user-responsibility disclaimer); "Accept and Continue" button disabled until all 4 are checked; no pre-checked boxes
 - [ ] **LEGAL-02**: 16+ age verification is a 5th checkbox on the Legal Consent screen: "I confirm I am 16 or older" (self-declaration; optional but logged when checked); mechanism: **resolved — self-declaration checkbox**
@@ -213,11 +213,11 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ONBD-01 | Phase 6 | Pending |
-| ONBD-02 | Phase 6 | Pending |
-| ONBD-03 | Phase 6 | Pending |
+| ONBD-01 | Phase 6 | Complete |
+| ONBD-02 | Phase 6 | Complete |
+| ONBD-03 | Phase 6 | Complete |
 | ONBD-04 | Phase 6 | Complete |
-| ONBD-05 | Phase 6 | Pending |
+| ONBD-05 | Phase 6 | Complete |
 | LEGAL-01 | Phase 6 | Pending |
 | LEGAL-02 | Phase 6 | Pending |
 | LEGAL-03 | Phase 6 | Complete |
