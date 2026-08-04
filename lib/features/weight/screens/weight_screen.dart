@@ -3,7 +3,10 @@ import 'dart:async';
 import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/core/theme/spacing_tokens.dart';
 import 'package:co2diet/core/theme/text_tokens.dart';
+import 'package:co2diet/core/widgets/ed_safety_net_dialog.dart';
 import 'package:co2diet/domain/entities/weight_settings.dart';
+import 'package:co2diet/domain/services/ed_safety_net_checker.dart';
+import 'package:co2diet/features/profile/providers/profile_notifier.dart';
 import 'package:co2diet/features/weight/providers/weight_notifier.dart';
 import 'package:co2diet/features/weight/widgets/weigh_in_reminder_section.dart';
 import 'package:co2diet/features/weight/widgets/weight_chart.dart';
@@ -108,9 +111,11 @@ class _WeightScreenBody extends ConsumerWidget {
   }
 }
 
-/// Target weight + target date fields (WT-03). Auto-saves on every change
-/// via `WeightNotifier.saveGoal`, mirroring `ProfileForm`/
+/// Target weight + target date fields (WT-03). Target date auto-saves on
+/// every change via `WeightNotifier.saveGoal`, mirroring `ProfileForm`/
 /// `Co2SettingsScreen`'s established no-blocking-validation convention.
+/// Target weight instead saves on submit/blur (not every keystroke) since
+/// it's gated by the ED safety-net BMI check (NFR-07).
 class _GoalFields extends ConsumerStatefulWidget {
   const _GoalFields({required this.settings});
 
@@ -122,6 +127,63 @@ class _GoalFields extends ConsumerStatefulWidget {
 
 class _GoalFieldsState extends ConsumerState<_GoalFields> {
   late DateTime? _targetDate = widget.settings.targetDate;
+  late final TextEditingController _targetWeightController =
+      TextEditingController(
+        text: widget.settings.targetWeightKg?.toStringAsFixed(1) ?? '',
+      );
+
+  /// The most recent target-weight value the user explicitly confirmed past
+  /// the ED safety-net BMI warning. Re-saving this exact same value does not
+  /// re-trigger the modal; a different unsafe value does (06-CONTEXT.md
+  /// re-warn rule). In-memory only — never persisted.
+  double? _lastConfirmedUnsafeWeightKg;
+
+  // Guards against double-invocation: Flutter's EditableText fires BOTH
+  // onEditingComplete and onFieldSubmitted for the same "Done" keyboard
+  // action (editable_text.dart's _finalizeEditing calls both), which would
+  // otherwise show the safety-net modal twice for one submit event.
+  bool _submitInFlight = false;
+
+  @override
+  void dispose() {
+    _targetWeightController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _handleTargetWeightSubmit() async {
+    if (_submitInFlight) return;
+    _submitInFlight = true;
+    try {
+      await _doHandleTargetWeightSubmit();
+    } finally {
+      _submitInFlight = false;
+    }
+  }
+
+  Future<void> _doHandleTargetWeightSubmit() async {
+    final parsed = double.tryParse(_targetWeightController.text);
+
+    if (parsed != null) {
+      final heightCm = ref.read(profileProvider).value?.heightCm;
+      final isUnsafe = EdSafetyNetChecker.bmiIsUnsafe(
+        weightKg: parsed,
+        heightCm: heightCm,
+      );
+
+      if (isUnsafe == true && parsed != _lastConfirmedUnsafeWeightKg) {
+        final confirmed = await showEdSafetyNetDialog(
+          context,
+          type: EdSafetyNetTriggerType.bmi,
+        );
+        if (!mounted || !confirmed) return;
+        _lastConfirmedUnsafeWeightKg = parsed;
+      }
+    }
+
+    await ref
+        .read(weightProvider.notifier)
+        .saveGoal(targetWeightKg: parsed, targetDate: _targetDate);
+  }
 
   Future<void> _pickTargetDate() async {
     final picked = await showDatePicker(
@@ -146,28 +208,26 @@ class _GoalFieldsState extends ConsumerState<_GoalFields> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // No value-derived key (deliberately) -- keying a TextFormField by
-        // its own current value causes Flutter to treat it as a brand new
-        // widget on every keystroke (auto-save -> provider rebuild -> key
-        // changes -> Element destroyed/recreated), dropping focus and
-        // dismissing the keyboard after every character. See profile_form
-        // .dart/co2_settings_screen.dart's identical fix.
+        // A TextEditingController (not initialValue) so the field's text
+        // survives provider rebuilds without losing focus/cursor position.
+        // The ED safety-net BMI check must only fire on a discrete "save
+        // event" (submit/blur), never on every keystroke (RESEARCH.md
+        // Pitfall 4) -- onChanged below only updates the controller's own
+        // buffer, it never saves or checks.
         TextFormField(
-          initialValue:
-              widget.settings.targetWeightKg?.toStringAsFixed(1) ?? '',
+          controller: _targetWeightController,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           decoration: const InputDecoration(
             labelText: 'Target weight',
             suffixText: 'kg',
           ),
-          onChanged: (raw) => unawaited(
-            ref
-                .read(weightProvider.notifier)
-                .saveGoal(
-                  targetWeightKg: double.tryParse(raw),
-                  targetDate: _targetDate,
-                ),
-          ),
+          onChanged: (_) {},
+          onEditingComplete: () => unawaited(_handleTargetWeightSubmit()),
+          onFieldSubmitted: (_) => unawaited(_handleTargetWeightSubmit()),
+          onTapOutside: (_) {
+            FocusScope.of(context).unfocus();
+            unawaited(_handleTargetWeightSubmit());
+          },
         ),
         const SizedBox(height: AppSpacing.stackGap),
         InkWell(
