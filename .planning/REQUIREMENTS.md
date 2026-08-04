@@ -19,8 +19,8 @@ Requirements for initial release. Each maps to a roadmap phase.
 
 - [ ] **LEGAL-01**: Legal Consent screen presents 4 mandatory **separate** checkboxes (Terms of Service, Privacy Policy, not-medical-advice disclaimer, user-responsibility disclaimer); "Accept and Continue" button disabled until all 4 are checked; no pre-checked boxes
 - [ ] **LEGAL-02**: 16+ age verification is a 5th checkbox on the Legal Consent screen: "I confirm I am 16 or older" (self-declaration; optional but logged when checked); mechanism: **resolved — self-declaration checkbox**
-- [ ] **LEGAL-03**: Each consent event is recorded with: timestamp (UTC), app version, policy version — stored in `consent_records` table; never deletable except on full account deletion
-- [ ] **LEGAL-04**: "View Terms", "View Privacy Policy", and "View Disclaimer" links are accessible from the Legal Consent screen before accepting
+- [x] **LEGAL-03**: Each consent event is recorded with: timestamp (UTC), app version, policy version — stored in `consent_records` table; never deletable except on full account deletion
+- [x] **LEGAL-04**: "View Terms", "View Privacy Policy", and "View Disclaimer" links are accessible from the Legal Consent screen before accepting
 
 ### Authentication & Accounts
 
@@ -123,8 +123,8 @@ Requirements for initial release. Each maps to a roadmap phase.
 ### Legal & Transparency
 
 - [ ] **LEG-01**: Legal Hub is accessible within 2 taps from any screen; contains full-document screens for: Terms of Service, Privacy Policy, Health Disclaimer, Impressum
-- [ ] **LEG-02**: Health Disclaimer is visible from the Legal Consent screen (before first use) and accessible from Legal Hub at any time; states the app does not provide medical advice and is not a substitute for professional dietary or medical guidance
-- [ ] **LEG-03**: Impressum contains: legal entity / operator, address, contact email, responsible person, required legal disclosures under German TMG §5 / MStV §18; accessible within 2 taps
+- [x] **LEG-02**: Health Disclaimer is visible from the Legal Consent screen (before first use) and accessible from Legal Hub at any time; states the app does not provide medical advice and is not a substitute for professional dietary or medical guidance
+- [x] **LEG-03**: Impressum contains: legal entity / operator, address, contact email, responsible person, required legal disclosures under German TMG §5 / MStV §18; accessible within 2 taps
 - [ ] **LEG-04**: Open source license disclosure: all third-party library licenses and copyright notices accessible in-app
 - [x] **LEG-05**: CO₂ methodology and data sources are publicly documented; linked from the Estimate Transparency screen and Legal Hub
 
@@ -220,8 +220,8 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | ONBD-05 | Phase 6 | Pending |
 | LEGAL-01 | Phase 6 | Pending |
 | LEGAL-02 | Phase 6 | Pending |
-| LEGAL-03 | Phase 6 | Pending |
-| LEGAL-04 | Phase 1 | Pending |
+| LEGAL-03 | Phase 6 | Complete |
+| LEGAL-04 | Phase 1 | Complete |
 | AUTH-01 | Phase 7 | Pending |
 | AUTH-02 | Phase 7 | Pending |
 | AUTH-03 | Phase 7 | Pending |
@@ -291,8 +291,8 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | NOTIF-02 | Phase 5 | Complete |
 | NOTIF-03 | Phase 5 | Complete |
 | LEG-01 | Phase 6 | Pending |
-| LEG-02 | Phase 6 | Pending |
-| LEG-03 | Phase 6 | Pending |
+| LEG-02 | Phase 6 | Complete |
+| LEG-03 | Phase 6 | Complete |
 | LEG-04 | Phase 1 | Pending |
 | LEG-05 | Phase 3 | Complete |
 | NFR-01 | Phase 6 | Pending |
