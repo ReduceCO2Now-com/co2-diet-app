@@ -129,6 +129,28 @@ dependencies:
   # `firstWhereOrNull` powers this plan's safe-fallback query-param parsing
   # for `/data-analysis?metric=` and `/food-search?slot=` (T-05-18-01).
   collection: ^1.19.1
+  # flutter_markdown_plus 1.0.12 — renders docs/legal/*.md (Terms/Privacy/
+  # Health Disclaimer/Impressum) as in-app document screens; community-
+  # maintained continuation of Google's discontinued flutter_markdown
+  # (flutter/flutter#162966). [VERIFIED: pub.dev 2026-08-03, 160/160 score,
+  # BSD-3-Clause, publisher foresightmobile.com
+  # (github.com/foresightmobile/flutter_markdown_plus), human-approved per
+  # Plan 06-02's blocking package-legitimacy checkpoint]
+  flutter_markdown_plus: ^1.0.12
+  # shared_preferences 2.5.5 — persists the "has completed onboarding"
+  # boolean flag read by the go_router redirect gate (ONBD-01/05).
+  # [VERIFIED: pub.dev 2026-08-03, 160/160 score, flutter-favorite badge,
+  # official publisher flutter.dev, human-approved per Plan 06-02's
+  # blocking package-legitimacy checkpoint]
+  shared_preferences: ^2.5.5
+  # package_info_plus 10.2.1 — reads the running app's version string at
+  # runtime for LEGAL-03's consent_records.appVersion column (no existing
+  # runtime accessor for pubspec.yaml's build-time version: field).
+  # [VERIFIED: pub.dev 2026-08-03, 150/160 score, verified publisher
+  # fluttercommunity.dev (github.com/fluttercommunity/plus_plugins), same
+  # family as already-approved share_plus/connectivity_plus, human-approved
+  # per Plan 06-02's blocking package-legitimacy checkpoint]
+  package_info_plus: ^10.2.1
 
 dev_dependencies:
   # build_runner 2.15.1 used (not 2.15.2) — 2.15.2 requires analyzer >=13.3 which
@@ -172,6 +194,7 @@ flutter:
   assets:
     - assets/fonts/
     - assets/off_reference.sqlite.gz
+    - docs/legal/
   fonts:
     - family: Plus Jakarta Sans
       fonts:
