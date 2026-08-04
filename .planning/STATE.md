@@ -2,9 +2,8 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
-status: planning
-stopped_at: Phase 6 context gathered
-last_updated: "2026-08-03T21:41:40.479Z"
+status: executing
+last_updated: "2026-08-04T06:33:42.178Z"
 progress:
   total_phases: 9
   completed_phases: 5
@@ -35,10 +34,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable — **COMPLETE** (19/19 plans executed, then a full real-device UAT pass on both Android and iOS: 9/9 tests passing on each — see `05-UAT.md`). Local Mode is shippable as of this phase per `ROADMAP.md`'s delivery principle.
-- **Plan:** Phase 5 fully executed and UAT-verified; no plan currently in progress.
-- **Status:** Ready to plan Phase 6
-- **Progress:** [█████░░░░] 5 of 9 phases complete
+- **Phase:** 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission — **IN PROGRESS** (1/10 plans executed). CONTEXT/RESEARCH/VALIDATION complete; 10 plans across 6 waves drafted and committed (`7b87c2e`): 06-01 (wave 0 test stubs — COMPLETE) → 06-02/06-03 (wave 1: legal docs + loader, ED safety net checker) → 06-04/05/06 (wave 2: consent domain + legal doc screen, onboarding gate + splash/welcome/carousel, privacy manifests) → 06-07/06-08 (wave 3: Legal Consent screen, Legal Hub + Consent History) → 06-09 (wave 4: router/redirect/Settings integration) → 06-10 (wave 5: manual a11y/tone checkpoints). All 23 phase requirement IDs traced to a plan.
+- **Plan:** 06-01 (Wave 0 test stub scaffolding) — COMPLETE. Next up: 06-02 (Wave 1: legal docs + loader).
+- **Status:** Executing Phase 6 — Wave 0 done, Wave 1 next
+- **Progress:** [█████░░░░] 5 of 9 phases complete (Phase 6: 1/10 plans)
 - **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files.
 
 ```
@@ -105,8 +104,11 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ### Open Decisions to Resolve During Execution
 
-- **Mode Choice visual weighting** — design intent is equal-weight cards; live build shows bias. Audit and fix in Phase 6.
 - **Weight Tracking placement** — Settings-only vs. also Insights tab. To be resolved during Phase 5 planning.
+
+### Resolved Decisions (carried forward for record)
+
+- **Mode Choice visual weighting** — RESOLVED in `06-CONTEXT.md`: no Mode Choice screen exists in Phase 6 at all (Account Mode doesn't exist yet, nothing to compare). Skipped entirely, not a placeholder. Phase 7 builds the real two-card screen and runs the equal-weight audit (ONBD-03) then, once there's something to weigh equally.
 
 ### Cross-Cutting Invariants (all phases must respect)
 
@@ -129,16 +131,20 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 - Confirm Flutter 3.27+ / Dart 3.6+ versions against `flutter pub outdated` before scaffolding.
 - Verify Open Food Facts export current size and license before designing seed pack (Phase 2 concern, but useful early).
-- Line up external Fachanwalt IT-Recht (€1–3k) and LCA methodology peer reviewer (€2–5k) — engagement needed before Phase 6 closes.
+
+### Pre-Launch Blockers (not Phase 6 completion blockers)
+
+- **External legal review:** Fachanwalt IT-Recht (€1–3k) sign-off on Terms/Privacy/Health Disclaimer, and LCA methodology peer reviewer (€2–5k) — per `06-CONTEXT.md`, Phase 6 ships complete drafted text flagged "pending legal review" via code comment/tracked TODO only (no user-visible banner). The live review is a pre-*launch* gate, explicitly out of Phase 6's scope — it does not block Phase 6 from closing.
+- **Impressum real identity data:** entity name/address/responsible-person are placeholder text ("Legal Entity Name", "Address TBD") pending a decision from Dr. Thomas (Product Owner) or whoever formally owns ReduceCO2Now. TMG §5 compliance blocked on this regardless of Phase 6 completion — org-leadership sign-off required before launch.
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-08-03T21:41:40.470Z
-**Stopped at:** Phase 6 context gathered
-**Next action:** Start Phase 6 (Onboarding, Legal Consent, Legal Hub, ED Safety Nets, Accessibility & Pre-Submission) — no CONTEXT.md exists for it yet.
-**Suggested next command:** `/gsd:discuss-phase 6`
+**Last session:** 2026-08-04T08:32:00.000Z
+**Stopped at:** Plan 06-01 (Wave 0 test stub scaffolding) executed and committed — 6 stub files, 22 skipped test cases, 0 failures
+**Next action:** Execute Plan 06-02 (Wave 1: legal docs + loader)
+**Suggested next command:** `/gsd:execute-phase 6`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
@@ -280,6 +286,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 05-18]: Every slot's quick-log button (Breakfast/Lunch/Dinner/Snack) always renders regardless of that slot's entry count; only the slot section header above the meal list is conditionally hidden when empty -- existing Phase 4 tests asserting slot-name absence for empty slots needed updating to findsOneWidget (button-only) vs findsNWidgets(2) (button+header)
 - [Phase 05-19]: formatCo2Approx extracted from formatCo2Display so callers composing their own unit text reuse the ~-prefixed rounding convention without inheriting the per-kg-of-product 'kg CO2e/kg' suffix
 - [Phase 05-19]: offline_phase5_test.dart proves AUTH-07/PRIV-08/INS-04 by direct-constructing every new Phase 5 service/repository with zero offApiClientProvider/connectivity_plus mocks -- an accidental network call would surface as MissingPluginException rather than being silently swallowed
+- [Phase 06-01]: Reused Phase 2-5 Wave 0 group-level skip convention verbatim for all 6 Phase 6 stub files, including testWidgets bodies wrapped inside a skipped group() -- no production imports until the implementing plan (06-02/03/04/07/08/09) turns each stub green
 
 ## Performance Metrics
 
@@ -326,3 +333,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P17 | ~20min | 2 tasks | 9 files |
 | Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P18 | ~50min | 4 tasks | 11 files |
 | Phase 05-nutrition-co-estimator-dashboard-insights-weight-notifications-export-local-mode-shippable P19 | ~20min | 2 tasks | 6 files |
+| Phase 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission P01 | ~5min | 2 tasks | 6 files |

@@ -160,7 +160,7 @@ Plans:
   5. Accessibility audit passes: system dark mode supported on iOS and Android; text scales with Dynamic Type / font size without layout breakage; all interactive elements have VoiceOver / TalkBack labels with key flows verified by a screen-reader pass; all charts and indicators are color-blind friendly (never red/green alone); all tap targets are ≥ 44×44 pt; tone/copy validated non-judgmental and non-preachy; SAM (Self-Assessment Manikin) test conducted and app confirmed to feel calm, supportive, and non-stressful; PrivacyInfo.xcprivacy present, Play Data Safety form drafted.
 **Plans**: 10 plans
 Plans:
-- [ ] 06-01-PLAN.md — Wave 0 test stubs (6 files)
+- [x] 06-01-PLAN.md — Wave 0 test stubs (6 files)
 - [ ] 06-02-PLAN.md — Package installs (flutter_markdown_plus, shared_preferences, package_info_plus) + legal document drafting (Terms/Privacy/Health Disclaimer/Impressum) + LegalDocumentLoader
 - [ ] 06-03-PLAN.md — EdSafetyNetChecker + EdSafetyNetDialog + Profile/Weight screen wiring + Profile footer
 - [ ] 06-04-PLAN.md — Consent domain (repository, notifier, DI) + shared LegalDocumentScreen
@@ -215,7 +215,7 @@ Plans:
 | 3. Barcode Scanning & CO₂ Factor Table | 5/5 | Complete   | 2026-07-22 |
 | 4. Meal Logging Core | 12/13 | In Progress|  |
 | 5. Full Local App (Local Mode Shippable) | 19/19 | Complete    | 2026-07-28 |
-| 6. Onboarding, Legal & Pre-Submission | 0/10 | Planned | - |
+| 6. Onboarding, Legal & Pre-Submission | 1/10 | In Progress|  |
 | 7. Keycloak Auth + Account Mode + Sync | 0/0 | Not started | - |
 | 8. Reference Data Delivery (Full OFF Pack) | 0/0 | Not started | - |
 | 9. Post-Launch Enhancements (v1.1+) | 0/0 | Not started | - |
