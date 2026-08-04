@@ -8,8 +8,16 @@ import 'package:co2diet/features/dashboard/screens/placeholder_dashboard_screen.
 import 'package:co2diet/features/data_analysis/screens/data_analysis_screen.dart';
 import 'package:co2diet/features/data_analysis/widgets/analysis_metric.dart';
 import 'package:co2diet/features/food_search/screens/food_search_screen.dart';
+import 'package:co2diet/features/legal/screens/consent_history_screen.dart';
+import 'package:co2diet/features/legal/screens/legal_consent_screen.dart';
+import 'package:co2diet/features/legal/screens/legal_document_screen.dart';
+import 'package:co2diet/features/legal/screens/legal_hub_screen.dart';
 import 'package:co2diet/features/my_foods/screens/custom_food_form_screen.dart';
 import 'package:co2diet/features/my_foods/screens/my_foods_screen.dart';
+import 'package:co2diet/features/onboarding/providers/onboarding_gate_provider.dart';
+import 'package:co2diet/features/onboarding/screens/onboarding_carousel_screen.dart';
+import 'package:co2diet/features/onboarding/screens/splash_screen.dart';
+import 'package:co2diet/features/onboarding/screens/welcome_screen.dart';
 import 'package:co2diet/features/profile/screens/profile_screen.dart';
 import 'package:co2diet/features/settings/screens/settings_screen.dart';
 import 'package:co2diet/features/weight/screens/weight_screen.dart';
@@ -19,6 +27,33 @@ import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_router.g.dart';
+
+/// Parses the `doc=` query-param slug used throughout the Legal Hub /
+/// Legal Consent flow (Plans 06-07/06-08) back into a [LegalDocId].
+///
+/// `LegalDocId.name` is camelCase for `healthDisclaimer`, but every
+/// existing caller (`LegalHubScreen`'s private `_LegalDocRouteSlug`
+/// extension, `LegalConsentScreen`'s `context.push` calls) already
+/// committed to the snake_case slug `health_disclaimer` — this mirrors
+/// that convention rather than `LegalDocId.values.byName`, which would
+/// silently 404 on the health-disclaimer deep link. Falls back to
+/// [LegalDocId.terms] on an absent/malformed slug, matching the
+/// `firstWhereOrNull`-with-safe-fallback pattern used for
+/// `AnalysisMetric`/`MealSlot` deep links (T-05-18-01 precedent).
+LegalDocId _legalDocIdFromSlug(String? slug) {
+  switch (slug) {
+    case 'terms':
+      return LegalDocId.terms;
+    case 'privacy':
+      return LegalDocId.privacy;
+    case 'health_disclaimer':
+      return LegalDocId.healthDisclaimer;
+    case 'impressum':
+      return LegalDocId.impressum;
+    default:
+      return LegalDocId.terms;
+  }
+}
 
 /// Global navigator key captured once at app start so non-widget code (the
 /// `NotificationService`'s tap handler, which runs with no `BuildContext`
@@ -78,8 +113,77 @@ class AppShell extends StatelessWidget {
 GoRouter appRouter(Ref ref) {
   return GoRouter(
     navigatorKey: rootNavigatorKey,
-    initialLocation: '/profile',
+    initialLocation: '/splash',
+    // Single top-level enforcement point for "consent is never skippable"
+    // (T-06-09-01): evaluated on every navigation attempt, including
+    // `initialLocation` itself, so a crafted deep link into `/dashboard`
+    // (or any other post-onboarding route) before Legal Consent is
+    // accepted is always redirected back to `/splash`.
+    redirect: (context, state) {
+      final hasOnboarded = ref.read(onboardingGateProvider);
+
+      const onboardingOnlyRoutes = [
+        '/splash',
+        '/welcome',
+        '/legal-consent',
+        '/onboarding-carousel',
+      ];
+      const allowedPreOnboarding = [...onboardingOnlyRoutes, '/profile'];
+
+      if (!hasOnboarded &&
+          !allowedPreOnboarding.any(
+            (route) => state.matchedLocation.startsWith(route),
+          )) {
+        return '/splash';
+      }
+
+      // Deliberately does NOT include '/profile' here — a completed user
+      // must still be able to visit the Profile bottom-nav tab normally.
+      if (hasOnboarded &&
+          onboardingOnlyRoutes.any(
+            (route) => state.matchedLocation.startsWith(route),
+          )) {
+        return '/dashboard';
+      }
+
+      return null;
+    },
     routes: [
+      // Onboarding flow — top-level, outside the shell (no bottom nav).
+      GoRoute(
+        path: '/splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: '/welcome',
+        builder: (context, state) => const WelcomeScreen(),
+      ),
+      GoRoute(
+        path: '/legal-consent',
+        builder: (context, state) => const LegalConsentScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding-carousel',
+        builder: (context, state) => const OnboardingCarouselScreen(),
+      ),
+      GoRoute(
+        path: '/legal-hub',
+        builder: (context, state) => const LegalHubScreen(),
+      ),
+      GoRoute(
+        path: '/legal-hub/document',
+        // `_legalDocIdFromSlug` parses the snake_case `doc=` slug
+        // convention already committed by LegalHubScreen/
+        // LegalConsentScreen — an absent/malformed `doc` query param
+        // never crashes, it falls back to Terms.
+        builder: (context, state) => LegalDocumentScreen(
+          docId: _legalDocIdFromSlug(state.uri.queryParameters['doc']),
+        ),
+      ),
+      GoRoute(
+        path: '/legal-hub/consent-history',
+        builder: (context, state) => const ConsentHistoryScreen(),
+      ),
       // Top-level route — covers the bottom nav bar (not nested in the shell).
       GoRoute(
         path: '/food-search',
