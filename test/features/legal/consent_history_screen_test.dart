@@ -67,8 +67,11 @@ void main() {
       expect(find.byType(Card), findsNWidgets(2));
       expect(find.textContaining('0.1.0+1'), findsOneWidget);
       expect(find.textContaining('0.1.0+2'), findsOneWidget);
-      expect(find.textContaining('2026-07-16'), findsOneWidget);
-      expect(find.textContaining('2026-08-01'), findsOneWidget);
+      // Both the row's own timestamp and its policy-version line contain
+      // this date substring (policy version equals the consent date in
+      // this fixture) -- assert at least one match, not exactly one.
+      expect(find.textContaining('2026-07-16'), findsWidgets);
+      expect(find.textContaining('2026-08-01'), findsWidgets);
 
       // Plain-language translation -- never the raw JSON keys.
       expect(find.textContaining('Terms of Service'), findsWidgets);
