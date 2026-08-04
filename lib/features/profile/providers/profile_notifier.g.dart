@@ -66,7 +66,7 @@ final class ProfileNotifierProvider
   ProfileNotifier create() => ProfileNotifier();
 }
 
-String _$profileNotifierHash() => r'c70473fadcb1931508c588a1894297512ca71c98';
+String _$profileNotifierHash() => r'ef1f2636843bf6fdf61a925f8b1cbb3aa98ec7f7';
 
 /// AsyncNotifier that loads the user profile and attaches computed
 /// `CalcTargets` via [TargetCalculator.derive] on each build().

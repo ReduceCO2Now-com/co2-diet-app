@@ -74,7 +74,7 @@ final class NotificationPrefsNotifierProvider
 }
 
 String _$notificationPrefsNotifierHash() =>
-    r'e5a83428d157c151ae9a058070e8154bb902637c';
+    r'675092c59988eb1e680960f83458b37f2eee47f7';
 
 /// AsyncNotifier exposing the user's per-meal-slot reminder configuration
 /// (NOTIF-01) and the single mutation surface (`setSlotEnabled`) that keeps

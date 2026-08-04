@@ -60,7 +60,7 @@ final class BackupNotifierProvider
   BackupNotifier create() => BackupNotifier();
 }
 
-String _$backupNotifierHash() => r'a282674816f0646f26a9cfda677ebd8182d14d6c';
+String _$backupNotifierHash() => r'1a981e17e7bff4dce17df1acb8fbdf00daa2c8ab';
 
 /// AsyncNotifier for the Backup & Restore screen (PRIV-01 through PRIV-04,
 /// PRIV-08, PRIV-09).

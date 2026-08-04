@@ -70,7 +70,7 @@ final class Co2SettingsNotifierProvider
 }
 
 String _$co2SettingsNotifierHash() =>
-    r'b33be4f06c36250e66776a1c1c0b8c1d5081cd43';
+    r'fc948e53a1b7528bedfb848867b8e85ea25fcdcf';
 
 /// AsyncNotifier that loads and saves the user's CO2 Calculation Settings
 /// (CO2-03).
