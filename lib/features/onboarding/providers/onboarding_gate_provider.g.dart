@@ -1,0 +1,189 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'onboarding_gate_provider.dart';
+
+// **************************************************************************
+// RiverpodGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+/// Provides the app-wide [SharedPreferences] instance.
+///
+/// The default implementation throws — this provider MUST be overridden in
+/// `main.dart` via `ProviderScope(overrides: [sharedPreferencesProvider
+/// .overrideWithValue(prefs)])` after `SharedPreferences.getInstance()`
+/// resolves, before `runApp`. Tests override it with
+/// `SharedPreferences.setMockInitialValues({})` + a real instance rather
+/// than mocking this provider directly.
+
+@ProviderFor(sharedPreferences)
+final sharedPreferencesProvider = SharedPreferencesProvider._();
+
+/// Provides the app-wide [SharedPreferences] instance.
+///
+/// The default implementation throws — this provider MUST be overridden in
+/// `main.dart` via `ProviderScope(overrides: [sharedPreferencesProvider
+/// .overrideWithValue(prefs)])` after `SharedPreferences.getInstance()`
+/// resolves, before `runApp`. Tests override it with
+/// `SharedPreferences.setMockInitialValues({})` + a real instance rather
+/// than mocking this provider directly.
+
+final class SharedPreferencesProvider
+    extends
+        $FunctionalProvider<
+          SharedPreferences,
+          SharedPreferences,
+          SharedPreferences
+        >
+    with $Provider<SharedPreferences> {
+  /// Provides the app-wide [SharedPreferences] instance.
+  ///
+  /// The default implementation throws — this provider MUST be overridden in
+  /// `main.dart` via `ProviderScope(overrides: [sharedPreferencesProvider
+  /// .overrideWithValue(prefs)])` after `SharedPreferences.getInstance()`
+  /// resolves, before `runApp`. Tests override it with
+  /// `SharedPreferences.setMockInitialValues({})` + a real instance rather
+  /// than mocking this provider directly.
+  SharedPreferencesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'sharedPreferencesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$sharedPreferencesHash();
+
+  @$internal
+  @override
+  $ProviderElement<SharedPreferences> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  SharedPreferences create(Ref ref) {
+    return sharedPreferences(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(SharedPreferences value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SharedPreferences>(value),
+    );
+  }
+}
+
+String _$sharedPreferencesHash() => r'2b2756fa92fd2d5487fb2665bcbfbcbfc246b9fb';
+
+/// Tracks whether the user has completed the onboarding flow
+/// (Splash → Welcome → Legal Consent → Profile Setup → Carousel).
+///
+/// A plain synchronous `Notifier<bool>` (not `AsyncNotifier`) since
+/// [build] only reads a value out of the already-loaded [SharedPreferences]
+/// instance supplied via [sharedPreferencesProvider] — there is no async
+/// work to await at construction time.
+///
+/// Plan 06-09's router redirect watches this provider to gate every route
+/// behind onboarding completion (ONBD-01/05). T-06-05-01: this flag is a
+/// plain on-device SharedPreferences value and can be tampered with on a
+/// rooted/jailbroken device to skip onboarding directly — accepted risk,
+/// the router redirect is still the enforced path for normal navigation.
+
+@ProviderFor(OnboardingGateNotifier)
+final onboardingGateProvider = OnboardingGateNotifierProvider._();
+
+/// Tracks whether the user has completed the onboarding flow
+/// (Splash → Welcome → Legal Consent → Profile Setup → Carousel).
+///
+/// A plain synchronous `Notifier<bool>` (not `AsyncNotifier`) since
+/// [build] only reads a value out of the already-loaded [SharedPreferences]
+/// instance supplied via [sharedPreferencesProvider] — there is no async
+/// work to await at construction time.
+///
+/// Plan 06-09's router redirect watches this provider to gate every route
+/// behind onboarding completion (ONBD-01/05). T-06-05-01: this flag is a
+/// plain on-device SharedPreferences value and can be tampered with on a
+/// rooted/jailbroken device to skip onboarding directly — accepted risk,
+/// the router redirect is still the enforced path for normal navigation.
+final class OnboardingGateNotifierProvider
+    extends $NotifierProvider<OnboardingGateNotifier, bool> {
+  /// Tracks whether the user has completed the onboarding flow
+  /// (Splash → Welcome → Legal Consent → Profile Setup → Carousel).
+  ///
+  /// A plain synchronous `Notifier<bool>` (not `AsyncNotifier`) since
+  /// [build] only reads a value out of the already-loaded [SharedPreferences]
+  /// instance supplied via [sharedPreferencesProvider] — there is no async
+  /// work to await at construction time.
+  ///
+  /// Plan 06-09's router redirect watches this provider to gate every route
+  /// behind onboarding completion (ONBD-01/05). T-06-05-01: this flag is a
+  /// plain on-device SharedPreferences value and can be tampered with on a
+  /// rooted/jailbroken device to skip onboarding directly — accepted risk,
+  /// the router redirect is still the enforced path for normal navigation.
+  OnboardingGateNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'onboardingGateProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$onboardingGateNotifierHash();
+
+  @$internal
+  @override
+  OnboardingGateNotifier create() => OnboardingGateNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$onboardingGateNotifierHash() =>
+    r'ec67cc89e5fe94fb874b91e3ced22ec88e519955';
+
+/// Tracks whether the user has completed the onboarding flow
+/// (Splash → Welcome → Legal Consent → Profile Setup → Carousel).
+///
+/// A plain synchronous `Notifier<bool>` (not `AsyncNotifier`) since
+/// [build] only reads a value out of the already-loaded [SharedPreferences]
+/// instance supplied via [sharedPreferencesProvider] — there is no async
+/// work to await at construction time.
+///
+/// Plan 06-09's router redirect watches this provider to gate every route
+/// behind onboarding completion (ONBD-01/05). T-06-05-01: this flag is a
+/// plain on-device SharedPreferences value and can be tampered with on a
+/// rooted/jailbroken device to skip onboarding directly — accepted risk,
+/// the router redirect is still the enforced path for normal navigation.
+
+abstract class _$OnboardingGateNotifier extends $Notifier<bool> {
+  bool build();
+  @$mustCallSuper
+  @override
+  WhenComplete runBuild() {
+    final ref = this.ref as $Ref<bool, bool>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<bool, bool>,
+              bool,
+              Object?,
+              Object?
+            >;
+    return element.handleCreate(ref, build);
+  }
+}

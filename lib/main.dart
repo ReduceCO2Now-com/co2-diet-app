@@ -3,9 +3,11 @@ import 'package:co2diet/core/assets/first_launch_extractor.dart';
 import 'package:co2diet/core/di/providers.dart';
 import 'package:co2diet/data/remote/off_api_client.dart';
 import 'package:co2diet/domain/services/notification_service.dart';
+import 'package:co2diet/features/onboarding/providers/onboarding_gate_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,11 +43,17 @@ Future<void> main() async {
     debugPrint('NotificationService initialization failed: $e');
   }
 
+  // Preload SharedPreferences before runApp so the synchronous
+  // OnboardingGateNotifier.build() (Plan 06-05) can read the
+  // hasCompletedOnboarding flag with no loading state.
+  final prefs = await SharedPreferences.getInstance();
+
   runApp(
     ProviderScope(
       overrides: [
         if (offRefPath != null)
           offRefPathProvider.overrideWithValue(offRefPath),
+        sharedPreferencesProvider.overrideWithValue(prefs),
       ],
       child: const Co2DietApp(),
     ),
