@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:co2diet/app.dart';
 import 'package:co2diet/core/di/providers.dart';
 import 'package:co2diet/core/router/app_router.dart';
@@ -152,6 +154,40 @@ void main() {
         // router's initial location before this test navigated away)
         // before teardown so the "Timer still pending" test-framework
         // invariant doesn't trip.
+        await tester.pump(const Duration(seconds: 3));
+      },
+    );
+
+    testWidgets(
+      'navigating to /legal-hub/document before onboarding completes '
+      'produces no redirect (regression: 06-10 manual verification found '
+      'every "View Terms/Privacy/Disclaimer" tap on Legal Consent bounced '
+      'to /splash because the pre-onboarding allowlist omitted '
+      '/legal-hub entirely)',
+      (tester) async {
+        final container = await pumpApp(
+          tester,
+          hasCompletedOnboarding: false,
+        );
+
+        unawaited(
+          container.read(appRouterProvider).push(
+            '/legal-hub/document?doc=terms',
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Scoped to AppBar since "Terms of Service" also appears via the
+        // Text widget's own internal RichText rendering (same duplication
+        // pattern the ONBD-05 test below handles for 'Dashboard').
+        expect(
+          find.descendant(
+            of: find.byType(AppBar),
+            matching: find.text('Terms of Service'),
+          ),
+          findsOneWidget,
+        );
+
         await tester.pump(const Duration(seconds: 3));
       },
     );

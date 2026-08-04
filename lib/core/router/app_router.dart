@@ -128,7 +128,18 @@ GoRouter appRouter(Ref ref) {
         '/legal-consent',
         '/onboarding-carousel',
       ];
-      const allowedPreOnboarding = [...onboardingOnlyRoutes, '/profile'];
+      // '/legal-hub' covers '/legal-hub', '/legal-hub/document', and
+      // '/legal-hub/consent-history' via the startsWith check below --
+      // LegalConsentScreen's "View Terms/Privacy/Disclaimer" links push
+      // into '/legal-hub/document' before onboarding completes, and must
+      // not be redirected back to '/splash' (bug found in 06-10 manual
+      // verification: the pre-onboarding allowlist omitted this prefix
+      // entirely, bouncing every "View..." tap to the start of onboarding).
+      const allowedPreOnboarding = [
+        ...onboardingOnlyRoutes,
+        '/profile',
+        '/legal-hub',
+      ];
 
       if (!hasOnboarded &&
           !allowedPreOnboarding.any(
