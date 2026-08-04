@@ -24,10 +24,12 @@
 import 'package:co2diet/core/di/providers.dart';
 import 'package:co2diet/domain/entities/user_profile.dart';
 import 'package:co2diet/domain/repositories/i_profile_repository.dart';
+import 'package:co2diet/features/onboarding/providers/onboarding_gate_provider.dart';
 import 'package:co2diet/features/profile/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// In-memory fake so `getProfile()` reflects whatever was last saved --
 /// a plain mocktail Mock that always returns null from `getProfile()`
@@ -64,9 +66,22 @@ void main() {
 
       final repo = _FakeProfileRepository();
 
+      // Plan 06-09: ProfileScreen now reads onboardingGateProvider (for
+      // the onboarding-only Continue button), which reads
+      // sharedPreferencesProvider -- must be overridden or the default
+      // throws UnimplementedError. Marked onboarding-complete since this
+      // test reproduces a post-onboarding crash, not onboarding UI.
+      SharedPreferences.setMockInitialValues({
+        'hasCompletedOnboarding': true,
+      });
+      final prefs = await SharedPreferences.getInstance();
+
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [profileRepositoryProvider.overrideWithValue(repo)],
+          overrides: [
+            profileRepositoryProvider.overrideWithValue(repo),
+            sharedPreferencesProvider.overrideWithValue(prefs),
+          ],
           child: const MaterialApp(home: ProfileScreen()),
         ),
       );

@@ -79,6 +79,14 @@ class _Co2DietAppState extends ConsumerState<Co2DietApp>
       darkTheme: buildDarkTheme(),
       debugShowCheckedModeBanner: false,
       routerConfig: ref.watch(appRouterProvider),
+      // ACC-02: respects the system's Dynamic Type / font-scaling setting
+      // everywhere, but clamps it to 1.6x so no key screen overflows at
+      // extreme accessibility text sizes.
+      builder: (context, child) => MediaQuery.withClampedTextScaling(
+        minScaleFactor: 1,
+        maxScaleFactor: 1.6,
+        child: child!,
+      ),
     );
   }
 }

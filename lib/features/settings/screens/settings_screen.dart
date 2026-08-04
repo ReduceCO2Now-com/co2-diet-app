@@ -69,6 +69,14 @@ class SettingsScreen extends StatelessWidget {
           ),
           const Divider(height: 1),
           ListTile(
+            leading: const Icon(Icons.gavel_outlined),
+            title: const Text('Legal & Privacy'),
+            subtitle: const Text(
+              'Terms, Privacy Policy, consent history, and your rights',
+            ),
+            onTap: () => context.push('/legal-hub'),
+          ),
+          ListTile(
             leading: const Icon(Icons.info_outline),
             title: const Text('Open source licenses'),
             subtitle: const Text('View all package licenses'),

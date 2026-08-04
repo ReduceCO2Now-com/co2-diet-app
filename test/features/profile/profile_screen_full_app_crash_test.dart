@@ -20,10 +20,12 @@
 import 'package:co2diet/app.dart';
 import 'package:co2diet/core/di/providers.dart';
 import 'package:co2diet/data/local/app_database.dart';
+import 'package:co2diet/features/onboarding/providers/onboarding_gate_provider.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   testWidgets(
@@ -39,14 +41,31 @@ void main() {
       final db = AppDatabase(NativeDatabase.memory());
       addTearDown(db.close);
 
+      // Plan 06-09: initialLocation is now '/splash', and the router's
+      // onboarding-gate redirect sends a completed user away from
+      // '/splash' to '/dashboard' -- mark onboarding complete so this
+      // test can reach the shell, then navigate to the Profile tab like
+      // a real user tapping the bottom nav.
+      SharedPreferences.setMockInitialValues({
+        'hasCompletedOnboarding': true,
+      });
+      final prefs = await SharedPreferences.getInstance();
+
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [appDatabaseProvider.overrideWithValue(db)],
+          overrides: [
+            appDatabaseProvider.overrideWithValue(db),
+            sharedPreferencesProvider.overrideWithValue(prefs),
+          ],
           child: const Co2DietApp(),
         ),
       );
-      // Real app: initialLocation '/profile' inside StatefulShellRoute ->
-      // several post-frame callbacks (locale detection etc.) need settling.
+      // Real app: initialLocation '/splash' redirects to '/dashboard' for
+      // a completed user -> several post-frame callbacks (locale
+      // detection etc.) need settling.
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.person_outline));
       await tester.pumpAndSettle();
 
       final caloriesCard = find.ancestor(

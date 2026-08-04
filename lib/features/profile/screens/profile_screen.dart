@@ -7,11 +7,13 @@ import 'package:co2diet/core/widgets/ed_safety_net_dialog.dart';
 import 'package:co2diet/domain/entities/calc_targets.dart';
 import 'package:co2diet/domain/entities/user_profile.dart';
 import 'package:co2diet/domain/services/ed_safety_net_checker.dart';
+import 'package:co2diet/features/onboarding/providers/onboarding_gate_provider.dart';
 import 'package:co2diet/features/profile/providers/profile_notifier.dart';
 import 'package:co2diet/features/profile/widgets/profile_form.dart';
 import 'package:co2diet/features/profile/widgets/target_display_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// Full styled Profile screen — the vertical slice entry point for Phase 1.
 ///
@@ -80,6 +82,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       });
     }
 
+    final hasOnboarded = ref.watch(onboardingGateProvider);
+
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
@@ -122,6 +126,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   color: AppColors.onSurfaceVariant,
                 ),
               ),
+              // Onboarding-only "Continue" button (ONBD-01/05) — absent
+              // once onboarding is complete, restoring this screen's
+              // exact prior-phase behavior.
+              if (!hasOnboarded) ...[
+                const SizedBox(height: AppSpacing.md),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () => context.go('/onboarding-carousel'),
+                    child: const Text('Continue'),
+                  ),
+                ),
+              ],
             ],
           ),
         ),
