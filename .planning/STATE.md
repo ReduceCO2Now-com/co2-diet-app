@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-08-04T07:21:01.612Z"
+last_updated: "2026-08-04T07:30:45.259Z"
 progress:
   total_phases: 9
   completed_phases: 5
@@ -34,10 +34,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission — **IN PROGRESS** (3/10 plans executed). CONTEXT/RESEARCH/VALIDATION complete; 10 plans across 6 waves drafted and committed (`7b87c2e`): 06-01 (wave 0 test stubs — COMPLETE) → 06-02/06-03 (wave 1: legal docs + loader + ED safety net checker — COMPLETE) → 06-04/05/06 (wave 2: consent domain + legal doc screen, onboarding gate + splash/welcome/carousel, privacy manifests) → 06-07/06-08 (wave 3: Legal Consent screen, Legal Hub + Consent History) → 06-09 (wave 4: router/redirect/Settings integration) → 06-10 (wave 5: manual a11y/tone checkpoints). All 23 phase requirement IDs traced to a plan.
-- **Plan:** 06-03 (Wave 1: ED safety net checker) — COMPLETE. Wave 1 done. Next up: 06-04/05/06 (Wave 2).
-- **Status:** Executing Phase 6 — Wave 1 complete, Wave 2 next
-- **Progress:** [███░░░░░░░] 30% (3/10 plans, Phase 6)
+- **Phase:** 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission — **IN PROGRESS** (4/10 plans executed). CONTEXT/RESEARCH/VALIDATION complete; 10 plans across 6 waves drafted and committed (`7b87c2e`): 06-01 (wave 0 test stubs — COMPLETE) → 06-02/06-03 (wave 1: legal docs + loader + ED safety net checker — COMPLETE) → 06-04/05/06 (wave 2: consent domain + legal doc screen — 06-04 COMPLETE, onboarding gate + splash/welcome/carousel, privacy manifests) → 06-07/06-08 (wave 3: Legal Consent screen, Legal Hub + Consent History) → 06-09 (wave 4: router/redirect/Settings integration) → 06-10 (wave 5: manual a11y/tone checkpoints). All 23 phase requirement IDs traced to a plan.
+- **Plan:** 06-04 (Wave 2: consent domain + legal document screen) — COMPLETE. Next up: 06-05/06-06 (rest of Wave 2).
+- **Status:** Executing Phase 6 — Wave 2 in progress (06-04 done, 06-05/06-06 next)
+- **Progress:** [████░░░░░░] 40% (4/10 plans, Phase 6)
 - **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files.
 
 ```
@@ -141,8 +141,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-08-04T07:21:01.607Z
-**Stopped at:** Plan 06-03 (Wave 1: ED safety net checker) executed and committed
+**Last session:** 2026-08-04T07:30:45.254Z
+**Stopped at:** Plan 06-04 (Wave 2: consent domain + legal document screen) executed and committed
 **Next action:** Execute Wave 2 (Plans 06-04/05/06)
 **Suggested next command:** `/gsd:execute-phase 6`
 
@@ -291,6 +291,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase ?]: [Phase 06-02]: legalDocumentLoaderProvider is not keepAlive -- LegalDocumentLoader is stateless/const, cheap to reconstruct, holds no DB/stream resources
 - [Phase 06-03]: showEdSafetyNetDialog always returns non-null bool -- declining/dismissing both resolve to false
 - [Phase 06-03]: WeightScreen target-weight field needs a submit-in-flight guard -- Flutter's EditableText fires both onEditingComplete and onFieldSubmitted for one Done action, which would double-invoke the async ED safety-net check
+- [Phase 06-04]: ConsentEvent named distinct from Drift's generated ConsentRecord class -- mirrors MealEntry.fromRow precedent, imports row type from app_database.dart
+- [Phase 06-04]: policyVersion for every consent event is always terms.md's frontmatter version -- all 4 legal docs are drafted/versioned together as one dated bundle
 
 ## Performance Metrics
 
@@ -340,3 +342,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission P01 | ~5min | 2 tasks | 6 files |
 | Phase 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission P02 | ~15min | 2 tasks | 11 files |
 | Phase 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission P03 | ~15min | 3 tasks | 5 files |
+| Phase 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission P04 | ~5min | 2 tasks | 8 files |
