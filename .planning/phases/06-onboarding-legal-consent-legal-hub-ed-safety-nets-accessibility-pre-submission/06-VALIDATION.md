@@ -39,16 +39,16 @@ updated: 2026-08-04
 
 | Plan | Wave | Requirement(s) | Test Type | Automated Command | File Exists | Status |
 |------|------|-----------------|-----------|--------------------|-------------|--------|
-| 06-01 (Task 1-2) | 0 | LEGAL-01/02/03, NFR-07, ONBD-01/05, PRIV-06 (stub scaffolding) | unit/widget stubs | `flutter test test/domain/services/ed_safety_net_checker_test.dart test/data/repositories/consent_repository_test.dart test/domain/services/legal_document_loader_test.dart test/features/legal/legal_consent_screen_test.dart test/features/legal/consent_history_screen_test.dart test/features/onboarding/onboarding_gate_test.dart` | ✅ created by 06-01 | ⬜ pending |
-| 06-02 (Task 2) | 1 | LEGAL-03, LEGAL-04, LEG-02, LEG-03 | unit | `flutter test test/domain/services/legal_document_loader_test.dart` | ✅ W0 (06-01 T1) | ⬜ pending |
-| 06-03 (Task 1) | 1 | NFR-07 | unit | `flutter test test/domain/services/ed_safety_net_checker_test.dart` | ✅ W0 (06-01 T1) | ⬜ pending |
-| 06-04 (Task 1) | 2 | LEGAL-03 | unit | `flutter test test/data/repositories/consent_repository_test.dart` | ✅ W0 (06-01 T1) | ⬜ pending |
-| 06-05 (Task 1) | 2 | ONBD-01/05 (provider-level slice) | unit | `flutter test test/features/onboarding/onboarding_gate_test.dart` | ✅ W0 (06-01 T2) | ⬜ pending |
-| 06-06 | 2 | LEG-01 (pre-submission artifacts) | manifest lint + doc presence | `plutil -lint ios/Runner/PrivacyInfo.xcprivacy` | n/a (new artifacts) | ⬜ pending |
-| 06-07 (Task 1) | 3 | LEGAL-01/02/03/04, LEG-02, ACC-02, ACC-03, ACC-05, NFR-01 | widget | `flutter test test/features/legal/legal_consent_screen_test.dart` | ✅ W0 (06-01 T2) | ⬜ pending |
-| 06-08 (Task 2) | 3 | LEG-01/02/03, PRIV-06 | widget | `flutter test test/features/legal/consent_history_screen_test.dart` | ✅ W0 (06-01 T2) | ⬜ pending |
-| 06-09 (Task 3) | 4 | ONBD-01/04/05, LEG-01, ACC-02 (full redirect-gate behavior) | widget/integration | `flutter test test/features/onboarding/onboarding_gate_test.dart` | ✅ W0 (06-01 T2) + 06-05 T1 supplement | ⬜ pending |
-| 06-10 | 5 | ACC-01/03/04/05, NFR-01/02/03/04 | manual-only (3 checkpoints) | N/A — human verification checklist | manual | ⬜ pending |
+| 06-01 (Task 1-2) | 0 | LEGAL-01/02/03, NFR-07, ONBD-01/05, PRIV-06 (stub scaffolding) | unit/widget stubs | `flutter test test/domain/services/ed_safety_net_checker_test.dart test/data/repositories/consent_repository_test.dart test/domain/services/legal_document_loader_test.dart test/features/legal/legal_consent_screen_test.dart test/features/legal/consent_history_screen_test.dart test/features/onboarding/onboarding_gate_test.dart` | ✅ created by 06-01 | ✅ green |
+| 06-02 (Task 2) | 1 | LEGAL-03, LEGAL-04, LEG-02, LEG-03 | unit | `flutter test test/domain/services/legal_document_loader_test.dart` | ✅ W0 (06-01 T1) | ✅ green |
+| 06-03 (Task 1) | 1 | NFR-07 | unit | `flutter test test/domain/services/ed_safety_net_checker_test.dart` | ✅ W0 (06-01 T1) | ✅ green |
+| 06-04 (Task 1) | 2 | LEGAL-03 | unit | `flutter test test/data/repositories/consent_repository_test.dart` | ✅ W0 (06-01 T1) | ✅ green |
+| 06-05 (Task 1) | 2 | ONBD-01/05 (provider-level slice) | unit | `flutter test test/features/onboarding/onboarding_gate_test.dart` | ✅ W0 (06-01 T2) | ✅ green |
+| 06-06 | 2 | LEG-01 (pre-submission artifacts) | manifest lint + doc presence | `plutil -lint ios/Runner/PrivacyInfo.xcprivacy` | n/a (new artifacts) | ✅ green |
+| 06-07 (Task 1) | 3 | LEGAL-01/02/03/04, LEG-02, ACC-02, ACC-03, ACC-05, NFR-01 | widget | `flutter test test/features/legal/legal_consent_screen_test.dart` | ✅ W0 (06-01 T2) | ✅ green |
+| 06-08 (Task 2) | 3 | LEG-01/02/03, PRIV-06 | widget | `flutter test test/features/legal/consent_history_screen_test.dart` | ✅ W0 (06-01 T2) | ✅ green |
+| 06-09 (Task 3) | 4 | ONBD-01/04/05, LEG-01, ACC-02 (full redirect-gate behavior) | widget/integration | `flutter test test/features/onboarding/onboarding_gate_test.dart` | ✅ W0 (06-01 T2) + 06-05 T1 supplement | ✅ green |
+| 06-10 | 5 | ACC-01/03/04/05, NFR-01/02/03/04 | manual-only (3 checkpoints) | N/A — human verification checklist | manual | ✅ green |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 *Filled in from the final 10-plan / 6-wave PLAN.md set. "Status" reflects execution state — flips to ✅ per plan as `/gsd-execute-phase 6` runs each plan's `<verify>` commands.*
