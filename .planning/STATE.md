@@ -132,6 +132,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - Confirm Flutter 3.27+ / Dart 3.6+ versions against `flutter pub outdated` before scaffolding.
 - Verify Open Food Facts export current size and license before designing seed pack (Phase 2 concern, but useful early).
 
+### Pending Todos
+
+- **Reconsider onboarding flow order — Carousel before Profile Setup** (`.planning/todos/pending/2026-08-05-reconsider-onboarding-flow-order-carousel-before-profile-setup.md`). Current locked flow (06-CONTEXT.md:26) confirmed working exactly as spec'd during 06-10 real-device verification, not a bug. User flagged a genuine UX preference (explain the app before asking for personal data) to revisit as its own deliberate decision after 06-10 fully wraps — deliberately not changed ad hoc mid-execution.
+
 ### Pre-Launch Blockers (not Phase 6 completion blockers)
 
 - **External legal review:** Fachanwalt IT-Recht (€1–3k) sign-off on Terms/Privacy/Health Disclaimer, and LCA methodology peer reviewer (€2–5k) — per `06-CONTEXT.md`, Phase 6 ships complete drafted text flagged "pending legal review" via code comment/tracked TODO only (no user-visible banner). The live review is a pre-*launch* gate, explicitly out of Phase 6's scope — it does not block Phase 6 from closing.
