@@ -1,4 +1,3 @@
-import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/core/theme/spacing_tokens.dart';
 import 'package:co2diet/domain/entities/user_food.dart';
 import 'package:co2diet/features/my_foods/providers/user_food_notifier.dart';
@@ -41,12 +40,13 @@ class _MyFoodsScreenState extends ConsumerState<MyFoodsScreen> {
   @override
   Widget build(BuildContext context) {
     final foodsAsync = ref.watch(userFoodProvider);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: const Text('My Foods'),
-        backgroundColor: AppColors.surface,
+        backgroundColor: colorScheme.surface,
         elevation: 0,
         actions: [
           IconButton(

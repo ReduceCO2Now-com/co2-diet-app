@@ -1,5 +1,4 @@
 import 'package:co2diet/core/di/legal_providers.dart';
-import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/core/theme/spacing_tokens.dart';
 import 'package:co2diet/core/theme/text_tokens.dart';
 import 'package:co2diet/domain/entities/consent_event.dart';
@@ -37,12 +36,13 @@ class ConsentHistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final repository = ref.watch(consentRepositoryProvider);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: const Text('Consent History'),
-        backgroundColor: AppColors.surface,
+        backgroundColor: colorScheme.surface,
         elevation: 0,
       ),
       body: SafeArea(
@@ -91,6 +91,7 @@ class _ConsentEventCard extends StatelessWidget {
     final consentLabels = event.consentsGiven
         .map((id) => _consentLabels[id] ?? id)
         .join(', ');
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Card(
       margin: const EdgeInsets.only(bottom: AppSpacing.stackGap),
@@ -109,13 +110,13 @@ class _ConsentEventCard extends StatelessWidget {
             Text(
               'App v${event.appVersion}',
               style: AppTextTheme.bodySm.copyWith(
-                color: AppColors.onSurfaceVariant,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
             Text(
               'Policy v${event.policyVersion}',
               style: AppTextTheme.bodySm.copyWith(
-                color: AppColors.onSurfaceVariant,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: AppSpacing.base),

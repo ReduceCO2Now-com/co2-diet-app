@@ -87,7 +87,7 @@ class TodayBreakdownBarChart extends StatelessWidget {
               toY: runningTotal,
               width: 22,
               rodStackItems: stackItems,
-              color: AppColors.surfaceContainerHigh,
+              color: Theme.of(context).colorScheme.surfaceContainerHigh,
             ),
           ],
         ),

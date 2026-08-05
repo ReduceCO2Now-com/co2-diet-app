@@ -67,7 +67,7 @@ class _DangerZoneSectionState extends State<DangerZoneSection> {
           'food, weigh-in, and setting stored on this device. This '
           'cannot be undone. Type $_confirmationWord below to confirm.',
           style: AppTextTheme.bodySm.copyWith(
-            color: AppColors.onSurfaceVariant,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         const SizedBox(height: AppSpacing.stackGap),

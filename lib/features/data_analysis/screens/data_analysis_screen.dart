@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:co2diet/core/di/app_providers.dart';
 import 'package:co2diet/core/di/meal_logging_providers.dart';
-import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/core/theme/spacing_tokens.dart';
 import 'package:co2diet/core/theme/text_tokens.dart';
 import 'package:co2diet/domain/services/daily_totals_calculator.dart';
@@ -112,14 +111,15 @@ class DataAnalysisScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: Text(
           'Data Analysis · ${initialMetric.displayLabel}',
           style: AppTextTheme.headlineLgMobile,
         ),
-        backgroundColor: AppColors.surface,
+        backgroundColor: colorScheme.surface,
         elevation: 0,
       ),
       body: SafeArea(

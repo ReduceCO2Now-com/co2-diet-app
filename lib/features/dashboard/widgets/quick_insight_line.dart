@@ -1,4 +1,3 @@
-import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:flutter/material.dart';
 
 /// Displays a single, pre-computed "most notable metric today" sentence on
@@ -22,9 +21,9 @@ class QuickInsightLine extends StatelessWidget {
     if (insightText == null) return const SizedBox.shrink();
     return Text(
       insightText!,
-      style: Theme.of(
-        context,
-      ).textTheme.bodySmall?.copyWith(color: AppColors.onSurfaceVariant),
+      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+      ),
     );
   }
 }

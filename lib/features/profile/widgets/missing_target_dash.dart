@@ -1,4 +1,3 @@
-import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/core/theme/text_tokens.dart';
 import 'package:flutter/material.dart';
 
@@ -20,7 +19,7 @@ class MissingTargetDash extends StatelessWidget {
     final text = Text(
       '—',
       style: AppTextTheme.titleMd.copyWith(
-        color: AppColors.onSurfaceVariant,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
     );
     if (tooltip != null) {

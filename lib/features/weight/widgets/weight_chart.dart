@@ -117,7 +117,7 @@ class _WeightChartState extends ConsumerState<WeightChart> {
                       if (targetWeightKg != null)
                         HorizontalLine(
                           y: targetWeightKg,
-                          color: AppColors.onSurfaceVariant,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           strokeWidth: 1.5,
                           dashArray: const [6, 4],
                           label: HorizontalLineLabel(

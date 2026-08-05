@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/core/theme/spacing_tokens.dart';
 import 'package:co2diet/core/theme/text_tokens.dart';
 import 'package:co2diet/core/widgets/ed_safety_net_dialog.dart';
@@ -56,11 +55,12 @@ class LegalHubScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: const Text('Legal & Privacy Hub'),
-        backgroundColor: AppColors.surface,
+        backgroundColor: colorScheme.surface,
         elevation: 0,
       ),
       body: SafeArea(
@@ -83,7 +83,7 @@ class LegalHubScreen extends StatelessWidget {
               '"Open source licenses" in Settings for every package '
               'license.',
               style: AppTextTheme.bodySm.copyWith(
-                color: AppColors.onSurfaceVariant,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: AppSpacing.lg),

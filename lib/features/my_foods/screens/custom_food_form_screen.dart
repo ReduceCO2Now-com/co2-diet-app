@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:co2diet/core/di/app_providers.dart';
 import 'package:co2diet/core/di/meal_logging_providers.dart';
-import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/core/theme/spacing_tokens.dart';
 import 'package:co2diet/domain/entities/food_item.dart';
 import 'package:co2diet/domain/entities/serving_size.dart';
@@ -295,11 +294,12 @@ class _CustomFoodFormScreenState extends ConsumerState<CustomFoodFormScreen> {
         ? 'Edit Custom Food'
         : (widget.overrideOf != null ? 'Override Food' : 'Add Custom Food');
 
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: Text(title),
-        backgroundColor: AppColors.surface,
+        backgroundColor: colorScheme.surface,
         elevation: 0,
       ),
       body: _loading

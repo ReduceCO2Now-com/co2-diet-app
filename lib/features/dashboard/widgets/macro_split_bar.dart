@@ -26,7 +26,7 @@ class MacroSplitBar extends StatelessWidget {
       return Text(
         'No macro data yet today',
         style: textTheme.bodySmall?.copyWith(
-          color: AppColors.onSurfaceVariant,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
       );
     }
@@ -103,9 +103,9 @@ class _LegendEntry extends StatelessWidget {
         // an explicit (hardcoded-light) backgroundColor in 06-10.
         Text(
           label,
-          style: Theme.of(
-            context,
-          ).textTheme.labelSmall?.copyWith(color: AppColors.onSurfaceVariant),
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
         ),
       ],
     );

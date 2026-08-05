@@ -1,4 +1,3 @@
-import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/domain/services/daily_totals_calculator.dart';
 import 'package:flutter/material.dart';
 
@@ -42,6 +41,7 @@ class _NutrientStat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     // Dash for missing data rather than a fabricated 0 -- same "no fake
     // precision" convention as `MetricCard`/`DetailedFoodAnalysisPanel`.
     final valueText = grams == null ? '—' : '${grams!.round()}g';
@@ -52,7 +52,7 @@ class _NutrientStat extends StatelessWidget {
         Text(
           label,
           style: textTheme.labelSmall?.copyWith(
-            color: AppColors.onSurfaceVariant,
+            color: colorScheme.onSurfaceVariant,
           ),
         ),
         // Explicit color -- without one, this fell back to the theme's
@@ -62,7 +62,7 @@ class _NutrientStat extends StatelessWidget {
         Text(
           valueText,
           style: textTheme.bodyMedium?.copyWith(
-            color: AppColors.onSurface,
+            color: colorScheme.onSurface,
             fontWeight: FontWeight.w600,
           ),
         ),

@@ -89,13 +89,15 @@ class AppShell extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final hasOnboarded = ref.watch(onboardingGateProvider);
 
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: colorScheme.surface,
       body: shell,
       bottomNavigationBar: !hasOnboarded
           ? null
           : NavigationBar(
-              backgroundColor: AppColors.surface,
+              backgroundColor: colorScheme.surface,
               indicatorColor: AppColors.primaryContainer.withValues(
                 alpha: 0.24,
               ),

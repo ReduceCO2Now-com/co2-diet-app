@@ -1,4 +1,3 @@
-import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/domain/entities/meal_entry.dart';
 import 'package:co2diet/domain/entities/portion_unit.dart';
 import 'package:co2diet/features/data_analysis/widgets/analysis_metric.dart';
@@ -48,9 +47,9 @@ class RankedContributorsList extends StatelessWidget {
     if (ranked.isEmpty) {
       return Text(
         'No contributors logged yet today',
-        style: Theme.of(
-          context,
-        ).textTheme.bodySmall?.copyWith(color: AppColors.onSurfaceVariant),
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
       );
     }
 

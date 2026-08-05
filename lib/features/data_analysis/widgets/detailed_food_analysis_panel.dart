@@ -1,4 +1,3 @@
-import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/domain/entities/meal_entry.dart';
 import 'package:co2diet/domain/entities/portion_unit.dart';
 import 'package:co2diet/features/barcode_scan/utils/co2_formatter.dart';
@@ -153,7 +152,7 @@ class _DetailedFoodAnalysisPanelState
     bool isCo2 = false,
   }) {
     final labelStyle = textTheme.bodySmall?.copyWith(
-      color: AppColors.onSurfaceVariant,
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
     );
     return TableRow(
       children: [

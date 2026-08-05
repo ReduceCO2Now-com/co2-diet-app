@@ -1,4 +1,3 @@
-import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:flutter/material.dart';
 
 /// Small Dashboard indicator showing which mode the app is running in
@@ -23,15 +22,17 @@ class ModeIndicator extends StatelessWidget {
         : 'Synced across devices';
     final icon = isLocalMode ? Icons.phone_iphone : Icons.cloud_sync_outlined;
 
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 14, color: AppColors.onSurfaceVariant),
+        Icon(icon, size: 14, color: colorScheme.onSurfaceVariant),
         const SizedBox(width: 4),
         Text(
           label,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: AppColors.onSurfaceVariant,
+            color: colorScheme.onSurfaceVariant,
           ),
         ),
       ],

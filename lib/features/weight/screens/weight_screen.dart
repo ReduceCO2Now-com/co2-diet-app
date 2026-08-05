@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/core/theme/spacing_tokens.dart';
 import 'package:co2diet/core/theme/text_tokens.dart';
 import 'package:co2diet/core/widgets/ed_safety_net_dialog.dart';
@@ -32,15 +31,16 @@ class WeightScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final weightAsync = ref.watch(weightProvider);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: const Text(
           'Weight Tracking',
           style: AppTextTheme.headlineLgMobile,
         ),
-        backgroundColor: AppColors.surface,
+        backgroundColor: colorScheme.surface,
         elevation: 0,
       ),
       body: SafeArea(
@@ -103,7 +103,7 @@ class _WeightScreenBody extends ConsumerWidget {
           'focus on the overall trend over several weeks rather than any '
           'single weigh-in.',
           style: AppTextTheme.bodySm.copyWith(
-            color: AppColors.onSurfaceVariant,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
       ],

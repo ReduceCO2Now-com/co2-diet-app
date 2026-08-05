@@ -1,4 +1,3 @@
-import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/core/theme/spacing_tokens.dart';
 import 'package:co2diet/core/theme/text_tokens.dart';
 import 'package:co2diet/domain/entities/user_profile.dart';
@@ -229,7 +228,7 @@ class _SectionHeader extends StatelessWidget {
     return Text(
       label.toUpperCase(),
       style: AppTextTheme.labelCaps.copyWith(
-        color: AppColors.onSurfaceVariant,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
     );
   }
@@ -250,7 +249,7 @@ class _UnitsToggle extends StatelessWidget {
         Text(
           'Units',
           style: AppTextTheme.bodySm.copyWith(
-            color: AppColors.onSurfaceVariant,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         const SizedBox(height: AppSpacing.base),

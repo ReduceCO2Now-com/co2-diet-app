@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:co2diet/core/di/backup_providers.dart';
-import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/core/theme/spacing_tokens.dart';
 import 'package:co2diet/core/theme/text_tokens.dart';
 import 'package:co2diet/domain/entities/backup_metadata.dart';
@@ -55,14 +54,15 @@ class BackupRestoreScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final metadataAsync = ref.watch(backupProvider);
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: const Text(
           'Backup & Restore',
           style: AppTextTheme.headlineLgMobile,
         ),
-        backgroundColor: AppColors.surface,
+        backgroundColor: colorScheme.surface,
         elevation: 0,
       ),
       body: SafeArea(
@@ -168,6 +168,7 @@ class _BackupRestoreBodyState extends ConsumerState<_BackupRestoreBody> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return ListView(
       padding: const EdgeInsets.all(AppSpacing.containerMargin),
       children: [
@@ -197,7 +198,7 @@ class _BackupRestoreBodyState extends ConsumerState<_BackupRestoreBody> {
           Text(
             'Last backup: ${widget.metadata.lastBackupAt}',
             style: AppTextTheme.bodySm.copyWith(
-              color: AppColors.onSurfaceVariant,
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
         const SizedBox(height: AppSpacing.stackGap),
@@ -297,7 +298,7 @@ class _BackupRestoreBodyState extends ConsumerState<_BackupRestoreBody> {
           Container(
             padding: const EdgeInsets.all(AppSpacing.sm),
             decoration: BoxDecoration(
-              color: AppColors.surfaceContainer,
+              color: colorScheme.surfaceContainer,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Column(
@@ -330,7 +331,7 @@ class _BackupRestoreBodyState extends ConsumerState<_BackupRestoreBody> {
         Text(
           _privacyStatement,
           style: AppTextTheme.bodySm.copyWith(
-            color: AppColors.onSurfaceVariant,
+            color: colorScheme.onSurfaceVariant,
           ),
         ),
         const SizedBox(height: AppSpacing.lg),

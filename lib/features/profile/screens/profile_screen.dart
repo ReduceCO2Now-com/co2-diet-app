@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/core/theme/spacing_tokens.dart';
 import 'package:co2diet/core/theme/text_tokens.dart';
 import 'package:co2diet/core/widgets/ed_safety_net_dialog.dart';
@@ -83,15 +82,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }
 
     final hasOnboarded = ref.watch(onboardingGateProvider);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: const Text(
           'My Profile',
           style: AppTextTheme.headlineLgMobile,
         ),
-        backgroundColor: AppColors.surface,
+        backgroundColor: colorScheme.surface,
         elevation: 0,
       ),
       body: SafeArea(
@@ -123,7 +123,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               Text(
                 'Your profile is stored only on this device.',
                 style: AppTextTheme.bodySm.copyWith(
-                  color: AppColors.onSurfaceVariant,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
               // Onboarding-only "Continue" button (ONBD-01/05) — absent
@@ -281,7 +281,7 @@ class _SectionHeader extends StatelessWidget {
     return Text(
       label.toUpperCase(),
       style: AppTextTheme.labelCaps.copyWith(
-        color: AppColors.onSurfaceVariant,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
     );
   }
@@ -320,7 +320,7 @@ class _TargetsSection extends StatelessWidget {
             child: Text(
               'Add height and weight to see targets.',
               style: AppTextTheme.bodySm.copyWith(
-                color: AppColors.onSurfaceVariant,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ),

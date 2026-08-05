@@ -1,4 +1,3 @@
-import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:flutter/material.dart';
 
 /// The dismissible "Complete your CO₂ profile" prompt card, shown at the
@@ -31,8 +30,10 @@ class Co2ProfilePromptCard extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!show) return const SizedBox.shrink();
 
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Material(
-      color: AppColors.surfaceContainerLow,
+      color: colorScheme.surfaceContainerLow,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,
@@ -41,12 +42,12 @@ class Co2ProfilePromptCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.info_outline,
-                color: AppColors.onSurfaceVariant,
+                color: colorScheme.onSurfaceVariant,
               ),
               const SizedBox(width: 8),
-              const Expanded(
+              Expanded(
                 // Explicit color -- without one, this Text fell back to
                 // Theme.of(context)'s dark-mode-aware default (light) while
                 // sitting on this card's own hardcoded-light Material
@@ -54,7 +55,7 @@ class Co2ProfilePromptCard extends StatelessWidget {
                 // (found via 06-10 real-device verification).
                 child: Text(
                   'Complete your CO₂ profile for better estimates',
-                  style: TextStyle(color: AppColors.onSurface),
+                  style: TextStyle(color: colorScheme.onSurface),
                 ),
               ),
               IconButton(

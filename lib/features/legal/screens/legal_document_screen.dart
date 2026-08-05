@@ -1,5 +1,4 @@
 import 'package:co2diet/core/di/legal_providers.dart';
-import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/core/theme/text_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
@@ -69,11 +68,12 @@ class LegalDocumentScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: Text(docId.title, style: AppTextTheme.headlineLgMobile),
-        backgroundColor: AppColors.surface,
+        backgroundColor: colorScheme.surface,
         elevation: 0,
       ),
       body: SafeArea(
@@ -95,28 +95,28 @@ class LegalDocumentScreen extends ConsumerWidget {
               // Explicit styleSheet -- without one, flutter_markdown_plus
               // falls back to Theme.of(context)'s own (dark-mode-aware)
               // text color while this screen's Scaffold background stays
-              // pinned to the fixed-light AppColors.surface (06-CONTEXT.md/
-              // DESIGN.md has no dark token set yet -- a known, already-
-              // tracked gap from Phase 1). In system dark mode that mismatch
-              // rendered near-white body text on a near-white background --
-              // found via real-device testing in 06-10 manual verification.
-              // Pinning to AppColors here matches every other screen's
-              // current (light-only) text treatment instead.
+              // pinned to a hardcoded-light color (06-CONTEXT.md/DESIGN.md
+              // has no dark token set yet -- a known, already-tracked gap
+              // from Phase 1). In system dark mode that mismatch rendered
+              // near-white body text on a near-white background -- found
+              // via real-device testing in 06-10 manual verification. Now
+              // pinned to the theme-aware `colorScheme.onSurface` instead,
+              // so it tracks the Scaffold's own theme-aware background.
               styleSheet: MarkdownStyleSheet(
-                p: AppTextTheme.bodyLg.copyWith(color: AppColors.onSurface),
+                p: AppTextTheme.bodyLg.copyWith(color: colorScheme.onSurface),
                 h1: AppTextTheme.headlineLgMobile.copyWith(
-                  color: AppColors.onSurface,
+                  color: colorScheme.onSurface,
                 ),
                 h2: AppTextTheme.headlineLgMobile.copyWith(
-                  color: AppColors.onSurface,
+                  color: colorScheme.onSurface,
                   fontSize: 22,
                 ),
                 strong: AppTextTheme.bodyLg.copyWith(
-                  color: AppColors.onSurface,
+                  color: colorScheme.onSurface,
                   fontWeight: FontWeight.bold,
                 ),
                 listBullet: AppTextTheme.bodyLg.copyWith(
-                  color: AppColors.onSurface,
+                  color: colorScheme.onSurface,
                 ),
               ),
             );

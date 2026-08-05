@@ -19,8 +19,9 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: colorScheme.surface,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
@@ -32,7 +33,7 @@ class WelcomeScreen extends StatelessWidget {
               Text(
                 'CO₂ Diet',
                 style: AppTextTheme.headlineLg.copyWith(
-                  color: AppColors.onSurface,
+                  color: colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: AppSpacing.xs),
@@ -41,7 +42,7 @@ class WelcomeScreen extends StatelessWidget {
                 'privately, offline.',
                 textAlign: TextAlign.center,
                 style: AppTextTheme.bodyLg.copyWith(
-                  color: AppColors.onSurfaceVariant,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: AppSpacing.xs),
@@ -49,7 +50,7 @@ class WelcomeScreen extends StatelessWidget {
                 'Private. Offline-first. No ads.',
                 textAlign: TextAlign.center,
                 style: AppTextTheme.bodySm.copyWith(
-                  color: AppColors.onSurfaceVariant,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),

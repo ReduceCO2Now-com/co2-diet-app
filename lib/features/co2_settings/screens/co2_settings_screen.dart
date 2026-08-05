@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/core/theme/spacing_tokens.dart';
 import 'package:co2diet/core/theme/text_tokens.dart';
 import 'package:co2diet/domain/entities/co2_settings.dart';
@@ -29,14 +28,15 @@ class Co2SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsAsync = ref.watch(co2SettingsProvider);
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: const Text(
           'CO2 Calculation Settings',
           style: AppTextTheme.headlineLgMobile,
         ),
-        backgroundColor: AppColors.surface,
+        backgroundColor: colorScheme.surface,
         elevation: 0,
       ),
       body: SafeArea(
@@ -78,7 +78,7 @@ class _Co2SettingsBody extends StatelessWidget {
           'as you like -- more fields improve the accuracy of your '
           'personal footprint estimate.',
           style: AppTextTheme.bodySm.copyWith(
-            color: AppColors.onSurfaceVariant,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         const SizedBox(height: AppSpacing.md),

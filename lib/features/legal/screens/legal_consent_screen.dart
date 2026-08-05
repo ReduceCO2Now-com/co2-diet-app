@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/core/theme/spacing_tokens.dart';
 import 'package:co2diet/core/theme/text_tokens.dart';
 import 'package:co2diet/features/legal/providers/consent_notifier.dart';
@@ -78,9 +77,10 @@ class _LegalConsentScreenState extends ConsumerState<LegalConsentScreen> {
     // returns, crashing mid-flight on the first `await` inside
     // acceptConsent (mirrors the [Phase 04-09] mealEntryProvider fix).
     ref.watch(consentProvider);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: colorScheme.surface,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(
@@ -93,14 +93,14 @@ class _LegalConsentScreenState extends ConsumerState<LegalConsentScreen> {
               Text(
                 'Before you start',
                 style: AppTextTheme.headlineLgMobile.copyWith(
-                  color: AppColors.onSurface,
+                  color: colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: AppSpacing.xs),
               Text(
                 'We need your consent to continue.',
                 style: AppTextTheme.bodyLg.copyWith(
-                  color: AppColors.onSurfaceVariant,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: AppSpacing.md),

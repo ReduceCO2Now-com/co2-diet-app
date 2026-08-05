@@ -79,9 +79,10 @@ class _OnboardingCarouselScreenState
   @override
   Widget build(BuildContext context) {
     final isLastSlide = _page == _slides.length - 1;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: colorScheme.surface,
       body: SafeArea(
         child: Column(
           children: [
@@ -117,7 +118,7 @@ class _OnboardingCarouselScreenState
                           slide.heading,
                           textAlign: TextAlign.center,
                           style: AppTextTheme.headlineLgMobile.copyWith(
-                            color: AppColors.onSurface,
+                            color: colorScheme.onSurface,
                           ),
                         ),
                         const SizedBox(height: AppSpacing.sm),
@@ -125,7 +126,7 @@ class _OnboardingCarouselScreenState
                           slide.body,
                           textAlign: TextAlign.center,
                           style: AppTextTheme.bodyLg.copyWith(
-                            color: AppColors.onSurfaceVariant,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -148,7 +149,7 @@ class _OnboardingCarouselScreenState
                   decoration: BoxDecoration(
                     color: isActive
                         ? AppColors.primary
-                        : AppColors.outlineVariant,
+                        : colorScheme.outlineVariant,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 );

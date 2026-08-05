@@ -30,7 +30,7 @@ class EstimateTransparencyPanel extends StatelessWidget {
       return Text(
         'No CO₂ estimates logged today yet',
         style: textTheme.bodySmall?.copyWith(
-          color: AppColors.onSurfaceVariant,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
       );
     }

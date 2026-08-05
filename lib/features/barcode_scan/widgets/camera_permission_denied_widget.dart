@@ -1,5 +1,4 @@
 import 'package:app_settings/app_settings.dart';
-import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:flutter/material.dart';
 
 /// Shown inside the barcode scan screen when the camera permission is denied.
@@ -24,10 +23,10 @@ class CameraPermissionDeniedWidget extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
+            Icon(
               Icons.camera_alt_outlined,
               size: 64,
-              color: AppColors.outlineVariant,
+              color: Theme.of(context).colorScheme.outlineVariant,
             ),
             const SizedBox(height: 24),
             Text(

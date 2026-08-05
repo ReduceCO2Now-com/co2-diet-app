@@ -33,7 +33,11 @@ class DataQualityIndicator extends StatelessWidget {
           AppColors.primaryContainer,
           Colors.white,
         ),
-      _ => ('Basic Estimate', AppColors.surfaceContainerHigh, Colors.black87),
+      _ => (
+          'Basic Estimate',
+          Theme.of(context).colorScheme.surfaceContainerHigh,
+          Colors.black87,
+        ),
     };
 
     return Container(

@@ -53,6 +53,7 @@ class MetricCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final valueText = value == null
         ? '—'
         : (isApproximate
@@ -65,7 +66,7 @@ class MetricCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLow,
+        color: colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(12),
         border: isEmphasized
             ? Border.all(color: AppColors.primaryContainer, width: 2)
@@ -78,7 +79,7 @@ class MetricCard extends StatelessWidget {
           Text(
             label,
             style: textTheme.labelMedium?.copyWith(
-              color: AppColors.onSurfaceVariant,
+              color: colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 4),
@@ -104,7 +105,7 @@ class MetricCard extends StatelessWidget {
                   Text(
                     'of ${_formatNumber(target!)}',
                     style: textTheme.bodySmall?.copyWith(
-                      color: AppColors.onSurfaceVariant,
+                      color: colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -118,7 +119,7 @@ class MetricCard extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: progress,
                 minHeight: 6,
-                backgroundColor: AppColors.surfaceContainerHigh,
+                backgroundColor: colorScheme.surfaceContainerHigh,
                 color: AppColors.primaryContainer,
               ),
             ),

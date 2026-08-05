@@ -36,7 +36,7 @@ class GoalComparisonBar extends StatelessWidget {
       return Text(
         'No $label target set yet',
         style: textTheme.bodySmall?.copyWith(
-          color: AppColors.onSurfaceVariant,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
       );
     }
@@ -54,7 +54,7 @@ class GoalComparisonBar extends StatelessWidget {
           child: LinearProgressIndicator(
             value: ratio,
             minHeight: 8,
-            backgroundColor: AppColors.surfaceContainerHigh,
+            backgroundColor: Theme.of(context).colorScheme.surfaceContainerHigh,
             color: AppColors.primaryContainer,
           ),
         ),

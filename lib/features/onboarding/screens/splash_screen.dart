@@ -29,8 +29,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: colorScheme.surface,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
@@ -42,7 +43,7 @@ class _SplashScreenState extends State<SplashScreen> {
               Text(
                 'CO₂ Diet',
                 style: AppTextTheme.displayLg.copyWith(
-                  color: AppColors.onSurface,
+                  color: colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: AppSpacing.xs),
@@ -51,7 +52,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 'privately, offline.',
                 textAlign: TextAlign.center,
                 style: AppTextTheme.bodyLg.copyWith(
-                  color: AppColors.onSurfaceVariant,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: AppSpacing.lg),

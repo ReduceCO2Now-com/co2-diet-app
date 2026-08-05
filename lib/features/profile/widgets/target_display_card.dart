@@ -40,8 +40,9 @@ class TargetDisplayCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Card(
-      color: AppColors.surfaceContainerLow,
+      color: colorScheme.surfaceContainerLow,
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.base * 2),
@@ -58,7 +59,7 @@ class TargetDisplayCard extends StatelessWidget {
               Text(
                 label,
                 style: AppTextTheme.bodySm.copyWith(
-                  color: AppColors.onSurfaceVariant,
+                  color: colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: AppSpacing.xs),
@@ -69,7 +70,7 @@ class TargetDisplayCard extends StatelessWidget {
                     Text(
                       '${value!.toStringAsFixed(0)} $unit',
                       style: AppTextTheme.titleMd.copyWith(
-                        color: AppColors.onSurface,
+                        color: colorScheme.onSurface,
                       ),
                     )
                   else

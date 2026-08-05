@@ -1,4 +1,3 @@
-import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/core/theme/spacing_tokens.dart';
 import 'package:co2diet/core/theme/text_tokens.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +55,7 @@ class ConsentCheckboxTile extends StatelessWidget {
                     child: Text(
                       label,
                       style: AppTextTheme.bodyLg.copyWith(
-                        color: AppColors.onSurface,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),
