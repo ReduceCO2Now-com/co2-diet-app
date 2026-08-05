@@ -97,7 +97,16 @@ class _LegendEntry extends StatelessWidget {
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 4),
-        Text(label, style: Theme.of(context).textTheme.labelSmall),
+        // Explicit color -- untested but same missing-color pattern as
+        // this file's confirmed-broken empty state (see build() above);
+        // without one this would regress once Dashboard's Scaffold gained
+        // an explicit (hardcoded-light) backgroundColor in 06-10.
+        Text(
+          label,
+          style: Theme.of(
+            context,
+          ).textTheme.labelSmall?.copyWith(color: AppColors.onSurfaceVariant),
+        ),
       ],
     );
   }

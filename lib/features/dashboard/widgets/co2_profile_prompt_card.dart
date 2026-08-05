@@ -47,8 +47,14 @@ class Co2ProfilePromptCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               const Expanded(
+                // Explicit color -- without one, this Text fell back to
+                // Theme.of(context)'s dark-mode-aware default (light) while
+                // sitting on this card's own hardcoded-light Material
+                // background, rendering invisible in system dark mode
+                // (found via 06-10 real-device verification).
                 child: Text(
                   'Complete your CO₂ profile for better estimates',
+                  style: TextStyle(color: AppColors.onSurface),
                 ),
               ),
               IconButton(

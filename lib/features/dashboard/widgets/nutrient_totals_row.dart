@@ -55,9 +55,16 @@ class _NutrientStat extends StatelessWidget {
             color: AppColors.onSurfaceVariant,
           ),
         ),
+        // Explicit color -- without one, this fell back to the theme's
+        // dark-mode-aware default (light) on Dashboard's own now-hardcoded-
+        // light background, rendering invisible in system dark mode
+        // (found via 06-10 real-device verification).
         Text(
           valueText,
-          style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+          style: textTheme.bodyMedium?.copyWith(
+            color: AppColors.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ],
     );

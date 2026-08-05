@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:co2diet/core/di/meal_logging_providers.dart';
+import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/core/theme/spacing_tokens.dart';
 import 'package:co2diet/domain/entities/meal_entry.dart';
 import 'package:co2diet/domain/entities/meal_entry_food_item_mapping.dart';
@@ -242,6 +243,15 @@ class _PlaceholderDashboardScreenState
     final entriesAsync = ref.watch(mealEntryProvider);
 
     return Scaffold(
+      // Explicit backgroundColor -- unlike every other screen in this app,
+      // this Scaffold previously had none, so it was the only one where
+      // the canvas genuinely followed system dark mode while its own
+      // children mixed hardcoded-AppColors and theme-derived-default
+      // text colors inconsistently. Found via 06-10 real-device dark-mode
+      // verification: MacroSplitBar's empty-state text (an already-
+      // hardcoded-dark AppColors.onSurfaceVariant) sat on this genuinely
+      // dark canvas and became illegible dark-on-dark.
+      backgroundColor: AppColors.surface,
       appBar: AppBar(title: const Text('Dashboard')),
       body: entriesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
