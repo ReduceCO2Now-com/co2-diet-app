@@ -2,13 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
-status: executing
-last_updated: "2026-08-04T11:10:48.671Z"
+status: planning
+stopped_at: "Completed 06-09-PLAN.md (Wave 4: router/redirect/Settings integration)"
+last_updated: "2026-08-05T10:24:10.207Z"
 progress:
   total_phases: 9
-  completed_phases: 5
-  total_plans: 51
-  completed_plans: 51
+  completed_phases: 6
+  total_plans: 61
+  completed_plans: 61
+  percent: 100
 ---
 
 # STATE: CO₂ Diet
@@ -36,7 +38,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - **Milestone:** v1 launch
 - **Phase:** 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission — **COMPLETE** (10/10 plans executed, all 3 of 06-10's real-device checkpoints approved on both Android and iOS). Real-device verification surfaced and fixed 4 genuine bugs (redirect allowlist gap, onboarding-completion state loss, bottom-nav Carousel-skip shortcut, app-wide dark-mode color mismatch across 36 files) beyond what any widget test caught. NFR-03 (SAM test) explicitly deferred to pre-launch — see Pre-Launch Blockers below, not a Phase 6 completion blocker.
 - **Plan:** 06-10 (Wave 5: manual a11y/tone checkpoints) — COMPLETE. Phase 6 fully done.
-- **Status:** Phase 6 complete — ready to plan Phase 7
+- **Status:** Ready to plan
 - **Progress:** [██████████] 100% (10/10 plans, Phase 6)
 - **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files.
 
