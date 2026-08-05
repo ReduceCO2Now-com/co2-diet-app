@@ -217,7 +217,7 @@ final class OnboardingGateNotifierProvider
 }
 
 String _$onboardingGateNotifierHash() =>
-    r'dca913dedd53fa04cec4d044c0f7e605a1923747';
+    r'0a319e6089b228b83ab30233d3fab6152ca5f226';
 
 /// Tracks whether the user has completed the onboarding flow
 /// (Splash → Welcome → Legal Consent → Profile Setup → Carousel).

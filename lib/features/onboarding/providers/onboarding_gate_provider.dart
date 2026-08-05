@@ -13,7 +13,7 @@ part 'onboarding_gate_provider.g.dart';
 /// than mocking this provider directly.
 ///
 /// keepAlive: true — wraps a genuine app-lifetime singleton resource
-/// (mirrors [appDatabaseProvider]'s treatment of [AppDatabase]), not
+/// (mirrors `appDatabaseProvider`'s treatment of `AppDatabase`), not
 /// screen-scoped data. Without it, plain `@riverpod`'s autoDispose default
 /// tears this down whenever nothing happens to be watching it, which is
 /// exactly the condition under which [OnboardingGateNotifier
@@ -52,9 +52,10 @@ SharedPreferences sharedPreferences(Ref ref) =>
 @Riverpod(keepAlive: true)
 class OnboardingGateNotifier extends _$OnboardingGateNotifier {
   @override
-  bool build() =>
-      ref.watch(sharedPreferencesProvider).getBool('hasCompletedOnboarding') ??
-      false;
+  bool build() {
+    final prefs = ref.watch(sharedPreferencesProvider);
+    return prefs.getBool('hasCompletedOnboarding') ?? false;
+  }
 
   /// Persists onboarding completion to disk and updates state synchronously
   /// so callers can `ref.read` the new value immediately after this

@@ -159,6 +159,47 @@ void main() {
     );
 
     testWidgets(
+      'the bottom navigation bar is hidden on /profile before onboarding '
+      'completes (regression: 06-10 manual verification found the bar '
+      'rendered unconditionally, letting a pre-onboarding user tap '
+      '"Dashboard" directly from Profile Setup -- bypassing the Carousel, '
+      'the only call site that invokes completeOnboarding() -- and get '
+      'correctly-but-confusingly bounced back to /splash by the redirect '
+      'guard, which read as an unexplained navigation loop)',
+      (tester) async {
+        final container = await pumpApp(
+          tester,
+          hasCompletedOnboarding: false,
+        );
+
+        container.read(appRouterProvider).go('/profile');
+        await tester.pumpAndSettle();
+
+        expect(find.text('My Profile'), findsOneWidget);
+        expect(find.byType(NavigationBar), findsNothing);
+
+        await tester.pump(const Duration(seconds: 3));
+      },
+    );
+
+    testWidgets(
+      'the bottom navigation bar is visible on /profile once onboarding '
+      'has completed',
+      (tester) async {
+        final container = await pumpApp(
+          tester,
+          hasCompletedOnboarding: true,
+        );
+
+        container.read(appRouterProvider).go('/profile');
+        await tester.pumpAndSettle();
+
+        expect(find.text('My Profile'), findsOneWidget);
+        expect(find.byType(NavigationBar), findsOneWidget);
+      },
+    );
+
+    testWidgets(
       'navigating to /legal-hub/document before onboarding completes '
       'produces no redirect (regression: 06-10 manual verification found '
       'every "View Terms/Privacy/Disclaimer" tap on Legal Consent bounced '

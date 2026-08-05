@@ -23,6 +23,7 @@ import 'package:co2diet/features/settings/screens/settings_screen.dart';
 import 'package:co2diet/features/weight/screens/weight_screen.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -64,7 +65,20 @@ LegalDocId _legalDocIdFromSlug(String? slug) {
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 
 /// Bottom navigation shell that wraps the three main branches.
-class AppShell extends StatelessWidget {
+///
+/// `/profile` is reachable both as the onboarding flow's Profile Setup
+/// step (before the Carousel/`completeOnboarding()` has ever run) and as
+/// the shell's normal Profile tab post-onboarding -- both share this same
+/// [AppShell] wrapper. Found via 06-10 manual real-device verification:
+/// the bottom nav bar rendered unconditionally, so a pre-onboarding user
+/// on Profile Setup could tap "Dashboard"/"Settings" directly, bypassing
+/// the mandatory Carousel step entirely (skipping the only call site that
+/// invokes `completeOnboarding()`) -- the top-level redirect guard then
+/// correctly bounced them to `/splash` since onboarding was never actually
+/// completed, which read as an unexplained "loop" rather than the
+/// guard doing its job. Hiding the bar until [onboardingGateProvider] is
+/// true removes the shortcut instead of trying to explain around it.
+class AppShell extends ConsumerWidget {
   /// Creates [AppShell] with the given [StatefulNavigationShell].
   const AppShell({required this.shell, super.key});
 
@@ -72,34 +86,42 @@ class AppShell extends StatelessWidget {
   final StatefulNavigationShell shell;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final hasOnboarded = ref.watch(onboardingGateProvider);
+
     return Scaffold(
       backgroundColor: AppColors.surface,
       body: shell,
-      bottomNavigationBar: NavigationBar(
-        backgroundColor: AppColors.surface,
-        indicatorColor: AppColors.primaryContainer.withValues(alpha: 0.24),
-        selectedIndex: shell.currentIndex,
-        onDestinationSelected: (index) =>
-            shell.goBranch(index, initialLocation: index == shell.currentIndex),
-        destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            selectedIcon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.dashboard_outlined),
-            selectedIcon: Icon(Icons.dashboard),
-            label: 'Dashboard',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-      ),
+      bottomNavigationBar: !hasOnboarded
+          ? null
+          : NavigationBar(
+              backgroundColor: AppColors.surface,
+              indicatorColor: AppColors.primaryContainer.withValues(
+                alpha: 0.24,
+              ),
+              selectedIndex: shell.currentIndex,
+              onDestinationSelected: (index) => shell.goBranch(
+                index,
+                initialLocation: index == shell.currentIndex,
+              ),
+              destinations: const [
+                NavigationDestination(
+                  icon: Icon(Icons.person_outline),
+                  selectedIcon: Icon(Icons.person),
+                  label: 'Profile',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.dashboard_outlined),
+                  selectedIcon: Icon(Icons.dashboard),
+                  label: 'Dashboard',
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.settings_outlined),
+                  selectedIcon: Icon(Icons.settings),
+                  label: 'Settings',
+                ),
+              ],
+            ),
     );
   }
 }
