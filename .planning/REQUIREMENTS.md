@@ -131,19 +131,19 @@ Requirements for initial release. Each maps to a roadmap phase.
 ### Non-Functional Requirements (UX Tone & Behavior)
 
 - [x] **NFR-01**: Tone is non-judgmental throughout — no "you failed" language, no guilt framing; copy follows positive recovery framing (canonical example: "Yesterday was higher than planned. That's normal. Let's continue today.")
-- [ ] **NFR-02**: CO₂ information is presented as informative and useful, never political or preachy; improvements are framed as opportunities, not obligations; no letter-grades or alarm-red indicators on food choices
-- [ ] **NFR-03**: App tone is calm, supportive, trustworthy, and motivating — validated via Self-Assessment Manikin (SAM) test in user testing before launch; app must not feel stressful, judgmental, or pressuring
-- [ ] **NFR-04**: No manipulative gamification: no streak-shame, no loss-aversion notifications, no aggressive account-creation nudging in Local Mode
+- [x] **NFR-02**: CO₂ information is presented as informative and useful, never political or preachy; improvements are framed as opportunities, not obligations; no letter-grades or alarm-red indicators on food choices
+- [ ] **NFR-03**: App tone is calm, supportive, trustworthy, and motivating — validated via Self-Assessment Manikin (SAM) test in user testing before launch; app must not feel stressful, judgmental, or pressuring — **pre-launch item**: developer self-review (2026-08-05) reads positively, but SAM test specifically requires an independent/naive tester per its own methodology; tracked in STATE.md Pre-Launch Blockers, not blocking Phase 6 closure
+- [x] **NFR-04**: No manipulative gamification: no streak-shame, no loss-aversion notifications, no aggressive account-creation nudging in Local Mode
 - [x] **NFR-05**: CO₂ data is presented with honest uncertainty — confidence bands and ranges, never false-precision numbers (e.g., display "~4.7 kg CO₂" or "4–5 kg CO₂", not "4.732 kg CO₂")
 - [x] **NFR-06**: Food database reliability — two testable acceptance criteria before launch: (a) **Search hit rate:** given a benchmark list of ~200 commonly logged foods in the EU/German market, >90% return a usable result from the local DB without requiring an API fallback; (b) **CO₂ coverage:** >90% of products in the bundled seed DB have at least a category-average CO₂e estimate (not necessarily a product-specific LCA value)
 - [x] **NFR-07**: Eating disorder safety nets: the app refuses to accept daily calorie targets below 1,200 kcal or goals implying BMI below 17.5 without surfacing a warning and a relevant professional resource / helpline link
 
 ### Accessibility
 
-- [ ] **ACC-01**: App supports system dark mode on both iOS and Android
+- [x] **ACC-01**: App supports system dark mode on both iOS and Android
 - [x] **ACC-02**: App respects system Dynamic Type / font size settings; all text scales without layout breakage
 - [x] **ACC-03**: All interactive elements have VoiceOver (iOS) and TalkBack (Android) semantic labels; key flows verified with screen reader before launch
-- [ ] **ACC-04**: All charts and indicators are color-blind friendly (not relying on red/green alone)
+- [x] **ACC-04**: All charts and indicators are color-blind friendly (not relying on red/green alone)
 - [x] **ACC-05**: All tap targets are minimum 44×44 pt throughout
 
 ---
@@ -296,16 +296,16 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | LEG-04 | Phase 1 | Pending |
 | LEG-05 | Phase 3 | Complete |
 | NFR-01 | Phase 6 | Complete |
-| NFR-02 | Phase 6 | Pending |
-| NFR-03 | Phase 6 | Pending |
-| NFR-04 | Phase 6 | Pending |
+| NFR-02 | Phase 6 | Complete |
+| NFR-03 | Phase 6 | Pending (pre-launch: needs independent SAM tester) |
+| NFR-04 | Phase 6 | Complete |
 | NFR-05 | Phase 5 | Complete |
 | NFR-06 | Phase 2 | Complete |
 | NFR-07 | Phase 6 | Complete |
-| ACC-01 | Phase 6 | Pending |
+| ACC-01 | Phase 6 | Complete |
 | ACC-02 | Phase 6 | Complete |
 | ACC-03 | Phase 6 | Complete |
-| ACC-04 | Phase 6 | Pending |
+| ACC-04 | Phase 6 | Complete |
 | ACC-05 | Phase 6 | Complete |
 
 **Coverage:**
