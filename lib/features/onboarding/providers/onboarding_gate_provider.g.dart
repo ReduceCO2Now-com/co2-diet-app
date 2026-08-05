@@ -16,6 +16,18 @@ part of 'onboarding_gate_provider.dart';
 /// resolves, before `runApp`. Tests override it with
 /// `SharedPreferences.setMockInitialValues({})` + a real instance rather
 /// than mocking this provider directly.
+///
+/// keepAlive: true — wraps a genuine app-lifetime singleton resource
+/// (mirrors [appDatabaseProvider]'s treatment of [AppDatabase]), not
+/// screen-scoped data. Without it, plain `@riverpod`'s autoDispose default
+/// tears this down whenever nothing happens to be watching it, which is
+/// exactly the condition under which [OnboardingGateNotifier
+/// .completeOnboarding] is called (06-10 manual verification found this
+/// live: OnboardingCarouselScreen never watches [onboardingGateProvider],
+/// so calling `completeOnboarding()` from its "Go to Dashboard" button hit
+/// an `UnmountedRefException` mid-`await`, silently swallowing the
+/// subsequent `context.go('/dashboard')` and leaving `hasCompletedOnboarding`
+/// never durably flipped for the redirect to observe).
 
 @ProviderFor(sharedPreferences)
 final sharedPreferencesProvider = SharedPreferencesProvider._();
@@ -28,6 +40,18 @@ final sharedPreferencesProvider = SharedPreferencesProvider._();
 /// resolves, before `runApp`. Tests override it with
 /// `SharedPreferences.setMockInitialValues({})` + a real instance rather
 /// than mocking this provider directly.
+///
+/// keepAlive: true — wraps a genuine app-lifetime singleton resource
+/// (mirrors [appDatabaseProvider]'s treatment of [AppDatabase]), not
+/// screen-scoped data. Without it, plain `@riverpod`'s autoDispose default
+/// tears this down whenever nothing happens to be watching it, which is
+/// exactly the condition under which [OnboardingGateNotifier
+/// .completeOnboarding] is called (06-10 manual verification found this
+/// live: OnboardingCarouselScreen never watches [onboardingGateProvider],
+/// so calling `completeOnboarding()` from its "Go to Dashboard" button hit
+/// an `UnmountedRefException` mid-`await`, silently swallowing the
+/// subsequent `context.go('/dashboard')` and leaving `hasCompletedOnboarding`
+/// never durably flipped for the redirect to observe).
 
 final class SharedPreferencesProvider
     extends
@@ -45,13 +69,25 @@ final class SharedPreferencesProvider
   /// resolves, before `runApp`. Tests override it with
   /// `SharedPreferences.setMockInitialValues({})` + a real instance rather
   /// than mocking this provider directly.
+  ///
+  /// keepAlive: true — wraps a genuine app-lifetime singleton resource
+  /// (mirrors [appDatabaseProvider]'s treatment of [AppDatabase]), not
+  /// screen-scoped data. Without it, plain `@riverpod`'s autoDispose default
+  /// tears this down whenever nothing happens to be watching it, which is
+  /// exactly the condition under which [OnboardingGateNotifier
+  /// .completeOnboarding] is called (06-10 manual verification found this
+  /// live: OnboardingCarouselScreen never watches [onboardingGateProvider],
+  /// so calling `completeOnboarding()` from its "Go to Dashboard" button hit
+  /// an `UnmountedRefException` mid-`await`, silently swallowing the
+  /// subsequent `context.go('/dashboard')` and leaving `hasCompletedOnboarding`
+  /// never durably flipped for the redirect to observe).
   SharedPreferencesProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'sharedPreferencesProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -79,7 +115,7 @@ final class SharedPreferencesProvider
   }
 }
 
-String _$sharedPreferencesHash() => r'2b2756fa92fd2d5487fb2665bcbfbcbfc246b9fb';
+String _$sharedPreferencesHash() => r'bb9e6ef7d3a26ef805262492637387254e4f6936';
 
 /// Tracks whether the user has completed the onboarding flow
 /// (Splash → Welcome → Legal Consent → Profile Setup → Carousel).
@@ -94,6 +130,15 @@ String _$sharedPreferencesHash() => r'2b2756fa92fd2d5487fb2665bcbfbcbfc246b9fb';
 /// plain on-device SharedPreferences value and can be tampered with on a
 /// rooted/jailbroken device to skip onboarding directly — accepted risk,
 /// the router redirect is still the enforced path for normal navigation.
+///
+/// keepAlive: true — this is app-lifetime gate state read from every
+/// top-level navigation via the router's `redirect` callback (a bare
+/// `ref.read`, with no active watcher of its own), and mutated from
+/// screens (`OnboardingCarouselScreen`) that never watch it either. Plain
+/// `@riverpod`'s autoDispose default let this provider get torn down
+/// between [completeOnboarding]'s `await` and its `state = true`, throwing
+/// `UnmountedRefException` and silently dropping the onboarding-complete
+/// signal — found via real-device testing in 06-10 manual verification.
 
 @ProviderFor(OnboardingGateNotifier)
 final onboardingGateProvider = OnboardingGateNotifierProvider._();
@@ -111,6 +156,15 @@ final onboardingGateProvider = OnboardingGateNotifierProvider._();
 /// plain on-device SharedPreferences value and can be tampered with on a
 /// rooted/jailbroken device to skip onboarding directly — accepted risk,
 /// the router redirect is still the enforced path for normal navigation.
+///
+/// keepAlive: true — this is app-lifetime gate state read from every
+/// top-level navigation via the router's `redirect` callback (a bare
+/// `ref.read`, with no active watcher of its own), and mutated from
+/// screens (`OnboardingCarouselScreen`) that never watch it either. Plain
+/// `@riverpod`'s autoDispose default let this provider get torn down
+/// between [completeOnboarding]'s `await` and its `state = true`, throwing
+/// `UnmountedRefException` and silently dropping the onboarding-complete
+/// signal — found via real-device testing in 06-10 manual verification.
 final class OnboardingGateNotifierProvider
     extends $NotifierProvider<OnboardingGateNotifier, bool> {
   /// Tracks whether the user has completed the onboarding flow
@@ -126,13 +180,22 @@ final class OnboardingGateNotifierProvider
   /// plain on-device SharedPreferences value and can be tampered with on a
   /// rooted/jailbroken device to skip onboarding directly — accepted risk,
   /// the router redirect is still the enforced path for normal navigation.
+  ///
+  /// keepAlive: true — this is app-lifetime gate state read from every
+  /// top-level navigation via the router's `redirect` callback (a bare
+  /// `ref.read`, with no active watcher of its own), and mutated from
+  /// screens (`OnboardingCarouselScreen`) that never watch it either. Plain
+  /// `@riverpod`'s autoDispose default let this provider get torn down
+  /// between [completeOnboarding]'s `await` and its `state = true`, throwing
+  /// `UnmountedRefException` and silently dropping the onboarding-complete
+  /// signal — found via real-device testing in 06-10 manual verification.
   OnboardingGateNotifierProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'onboardingGateProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -154,7 +217,7 @@ final class OnboardingGateNotifierProvider
 }
 
 String _$onboardingGateNotifierHash() =>
-    r'ec67cc89e5fe94fb874b91e3ced22ec88e519955';
+    r'dca913dedd53fa04cec4d044c0f7e605a1923747';
 
 /// Tracks whether the user has completed the onboarding flow
 /// (Splash → Welcome → Legal Consent → Profile Setup → Carousel).
@@ -169,6 +232,15 @@ String _$onboardingGateNotifierHash() =>
 /// plain on-device SharedPreferences value and can be tampered with on a
 /// rooted/jailbroken device to skip onboarding directly — accepted risk,
 /// the router redirect is still the enforced path for normal navigation.
+///
+/// keepAlive: true — this is app-lifetime gate state read from every
+/// top-level navigation via the router's `redirect` callback (a bare
+/// `ref.read`, with no active watcher of its own), and mutated from
+/// screens (`OnboardingCarouselScreen`) that never watch it either. Plain
+/// `@riverpod`'s autoDispose default let this provider get torn down
+/// between [completeOnboarding]'s `await` and its `state = true`, throwing
+/// `UnmountedRefException` and silently dropping the onboarding-complete
+/// signal — found via real-device testing in 06-10 manual verification.
 
 abstract class _$OnboardingGateNotifier extends $Notifier<bool> {
   bool build();

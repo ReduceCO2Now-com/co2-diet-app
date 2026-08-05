@@ -193,6 +193,46 @@ void main() {
     );
 
     testWidgets(
+      'calling completeOnboarding() mid-session (as the Carousel does) '
+      'then navigating to /dashboard produces no redirect back to /splash '
+      '(regression: 06-10 manual verification reported this exact loop '
+      'on real Android hardware)',
+      (tester) async {
+        final container = await pumpApp(
+          tester,
+          hasCompletedOnboarding: false,
+        );
+
+        // Mirrors OnboardingCarouselScreen._finishOnboarding(): call the
+        // notifier live (not seeded via SharedPreferences.setMockInitialValues
+        // at app start, which every other "completed" test in this file
+        // does) -- this is the one path that actually flips the provider
+        // mid-session, exactly like a real device.
+        await container
+            .read(onboardingGateProvider.notifier)
+            .completeOnboarding();
+
+        container.read(appRouterProvider).go('/dashboard');
+        await tester.pumpAndSettle();
+
+        expect(
+          find.descendant(
+            of: find.byType(AppBar),
+            matching: find.text('Dashboard'),
+          ),
+          findsOneWidget,
+        );
+        expect(find.byType(CircularProgressIndicator), findsNothing);
+
+        // Flush the still-pending 2s Splash timer (Splash was the
+        // router's initial location before this test navigated away)
+        // before teardown so the "Timer still pending" test-framework
+        // invariant doesn't trip.
+        await tester.pump(const Duration(seconds: 3));
+      },
+    );
+
+    testWidgets(
       'completed onboarding redirects away from /welcome to /dashboard '
       '(ONBD-05)',
       (tester) async {

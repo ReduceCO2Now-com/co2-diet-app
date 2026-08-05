@@ -90,7 +90,36 @@ class LegalDocumentScreen extends ConsumerWidget {
                 child: Text('Unable to load this document.'),
               );
             }
-            return Markdown(data: snapshot.data!.body);
+            return Markdown(
+              data: snapshot.data!.body,
+              // Explicit styleSheet -- without one, flutter_markdown_plus
+              // falls back to Theme.of(context)'s own (dark-mode-aware)
+              // text color while this screen's Scaffold background stays
+              // pinned to the fixed-light AppColors.surface (06-CONTEXT.md/
+              // DESIGN.md has no dark token set yet -- a known, already-
+              // tracked gap from Phase 1). In system dark mode that mismatch
+              // rendered near-white body text on a near-white background --
+              // found via real-device testing in 06-10 manual verification.
+              // Pinning to AppColors here matches every other screen's
+              // current (light-only) text treatment instead.
+              styleSheet: MarkdownStyleSheet(
+                p: AppTextTheme.bodyLg.copyWith(color: AppColors.onSurface),
+                h1: AppTextTheme.headlineLgMobile.copyWith(
+                  color: AppColors.onSurface,
+                ),
+                h2: AppTextTheme.headlineLgMobile.copyWith(
+                  color: AppColors.onSurface,
+                  fontSize: 22,
+                ),
+                strong: AppTextTheme.bodyLg.copyWith(
+                  color: AppColors.onSurface,
+                  fontWeight: FontWeight.bold,
+                ),
+                listBullet: AppTextTheme.bodyLg.copyWith(
+                  color: AppColors.onSurface,
+                ),
+              ),
+            );
           },
         ),
       ),
