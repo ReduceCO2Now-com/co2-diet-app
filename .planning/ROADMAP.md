@@ -183,7 +183,16 @@ Plans:
   3. Creating or logging into an account moves zero local data — the app clearly states this ("your data stays on this device — sync coming soon") at both signup and login; Dashboard's mode indicator reflects "Account Mode: data still stored locally" without implying any backup exists.
   4. A user can permanently delete their account from within the app; the deletion request removes the Keycloak user in the same operation (immediate hard delete, no grace period) and completes within the legally required timeframe (App Store rule + GDPR Art. 17); local data is untouched by default and the deletion is logged in the local `consent_records` audit trail.
   5. A local-only CO₂ methodology-update mechanism ships: on launch, entries whose stored `co2MethodologyVersion(Snapshot)` predates the current app-binary constant trigger a non-intrusive, dismissible Dashboard banner — zero backend dependency; the actual version constant is not bumped this phase.
-**Plans**: TBD
+**Plans**: 8 plans
+Plans:
+- [ ] 07-01-PLAN.md — Wave 0 test stubs (5 files)
+- [ ] 07-02-PLAN.md — Package installs (flutter_appauth, flutter_secure_storage) + native redirect-scheme wiring + AuthState/KeycloakConfig/BackendConfig/auth_providers.dart
+- [ ] 07-03-PLAN.md — AuthNotifier (signup/login/refresh/logout/account deletion) + realmDiscoveryReadyProvider
+- [ ] 07-04-PLAN.md — MethodologyVersionChecker (CO2 methodology-announcement mechanism)
+- [ ] 07-05-PLAN.md — Auth UI: combined sign-in/create-account screen, Check Email screen, Apple/Google buttons
+- [ ] 07-06-PLAN.md — Account section in Settings + account deletion flow
+- [ ] 07-07-PLAN.md — CO2 methodology banner + Dashboard wiring
+- [ ] 07-08-PLAN.md — Final integration: router wiring, mode indicator, Legal Hub cross-reference, terms.md, GDPR contract spec for Tomris
 **UI hint**: yes
 
 ### Phase 8: User Data Sync Engine

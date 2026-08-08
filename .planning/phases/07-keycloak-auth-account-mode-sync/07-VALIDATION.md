@@ -1,8 +1,8 @@
 ---
 phase: 7
 slug: keycloak-auth-account-mode-sync
-status: draft
-nyquist_compliant: false
+status: ready
+nyquist_compliant: true
 wave_0_complete: false
 created: 2026-08-08
 ---
@@ -38,17 +38,17 @@ created: 2026-08-08
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 07-XX-XX | TBD | TBD | AUTH-01 | widget | `flutter test test/features/auth/auth_screen_test.dart` | ❌ W0 | ⬜ pending |
-| 07-XX-XX | TBD | TBD | AUTH-02 | unit | `flutter test test/features/auth/providers/auth_provider_test.dart` | ❌ W0 | ⬜ pending |
-| 07-XX-XX | TBD | TBD | AUTH-03 | widget | `flutter test test/features/settings/widgets/account_section_test.dart` | ❌ W0 | ⬜ pending |
-| 07-XX-XX | TBD | TBD | AUTH-04 | unit | `flutter test test/features/auth/auth_screen_test.dart` | ❌ W0 | ⬜ pending |
-| 07-XX-XX | TBD | TBD | AUTH-05 / AUTH-06 | unit | `flutter test test/features/auth/providers/auth_provider_test.dart` | ❌ W0 | ⬜ pending |
-| 07-XX-XX | TBD | TBD | AUTH-10 | ci | `dart run tool/check_privacy_deps.dart` (existing Phase 1 script) | ✅ existing | ⬜ pending |
-| 07-XX-XX | TBD | TBD | PRIV-05 | unit + widget | `flutter test test/features/auth/providers/auth_provider_test.dart` and `test/features/settings/widgets/account_section_test.dart` | ❌ W0 | ⬜ pending |
-| 07-XX-XX | TBD | TBD | (CO2 methodology banner, success criterion #5) | unit | `flutter test test/domain/services/methodology_version_checker_test.dart` | ❌ W0 | ⬜ pending |
+| 07-05-T2 | 07-05 | 3 | AUTH-01 | widget | `flutter test test/features/auth/auth_screen_test.dart` | ❌ W0 (07-01) | ⬜ pending |
+| 07-03-T1 | 07-03 | 2 | AUTH-02 | unit | `flutter test test/features/auth/providers/auth_provider_test.dart` | ❌ W0 (07-01) | ⬜ pending |
+| 07-06-T2 | 07-06 | 3 | AUTH-03 | widget | `flutter test test/features/settings/widgets/account_section_test.dart` | ❌ W0 (07-01) | ⬜ pending |
+| 07-05-T2 | 07-05 | 3 | AUTH-04 | unit | `flutter test test/features/auth/auth_screen_test.dart` | ❌ W0 (07-01) | ⬜ pending |
+| 07-03-T1 | 07-03 | 2 | AUTH-05 / AUTH-06 | unit | `flutter test test/features/auth/providers/auth_provider_test.dart` | ❌ W0 (07-01) | ⬜ pending |
+| 07-02-T1 | 07-02 | 1 | AUTH-10 | ci | `dart run tool/check_privacy_deps.dart` (existing Phase 1 script) | ✅ existing | ⬜ pending |
+| 07-03-T1 / 07-06-T2 | 07-03 / 07-06 | 2 / 3 | PRIV-05 | unit + widget | `flutter test test/features/auth/providers/auth_provider_test.dart` and `test/features/settings/widgets/account_section_test.dart` | ❌ W0 (07-01) | ⬜ pending |
+| 07-04-T1 / 07-07-T2 | 07-04 / 07-07 | 2 / 3 | (CO2 methodology banner, success criterion #5 / CO2-04) | unit + widget | `flutter test test/domain/services/methodology_version_checker_test.dart` and `test/features/dashboard/widgets/co2_methodology_banner_test.dart` | ❌ W0 (07-01) | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
-*Task IDs and wave assignments are placeholders — the planner fills in real values when PLAN.md files are created.*
+*Filled in by the planner (07-01 through 07-08-PLAN.md, created 2026-08-08) — real values, not placeholders.*
 
 ---
 
@@ -78,11 +78,11 @@ created: 2026-08-08
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 30s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have `<automated>` verify or Wave 0 dependencies (the sole exception is 07-02's package-legitimacy checkpoint, which is a blocking human-verify gate by design, not a code-producing task)
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all MISSING references (07-01-PLAN.md creates all 5 files)
+- [x] No watch-mode flags
+- [x] Feedback latency < 30s
+- [x] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** planned — 07-01 through 07-08-PLAN.md created 2026-08-08; pending execution via `/gsd-execute-phase 7`
