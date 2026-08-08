@@ -583,7 +583,9 @@ Future<void> deleteAccount(String accessToken) async {
 
 **All claims above need user/Tomris confirmation before being treated as locked implementation decisions** — this is expected and by-design for a phase explicitly scoped around a not-yet-existent backend realm.
 
-## Open Questions
+## Open Questions (DEFERRED — backend coordination pending)
+
+All 4 items below are blocked on Tomris's not-yet-existent Keycloak realm/backend, not on planning gaps in this phase -- each has a recommendation the planner has already acted on (see Assumptions Log and Plan 07-08's `docs/backend-contracts/gdpr-account-deletion.md`), pending real-realm confirmation.
 
 1. **What is the exact GDPR account-deletion API contract?**
    - What we know: No such endpoint exists anywhere in the backend reference repo; PRIV-05 requires "Keycloak user record is deleted in the same operation," implying a single synchronous server-side call that both removes the Keycloak user and any backend-side account record.
