@@ -13,7 +13,7 @@ Requirements for initial release. Each maps to a roadmap phase.
 
 - [x] **ONBD-01**: App displays Splash screen (2–3 second load, centered logo + tagline, auto-advances to Welcome)
 - [x] **ONBD-02**: Welcome screen shows equal-weight "Get Started" and "Use Without Account" CTAs (no hierarchy bias between paths)
-- [ ] **ONBD-03**: Account / Local Mode choice screen shows two equal-weight cards — no "Recommended" badge on either (design intent; audit against live-build bias before launch) — **deferred to Phase 7**: no Mode Choice screen exists in Phase 6 at all (06-CONTEXT.md), Account Mode doesn't exist yet so there's nothing to weigh equally against
+- [ ] **ONBD-03**: Account / Local Mode choice screen shows two equal-weight cards — no "Recommended" badge on either (design intent; audit against live-build bias before launch) — **deferred to Phase 8**: no Mode Choice screen exists in Phase 6 (06-CONTEXT.md) or Phase 7 (07-CONTEXT.md); Account Mode has no tangible benefit to weigh against Local Mode until Phase 8's sync engine ships
 - [x] **ONBD-04**: Profile Setup screen: age, gender, height, weight, activity level, dietary preference; all fields optional; auto-saves; no blocking validation; footer adapts to mode (local: "stored only on this device" / account: "synced securely")
 - [x] **ONBD-05**: Onboarding Carousel: 3–4 slides explaining how CO₂ scoring works; swipeable; "Skip intro" link jumps to Dashboard; "Go to Dashboard" sticky button on last slide
 
@@ -31,8 +31,8 @@ Requirements for initial release. Each maps to a roadmap phase.
 - [ ] **AUTH-05**: Apple Sign-in via Keycloak Identity Provider (mandatory on iOS per App Store Guideline 4.8; Keycloak handles the Apple IdP flow — no native Apple Sign-in SDK on the Flutter client)
 - [ ] **AUTH-06**: Google Sign-in via Keycloak Identity Provider
 - [x] **AUTH-07**: Local Mode: full app access with zero server account; all data stored on-device; app never contacts the backend in Local Mode without explicit user action
-- [ ] **AUTH-08**: User can upgrade from Local Mode to Account Mode at any time without losing any local data; all local data is synced to the backend on upgrade
-- [ ] **AUTH-09**: Account Mode users get cross-device sync via self-hosted backend (Spring Boot + PostgreSQL + Keycloak); sync is background/transparent
+- [ ] **AUTH-08**: User can upgrade from Local Mode to Account Mode at any time without losing any local data; all local data is synced to the backend on upgrade — **deferred to Phase 8**: requires the sync engine, split out of the original Phase 7 (07-CONTEXT.md)
+- [ ] **AUTH-09**: Account Mode users get cross-device sync via self-hosted backend (Spring Boot + PostgreSQL + Keycloak); sync is background/transparent — **deferred to Phase 8**: backend's current architecture doesn't support bidirectional user-data sync yet (07-CONTEXT.md)
 - [ ] **AUTH-10**: All auth is implemented via Keycloak OIDC + PKCE — no Firebase Authentication, no Supabase Auth
 
 ### Profile & Goals
@@ -215,7 +215,7 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 |-------------|-------|--------|
 | ONBD-01 | Phase 6 | Complete |
 | ONBD-02 | Phase 6 | Complete |
-| ONBD-03 | Phase 6 | Deferred to Phase 7 (no Mode Choice screen this phase, per 06-CONTEXT.md) |
+| ONBD-03 | Phase 8 | Deferred (no Mode Choice screen until Account Mode has a real benefit — per 06-CONTEXT.md and 07-CONTEXT.md) |
 | ONBD-04 | Phase 6 | Complete |
 | ONBD-05 | Phase 6 | Complete |
 | LEGAL-01 | Phase 6 | Complete |
@@ -229,8 +229,8 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | AUTH-05 | Phase 7 | Pending |
 | AUTH-06 | Phase 7 | Pending |
 | AUTH-07 | Phase 5 | Complete |
-| AUTH-08 | Phase 7 | Pending |
-| AUTH-09 | Phase 7 | Pending |
+| AUTH-08 | Phase 8 | Pending (split out of Phase 7, 07-CONTEXT.md) |
+| AUTH-09 | Phase 8 | Pending (split out of Phase 7, 07-CONTEXT.md) |
 | AUTH-10 | Phase 7 | Pending |
 | PROF-01 | Phase 1 | Complete |
 | PROF-02 | Phase 1 | Complete |

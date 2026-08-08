@@ -2,14 +2,14 @@
 
 **Created:** 2026-07-16
 **Granularity:** fine (target 8–12 phases)
-**Total phases:** 9
+**Total phases:** 10
 **Coverage:** 75/75 v1 requirements mapped
 
 **Core value:** A user must be able to log a meal in under 10 seconds — everything else is secondary to that speed and privacy guarantee.
 
-**Delivery principle:** Local Mode is the product; Account Mode is an enhancement. Local Mode is shippable at the end of Phase 5. Legal/store-ready ships at Phase 6. Sync ships at Phase 7. Post-launch enrichment is Phase 8–9.
+**Delivery principle:** Local Mode is the product; Account Mode is an enhancement. Local Mode is shippable at the end of Phase 5. Legal/store-ready ships at Phase 6. Auth (login-only, no data movement) ships at Phase 7. Sync + Local→Account upgrade + Mode Choice ship at Phase 8, once backend data-ownership is resolved with Tomris. Post-launch enrichment is Phase 9–10.
 
-**Ordering rationale:** Highest architectural risk (sync-safe schema) is Phase 1 because it cannot be retrofitted. Highest technical risk (OFF ingest + FTS5 + barcode + CO₂ factor mapping) is Phase 2–3 to burn down uncertainty early. Auth is deliberately late (Phase 7) — Local Mode never blocks on it.
+**Ordering rationale:** Highest architectural risk (sync-safe schema) is Phase 1 because it cannot be retrofitted. Highest technical risk (OFF ingest + FTS5 + barcode + CO₂ factor mapping) is Phase 2–3 to burn down uncertainty early. Auth is deliberately late (Phase 7) — Local Mode never blocks on it. **Phase 7/8 split (2026-08-08):** originally one "Keycloak Auth + Account Mode + Sync" phase; split after a backend repo scan found the backend's actual architecture avoids owning bidirectional user data (one-way catalog sync only, no realm/IdP config, no GDPR endpoints yet) — see `07-CONTEXT.md`. Phase 7 now ships only what has zero backend-sync dependency; Phase 8 carries the sync engine, deferred pending a data-ownership conversation with Tomris.
 
 ---
 
@@ -21,9 +21,10 @@
 - [x] **Phase 4: Meal Logging Core** — Breakfast/Lunch/Dinner/Snack slots, portion units, Recent, Favorites, Custom foods, personal overrides, edit/delete/duplicate, offline-first, <10s meal-log verified (completed 2026-07-27)
 - [x] **Phase 5: Nutrition, CO₂ Estimator, Dashboard, Insights, Weight, Notifications, Export/Backup** — full local app; CO₂ Estimator + Transparency + Improvement Opportunities; Insights (7d/30d); Weight tracking; local notifications; Export (CSV/Excel/JSON); Backup/Restore. **Local Mode shippable here.** (completed 2026-07-28)
 - [ ] **Phase 6: Onboarding, Legal Consent, Legal Hub, ED Safety Nets, Accessibility & Pre-Submission** — Splash → Welcome → Legal Consent → Mode Choice → Profile → Carousel; timestamped consent records; Legal Hub (Terms/Privacy/Disclaimer/Impressum); ED safety nets; PrivacyManifest/Data Safety; a11y audit; equal-weight Mode Choice audit; SAM test
-- [ ] **Phase 7: Keycloak Auth + Account Mode + Sync** — flutter_appauth OIDC/PKCE, Apple + Google IdPs, email/password + reset, Local→Account upgrade, outbox drainer + delta pull LWW-by-HLC, GDPR endpoints (export/delete), sync status UI
-- [ ] **Phase 8: Reference Data Delivery (Full OFF Pack)** — on-demand ~300–800MB OFF pack via CDN, delta refresh, methodology-version announcement flow
-- [ ] **Phase 9: Post-Launch Enhancements (deferred)** — v1.1+ scope placeholder (water tracking, CO₂ profile modifiers UI polish, advanced insights, wearable/Health integration) — no v1 requirements land here; kept in roadmap for continuity
+- [ ] **Phase 7: Keycloak Auth + Account Deletion** — flutter_appauth OIDC/PKCE login (email/password, Apple, Google), logout, password reset, GDPR account deletion, local-only CO₂ methodology-update announcement. No data movement — Local→Account upgrade and sync are Phase 8.
+- [ ] **Phase 8: User Data Sync Engine** — Local→Account upgrade without data loss, hand-rolled outbox + HLC sync, LWW conflict resolution, sync status UI, onboarding Mode Choice screen (two equal-weight cards) + equal-weight audit. Depends on a resolved backend data-ownership model with Tomris. (INSERTED — split out of the original Phase 7 on 2026-08-08, see `07-CONTEXT.md`)
+- [ ] **Phase 9: Reference Data Delivery (Full OFF Pack)** — on-demand ~300–800MB OFF pack via CDN, delta refresh, live methodology-version announcement flow
+- [ ] **Phase 10: Post-Launch Enhancements (deferred)** — v1.1+ scope placeholder (water tracking, CO₂ profile modifiers UI polish, advanced insights, wearable/Health integration) — no v1 requirements land here; kept in roadmap for continuity
 
 ---
 
@@ -172,22 +173,34 @@ Plans:
 - [ ] 06-10-PLAN.md — Accessibility & pre-launch manual verification (dark mode/color-blind/tap-target, screen-reader pass, SAM test + tone audit)
 **UI hint**: yes
 
-### Phase 7: Keycloak Auth + Account Mode + Sync
-**Goal**: Add Account Mode as a pure enhancement — Keycloak OIDC auth (email/password, Apple, Google), Local→Account upgrade without data loss, and hand-rolled outbox + HLC sync — so users who opt in get transparent cross-device sync while Local Mode users are unaffected.
-**Depends on**: Phase 6; requires backend readiness from Tomris (Spring Boot + PostgreSQL + Keycloak realm + GDPR endpoints)
-**Requirements**: AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05, AUTH-06, AUTH-08, AUTH-09, AUTH-10, CO2-07, PRIV-05
+### Phase 7: Keycloak Auth + Account Deletion
+**Goal**: Add Account Mode's authentication surface as a pure, self-contained enhancement — Keycloak OIDC login (email/password, Apple, Google), logout, password reset, GDPR account deletion, and a local-only CO₂ methodology-update announcement — with zero data movement, so Local Mode users are completely unaffected and nothing here depends on a backend sync/data-ownership model that doesn't exist yet.
+**Depends on**: Phase 6; requires a live Keycloak realm + Apple/Google IdP config from Tomris (the entire Account section in Settings is gated behind a live realm-discovery check and stays hidden until that's ready)
+**Requirements**: AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05, AUTH-06, AUTH-10, PRIV-05
 **Success Criteria** (what must be TRUE):
-  1. A user can create an account with email/password (email verified before sync enables), log in and stay logged in across sessions, log out from any screen, and reset password via a secure email link — all via Keycloak OIDC + PKCE using `flutter_appauth` and the system browser; refresh token in secure storage, access token in memory only; zero Firebase/Supabase auth.
-  2. Apple Sign-in (via Keycloak Identity Provider, mandatory on iOS per App Store Guideline 4.8) and Google Sign-in (via Keycloak IdP) both complete the sign-up/sign-in flow end-to-end on real devices; no native Apple Sign-in SDK on the Flutter client.
-  3. A Local Mode user can upgrade to Account Mode at any time without losing any local data — all existing local rows are marked dirty and drained to the backend via the outbox, and dashboard/history reflect zero data loss after the upgrade completes.
-  4. Sync engine: background/foreground-on-resume outbox drainer pushes dirty local rows, delta pull applies remote changes, conflicts resolve LWW-by-HLC; sync status is visible to the user (idle / syncing / error) via a non-intrusive indicator; sync is fully transparent on happy path.
-  5. A user can permanently delete their account and all associated data from within the app; the deletion request removes the Keycloak user in the same operation and completes within the legally required timeframe (App Store rule + GDPR Art. 17); a CO₂ methodology update surfaces a non-intrusive "CO₂ estimates updated with methodology v2" announcement to users on next launch.
+  1. A user can create an account with email/password (email verified before login completes), log in and stay logged in across sessions, log out from any screen, and reset password via a secure email link (Keycloak-hosted, external browser) — all via Keycloak OIDC + PKCE using `flutter_appauth` and the system browser; refresh token in secure storage, access token in memory only; zero Firebase/Supabase auth.
+  2. Apple Sign-in (iOS-only, via Keycloak Identity Provider, mandatory on iOS per App Store Guideline 4.8) and Google Sign-in (via Keycloak IdP) both complete the sign-up/sign-in flow end-to-end on real devices; no native Apple Sign-in SDK on the Flutter client.
+  3. Creating or logging into an account moves zero local data — the app clearly states this ("your data stays on this device — sync coming soon") at both signup and login; Dashboard's mode indicator reflects "Account Mode: data still stored locally" without implying any backup exists.
+  4. A user can permanently delete their account from within the app; the deletion request removes the Keycloak user in the same operation (immediate hard delete, no grace period) and completes within the legally required timeframe (App Store rule + GDPR Art. 17); local data is untouched by default and the deletion is logged in the local `consent_records` audit trail.
+  5. A local-only CO₂ methodology-update mechanism ships: on launch, entries whose stored `co2MethodologyVersion(Snapshot)` predates the current app-binary constant trigger a non-intrusive, dismissible Dashboard banner — zero backend dependency; the actual version constant is not bumped this phase.
 **Plans**: TBD
 **UI hint**: yes
 
-### Phase 8: Reference Data Delivery (Full OFF Pack)
+### Phase 8: User Data Sync Engine
+**Goal**: Deliver the cross-device sync capability originally scoped into Phase 7 — Local→Account upgrade without data loss, hand-rolled outbox + HLC sync with LWW conflict resolution, and the onboarding Mode Choice screen — once Account Mode has something tangible to offer and the backend's data-ownership model is actually agreed with Tomris. (INSERTED — split out of the original "Phase 7: Keycloak Auth + Account Mode + Sync" on 2026-08-08 after a backend repo scan found the backend's real architecture avoids owning bidirectional user data; see `.planning/phases/07-keycloak-auth-account-mode-sync/07-CONTEXT.md` for the full rationale.)
+**Depends on**: Phase 7; requires an explicit backend data-ownership/sync-protocol agreement with Tomris (the backend's current design is one-directional catalog-only sync with an undecided backup story — this phase cannot be planned in detail until that's resolved)
+**Requirements**: AUTH-08, AUTH-09, ONBD-03
+**Success Criteria** (what must be TRUE):
+  1. A Local Mode (or newly-authenticated) user can upgrade to full Account Mode at any time without losing any local data — all existing local rows are marked dirty and drained to the backend via the outbox, and dashboard/history reflect zero data loss after the upgrade completes.
+  2. Sync engine: background/foreground-on-resume outbox drainer pushes dirty local rows, delta pull applies remote changes, conflicts resolve LWW-by-HLC; sync status is visible to the user (idle / syncing / error) via a non-intrusive indicator; sync is fully transparent on the happy path.
+  3. Onboarding Mode Choice screen ships: two equal-weight cards (Account vs. Local Mode), no "Recommended" badge on either, audited against live-build bias (ONBD-03) — meaningful now that Account Mode actually offers cross-device sync.
+  4. Every repository's Phase-1 HLC placeholders (`hlcNodeId='local'`, `hlcCounter=0`) are replaced with a full HLC clock using a stable device UUID.
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 9: Reference Data Delivery (Full OFF Pack)
 **Goal**: Enable users on Wi-Fi to opt into the full Open Food Facts catalog (~300–800MB) via CDN with incremental delta refresh — closing the last gap between "starter seed" and "full catalog" without inflating install size for everyone.
-**Depends on**: Phase 7 (post-launch enrichment; not blocking store submission)
+**Depends on**: Phase 8 (post-launch enrichment; not blocking store submission)
 **Requirements**: (none — v1 launch is served by the Phase 2 bundled seed; this phase is v1.0.x enrichment kept in-roadmap for continuity)
 **Success Criteria** (what must be TRUE):
   1. User can opt into "Download full food database" from settings; the client downloads the current OFF pack from a CDN with pause/resume and Wi-Fi-only default.
@@ -195,9 +208,9 @@ Plans:
   3. Download progress and disk-usage impact are transparently shown before and during the transfer; user can revert to the bundled seed at any time.
 **Plans**: TBD
 
-### Phase 9: Post-Launch Enhancements (v1.1+ Placeholder)
+### Phase 10: Post-Launch Enhancements (v1.1+ Placeholder)
 **Goal**: Track deferred v1.1+ scope (water tracking, CO₂ profile modifier UI polish, advanced insights, wearable / Apple Health / Google Fit integration, recipes, passkeys) as a durable slot in the roadmap — no v1 requirements land here.
-**Depends on**: Phase 7 shipped and live-user feedback collected
+**Depends on**: Phase 7 and Phase 8 shipped and live-user feedback collected
 **Requirements**: (none in v1; placeholder for v1.1 promotions from `## v2 Requirements` in REQUIREMENTS.md)
 **Success Criteria** (what must be TRUE):
   1. A prioritized v1.1 shortlist exists in `.planning/` derived from post-launch user feedback and store review signal.
@@ -216,9 +229,10 @@ Plans:
 | 4. Meal Logging Core | 12/13 | In Progress|  |
 | 5. Full Local App (Local Mode Shippable) | 19/19 | Complete    | 2026-07-28 |
 | 6. Onboarding, Legal & Pre-Submission | 9/10 | In Progress|  |
-| 7. Keycloak Auth + Account Mode + Sync | 0/0 | Not started | - |
-| 8. Reference Data Delivery (Full OFF Pack) | 0/0 | Not started | - |
-| 9. Post-Launch Enhancements (v1.1+) | 0/0 | Not started | - |
+| 7. Keycloak Auth + Account Deletion | 0/0 | Not started | - |
+| 8. User Data Sync Engine (INSERTED) | 0/0 | Not started | - |
+| 9. Reference Data Delivery (Full OFF Pack) | 0/0 | Not started | - |
+| 10. Post-Launch Enhancements (v1.1+) | 0/0 | Not started | - |
 
 ---
 
@@ -232,13 +246,15 @@ Plans:
 
 **AUTH-07 (Local Mode never contacts backend without explicit action):** Assigned to Phase 5 (Local Mode complete). The invariant is enforced from Phase 1 by not integrating any auth/backend code until Phase 7.
 
-**CO2-04 (`co2_methodology_version` field):** Column added in Phase 1 schema; user-facing update-announcement flow ships with the sync/auth surface in Phase 7 (first realistic point at which a methodology update would be pushed).
+**CO2-04 (`co2_methodology_version` field):** Column added in Phase 1 schema; the local-only detection/announcement mechanism ships with the auth surface in Phase 7 (zero backend dependency — compares stored snapshots against an app-binary constant). The live/CDN-fetched variant of this flow (mentioned in Phase 9's Reference Data Delivery goal) is a later enrichment, not required for Phase 7's mechanism.
 
-**PRIV-05 (permanent account deletion):** Assigned to Phase 7 (requires backend + Keycloak). PRIV-09 (local Danger Zone delete) is Phase 5 (local-only).
+**PRIV-05 (permanent account deletion):** Assigned to Phase 7 (requires a live Keycloak realm, not the deferred sync engine). PRIV-09 (local Danger Zone delete) is Phase 5 (local-only).
 
-**PRIV-06 (GDPR rights UI hub):** Assigned to Phase 6 (Legal Hub is the delivery vehicle). The backing sync/backend endpoints ship in Phase 7.
+**PRIV-06 (GDPR rights UI hub):** Assigned to Phase 6 (Legal Hub is the delivery vehicle). Phase 7 adds account deletion as one more right the hub cross-references; the remaining backing sync/backend endpoints ship in Phase 8.
 
 **LEG-05 (CO₂ methodology publicly documented):** Assigned to Phase 3 where the CO₂ factor table + confidence bands + transparency link land together.
+
+**AUTH-08 / AUTH-09 / ONBD-03 (Local→Account upgrade, sync engine, Mode Choice screen):** Originally bundled into Phase 7; split out to the new Phase 8 on 2026-08-08 after a backend repo scan found the backend's actual architecture avoids owning bidirectional user data. See `.planning/phases/07-keycloak-auth-account-mode-sync/07-CONTEXT.md`.
 
 ---
 

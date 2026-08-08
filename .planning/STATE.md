@@ -6,7 +6,7 @@ status: planning
 stopped_at: "Phase 7 context gathered — scope split: auth+deletion+CO2 announcement this round, sync engine deferred to a future phase"
 last_updated: "2026-08-07T23:57:54.908Z"
 progress:
-  total_phases: 9
+  total_phases: 10
   completed_phases: 6
   total_plans: 61
   completed_plans: 61
@@ -76,6 +76,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ---
 
 ## Accumulated Context
+
+### Roadmap Evolution
+
+- **2026-08-08:** Phase 7 ("Keycloak Auth + Account Mode + Sync") split into two phases after a backend repo scan (`CO2Diet_Backend`, cloned as reference material) found the backend's actual architecture avoids owning bidirectional user data. Phase 7 is now "Keycloak Auth + Account Deletion" (AUTH-01–06, AUTH-10, PRIV-05 — login, logout, password reset, GDPR account deletion, local-only CO2 methodology announcement; zero data movement). A new Phase 8 "User Data Sync Engine" (INSERTED) carries AUTH-08, AUTH-09, ONBD-03 (Local→Account upgrade, outbox/HLC/LWW sync, Mode Choice screen), depending on a resolved backend data-ownership agreement with Tomris. Former Phase 8 (Reference Data Delivery) → Phase 9; former Phase 9 (Post-Launch Enhancements) → Phase 10. Total phase count: 9 → 10. See `.planning/phases/07-keycloak-auth-account-mode-sync/07-CONTEXT.md`.
 
 ### Key Decisions Locked
 
