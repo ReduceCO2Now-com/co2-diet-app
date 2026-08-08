@@ -2,9 +2,8 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
-status: planning
-stopped_at: "Phase 7 context gathered — scope split: auth+deletion+CO2 announcement this round, sync engine deferred to a future phase"
-last_updated: "2026-08-07T23:57:54.908Z"
+status: executing
+last_updated: "2026-08-08T01:26:21.430Z"
 progress:
   total_phases: 10
   completed_phases: 6
@@ -36,10 +35,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission — **COMPLETE** (10/10 plans executed, all 3 of 06-10's real-device checkpoints approved on both Android and iOS). Real-device verification surfaced and fixed 4 genuine bugs (redirect allowlist gap, onboarding-completion state loss, bottom-nav Carousel-skip shortcut, app-wide dark-mode color mismatch across 36 files) beyond what any widget test caught. NFR-03 (SAM test) explicitly deferred to pre-launch — see Pre-Launch Blockers below, not a Phase 6 completion blocker.
-- **Plan:** 06-10 (Wave 5: manual a11y/tone checkpoints) — COMPLETE. Phase 6 fully done.
-- **Status:** Ready to plan
-- **Progress:** [██████████] 100% (10/10 plans, Phase 6)
+- **Phase:** 07-keycloak-auth-account-mode-sync — **IN PROGRESS** (1/8 plans executed). Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS.
+- **Plan:** 07-01 (Wave 0: five skipped Wave 0 test stubs for AUTH-01–06/PRIV-05/CO2 methodology announcement) — COMPLETE.
+- **Status:** Executing Phase 7
+- **Progress:** [█░░░░░░░] 1/8 plans (Phase 7)
 - **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files.
 
 ```
@@ -152,10 +151,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-08-07T23:57:54.900Z
-**Stopped at:** Phase 7 context gathered — scope split: auth+deletion+CO2 announcement this round, sync engine deferred to a future phase
-**Next action:** Execute Plan 06-10 (Wave 5: manual a11y/tone checkpoints) — final plan of Phase 6
-**Suggested next command:** `/gsd:execute-phase 6`
+**Last session:** 2026-08-08T01:26:21.430Z
+**Stopped at:** Completed 07-01-PLAN.md (five Wave 0 test stubs) — Phase 7 has 7 plans remaining (07-02 through 07-08)
+**Next action:** Execute Plan 07-02
+**Suggested next command:** `/gsd:execute-phase 7`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
@@ -314,6 +313,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 06-08]: ConsentHistoryScreen uses ref.watch(consentRepositoryProvider) + a widget-level StreamBuilder rather than a dedicated @riverpod StreamProvider -- avoids an extra codegen surface for a screen with a single stream consumer
 - [Phase ?]: [Phase 06-09]: Router redirect uses onboardingGateProvider (not onboardingGateNotifierProvider as PLAN.md prose stated) -- matches the actual @riverpod-generated name, consistent with [Phase 06-05]/[Phase 06-07]'s Notifier-suffix-stripping convention
 - [Phase ?]: [Phase 06-09]: /legal-hub/document's doc= query param parsed via a private _legalDocIdFromSlug switch, not LegalDocId.values.firstWhereOrNull(name==...) as PLAN.md's prose specified -- LegalDocId.name is camelCase (healthDisclaimer) but LegalHubScreen/LegalConsentScreen already committed to the snake_case slug health_disclaimer
+- [Phase 07-01]: Group-level skip: pattern reused verbatim from Phase 2-6 Wave 0 precedent for all 5 Phase 7 stub files, including testWidgets bodies wrapped inside a skipped group()
 
 ## Performance Metrics
 
@@ -369,3 +369,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission P07 | ~25min | 1 task | 3 files |
 | Phase 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission P08 | ~15min | 2 tasks | 3 files |
 | Phase 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission P09 | ~25min | 3 tasks | 8 files |
+| Phase 07 P01 | ~5min | 2 tasks | 5 files |

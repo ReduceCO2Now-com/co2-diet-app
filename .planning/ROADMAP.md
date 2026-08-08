@@ -185,7 +185,7 @@ Plans:
   5. A local-only CO₂ methodology-update mechanism ships: on launch, entries whose stored `co2MethodologyVersion(Snapshot)` predates the current app-binary constant trigger a non-intrusive, dismissible Dashboard banner — zero backend dependency; the actual version constant is not bumped this phase.
 **Plans**: 8 plans
 Plans:
-- [ ] 07-01-PLAN.md — Wave 0 test stubs (5 files)
+- [x] 07-01-PLAN.md — Wave 0 test stubs (5 files)
 - [ ] 07-02-PLAN.md — Package installs (flutter_appauth, flutter_secure_storage) + native redirect-scheme wiring + AuthState/KeycloakConfig/BackendConfig/auth_providers.dart
 - [ ] 07-03-PLAN.md — AuthNotifier (signup/login/refresh/logout/account deletion) + realmDiscoveryReadyProvider
 - [ ] 07-04-PLAN.md — MethodologyVersionChecker (CO2 methodology-announcement mechanism)
@@ -238,7 +238,7 @@ Plans:
 | 4. Meal Logging Core | 12/13 | In Progress|  |
 | 5. Full Local App (Local Mode Shippable) | 19/19 | Complete    | 2026-07-28 |
 | 6. Onboarding, Legal & Pre-Submission | 9/10 | In Progress|  |
-| 7. Keycloak Auth + Account Deletion | 0/0 | Not started | - |
+| 7. Keycloak Auth + Account Deletion | 1/8 | In Progress|  |
 | 8. User Data Sync Engine (INSERTED) | 0/0 | Not started | - |
 | 9. Reference Data Delivery (Full OFF Pack) | 0/0 | Not started | - |
 | 10. Post-Launch Enhancements (v1.1+) | 0/0 | Not started | - |
