@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-08-09T16:02:05.494Z"
+last_updated: "2026-08-09T16:15:00.000Z"
 progress:
   total_phases: 10
   completed_phases: 6
@@ -35,10 +35,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 07-keycloak-auth-account-mode-sync — **IN PROGRESS** (6/8 plans executed). Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS.
-- **Plan:** 07-06 (AccountSection wired into Settings behind realmDiscoveryReadyProvider -- signed-out/signed-in/logout/GDPR delete-account flow, /auth + /check-email routes, 9 green widget tests, zero skips) — COMPLETE.
+- **Phase:** 07-keycloak-auth-account-mode-sync — **IN PROGRESS** (7/8 plans executed). Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS.
+- **Plan:** 07-07 (CO2 methodology-update announcement banner: hasStaleMethodologyEntriesProvider + MethodologyBannerDismissalNotifier + Co2MethodologyBanner wired above ModeIndicator, 5 green widget tests, zero skips, CO2-04 complete) — COMPLETE.
 - **Status:** Executing Phase 7
-- **Progress:** [██████░░] 6/8 plans (Phase 7)
+- **Progress:** [███████░] 7/8 plans (Phase 7)
 - **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files.
 
 ```
@@ -151,9 +151,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-08-09T16:02:05.488Z
-**Stopped at:** Completed 07-06-PLAN.md
-**Next action:** Execute Plan 07-07
+**Last session:** 2026-08-09T16:15:00.000Z
+**Stopped at:** Completed 07-07-PLAN.md
+**Next action:** Execute Plan 07-08 (final Phase 7 plan)
 **Suggested next command:** `/gsd:execute-phase 7`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
@@ -330,6 +330,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 07-05]: url_launcher_platform_interface promoted transitive -> direct dev dependency (mirrors the existing share_plus_platform_interface precedent from Phase 05-16) so auth_screen_test.dart can mock UrlLauncherPlatform.instance for the Forgot-password assertion
 - [Phase ?]: [Phase 07-06]: /auth and /check-email routes added to app_router.dart -- 07-05-SUMMARY.md flagged this plan as owner of that wiring; AccountSection's sign-in CTA had no route to navigate to without it
 - [Phase ?]: [Phase 07-06]: AccountSection is a single ConsumerWidget returning either a ListTile (signed-out) or a Column of rows (signed-in), embedded as one ListView child in SettingsScreen -- mirrors MealReminderSettingsSection's existing embedding pattern
+- [Phase 07-07]: Generated provider variable is methodologyBannerDismissalProvider, not methodologyBannerDismissalNotifierProvider -- @riverpod strips the Notifier suffix from the class name (same convention as [Phase 06-05]/[Phase 06-07]/[Phase 06-09]'s onboardingGateProvider/consentProvider; PLAN.md's prose used the wrong name)
+- [Phase 07-07]: hasStaleMethodologyEntriesProvider composes whole-table DAO scans (UserProfileDao.getProfile, MealEntryDao.getAllEntries, UserFoodDao.getAllAlphabetical) directly at the provider layer -- mirrors BackupExportService's established precedent for cross-table reads with no single-feature repository home
 
 ## Performance Metrics
 
@@ -391,3 +393,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 07 P04 | ~2min | 1 tasks | 2 files |
 | Phase 07 P05 | ~20min | 2 tasks | 6 files |
 | Phase 07-keycloak-auth-account-mode-sync P06 | ~20min | 2 tasks | 5 files |
+| Phase 07-keycloak-auth-account-mode-sync P07 | ~15min | 2 tasks | 5 files |
