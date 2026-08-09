@@ -18,7 +18,7 @@ part of 'onboarding_gate_provider.dart';
 /// than mocking this provider directly.
 ///
 /// keepAlive: true — wraps a genuine app-lifetime singleton resource
-/// (mirrors [appDatabaseProvider]'s treatment of [AppDatabase]), not
+/// (mirrors `appDatabaseProvider`'s treatment of `AppDatabase`), not
 /// screen-scoped data. Without it, plain `@riverpod`'s autoDispose default
 /// tears this down whenever nothing happens to be watching it, which is
 /// exactly the condition under which [OnboardingGateNotifier
@@ -42,7 +42,7 @@ final sharedPreferencesProvider = SharedPreferencesProvider._();
 /// than mocking this provider directly.
 ///
 /// keepAlive: true — wraps a genuine app-lifetime singleton resource
-/// (mirrors [appDatabaseProvider]'s treatment of [AppDatabase]), not
+/// (mirrors `appDatabaseProvider`'s treatment of `AppDatabase`), not
 /// screen-scoped data. Without it, plain `@riverpod`'s autoDispose default
 /// tears this down whenever nothing happens to be watching it, which is
 /// exactly the condition under which [OnboardingGateNotifier
@@ -71,7 +71,7 @@ final class SharedPreferencesProvider
   /// than mocking this provider directly.
   ///
   /// keepAlive: true — wraps a genuine app-lifetime singleton resource
-  /// (mirrors [appDatabaseProvider]'s treatment of [AppDatabase]), not
+  /// (mirrors `appDatabaseProvider`'s treatment of `AppDatabase`), not
   /// screen-scoped data. Without it, plain `@riverpod`'s autoDispose default
   /// tears this down whenever nothing happens to be watching it, which is
   /// exactly the condition under which [OnboardingGateNotifier
