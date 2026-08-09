@@ -2,8 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
-status: executing
-last_updated: "2026-08-10T00:22:38.000Z"
+status: planning
+stopped_at: Completed 07-08-PLAN.md — Phase 7 (Keycloak Auth + Account Deletion) fully complete, 8/8 plans
+last_updated: "2026-08-09T16:43:03.007Z"
 progress:
   total_phases: 10
   completed_phases: 7
@@ -37,7 +38,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - **Milestone:** v1 launch
 - **Phase:** 07-keycloak-auth-account-mode-sync — **COMPLETE** (8/8 plans executed). Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS.
 - **Plan:** 07-08 (Phase 7 close-out: ModeIndicator wired to real AuthNotifier state with locked "sync coming soon" copy, Legal Hub Delete Account cross-reference, terms.md Account Mode & Data section, docs/backend-contracts/gdpr-account-deletion.md written spec for Tomris, full flutter test suite green) — COMPLETE.
-- **Status:** Phase 7 complete — ready to plan Phase 8 (User Data Sync Engine, pending backend data-ownership agreement with Tomris)
+- **Status:** Ready to plan
 - **Progress:** [███████░░░] 70% (7/10 phases)
 - **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files. Phase 7's requirement set (AUTH-01, AUTH-02, AUTH-03, AUTH-05, AUTH-06, AUTH-10, PRIV-05) is now fully delivered and reachable end-to-end.
 
