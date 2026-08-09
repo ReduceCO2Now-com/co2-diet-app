@@ -24,12 +24,12 @@ Requirements for initial release. Each maps to a roadmap phase.
 
 ### Authentication & Accounts
 
-- [ ] **AUTH-01**: User can create an account with email and password (email must be verified before sync is enabled)
-- [ ] **AUTH-02**: User can log in with email and password and stay logged in across sessions
-- [ ] **AUTH-03**: User can log out from any screen
-- [ ] **AUTH-04**: User can reset password via a secure email link
-- [ ] **AUTH-05**: Apple Sign-in via Keycloak Identity Provider (mandatory on iOS per App Store Guideline 4.8; Keycloak handles the Apple IdP flow — no native Apple Sign-in SDK on the Flutter client)
-- [ ] **AUTH-06**: Google Sign-in via Keycloak Identity Provider
+- [x] **AUTH-01**: User can create an account with email and password (email must be verified before sync is enabled)
+- [x] **AUTH-02**: User can log in with email and password and stay logged in across sessions
+- [x] **AUTH-03**: User can log out from any screen
+- [x] **AUTH-04**: User can reset password via a secure email link
+- [x] **AUTH-05**: Apple Sign-in via Keycloak Identity Provider (mandatory on iOS per App Store Guideline 4.8; Keycloak handles the Apple IdP flow — no native Apple Sign-in SDK on the Flutter client)
+- [x] **AUTH-06**: Google Sign-in via Keycloak Identity Provider
 - [x] **AUTH-07**: Local Mode: full app access with zero server account; all data stored on-device; app never contacts the backend in Local Mode without explicit user action
 - [ ] **AUTH-08**: User can upgrade from Local Mode to Account Mode at any time without losing any local data; all local data is synced to the backend on upgrade — **deferred to Phase 8**: requires the sync engine, split out of the original Phase 7 (07-CONTEXT.md)
 - [ ] **AUTH-09**: Account Mode users get cross-device sync via self-hosted backend (Spring Boot + PostgreSQL + Keycloak); sync is background/transparent — **deferred to Phase 8**: backend's current architecture doesn't support bidirectional user-data sync yet (07-CONTEXT.md)
@@ -108,7 +108,7 @@ Requirements for initial release. Each maps to a roadmap phase.
 - [x] **PRIV-02**: User can create a manual backup (save to device, save to cloud/Files, or share)
 - [x] **PRIV-03**: User can configure automatic backups with configurable frequency and destination
 - [x] **PRIV-04**: User can restore from backup with a preview of what will be restored and an explicit confirmation step before any data is overwritten
-- [ ] **PRIV-05**: User can permanently delete their account and all associated data; deletion completes within the legally required timeframe; Keycloak user record is deleted in the same operation; required by App Store (since June 2022) and GDPR Art. 17
+- [x] **PRIV-05**: User can permanently delete their account and all associated data; deletion completes within the legally required timeframe; Keycloak user record is deleted in the same operation; required by App Store (since June 2022) and GDPR Art. 17
 - [x] **PRIV-06**: User can exercise full GDPR rights from the Legal & Privacy hub: access data, rectify data, data portability, and consent withdrawal
 - [x] **PRIV-07**: Application contains zero third-party analytics SDKs, advertising SDKs, or behavioral tracking SDKs; compliance verified by an automated dependency audit run in CI (hardcoded blocklist) and an Exodus Privacy scan on every release build
 - [x] **PRIV-08**: In Local Mode, no data is ever transmitted to any server without explicit user action
@@ -222,12 +222,12 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | LEGAL-02 | Phase 6 | Complete |
 | LEGAL-03 | Phase 6 | Complete |
 | LEGAL-04 | Phase 1 | Complete |
-| AUTH-01 | Phase 7 | Pending |
-| AUTH-02 | Phase 7 | Pending |
-| AUTH-03 | Phase 7 | Pending |
-| AUTH-04 | Phase 7 | Pending |
-| AUTH-05 | Phase 7 | Pending |
-| AUTH-06 | Phase 7 | Pending |
+| AUTH-01 | Phase 7 | Complete |
+| AUTH-02 | Phase 7 | Complete |
+| AUTH-03 | Phase 7 | Complete |
+| AUTH-04 | Phase 7 | Complete |
+| AUTH-05 | Phase 7 | Complete |
+| AUTH-06 | Phase 7 | Complete |
 | AUTH-07 | Phase 5 | Complete |
 | AUTH-08 | Phase 8 | Pending (split out of Phase 7, 07-CONTEXT.md) |
 | AUTH-09 | Phase 8 | Pending (split out of Phase 7, 07-CONTEXT.md) |
@@ -282,7 +282,7 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | PRIV-02 | Phase 5 | Complete |
 | PRIV-03 | Phase 5 | Complete |
 | PRIV-04 | Phase 5 | Complete |
-| PRIV-05 | Phase 7 | Pending |
+| PRIV-05 | Phase 7 | Complete |
 | PRIV-06 | Phase 6 | Complete |
 | PRIV-07 | Phase 1 | Complete |
 | PRIV-08 | Phase 5 | Complete |
