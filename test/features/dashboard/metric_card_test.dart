@@ -113,7 +113,10 @@ void main() {
         ),
       );
 
-      expect(find.text('Synced across devices'), findsOneWidget);
+      expect(
+        find.text('Account Mode: Data still stored locally (sync coming soon)'),
+        findsOneWidget,
+      );
     });
   });
 

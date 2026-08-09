@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:co2diet/core/di/meal_logging_providers.dart';
 import 'package:co2diet/core/theme/spacing_tokens.dart';
+import 'package:co2diet/domain/entities/auth_state.dart';
 import 'package:co2diet/domain/entities/meal_entry.dart';
 import 'package:co2diet/domain/entities/meal_entry_food_item_mapping.dart';
 import 'package:co2diet/domain/entities/meal_slot.dart';
 import 'package:co2diet/domain/services/daily_totals_calculator.dart';
 import 'package:co2diet/domain/services/personal_co2_multiplier_calculator.dart';
+import 'package:co2diet/features/auth/providers/auth_provider.dart';
 import 'package:co2diet/features/co2_settings/providers/co2_settings_notifier.dart';
 import 'package:co2diet/features/dashboard/widgets/co2_methodology_banner.dart';
 import 'package:co2diet/features/dashboard/widgets/co2_profile_prompt_card.dart';
@@ -292,7 +294,9 @@ class _PlaceholderDashboardScreenState
               // phase since currentCo2MethodologyVersion is never bumped.
               const Co2MethodologyBanner(),
               const SizedBox(height: AppSpacing.stackGap),
-              const ModeIndicator(),
+              ModeIndicator(
+                isLocalMode: ref.watch(authProvider) is! AuthAuthenticated,
+              ),
               const SizedBox(height: AppSpacing.stackGap),
               Row(
                 children: [
