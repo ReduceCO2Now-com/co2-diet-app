@@ -144,6 +144,17 @@ class LegalHubScreen extends StatelessWidget {
               trailing: const Icon(Icons.chevron_right),
               onTap: () => context.push('/backup-restore'),
             ),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: const Icon(Icons.person_remove_outlined),
+              title: const Text('Delete Account (Account Mode)'),
+              subtitle: const Text(
+                'Permanently delete your Account Mode login and backend '
+                'account -- your local data stays on this device.',
+              ),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/settings'),
+            ),
             const Divider(height: AppSpacing.lg),
 
             // ── View my consent history ───────────────────────────────

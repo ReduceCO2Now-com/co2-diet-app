@@ -28,7 +28,8 @@ void main() {
       'returns version unknown and the raw input unchanged when the '
       'frontmatter block is unterminated',
       () {
-        const raw = '---\nversion: 2026-08-04\nBody text with no closing '
+        const raw =
+            '---\nversion: 2026-08-04\nBody text with no closing '
             'marker';
         final result = parseLegalDocument(raw);
         expect(result.version, 'unknown');
@@ -52,16 +53,19 @@ void main() {
     TestWidgetsFlutterBinding.ensureInitialized();
     const loader = LegalDocumentLoader();
 
-    test('load() returns the real version/body from docs/legal/terms.md', () async {
-      final result = await loader.load('terms.md');
-      expect(result.version, '2026-08-04');
-      expect(result.body, isNotEmpty);
-      expect(result.body, contains('Terms of Service'));
-    });
+    test(
+      'load() returns the real version/body from docs/legal/terms.md',
+      () async {
+        final result = await loader.load('terms.md');
+        expect(result.version, '2026-08-10');
+        expect(result.body, isNotEmpty);
+        expect(result.body, contains('Terms of Service'));
+      },
+    );
 
     test('versionOf() returns just the version string', () async {
       final version = await loader.versionOf('terms.md');
-      expect(version, '2026-08-04');
+      expect(version, '2026-08-10');
     });
   });
 }

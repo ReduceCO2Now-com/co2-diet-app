@@ -1,11 +1,11 @@
 ---
-version: 2026-08-04
+version: 2026-08-10
 ---
 <!-- PENDING LEGAL REVIEW: Fachanwalt IT-Recht sign-off tracked outside Phase 6, see STATE.md Todos -->
 
 # Terms of Service
 
-**Last updated: August 4, 2026**
+**Last updated: August 10, 2026**
 
 ## 1. Acceptance of these Terms
 
@@ -80,7 +80,32 @@ These Terms are governed by the laws of the Federal Republic of Germany, without
 conflict-of-law provisions, without prejudice to any mandatory consumer-protection provisions of
 your country of residence that may apply to you.
 
-## 8. Contact
+## 9. Account Mode & Data
+
+Account Mode is an entirely optional feature, separate from the App's core Local Mode
+functionality described in Section 2. You never need to create or log into an account to use
+any of the App's food-logging, CO2e-estimation, or tracking features.
+
+Creating or logging into an Account Mode account uses Keycloak, an open-source identity system,
+via a secure OIDC (OpenID Connect) sign-in flow. Creating or logging into an Account Mode
+account moves **zero** of your existing local data (meals, weight entries, preferences, and
+settings) to any server. Your local data remains fully under your own control on your own
+device, regardless of whether you have an Account Mode account, are signed in, or are signed
+out — Account Mode's login state does not change how your local data is stored.
+
+Because Account Mode involves creating a login credential with a third party (Keycloak) that is
+distinct from the Local Mode data-handling described elsewhere in these Terms, using Account
+Mode requires you to separately accept this section via its own in-app checkbox at signup. This
+acceptance is recorded as its own consent event, distinct from your initial acceptance of these
+Terms as a whole.
+
+You may permanently delete your Account Mode account at any time, in-app, via Settings ->
+Account. Account deletion is immediate and irreversible, consistent with your right to erasure
+under GDPR Article 17. Deleting your Account Mode account has no effect on your local data —
+your meals, weight entries, preferences, and settings remain on your device exactly as they
+were.
+
+## 10. Contact
 
 If you have questions about these Terms, please see the Impressum section of the Legal & Privacy
 hub within the App for our current contact details.
