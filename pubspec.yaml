@@ -151,6 +151,26 @@ dependencies:
   # family as already-approved share_plus/connectivity_plus, human-approved
   # per Plan 06-02's blocking package-legitimacy checkpoint]
   package_info_plus: ^10.2.1
+  # flutter_appauth 12.0.2 — Keycloak OIDC + PKCE login via the system
+  # browser (AUTH-01/AUTH-10 locked decision: "Auth: Keycloak OIDC + PKCE
+  # via flutter_appauth — no Firebase/Supabase"). [VERIFIED: pub.dev
+  # 2026-08-09, 160/160 score, publisher dexterx.dev
+  # (github.com/MaikuB/flutter_appauth), first published 2019 (7 years
+  # active maintenance), latest release 2026-06-26, human-approved per
+  # Plan 07-02's blocking package-legitimacy checkpoint]
+  flutter_appauth: ^12.0.2
+  # flutter_secure_storage 11.0.0 — on-device Keychain/Keystore storage for
+  # the OIDC refresh token (AUTH-07/PRIV-08). [VERIFIED: pub.dev 2026-08-09,
+  # 160/160 score, verified publisher steenbakker.dev
+  # (github.com/juliansteenbakker/flutter_secure_storage), 3.47M 30-day
+  # downloads, 4.47k likes, human-approved per Plan 07-02's blocking
+  # package-legitimacy checkpoint]
+  flutter_secure_storage: ^11.0.0
+  # http 1.6.0 — was already a transitive dependency (via openfoodfacts);
+  # declared directly per very_good_analysis depend_on_referenced_packages
+  # rule, since lib/domain/services/backend_config.dart and the
+  # realm-discovery check both import it directly.
+  http: ^1.6.0
 
 dev_dependencies:
   # build_runner 2.15.1 used (not 2.15.2) — 2.15.2 requires analyzer >=13.3 which

@@ -30,6 +30,12 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        // flutter_appauth requires this manifest placeholder to register the
+        // OIDC redirect-URI scheme's intent-filter (07-RESEARCH.md Pitfall 2 --
+        // lowercase scheme). Must match KeycloakConfig.redirectUrl's scheme
+        // exactly ("com.reduceco2now.co2diet.auth://callback").
+        manifestPlaceholders["appAuthRedirectScheme"] = "com.reduceco2now.co2diet.auth"
     }
 
     buildTypes {
