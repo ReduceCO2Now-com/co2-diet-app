@@ -189,7 +189,7 @@ Plans:
 - [x] 07-02-PLAN.md — Package installs (flutter_appauth, flutter_secure_storage) + native redirect-scheme wiring + AuthState/KeycloakConfig/BackendConfig/auth_providers.dart
 - [x] 07-03-PLAN.md — AuthNotifier (signup/login/refresh/logout/account deletion) + realmDiscoveryReadyProvider
 - [x] 07-04-PLAN.md — MethodologyVersionChecker (CO2 methodology-announcement mechanism)
-- [ ] 07-05-PLAN.md — Auth UI: combined sign-in/create-account screen, Check Email screen, Apple/Google buttons
+- [x] 07-05-PLAN.md — Auth UI: combined sign-in/create-account screen, Check Email screen, Apple/Google buttons
 - [ ] 07-06-PLAN.md — Account section in Settings + account deletion flow
 - [ ] 07-07-PLAN.md — CO2 methodology banner + Dashboard wiring
 - [ ] 07-08-PLAN.md — Final integration: router wiring, mode indicator, Legal Hub cross-reference, terms.md, GDPR contract spec for Tomris
@@ -238,7 +238,7 @@ Plans:
 | 4. Meal Logging Core | 12/13 | In Progress|  |
 | 5. Full Local App (Local Mode Shippable) | 19/19 | Complete    | 2026-07-28 |
 | 6. Onboarding, Legal & Pre-Submission | 9/10 | In Progress|  |
-| 7. Keycloak Auth + Account Deletion | 4/8 | In Progress|  |
+| 7. Keycloak Auth + Account Deletion | 5/8 | In Progress|  |
 | 8. User Data Sync Engine (INSERTED) | 0/0 | Not started | - |
 | 9. Reference Data Delivery (Full OFF Pack) | 0/0 | Not started | - |
 | 10. Post-Launch Enhancements (v1.1+) | 0/0 | Not started | - |

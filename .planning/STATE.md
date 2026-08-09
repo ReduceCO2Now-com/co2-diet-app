@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-08-09T15:28:36.363Z"
+last_updated: "2026-08-09T15:48:00.000Z"
 progress:
   total_phases: 10
   completed_phases: 6
@@ -35,10 +35,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 07-keycloak-auth-account-mode-sync — **IN PROGRESS** (4/8 plans executed). Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS.
-- **Plan:** 07-04 (MethodologyVersionChecker -- pure, DB-free CO2 methodology-version staleness comparison logic behind CO2-04's local-only announcement mechanism; currentCo2MethodologyVersion constant deliberately left at '1.0') — COMPLETE.
+- **Phase:** 07-keycloak-auth-account-mode-sync — **IN PROGRESS** (5/8 plans executed). Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS.
+- **Plan:** 07-05 (AuthScreen + CheckEmailScreen + hand-rolled AppleSignInButton/GoogleSignInButton -- combined sign-in/create-account UI, connectivity pre-flight gate, client-side password/terms validation, all covered by 12 green widget tests against the real AuthNotifier) — COMPLETE.
 - **Status:** Executing Phase 7
-- **Progress:** [████░░░░] 4/8 plans (Phase 7)
+- **Progress:** [█████░░░] 5/8 plans (Phase 7)
 - **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files.
 
 ```
@@ -151,9 +151,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-08-09T15:28:36.358Z
-**Stopped at:** Completed 07-04-PLAN.md
-**Next action:** Execute Plan 07-05
+**Last session:** 2026-08-09T15:48:00.000Z
+**Stopped at:** Completed 07-05-PLAN.md
+**Next action:** Execute Plan 07-06
 **Suggested next command:** `/gsd:execute-phase 7`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
@@ -324,6 +324,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 07-03]: logout()/deleteAccount() cache the last-seen idToken in a private in-memory-only _idToken field (never persisted) purely to satisfy endSession's idTokenHint parameter -- not part of AuthState, which only exposes email/accessToken
 - [Phase 07-04]: currentCo2MethodologyVersion stays '1.0' this phase per 07-CONTEXT.md's scope boundary -- MethodologyVersionChecker builds the comparison mechanism only, not a version bump
 - [Phase 07-04]: MethodologyVersionChecker.isStale uses plain string inequality (not semver parsing) -- this codebase's version strings are simple decimals
+- [Phase 07-05]: Password-length/terms-checkbox client-side pre-checks gate only the email/password create-account CTA, not the social buttons -- mirrors AuthNotifier.signInWithIdp's existing design (Plan 07-03), which never records account_mode_terms consent for social sign-in/signup regardless of mode
+- [Phase 07-05]: AuthScreen(showAppleButton: bool?) constructor override (default null -> Platform.isIOS) used for iOS-only-button testability instead of debugDefaultTargetPlatformOverride, since Platform.isIOS reads the real host OS via dart:io and is not intercepted by Flutter's widget-test platform-override machinery
+- [Phase 07-05]: context.pop()/context.canPop() guard added on the sign-in and social-IdP success paths -- the plan's literal context.pop() throws GoError('nothing to pop') when AuthScreen is the router's initial/only route (both in tests and any theoretical deep-link entry); no-op fallback when there's nothing to pop to, unchanged behavior on the real Settings-pushed entry path
+- [Phase 07-05]: url_launcher_platform_interface promoted transitive -> direct dev dependency (mirrors the existing share_plus_platform_interface precedent from Phase 05-16) so auth_screen_test.dart can mock UrlLauncherPlatform.instance for the Forgot-password assertion
 
 ## Performance Metrics
 
@@ -383,3 +387,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 07-keycloak-auth-account-mode-sync P02 | 7min | 2 tasks | 11 files |
 | Phase 07-keycloak-auth-account-mode-sync P03 | ~25min | 2 tasks | 5 files |
 | Phase 07 P04 | ~2min | 1 tasks | 2 files |
+| Phase 07 P05 | ~20min | 2 tasks | 6 files |
