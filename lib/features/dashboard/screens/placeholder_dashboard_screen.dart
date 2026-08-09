@@ -8,6 +8,7 @@ import 'package:co2diet/domain/entities/meal_slot.dart';
 import 'package:co2diet/domain/services/daily_totals_calculator.dart';
 import 'package:co2diet/domain/services/personal_co2_multiplier_calculator.dart';
 import 'package:co2diet/features/co2_settings/providers/co2_settings_notifier.dart';
+import 'package:co2diet/features/dashboard/widgets/co2_methodology_banner.dart';
 import 'package:co2diet/features/dashboard/widgets/co2_profile_prompt_card.dart';
 import 'package:co2diet/features/dashboard/widgets/macro_split_bar.dart';
 import 'package:co2diet/features/dashboard/widgets/meal_entry_row.dart';
@@ -284,6 +285,13 @@ class _PlaceholderDashboardScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // CO2-04: local-only methodology-update announcement --
+              // above ModeIndicator, since a methodology change is more
+              // consequential than the mode indicator's passive status
+              // line (07-07-PLAN.md placement decision). Dormant this
+              // phase since currentCo2MethodologyVersion is never bumped.
+              const Co2MethodologyBanner(),
+              const SizedBox(height: AppSpacing.stackGap),
               const ModeIndicator(),
               const SizedBox(height: AppSpacing.stackGap),
               Row(
