@@ -33,7 +33,7 @@ Requirements for initial release. Each maps to a roadmap phase.
 - [x] **AUTH-07**: Local Mode: full app access with zero server account; all data stored on-device; app never contacts the backend in Local Mode without explicit user action
 - [ ] **AUTH-08**: User can upgrade from Local Mode to Account Mode at any time without losing any local data; all local data is synced to the backend on upgrade — **deferred to Phase 8**: requires the sync engine, split out of the original Phase 7 (07-CONTEXT.md)
 - [ ] **AUTH-09**: Account Mode users get cross-device sync via self-hosted backend (Spring Boot + PostgreSQL + Keycloak); sync is background/transparent — **deferred to Phase 8**: backend's current architecture doesn't support bidirectional user-data sync yet (07-CONTEXT.md)
-- [ ] **AUTH-10**: All auth is implemented via Keycloak OIDC + PKCE — no Firebase Authentication, no Supabase Auth
+- [x] **AUTH-10**: All auth is implemented via Keycloak OIDC + PKCE — no Firebase Authentication, no Supabase Auth
 
 ### Profile & Goals
 
@@ -231,7 +231,7 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | AUTH-07 | Phase 5 | Complete |
 | AUTH-08 | Phase 8 | Pending (split out of Phase 7, 07-CONTEXT.md) |
 | AUTH-09 | Phase 8 | Pending (split out of Phase 7, 07-CONTEXT.md) |
-| AUTH-10 | Phase 7 | Pending |
+| AUTH-10 | Phase 7 | Complete |
 | PROF-01 | Phase 1 | Complete |
 | PROF-02 | Phase 1 | Complete |
 | PROF-03 | Phase 1 | Complete |

@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-08-08T01:26:21.430Z"
+last_updated: "2026-08-09T15:04:41.732Z"
 progress:
   total_phases: 10
   completed_phases: 6
@@ -35,10 +35,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 07-keycloak-auth-account-mode-sync — **IN PROGRESS** (1/8 plans executed). Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS.
-- **Plan:** 07-01 (Wave 0: five skipped Wave 0 test stubs for AUTH-01–06/PRIV-05/CO2 methodology announcement) — COMPLETE.
+- **Phase:** 07-keycloak-auth-account-mode-sync — **IN PROGRESS** (2/8 plans executed). Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS.
+- **Plan:** 07-02 (flutter_appauth + flutter_secure_storage installed and human-approved; native Android/iOS redirect-URI scheme wiring; AuthState/KeycloakConfig/BackendConfig/auth_providers.dart shared contracts) — COMPLETE.
 - **Status:** Executing Phase 7
-- **Progress:** [█░░░░░░░] 1/8 plans (Phase 7)
+- **Progress:** [██░░░░░░] 2/8 plans (Phase 7)
 - **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files.
 
 ```
@@ -151,9 +151,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-08-08T01:26:21.430Z
-**Stopped at:** Completed 07-01-PLAN.md (five Wave 0 test stubs) — Phase 7 has 7 plans remaining (07-02 through 07-08)
-**Next action:** Execute Plan 07-02
+**Last session:** 2026-08-09T15:04:41.725Z
+**Stopped at:** Completed 07-02-PLAN.md
+**Next action:** Execute Plan 07-03
 **Suggested next command:** `/gsd:execute-phase 7`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
@@ -314,6 +314,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase ?]: [Phase 06-09]: Router redirect uses onboardingGateProvider (not onboardingGateNotifierProvider as PLAN.md prose stated) -- matches the actual @riverpod-generated name, consistent with [Phase 06-05]/[Phase 06-07]'s Notifier-suffix-stripping convention
 - [Phase ?]: [Phase 06-09]: /legal-hub/document's doc= query param parsed via a private _legalDocIdFromSlug switch, not LegalDocId.values.firstWhereOrNull(name==...) as PLAN.md's prose specified -- LegalDocId.name is camelCase (healthDisclaimer) but LegalHubScreen/LegalConsentScreen already committed to the snake_case slug health_disclaimer
 - [Phase 07-01]: Group-level skip: pattern reused verbatim from Phase 2-6 Wave 0 precedent for all 5 Phase 7 stub files, including testWidgets bodies wrapped inside a skipped group()
+- [Phase 07-02]: flutter_appauth 12.0.2 + flutter_secure_storage 11.0.0 approved via blocking package-legitimacy checkpoint (160/160 pub scores, verified publishers dexterx.dev/steenbakker.dev, active maintenance) — pub.dev/Dart isn't a slopcheck-supported ecosystem, independent-signal review + explicit human approval required before install
+- [Phase 07-02]: AuthState is a plain sealed class (not Freezed) with static ergonomic factories, mirroring FoodSearchState's established pattern ([Phase 02-06])
+- [Phase 07-02]: KeycloakConfig/BackendConfig are static-const-only classes with a private unnamed constructor (`const ClassName._()`), every field `[ASSUMED]`-doc-commented citing the exact 07-RESEARCH.md Assumptions Log entry (A1-A5) — single source of truth for the eventual real-realm/backend handoff from Tomris
+- [Phase 07-02]: auth_providers.dart's secureStorage/appAuth/authHttpClient providers are all keepAlive — AuthNotifier (Plan 07-03, itself keepAlive) reads them via bare ref.read from mutation methods that may outlive their triggering widget, same UnmountedRefException risk class as OnboardingGateNotifier/mealEntryProvider precedents
 
 ## Performance Metrics
 
@@ -370,3 +374,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission P08 | ~15min | 2 tasks | 3 files |
 | Phase 06-onboarding-legal-consent-legal-hub-ed-safety-nets-accessibility-pre-submission P09 | ~25min | 3 tasks | 8 files |
 | Phase 07 P01 | ~5min | 2 tasks | 5 files |
+| Phase 07-keycloak-auth-account-mode-sync P02 | 7min | 2 tasks | 11 files |
