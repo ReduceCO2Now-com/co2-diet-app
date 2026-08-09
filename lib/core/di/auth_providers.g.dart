@@ -9,8 +9,8 @@ part of 'auth_providers.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 /// Provides the [FlutterSecureStorage] instance used to persist the OIDC
-/// refresh token on-device (Keychain on iOS, Keystore-backed EncryptedSharedPreferences
-/// on Android).
+/// refresh token on-device (Keychain on iOS, Keystore-backed
+/// EncryptedSharedPreferences on Android).
 ///
 /// keepAlive: true — AuthNotifier (Plan 07-03, itself keepAlive) reads this
 /// via bare `ref.read` from mutation methods (login/logout) that may run
@@ -22,8 +22,8 @@ part of 'auth_providers.dart';
 final secureStorageProvider = SecureStorageProvider._();
 
 /// Provides the [FlutterSecureStorage] instance used to persist the OIDC
-/// refresh token on-device (Keychain on iOS, Keystore-backed EncryptedSharedPreferences
-/// on Android).
+/// refresh token on-device (Keychain on iOS, Keystore-backed
+/// EncryptedSharedPreferences on Android).
 ///
 /// keepAlive: true — AuthNotifier (Plan 07-03, itself keepAlive) reads this
 /// via bare `ref.read` from mutation methods (login/logout) that may run
@@ -40,8 +40,8 @@ final class SecureStorageProvider
         >
     with $Provider<FlutterSecureStorage> {
   /// Provides the [FlutterSecureStorage] instance used to persist the OIDC
-  /// refresh token on-device (Keychain on iOS, Keystore-backed EncryptedSharedPreferences
-  /// on Android).
+  /// refresh token on-device (Keychain on iOS, Keystore-backed
+  /// EncryptedSharedPreferences on Android).
   ///
   /// keepAlive: true — AuthNotifier (Plan 07-03, itself keepAlive) reads this
   /// via bare `ref.read` from mutation methods (login/logout) that may run
@@ -146,7 +146,7 @@ final class AppAuthProvider
 String _$appAuthHash() => r'83442944f4804b5bb8d8b1fde82a144b16c24a34';
 
 /// Provides the [http.Client] used for direct backend calls (e.g. Plan
-/// 07-03's `deleteAccount()` against [BackendConfig.baseUrl]) that don't go
+/// 07-03's `deleteAccount()` against `BackendConfig.baseUrl`) that don't go
 /// through Keycloak's OIDC endpoints.
 ///
 /// keepAlive: true — same rationale as [secureStorageProvider].
@@ -157,7 +157,7 @@ String _$appAuthHash() => r'83442944f4804b5bb8d8b1fde82a144b16c24a34';
 final authHttpClientProvider = AuthHttpClientProvider._();
 
 /// Provides the [http.Client] used for direct backend calls (e.g. Plan
-/// 07-03's `deleteAccount()` against [BackendConfig.baseUrl]) that don't go
+/// 07-03's `deleteAccount()` against `BackendConfig.baseUrl`) that don't go
 /// through Keycloak's OIDC endpoints.
 ///
 /// keepAlive: true — same rationale as [secureStorageProvider].
@@ -168,7 +168,7 @@ final class AuthHttpClientProvider
     extends $FunctionalProvider<http.Client, http.Client, http.Client>
     with $Provider<http.Client> {
   /// Provides the [http.Client] used for direct backend calls (e.g. Plan
-  /// 07-03's `deleteAccount()` against [BackendConfig.baseUrl]) that don't go
+  /// 07-03's `deleteAccount()` against `BackendConfig.baseUrl`) that don't go
   /// through Keycloak's OIDC endpoints.
   ///
   /// keepAlive: true — same rationale as [secureStorageProvider].
