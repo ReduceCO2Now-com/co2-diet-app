@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-08-09T16:15:00.000Z"
+last_updated: "2026-08-10T00:22:38.000Z"
 progress:
   total_phases: 10
-  completed_phases: 6
-  total_plans: 61
-  completed_plans: 61
-  percent: 100
+  completed_phases: 7
+  total_plans: 69
+  completed_plans: 69
+  percent: 70
 ---
 
 # STATE: CO₂ Diet
@@ -35,14 +35,14 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 07-keycloak-auth-account-mode-sync — **IN PROGRESS** (7/8 plans executed). Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS.
-- **Plan:** 07-07 (CO2 methodology-update announcement banner: hasStaleMethodologyEntriesProvider + MethodologyBannerDismissalNotifier + Co2MethodologyBanner wired above ModeIndicator, 5 green widget tests, zero skips, CO2-04 complete) — COMPLETE.
-- **Status:** Executing Phase 7
-- **Progress:** [███████░] 7/8 plans (Phase 7)
-- **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files.
+- **Phase:** 07-keycloak-auth-account-mode-sync — **COMPLETE** (8/8 plans executed). Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS.
+- **Plan:** 07-08 (Phase 7 close-out: ModeIndicator wired to real AuthNotifier state with locked "sync coming soon" copy, Legal Hub Delete Account cross-reference, terms.md Account Mode & Data section, docs/backend-contracts/gdpr-account-deletion.md written spec for Tomris, full flutter test suite green) — COMPLETE.
+- **Status:** Phase 7 complete — ready to plan Phase 8 (User Data Sync Engine, pending backend data-ownership agreement with Tomris)
+- **Progress:** [███████░░░] 70% (7/10 phases)
+- **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files. Phase 7's requirement set (AUTH-01, AUTH-02, AUTH-03, AUTH-05, AUTH-06, AUTH-10, PRIV-05) is now fully delivered and reachable end-to-end.
 
 ```
-[█████░░░░] 55% (5/9 phases)
+[███████░░░] 70% (7/10 phases)
 ```
 
 ### Initialization Progress
@@ -151,10 +151,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-08-09T16:15:00.000Z
-**Stopped at:** Completed 07-07-PLAN.md
-**Next action:** Execute Plan 07-08 (final Phase 7 plan)
-**Suggested next command:** `/gsd:execute-phase 7`
+**Last session:** 2026-08-10T00:22:38.000Z
+**Stopped at:** Completed 07-08-PLAN.md — Phase 7 (Keycloak Auth + Account Deletion) fully complete, 8/8 plans
+**Next action:** Plan Phase 8 (User Data Sync Engine) — depends on a resolved backend data-ownership agreement with Tomris (see ROADMAP.md Phase 8 section)
+**Suggested next command:** `/gsd:plan-phase 8` (once backend data-ownership is agreed with Tomris)
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
@@ -332,6 +332,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase ?]: [Phase 07-06]: AccountSection is a single ConsumerWidget returning either a ListTile (signed-out) or a Column of rows (signed-in), embedded as one ListView child in SettingsScreen -- mirrors MealReminderSettingsSection's existing embedding pattern
 - [Phase 07-07]: Generated provider variable is methodologyBannerDismissalProvider, not methodologyBannerDismissalNotifierProvider -- @riverpod strips the Notifier suffix from the class name (same convention as [Phase 06-05]/[Phase 06-07]/[Phase 06-09]'s onboardingGateProvider/consentProvider; PLAN.md's prose used the wrong name)
 - [Phase 07-07]: hasStaleMethodologyEntriesProvider composes whole-table DAO scans (UserProfileDao.getProfile, MealEntryDao.getAllEntries, UserFoodDao.getAllAlphabetical) directly at the provider layer -- mirrors BackupExportService's established precedent for cross-table reads with no single-feature repository home
+- [Phase 07-08]: /auth and /check-email routes were already registered in app_router.dart by Plan 07-06 (a documented Rule 2 deviation) -- Plan 07-08 verified them present rather than re-adding them, despite PLAN.md's prose describing that wiring as this plan's job
+- [Phase 07-08]: terms.md's Contact section was actually numbered "## 8. Contact" on disk (not "## 9." as PLAN.md's prose assumed) -- new Account Mode & Data section inserted as "## 9.", Contact renumbered to "## 10."
+- [Phase 07-08]: docs/backend-contracts/ created as a new top-level docs directory for written API-contract hand-off specs to Tomris, with every field explicitly marked [ASSUMED -- not yet confirmed with Tomris] -- establishes the pattern for any future backend-contract documentation this app needs (e.g. Phase 8's sync endpoints)
+- [Phase 07-08]: Phase 7 (Keycloak Auth + Account Deletion) is fully COMPLETE -- 8/8 plans, all AUTH-01/02/03/05/06/10 + PRIV-05 requirements delivered and reachable end-to-end, full flutter test suite green (473 tests), privacy blocklist check passing with flutter_appauth/flutter_secure_storage installed
 
 ## Performance Metrics
 
@@ -394,3 +398,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 07 P05 | ~20min | 2 tasks | 6 files |
 | Phase 07-keycloak-auth-account-mode-sync P06 | ~20min | 2 tasks | 5 files |
 | Phase 07-keycloak-auth-account-mode-sync P07 | ~15min | 2 tasks | 5 files |
+| Phase 07-keycloak-auth-account-mode-sync P08 | ~15min | 2 tasks | 7 files |

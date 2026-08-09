@@ -21,7 +21,7 @@
 - [x] **Phase 4: Meal Logging Core** — Breakfast/Lunch/Dinner/Snack slots, portion units, Recent, Favorites, Custom foods, personal overrides, edit/delete/duplicate, offline-first, <10s meal-log verified (completed 2026-07-27)
 - [x] **Phase 5: Nutrition, CO₂ Estimator, Dashboard, Insights, Weight, Notifications, Export/Backup** — full local app; CO₂ Estimator + Transparency + Improvement Opportunities; Insights (7d/30d); Weight tracking; local notifications; Export (CSV/Excel/JSON); Backup/Restore. **Local Mode shippable here.** (completed 2026-07-28)
 - [ ] **Phase 6: Onboarding, Legal Consent, Legal Hub, ED Safety Nets, Accessibility & Pre-Submission** — Splash → Welcome → Legal Consent → Mode Choice → Profile → Carousel; timestamped consent records; Legal Hub (Terms/Privacy/Disclaimer/Impressum); ED safety nets; PrivacyManifest/Data Safety; a11y audit; equal-weight Mode Choice audit; SAM test
-- [ ] **Phase 7: Keycloak Auth + Account Deletion** — flutter_appauth OIDC/PKCE login (email/password, Apple, Google), logout, password reset, GDPR account deletion, local-only CO₂ methodology-update announcement. No data movement — Local→Account upgrade and sync are Phase 8.
+- [x] **Phase 7: Keycloak Auth + Account Deletion** — flutter_appauth OIDC/PKCE login (email/password, Apple, Google), logout, password reset, GDPR account deletion, local-only CO₂ methodology-update announcement. No data movement — Local→Account upgrade and sync are Phase 8. (completed 2026-08-09)
 - [ ] **Phase 8: User Data Sync Engine** — Local→Account upgrade without data loss, hand-rolled outbox + HLC sync, LWW conflict resolution, sync status UI, onboarding Mode Choice screen (two equal-weight cards) + equal-weight audit. Depends on a resolved backend data-ownership model with Tomris. (INSERTED — split out of the original Phase 7 on 2026-08-08, see `07-CONTEXT.md`)
 - [ ] **Phase 9: Reference Data Delivery (Full OFF Pack)** — on-demand ~300–800MB OFF pack via CDN, delta refresh, live methodology-version announcement flow
 - [ ] **Phase 10: Post-Launch Enhancements (deferred)** — v1.1+ scope placeholder (water tracking, CO₂ profile modifiers UI polish, advanced insights, wearable/Health integration) — no v1 requirements land here; kept in roadmap for continuity
@@ -192,7 +192,7 @@ Plans:
 - [x] 07-05-PLAN.md — Auth UI: combined sign-in/create-account screen, Check Email screen, Apple/Google buttons
 - [x] 07-06-PLAN.md — Account section in Settings + account deletion flow
 - [x] 07-07-PLAN.md — CO2 methodology banner + Dashboard wiring
-- [ ] 07-08-PLAN.md — Final integration: router wiring, mode indicator, Legal Hub cross-reference, terms.md, GDPR contract spec for Tomris
+- [x] 07-08-PLAN.md — Final integration: router wiring, mode indicator, Legal Hub cross-reference, terms.md, GDPR contract spec for Tomris
 **UI hint**: yes
 
 ### Phase 8: User Data Sync Engine
@@ -238,7 +238,7 @@ Plans:
 | 4. Meal Logging Core | 12/13 | In Progress|  |
 | 5. Full Local App (Local Mode Shippable) | 19/19 | Complete    | 2026-07-28 |
 | 6. Onboarding, Legal & Pre-Submission | 9/10 | In Progress|  |
-| 7. Keycloak Auth + Account Deletion | 7/8 | In Progress|  |
+| 7. Keycloak Auth + Account Deletion | 8/8 | Complete   | 2026-08-09 |
 | 8. User Data Sync Engine (INSERTED) | 0/0 | Not started | - |
 | 9. Reference Data Delivery (Full OFF Pack) | 0/0 | Not started | - |
 | 10. Post-Launch Enhancements (v1.1+) | 0/0 | Not started | - |
