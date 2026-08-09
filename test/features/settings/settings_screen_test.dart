@@ -1,6 +1,14 @@
 // Plan 05-18: SettingsScreen gains three new entry points (CO2 Calculation
 // Settings, Weight Tracking, Backup & Restore) plus the embedded meal
 // reminder settings section (NOTIF-01's settings-location decision).
+//
+// Plan 07-06: SettingsScreen now also watches realmDiscoveryReadyProvider
+// (converted StatelessWidget -> ConsumerWidget) to gate AccountSection --
+// authHttpClientProvider is mocked to fail fast (no real network call to
+// KeycloakConfig.issuer) so this pre-existing test suite stays fully
+// offline/deterministic; account_section_test.dart owns the accountReady
+// == true rendering assertions.
+import 'package:co2diet/core/di/auth_providers.dart';
 import 'package:co2diet/core/di/notification_providers.dart';
 import 'package:co2diet/domain/entities/notification_prefs.dart';
 import 'package:co2diet/domain/repositories/i_notification_prefs_repository.dart';
@@ -9,10 +17,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 
 class _MockNotificationPrefsRepository extends Mock
     implements INotificationPrefsRepository {}
+
+class _MockHttpClient extends Mock implements http.Client {}
 
 Widget _wrap(Widget dashboard) {
   final router = GoRouter(
@@ -37,6 +48,10 @@ Widget _wrap(Widget dashboard) {
 }
 
 void main() {
+  setUpAll(() {
+    registerFallbackValue(Uri.parse('http://localhost'));
+  });
+
   Future<void> pumpSettings(WidgetTester tester) async {
     // Tall test viewport -- the new tiles + embedded 4-row
     // MealReminderSettingsSection need more vertical space than the
@@ -51,12 +66,18 @@ void main() {
       mockPrefsRepo.getPrefs,
     ).thenAnswer((_) async => const NotificationPrefs());
 
+    final mockHttpClient = _MockHttpClient();
+    when(
+      () => mockHttpClient.get(any()),
+    ).thenThrow(Exception('no network in this test'));
+
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           notificationPrefsRepositoryProvider.overrideWithValue(
             mockPrefsRepo,
           ),
+          authHttpClientProvider.overrideWithValue(mockHttpClient),
         ],
         child: _wrap(const SettingsScreen()),
       ),

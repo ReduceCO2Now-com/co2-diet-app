@@ -1,5 +1,7 @@
 import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/domain/entities/meal_slot.dart';
+import 'package:co2diet/features/auth/screens/auth_screen.dart';
+import 'package:co2diet/features/auth/screens/check_email_screen.dart';
 import 'package:co2diet/features/backup/screens/backup_restore_screen.dart';
 import 'package:co2diet/features/barcode_scan/screens/barcode_scan_screen.dart';
 import 'package:co2diet/features/barcode_scan/screens/methodology_screen.dart';
@@ -285,6 +287,19 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: '/my-foods',
         builder: (context, state) => const MyFoodsScreen(),
+      ),
+      // Account Mode entry point (Plan 07-06) — reachable from Settings'
+      // AccountSection sign-in/create-account row (07-05-SUMMARY.md: "Plan
+      // 07-06 owns adding the /auth and /check-email routes").
+      GoRoute(
+        path: '/auth',
+        builder: (context, state) => const AuthScreen(),
+      ),
+      GoRoute(
+        path: '/check-email',
+        builder: (context, state) => CheckEmailScreen(
+          email: state.uri.queryParameters['email'] ?? '',
+        ),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, shell) => AppShell(shell: shell),
