@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-08-09T15:21:33.024Z"
+last_updated: "2026-08-09T15:28:36.363Z"
 progress:
   total_phases: 10
   completed_phases: 6
@@ -35,10 +35,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 07-keycloak-auth-account-mode-sync — **IN PROGRESS** (3/8 plans executed). Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS.
-- **Plan:** 07-03 (AuthNotifier -- signup/login/silent refresh/logout/social-login/account-deletion, all unit-tested against mocked flutter_appauth/flutter_secure_storage/http; realmDiscoveryReadyProvider session-cached readiness gate) — COMPLETE.
+- **Phase:** 07-keycloak-auth-account-mode-sync — **IN PROGRESS** (4/8 plans executed). Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS.
+- **Plan:** 07-04 (MethodologyVersionChecker -- pure, DB-free CO2 methodology-version staleness comparison logic behind CO2-04's local-only announcement mechanism; currentCo2MethodologyVersion constant deliberately left at '1.0') — COMPLETE.
 - **Status:** Executing Phase 7
-- **Progress:** [███░░░░░] 3/8 plans (Phase 7)
+- **Progress:** [████░░░░] 4/8 plans (Phase 7)
 - **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files.
 
 ```
@@ -151,9 +151,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-08-09T15:21:33.018Z
-**Stopped at:** Completed 07-03-PLAN.md
-**Next action:** Execute Plan 07-04
+**Last session:** 2026-08-09T15:28:36.358Z
+**Stopped at:** Completed 07-04-PLAN.md
+**Next action:** Execute Plan 07-05
 **Suggested next command:** `/gsd:execute-phase 7`
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
@@ -322,6 +322,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 07-03]: _fetchUserInfo() defaults emailVerified: true and falls back to a caller-supplied cached email (or a generic 'Account' label) on any /userinfo failure -- a transient userinfo hiccup must never crash silent refresh or incorrectly block an already-established session
 - [Phase 07-03]: signIn/signUp/signInWithIdp wrap authorizeAndExchangeCode in a blanket on Exception catch that swallows every failure (cancellation-flavored or otherwise), leaving state unchanged -- real credential errors surface inside Keycloak's own hosted page, never back to the app
 - [Phase 07-03]: logout()/deleteAccount() cache the last-seen idToken in a private in-memory-only _idToken field (never persisted) purely to satisfy endSession's idTokenHint parameter -- not part of AuthState, which only exposes email/accessToken
+- [Phase 07-04]: currentCo2MethodologyVersion stays '1.0' this phase per 07-CONTEXT.md's scope boundary -- MethodologyVersionChecker builds the comparison mechanism only, not a version bump
+- [Phase 07-04]: MethodologyVersionChecker.isStale uses plain string inequality (not semver parsing) -- this codebase's version strings are simple decimals
 
 ## Performance Metrics
 
@@ -380,3 +382,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 07 P01 | ~5min | 2 tasks | 5 files |
 | Phase 07-keycloak-auth-account-mode-sync P02 | 7min | 2 tasks | 11 files |
 | Phase 07-keycloak-auth-account-mode-sync P03 | ~25min | 2 tasks | 5 files |
+| Phase 07 P04 | ~2min | 1 tasks | 2 files |
