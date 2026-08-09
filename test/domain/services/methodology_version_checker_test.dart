@@ -1,60 +1,95 @@
+import 'package:co2diet/domain/services/methodology_version_checker.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group(
-    'isStale',
-    skip: 'Awaiting Plan 07-04 implementation',
-    () {
-      // TODO(Plan 07-04): a null snapshot version is never stale --
-      // there is nothing to compare against.
-      test('null snapshot is never stale', () {});
+  group('isStale', () {
+    const checker = MethodologyVersionChecker();
 
-      // TODO(Plan 07-04): a snapshot equal to the current version is
-      // not stale.
-      test(
-        'snapshot equal to the current version is not stale',
-        () {},
-      );
+    test('null snapshot is never stale', () {
+      expect(checker.isStale(null), isFalse);
+    });
 
-      // TODO(Plan 07-04): a snapshot older than the current version is
-      // stale.
-      test(
-        'snapshot older than the current version is stale',
-        () {},
-      );
-    },
-  );
+    test('snapshot equal to the current version is not stale', () {
+      expect(checker.isStale(currentCo2MethodologyVersion), isFalse);
+    });
 
-  group(
-    'hasAnyStale',
-    skip: 'Awaiting Plan 07-04 implementation',
-    () {
-      // TODO(Plan 07-04): false when profile/meal/food versions are
-      // all null or current.
-      test(
-        'false when profile/meal/food versions are all null or '
-        'current',
-        () {},
-      );
+    test('snapshot older than the current version is stale', () {
+      expect(checker.isStale('0.9'), isTrue);
+    });
 
-      // TODO(Plan 07-04): true when the profile version is stale.
-      test(
-        'true when the profile version is stale',
-        () {},
-      );
+    test(
+      'accepts an optional currentVersion override without mutating the '
+      'real constant',
+      () {
+        expect(
+          checker.isStale('1.0', currentVersion: '1.1'),
+          isTrue,
+        );
+        expect(
+          checker.isStale('1.1', currentVersion: '1.1'),
+          isFalse,
+        );
+        expect(checker.isStale('1.0'), isFalse);
+      },
+    );
+  });
 
-      // TODO(Plan 07-04): true when any meal-entry snapshot version is
-      // stale.
-      test(
-        'true when any meal-entry snapshot version is stale',
-        () {},
-      );
+  group('hasAnyStale', () {
+    const checker = MethodologyVersionChecker();
 
-      // TODO(Plan 07-04): true when any user-food version is stale.
-      test(
-        'true when any user-food version is stale',
-        () {},
+    test(
+      'false when profile/meal/food versions are all null or current',
+      () {
+        expect(
+          checker.hasAnyStale(
+            profileVersion: null,
+            mealVersions: [],
+            foodVersions: [],
+          ),
+          isFalse,
+        );
+        expect(
+          checker.hasAnyStale(
+            profileVersion: '1.0',
+            mealVersions: [null, '1.0'],
+            foodVersions: [null],
+          ),
+          isFalse,
+        );
+      },
+    );
+
+    test('true when the profile version is stale', () {
+      expect(
+        checker.hasAnyStale(
+          profileVersion: '0.9',
+          mealVersions: [],
+          foodVersions: [],
+        ),
+        isTrue,
       );
-    },
-  );
+    });
+
+    test('true when any meal-entry snapshot version is stale', () {
+      expect(
+        checker.hasAnyStale(
+          profileVersion: '1.0',
+          mealVersions: ['1.0', '0.8', null],
+          foodVersions: [],
+        ),
+        isTrue,
+      );
+    });
+
+    test('true when any user-food version is stale', () {
+      expect(
+        checker.hasAnyStale(
+          profileVersion: '1.0',
+          mealVersions: [],
+          foodVersions: [null, '0.7'],
+        ),
+        isTrue,
+      );
+    });
+  });
 }
