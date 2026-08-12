@@ -13,7 +13,6 @@ Requirements for initial release. Each maps to a roadmap phase.
 
 - [x] **ONBD-01**: App displays Splash screen (2–3 second load, centered logo + tagline, auto-advances to Welcome)
 - [x] **ONBD-02**: Welcome screen shows equal-weight "Get Started" and "Use Without Account" CTAs (no hierarchy bias between paths)
-- [ ] **ONBD-03**: Account / Local Mode choice screen shows two equal-weight cards — no "Recommended" badge on either (design intent; audit against live-build bias before launch) — **deferred to Phase 8**: no Mode Choice screen exists in Phase 6 (06-CONTEXT.md) or Phase 7 (07-CONTEXT.md); Account Mode has no tangible benefit to weigh against Local Mode until Phase 8's sync engine ships
 - [x] **ONBD-04**: Profile Setup screen: age, gender, height, weight, activity level, dietary preference; all fields optional; auto-saves; no blocking validation; footer adapts to mode (local: "stored only on this device" / account: "synced securely")
 - [x] **ONBD-05**: Onboarding Carousel: 3–4 slides explaining how CO₂ scoring works; swipeable; "Skip intro" link jumps to Dashboard; "Go to Dashboard" sticky button on last slide
 
@@ -31,8 +30,8 @@ Requirements for initial release. Each maps to a roadmap phase.
 - [x] **AUTH-05**: Apple Sign-in via Keycloak Identity Provider (mandatory on iOS per App Store Guideline 4.8; Keycloak handles the Apple IdP flow — no native Apple Sign-in SDK on the Flutter client)
 - [x] **AUTH-06**: Google Sign-in via Keycloak Identity Provider
 - [x] **AUTH-07**: Local Mode: full app access with zero server account; all data stored on-device; app never contacts the backend in Local Mode without explicit user action
-- [ ] **AUTH-08**: User can upgrade from Local Mode to Account Mode at any time without losing any local data; all local data is synced to the backend on upgrade — **deferred to Phase 8**: requires the sync engine, split out of the original Phase 7 (07-CONTEXT.md)
-- [ ] **AUTH-09**: Account Mode users get cross-device sync via self-hosted backend (Spring Boot + PostgreSQL + Keycloak); sync is background/transparent — **deferred to Phase 8**: backend's current architecture doesn't support bidirectional user-data sync yet (07-CONTEXT.md)
+- [x] **AUTH-08**: User can upgrade from Local Mode to Account Mode at any time without losing any local data — **satisfied by Phase 7's design (2026-08-12)**: creating/using an Account Mode account never touches or moves local data at all, so nothing can be lost; confirmed the original "synced to the backend on upgrade" mechanism will never exist (backend's Sync module is permanently reference-data-only, settled architecture), but the requirement's actual intent — no data loss — doesn't require it
+- [ ] **AUTH-09**: Account Mode users can back up their data to the backend as an opaque, client-encrypted blob the server cannot read, and restore it on another device — **narrowed 2026-08-12**: confirmed the backend will never do bidirectional user-data sync (settled, not just undecided); this requirement now covers only the encrypted-backup case, contingent on Tomris resolving the backend's still-open "encrypted blob vs. pure user-cloud export" decision (currently leaning against it) — tracked in the renamed Phase 8 (Encrypted Account Backup)
 - [x] **AUTH-10**: All auth is implemented via Keycloak OIDC + PKCE — no Firebase Authentication, no Supabase Auth
 
 ### Profile & Goals
@@ -155,6 +154,9 @@ Deferred to post-v1. Not in current roadmap.
 ### Auth
 - **AUTH-V2-01**: Passkey support (Flutter ecosystem not mature as of Jan 2026 — reassess for v1.1)
 
+### Onboarding
+- **ONBD-03**: Account / Local Mode choice screen shows two equal-weight cards — no "Recommended" badge on either (design intent; audit against live-build bias before launch). Moved from v1 (2026-08-12): its premise requires Account Mode to offer a real, comparable benefit against Local Mode, which doesn't exist unless Phase 8 (Encrypted Account Backup, contingent on Tomris) ever ships. Revisit if/when that happens.
+
 ### Food & Logging
 - **LOG-V2-01**: Recipe builder and saved recipes
 - **LOG-V2-02**: Meal planning (weekly plan, grocery list generation)
@@ -215,7 +217,6 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 |-------------|-------|--------|
 | ONBD-01 | Phase 6 | Complete |
 | ONBD-02 | Phase 6 | Complete |
-| ONBD-03 | Phase 8 | Deferred (no Mode Choice screen until Account Mode has a real benefit — per 06-CONTEXT.md and 07-CONTEXT.md) |
 | ONBD-04 | Phase 6 | Complete |
 | ONBD-05 | Phase 6 | Complete |
 | LEGAL-01 | Phase 6 | Complete |
@@ -229,8 +230,8 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | AUTH-05 | Phase 7 | Complete |
 | AUTH-06 | Phase 7 | Complete |
 | AUTH-07 | Phase 5 | Complete |
-| AUTH-08 | Phase 8 | Pending (split out of Phase 7, 07-CONTEXT.md) |
-| AUTH-09 | Phase 8 | Pending (split out of Phase 7, 07-CONTEXT.md) |
+| AUTH-08 | Phase 7 | Complete (satisfied by design — no data movement means no data loss; 2026-08-12) |
+| AUTH-09 | Phase 8 | Pending (narrowed to encrypted-blob backup only, contingent on Tomris; 2026-08-12) |
 | AUTH-10 | Phase 7 | Complete |
 | PROF-01 | Phase 1 | Complete |
 | PROF-02 | Phase 1 | Complete |
@@ -309,12 +310,12 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | ACC-05 | Phase 6 | Complete |
 
 **Coverage:**
-- v1 requirements: 94 total
-- Mapped to phases: 94
+- v1 requirements: 93 total
+- Mapped to phases: 93
 - Unmapped: 0 ✓
 - Duplicated (any requirement in >1 phase): 0 ✓
 
-**Note:** The previous traceability header claimed 75 total v1 requirements — corrected during roadmap creation. Actual v1 REQ-ID count is 94 (ONBD 5 + LEGAL 4 + AUTH 10 + PROF 6 + LOG 13 + NUTR 4 + CO2 6 + DASH 8 + INS 4 + WT 5 + PRIV 9 + NOTIF 3 + LEG 5 + NFR 7 + ACC 5). No CO2-07 requirement is defined in this document; the earlier reference to "CO2-07" in a draft traceability row was stale and has been removed.
+**Note:** The previous traceability header claimed 75 total v1 requirements — corrected during roadmap creation to 94, then to 93 on 2026-08-12 after ONBD-03 moved to `## v2 Requirements` (its premise — a real choice to weigh against Local Mode — doesn't exist without Phase 8's contingent Encrypted Account Backup shipping). Actual v1 REQ-ID count is 93 (ONBD 4 + LEGAL 4 + AUTH 10 + PROF 6 + LOG 13 + NUTR 4 + CO2 6 + DASH 8 + INS 4 + WT 5 + PRIV 9 + NOTIF 3 + LEG 5 + NFR 7 + ACC 5). No CO2-07 requirement is defined in this document; the earlier reference to "CO2-07" in a draft traceability row was stale and has been removed.
 
 ---
 

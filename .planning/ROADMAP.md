@@ -22,7 +22,7 @@
 - [x] **Phase 5: Nutrition, CO₂ Estimator, Dashboard, Insights, Weight, Notifications, Export/Backup** — full local app; CO₂ Estimator + Transparency + Improvement Opportunities; Insights (7d/30d); Weight tracking; local notifications; Export (CSV/Excel/JSON); Backup/Restore. **Local Mode shippable here.** (completed 2026-07-28)
 - [ ] **Phase 6: Onboarding, Legal Consent, Legal Hub, ED Safety Nets, Accessibility & Pre-Submission** — Splash → Welcome → Legal Consent → Mode Choice → Profile → Carousel; timestamped consent records; Legal Hub (Terms/Privacy/Disclaimer/Impressum); ED safety nets; PrivacyManifest/Data Safety; a11y audit; equal-weight Mode Choice audit; SAM test
 - [x] **Phase 7: Keycloak Auth + Account Deletion** — flutter_appauth OIDC/PKCE login (email/password, Apple, Google), logout, password reset, GDPR account deletion, local-only CO₂ methodology-update announcement. No data movement — Local→Account upgrade and sync are Phase 8. (completed 2026-08-09)
-- [ ] **Phase 8: User Data Sync Engine** — Local→Account upgrade without data loss, hand-rolled outbox + HLC sync, LWW conflict resolution, sync status UI, onboarding Mode Choice screen (two equal-weight cards) + equal-weight audit. Depends on a resolved backend data-ownership model with Tomris. (INSERTED — split out of the original Phase 7 on 2026-08-08, see `07-CONTEXT.md`)
+- [ ] **Phase 8: Encrypted Account Backup (contingent on Tomris)** — automatic, account-gated push/pull of an opaque client-encrypted backup blob to the backend; no bidirectional sync, no HLC, no conflict resolution needed. **Zero actionable content until Tomris resolves the backend's open encrypted-blob-vs-user-cloud-export decision** (currently leaning against it). (RENAMED AND NARROWED 2026-08-12 — see Phase Details section)
 - [ ] **Phase 9: Reference Data Delivery (Full OFF Pack)** — on-demand ~300–800MB OFF pack via CDN, delta refresh, live methodology-version announcement flow
 - [ ] **Phase 10: Post-Launch Enhancements (deferred)** — v1.1+ scope placeholder (water tracking, CO₂ profile modifiers UI polish, advanced insights, wearable/Health integration) — no v1 requirements land here; kept in roadmap for continuity
 
@@ -195,16 +195,15 @@ Plans:
 - [x] 07-08-PLAN.md — Final integration: router wiring, mode indicator, Legal Hub cross-reference, terms.md, GDPR contract spec for Tomris
 **UI hint**: yes
 
-### Phase 8: User Data Sync Engine
-**Goal**: Deliver the cross-device sync capability originally scoped into Phase 7 — Local→Account upgrade without data loss, hand-rolled outbox + HLC sync with LWW conflict resolution, and the onboarding Mode Choice screen — once Account Mode has something tangible to offer and the backend's data-ownership model is actually agreed with Tomris. (INSERTED — split out of the original "Phase 7: Keycloak Auth + Account Mode + Sync" on 2026-08-08 after a backend repo scan found the backend's real architecture avoids owning bidirectional user data; see `.planning/phases/07-keycloak-auth-account-mode-sync/07-CONTEXT.md` for the full rationale.)
-**Depends on**: Phase 7; requires an explicit backend data-ownership/sync-protocol agreement with Tomris (the backend's current design is one-directional catalog-only sync with an undecided backup story — this phase cannot be planned in detail until that's resolved)
-**Requirements**: AUTH-08, AUTH-09, ONBD-03
+### Phase 8: Encrypted Account Backup (contingent on Tomris)
+**Goal**: If and only if Tomris's backend resolves its still-open "encrypted blob vs. pure user-cloud export" decision toward encrypted blob storage, deliver automatic, account-gated backup/restore of local data to the backend as an opaque, client-encrypted blob the server cannot read — distinct from and additional to Phase 5's manual export/share, which remains the only backup mechanism otherwise. (RENAMED AND NARROWED 2026-08-12 — originally "User Data Sync Engine," a bidirectional outbox/HLC/LWW sync of user data. A re-scan of the `CO2Diet_Backend` reference repo confirmed the backend's "Sync" module is permanently scoped to catalog/CO₂ reference data only and will never do bidirectional user-data sync, regardless of how the encrypted-backup decision resolves — this is settled architecture, not an open question. See `.planning/phases/07-keycloak-auth-account-mode-sync/07-CONTEXT.md` for the original split rationale.)
+**Depends on**: Phase 7; requires Tomris to resolve the backend's open "encrypted blob vs. pure user-cloud export" decision (`docs/backend-architecture.md` §13 in the backend reference repo) toward encrypted blob storage. **The documented design currently leans against this** ("leans user-cloud, which lets us drop the `backup/` module entirely") — this phase has zero actionable content until/unless that changes and should not be planned blind.
+**Requirements**: AUTH-09 (narrowed 2026-08-12 — see REQUIREMENTS.md)
 **Success Criteria** (what must be TRUE):
-  1. A Local Mode (or newly-authenticated) user can upgrade to full Account Mode at any time without losing any local data — all existing local rows are marked dirty and drained to the backend via the outbox, and dashboard/history reflect zero data loss after the upgrade completes.
-  2. Sync engine: background/foreground-on-resume outbox drainer pushes dirty local rows, delta pull applies remote changes, conflicts resolve LWW-by-HLC; sync status is visible to the user (idle / syncing / error) via a non-intrusive indicator; sync is fully transparent on the happy path.
-  3. Onboarding Mode Choice screen ships: two equal-weight cards (Account vs. Local Mode), no "Recommended" badge on either, audited against live-build bias (ONBD-03) — meaningful now that Account Mode actually offers cross-device sync.
-  4. Every repository's Phase-1 HLC placeholders (`hlcNodeId='local'`, `hlcCounter=0`) are replaced with a full HLC clock using a stable device UUID.
-**Plans**: TBD
+  1. A logged-in Account Mode user can push an opaque, client-side-encrypted backup of their local data to the backend, and pull it down on another device — the backend never has access to readable meals/weight/profile data at any point.
+  2. Backup push/pull is automatic and account-gated, distinct from Phase 5's manual export/share (which remains available and unchanged for any user who doesn't want cloud backup).
+  3. No conflict-resolution or merge logic is needed or built — the blob is opaque and unreadable server-side, so there is no bidirectional sync, no HLC, no outbox, no LWW. This is a simple push/pull, not a sync engine.
+**Plans**: TBD — do not plan until Tomris's backend decision resolves
 **UI hint**: yes
 
 ### Phase 9: Reference Data Delivery (Full OFF Pack)
@@ -218,8 +217,8 @@ Plans:
 **Plans**: TBD
 
 ### Phase 10: Post-Launch Enhancements (v1.1+ Placeholder)
-**Goal**: Track deferred v1.1+ scope (water tracking, CO₂ profile modifier UI polish, advanced insights, wearable / Apple Health / Google Fit integration, recipes, passkeys) as a durable slot in the roadmap — no v1 requirements land here.
-**Depends on**: Phase 7 and Phase 8 shipped and live-user feedback collected
+**Goal**: Track deferred v1.1+ scope (water tracking, CO₂ profile modifier UI polish, advanced insights, wearable / Apple Health / Google Fit integration, recipes, passkeys, ONBD-03's Mode Choice screen) as a durable slot in the roadmap — no v1 requirements land here.
+**Depends on**: Phase 7 shipped and live-user feedback collected. Phase 8 is contingent and may never ship — not a hard dependency.
 **Requirements**: (none in v1; placeholder for v1.1 promotions from `## v2 Requirements` in REQUIREMENTS.md)
 **Success Criteria** (what must be TRUE):
   1. A prioritized v1.1 shortlist exists in `.planning/` derived from post-launch user feedback and store review signal.
@@ -239,7 +238,7 @@ Plans:
 | 5. Full Local App (Local Mode Shippable) | 19/19 | Complete    | 2026-07-28 |
 | 6. Onboarding, Legal & Pre-Submission | 9/10 | In Progress|  |
 | 7. Keycloak Auth + Account Deletion | 8/8 | Complete   | 2026-08-09 |
-| 8. User Data Sync Engine (INSERTED) | 0/0 | Not started | - |
+| 8. Encrypted Account Backup (contingent) | 0/0 | Not started | - |
 | 9. Reference Data Delivery (Full OFF Pack) | 0/0 | Not started | - |
 | 10. Post-Launch Enhancements (v1.1+) | 0/0 | Not started | - |
 
@@ -263,7 +262,7 @@ Plans:
 
 **LEG-05 (CO₂ methodology publicly documented):** Assigned to Phase 3 where the CO₂ factor table + confidence bands + transparency link land together.
 
-**AUTH-08 / AUTH-09 / ONBD-03 (Local→Account upgrade, sync engine, Mode Choice screen):** Originally bundled into Phase 7; split out to the new Phase 8 on 2026-08-08 after a backend repo scan found the backend's actual architecture avoids owning bidirectional user data. See `.planning/phases/07-keycloak-auth-account-mode-sync/07-CONTEXT.md`.
+**AUTH-08 / AUTH-09 / ONBD-03 resolution (2026-08-12):** Originally bundled into Phase 7, then split into Phase 8 on 2026-08-08. A re-scan of the `CO2Diet_Backend` reference repo confirmed the backend's "Sync" module will never do bidirectional user-data sync — settled architecture, not an open question, regardless of the backend's separate still-open encrypted-backup decision. Resolved as: **AUTH-08** is satisfied by Phase 7's existing zero-data-movement design (marked Complete in REQUIREMENTS.md, no further work needed). **AUTH-09** is narrowed to only the encrypted-blob-backup case and stays with the renamed Phase 8, contingent on Tomris. **ONBD-03** is moved to `## v2 Requirements` in REQUIREMENTS.md — its premise (a real choice to weigh against Local Mode) doesn't exist without that backup shipping. See `.planning/phases/07-keycloak-auth-account-mode-sync/07-CONTEXT.md` for the original split rationale.
 
 ---
 
