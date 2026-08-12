@@ -214,7 +214,16 @@ Plans:
   1. User can opt into "Download full food database" from settings; the client downloads the current OFF pack from a CDN with pause/resume and Wi-Fi-only default.
   2. Incremental delta refresh runs on user request or on a configurable schedule (never silent — always visible via Settings status, regardless of Local vs. Account Mode; the two modes have no functional difference here, corrected 2026-08-12 from earlier "in Local Mode" wording that predated the Phase 7/8 split), and applied deltas do not require app reinstall.
   3. Download progress and disk-usage impact are transparently shown before and during the transfer; user can revert to the bundled seed at any time.
-**Plans**: TBD
+**Plans**: 8 plans, 7 waves
+Plans:
+- [ ] 09-01-PLAN.md — Wave 0 test stubs (7 files)
+- [ ] 09-02-PLAN.md — Package installs (background_downloader, crypto, storage_space) + domain contracts (ReferencePackStatus/Schedule, ReferencePackManifest, IReferencePackRepository) + ChecksumVerifier + DiskSpaceChecker
+- [ ] 09-03-PLAN.md — ReferencePackApiClient + ReferencePackExtractor (atomic swap) + FoodCatalogDao.countProducts + DownloadManager (background_downloader wrapper)
+- [ ] 09-04-PLAN.md — DeltaApplier (products_fts resync) + ReferencePackRepository + DI wiring
+- [ ] 09-05-PLAN.md — ReferencePackNotifier + Settings row + dedicated ReferenceDataScreen + router wiring
+- [ ] 09-06-PLAN.md — ReferencePackScheduleNotifier + app.dart foreground scheduled-check wiring
+- [ ] 09-07-PLAN.md — Manifest/delta contract doc + tools/build_reference_pack_release.py (build-side pipeline)
+- [ ] 09-08-PLAN.md — Local Range-test-server + real-device verification (resumable download, live atomic swap)
 
 ### Phase 10: Post-Launch Enhancements (v1.1+ Placeholder)
 **Goal**: Track deferred v1.1+ scope (water tracking, CO₂ profile modifier UI polish, advanced insights, wearable / Apple Health / Google Fit integration, recipes, passkeys, ONBD-03's Mode Choice screen) as a durable slot in the roadmap — no v1 requirements land here.
