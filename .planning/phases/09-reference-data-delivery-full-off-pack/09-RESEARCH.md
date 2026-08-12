@@ -451,22 +451,25 @@ CREATE TABLE deleted_barcodes (
 
 **If this table is empty:** N/A — see rows above.
 
-## Open Questions
+## Open Questions (RESOLVED — see per-question markers below)
 
 1. **What does the eventual CDN choice mean for resume reliability and cost?**
    - What we know: CONTEXT.md explicitly defers CDN hosting as a coordination point, not blocking this phase's planning.
    - What's unclear: Whether the eventual host (S3, Cloudflare R2, Bunny, GitHub Releases, backend-team infra) reliably supports Range requests + stable ETags, and what the egress-cost implications of "multi-hundred-MB downloads for every opted-in user" are.
    - Recommendation: Plan the client-side download/resume logic against the generic HTTP Range contract (works with any Range-capable static host); treat actual CDN selection + a resume-reliability smoke test against it as a pre-launch/human-verification gate, not a client-code blocker.
+   - **RESOLVED — deferred by design:** CDN choice is explicitly out of this phase's scope per CONTEXT.md's "Claude's Discretion" section (a flagged, non-blocking coordination point, not a client-code blocker). The client-side logic is planned against the generic HTTP Range contract regardless of eventual host, so no plan is blocked on this question.
 
 2. **Who owns and runs the build-side delta-generation pipeline, and on what cadence?**
    - What we know: `tools/ingest_off.py` already exists and could be extended to also emit a diff against the previous published version; OFF's own dumps regenerate nightly with 14-day rolling deltas.
    - What's unclear: Whether this pipeline runs on Ali's machine manually (like the current Phase 2 seed-generation process), or needs CI/scheduled infra — and how often new full-pack versions are actually cut (weekly? monthly? tied to app releases?).
    - Recommendation: Out of this phase's Flutter-client scope by design, but the planner should still produce/extend `tools/ingest_off.py` (or a sibling script) as part of this phase's deliverables, since the client can't be meaningfully tested end-to-end without at least one real manifest + pack + delta artifact to point at.
+   - **RESOLVED:** addressed by Plan 09-07's `tools/build_reference_pack_release.py`, a sibling script to `tools/ingest_off.py` that produces a versioned full-pack release, `manifest.json`, and a delta artifact against a prior version — run manually today (same pattern as the existing Phase 2 seed-generation process), with CI/scheduled infra explicitly left as a future decision, not a blocker for this phase.
 
 3. **Exact bytes-remaining / speed / ETA display source**
    - What we know: CONTEXT.md requires bytes downloaded/total and a determinate percentage.
    - What's unclear: Whether `background_downloader`'s `TaskProgressUpdate` exposes raw byte counts directly or only a 0.0–1.0 fraction (multiple docs excerpts referenced fraction-based progress plus a separate `DownloadProgressIndicator` widget showing speed/time-remaining, but didn't show the exact byte-count field name).
    - Recommendation: Confirm the exact `TaskProgressUpdate` field names during implementation (quick pub.dev API-reference check, not a planning blocker) — worst case, compute bytes-downloaded as `progress * expectedFileSize` from the manifest's already-known `pack_size_bytes`.
+   - **RESOLVED:** the documented fallback is specified directly in Plan 09-03 Task 2's DownloadManager action — if raw byte counts are not exposed on `TaskProgressUpdate`, bytesDownloaded is computed via a dedicated, unit-tested `estimateBytesDownloaded(progressFraction, expectedFileSize)` helper using `progress * expectedFileSize`. The exact field-name check itself remains a routine implementation-time detail, not a planning blocker.
 
 ## Environment Availability
 
