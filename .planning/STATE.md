@@ -160,8 +160,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 **Last session:** 2026-08-12T15:16:09.428Z
 **Stopped at:** Phase 9 context gathered — full OFF pack delivery, delta refresh, revert-to-seed all locked
-**Next action:** Phase 8 (User Data Sync Engine) remains blocked on a resolved backend data-ownership agreement with Tomris — do not plan it blind. **Phase 9 (Reference Data Delivery / Full OFF Pack) has no technical dependency on Phase 8** (confirmed 2026-08-12 — CDN-delivered static reference data, no auth/sync coupling) and can be discussed/planned now instead, making real roadmap progress while waiting on Tomris.
-**Suggested next command:** `/gsd:discuss-phase 9` (Phase 8 stays parked until Tomris conversation happens: `/gsd:discuss-phase 8` once resolved)
+**Next action:** Phase 9 context gathered (09-CONTEXT.md) — ready to plan. Phase 8 (Encrypted Account Backup) remains parked with zero actionable content until Tomris resolves the backend's still-open encrypted-blob-vs-user-cloud-export decision — do not discuss/plan it blind.
+**Suggested next command:** `/gsd:plan-phase 9` (Phase 8 stays parked until Tomris's backend decision resolves: `/gsd:discuss-phase 8` once it does)
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
