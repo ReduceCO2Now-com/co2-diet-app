@@ -160,8 +160,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 **Last session:** 2026-08-10T00:22:38.000Z
 **Stopped at:** Completed 07-08-PLAN.md — Phase 7 (Keycloak Auth + Account Deletion) fully complete, 8/8 plans
-**Next action:** Plan Phase 8 (User Data Sync Engine) — depends on a resolved backend data-ownership agreement with Tomris (see ROADMAP.md Phase 8 section)
-**Suggested next command:** `/gsd:plan-phase 8` (once backend data-ownership is agreed with Tomris)
+**Next action:** Phase 8 (User Data Sync Engine) remains blocked on a resolved backend data-ownership agreement with Tomris — do not plan it blind. **Phase 9 (Reference Data Delivery / Full OFF Pack) has no technical dependency on Phase 8** (confirmed 2026-08-12 — CDN-delivered static reference data, no auth/sync coupling) and can be discussed/planned now instead, making real roadmap progress while waiting on Tomris.
+**Suggested next command:** `/gsd:discuss-phase 9` (Phase 8 stays parked until Tomris conversation happens: `/gsd:discuss-phase 8` once resolved)
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 

@@ -209,7 +209,7 @@ Plans:
 
 ### Phase 9: Reference Data Delivery (Full OFF Pack)
 **Goal**: Enable users on Wi-Fi to opt into the full Open Food Facts catalog (~300–800MB) via CDN with incremental delta refresh — closing the last gap between "starter seed" and "full catalog" without inflating install size for everyone.
-**Depends on**: Phase 8 (post-launch enrichment; not blocking store submission)
+**Depends on**: Phase 2 (bundled seed database this enriches). **No technical dependency on Phase 8** — CDN-delivered static reference data, no auth/Account Mode/backend-sync coupling; works identically in Local Mode (post-launch enrichment; not blocking store submission). Listed after Phase 8 for roadmap continuity only, not because it's blocked on it — confirmed 2026-08-12 after re-reading this phase's own content against the Phase 8 split.
 **Requirements**: (none — v1 launch is served by the Phase 2 bundled seed; this phase is v1.0.x enrichment kept in-roadmap for continuity)
 **Success Criteria** (what must be TRUE):
   1. User can opt into "Download full food database" from settings; the client downloads the current OFF pack from a CDN with pause/resume and Wi-Fi-only default.
