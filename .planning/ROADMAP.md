@@ -212,7 +212,7 @@ Plans:
 **Requirements**: (none — v1 launch is served by the Phase 2 bundled seed; this phase is v1.0.x enrichment kept in-roadmap for continuity)
 **Success Criteria** (what must be TRUE):
   1. User can opt into "Download full food database" from settings; the client downloads the current OFF pack from a CDN with pause/resume and Wi-Fi-only default.
-  2. Incremental delta refresh runs on user request or on a configurable schedule (never silent background transfer in Local Mode), and applied deltas do not require app reinstall.
+  2. Incremental delta refresh runs on user request or on a configurable schedule (never silent — always visible via Settings status, regardless of Local vs. Account Mode; the two modes have no functional difference here, corrected 2026-08-12 from earlier "in Local Mode" wording that predated the Phase 7/8 split), and applied deltas do not require app reinstall.
   3. Download progress and disk-usage impact are transparently shown before and during the transfer; user can revert to the bundled seed at any time.
 **Plans**: TBD
 
