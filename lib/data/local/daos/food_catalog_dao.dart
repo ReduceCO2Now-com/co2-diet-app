@@ -512,6 +512,30 @@ class FoodCatalogDao extends DatabaseAccessor<AppDatabase>
   }
 
   // ---------------------------------------------------------------------------
+  // Reference pack product count (Plan 09-03)
+  // ---------------------------------------------------------------------------
+
+  /// Returns `SELECT COUNT(*) FROM off_ref.products` -- the raw product
+  /// count of whatever is currently ATTACHed under the `off_ref` alias,
+  /// whether that is the bundled starter seed or a downloaded
+  /// full/delta-refreshed pack. Used by the product-count comparison UI
+  /// (`09-CONTEXT.md`'s locked "50,000 products (starter pack)" vs
+  /// "2.5M products (full catalog)" example).
+  ///
+  /// Returns 0 when [AppDatabase.offRefPath] is null (unit-test isolation
+  /// convention, matching every other off_ref-dependent method in this DAO).
+  Future<int> countProducts() async {
+    if (attachedDatabase.offRefPath == null) return 0;
+    final row = await attachedDatabase
+        .customSelect(
+          'SELECT COUNT(*) AS product_count FROM off_ref.products',
+          readsFrom: {},
+        )
+        .getSingle();
+    return row.read<int>('product_count');
+  }
+
+  // ---------------------------------------------------------------------------
   // Personal override mapping (LOG-11)
   // ---------------------------------------------------------------------------
 
