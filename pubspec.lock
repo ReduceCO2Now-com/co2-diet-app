@@ -73,6 +73,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.13.1"
+  background_downloader:
+    dependency: "direct main"
+    description:
+      name: background_downloader
+      sha256: bdd41f116998233182cc4ec04cb6afac534067d640ddebb791ce44593f574b87
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.5.8"
   boolean_selector:
     dependency: transitive
     description:
@@ -242,7 +250,7 @@ packages:
     source: hosted
     version: "0.3.5+4"
   crypto:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: crypto
       sha256: c8ea0233063ba03258fbcf2ca4d6dadfefe14f02fab57702265467a19f27fadf
@@ -1289,6 +1297,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+  storage_space:
+    dependency: "direct main"
+    description:
+      name: storage_space
+      sha256: "8a3fbc61c20ce3b926b663b4ae77064e2bc5351a49756a41fa415e302f4063cd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.0"
   stream_channel:
     dependency: transitive
     description:
