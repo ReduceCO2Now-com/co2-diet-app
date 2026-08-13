@@ -158,10 +158,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-08-12T15:16:09.428Z
-**Stopped at:** Phase 9 context gathered — full OFF pack delivery, delta refresh, revert-to-seed all locked
-**Next action:** Phase 9 context gathered (09-CONTEXT.md) — ready to plan. Phase 8 (Encrypted Account Backup) remains parked with zero actionable content until Tomris resolves the backend's still-open encrypted-blob-vs-user-cloud-export decision — do not discuss/plan it blind.
-**Suggested next command:** `/gsd:plan-phase 9` (Phase 8 stays parked until Tomris's backend decision resolves: `/gsd:discuss-phase 8` once it does)
+**Last session:** 2026-08-13
+**Stopped at:** Phase 9 planned and independently verified — 8 plans across 7 waves (09-01 through 09-08), 3 revision iterations against the plan checker (gzip-decompression gap, script-path fix, DeltaApplier-wiring + fixture-filename fix) plus a 4th one-time independent confirmation pass that found zero remaining issues. `## VERIFICATION PASSED`. Ready to execute.
+**Next action:** Run `/gsd:execute-phase 9`. Phase 8 (Encrypted Account Backup) remains parked with zero actionable content until Tomris resolves the backend's still-open encrypted-blob-vs-user-cloud-export decision — do not discuss/plan it blind.
+**Suggested next command:** `/gsd:execute-phase 9` (Phase 8 stays parked until Tomris's backend decision resolves: `/gsd:discuss-phase 8` once it does)
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
