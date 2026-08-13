@@ -2,14 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
-status: planning
-stopped_at: Phase 9 context gathered — full OFF pack delivery, delta refresh, revert-to-seed all locked
-last_updated: "2026-08-12T15:16:09.436Z"
+status: executing
+last_updated: "2026-08-13T11:43:54.654Z"
 progress:
   total_phases: 10
   completed_phases: 7
-  total_plans: 69
-  completed_plans: 69
+  total_plans: 70
+  completed_plans: 70
   percent: 70
 ---
 
@@ -36,9 +35,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 07-keycloak-auth-account-mode-sync — **COMPLETE** (8/8 plans executed). Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS.
-- **Plan:** 07-08 (Phase 7 close-out: ModeIndicator wired to real AuthNotifier state with locked "sync coming soon" copy, Legal Hub Delete Account cross-reference, terms.md Account Mode & Data section, docs/backend-contracts/gdpr-account-deletion.md written spec for Tomris, full flutter test suite green) — COMPLETE.
-- **Status:** Ready to plan
+- **Phase:** 09-reference-data-delivery-full-off-pack — **IN PROGRESS** (1/8 plans executed). Phase 7 (Keycloak Auth + Account Deletion) is COMPLETE — 8/8 plans. Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS. Phase 8 (Encrypted Account Backup) remains parked pending Tomris's backend decision.
+- **Plan:** 09-01 (Wave 0 test stubs: 7 skipped stub files covering manifest fetch/parse, version comparison, disk preflight, checksum verification, Settings row, dedicated download/revert screen, scheduled lifecycle check, delta-apply FTS sync) — COMPLETE.
+- **Status:** Executing Phase 9
 - **Progress:** [███████░░░] 70% (7/10 phases)
 - **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files. Phase 7's requirement set (AUTH-01, AUTH-02, AUTH-03, AUTH-05, AUTH-06, AUTH-10, PRIV-05) is now fully delivered and reachable end-to-end.
 
@@ -158,10 +157,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-08-13
-**Stopped at:** Phase 9 planned and independently verified — 8 plans across 7 waves (09-01 through 09-08), 3 revision iterations against the plan checker (gzip-decompression gap, script-path fix, DeltaApplier-wiring + fixture-filename fix) plus a 4th one-time independent confirmation pass that found zero remaining issues. `## VERIFICATION PASSED`. Ready to execute.
-**Next action:** Run `/gsd:execute-phase 9`. Phase 8 (Encrypted Account Backup) remains parked with zero actionable content until Tomris resolves the backend's still-open encrypted-blob-vs-user-cloud-export decision — do not discuss/plan it blind.
-**Suggested next command:** `/gsd:execute-phase 9` (Phase 8 stays parked until Tomris's backend decision resolves: `/gsd:discuss-phase 8` once it does)
+**Last session:** 2026-08-13T11:43:54.643Z
+**Stopped at:** Phase 9 Plan 01 (Wave 0 test stubs) executed and committed
+**Next action:** Continue Phase 9 execution — run `/gsd:execute-phase 9` again (or the orchestrator's next-plan step) to proceed to Plan 09-02 (package installs + DiskSpaceChecker + ChecksumVerifier implementation, turning two of this plan's stubs green).
+**Suggested next command:** `/gsd:execute-phase 9` (continues from Plan 09-02; Phase 8 stays parked until Tomris's backend decision resolves: `/gsd:discuss-phase 8` once it does)
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
@@ -343,6 +342,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 07-08]: terms.md's Contact section was actually numbered "## 8. Contact" on disk (not "## 9." as PLAN.md's prose assumed) -- new Account Mode & Data section inserted as "## 9.", Contact renumbered to "## 10."
 - [Phase 07-08]: docs/backend-contracts/ created as a new top-level docs directory for written API-contract hand-off specs to Tomris, with every field explicitly marked [ASSUMED -- not yet confirmed with Tomris] -- establishes the pattern for any future backend-contract documentation this app needs (e.g. Phase 8's sync endpoints)
 - [Phase 07-08]: Phase 7 (Keycloak Auth + Account Deletion) is fully COMPLETE -- 8/8 plans, all AUTH-01/02/03/05/06/10 + PRIV-05 requirements delivered and reachable end-to-end, full flutter test suite green (473 tests), privacy blocklist check passing with flutter_appauth/flutter_secure_storage installed
+- [Phase 09-01]: reference_pack_delta_apply_test.dart uses testWidgets wrapped in a skipped group() (not markTestSkipped()-in-body) per this plan's explicit spec, matching this project's testWidgets-based integration_test convention
+- [Phase 09-01]: flutter test cannot combine integration_test/ files with unit/widget test files in a single invocation -- plan's combined <verify> commands split into separate invocations; the integration stub is verified via flutter analyze only since this local environment's Xcode/codesign setup cannot build any integration_test target (pre-existing, confirmed against an already-passing existing integration test)
 
 ## Performance Metrics
 
@@ -406,3 +407,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 07-keycloak-auth-account-mode-sync P06 | ~20min | 2 tasks | 5 files |
 | Phase 07-keycloak-auth-account-mode-sync P07 | ~15min | 2 tasks | 5 files |
 | Phase 07-keycloak-auth-account-mode-sync P08 | ~15min | 2 tasks | 7 files |
+| Phase 09 P01 | ~20min | 3 tasks | 8 files |

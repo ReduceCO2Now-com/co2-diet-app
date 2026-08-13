@@ -216,7 +216,7 @@ Plans:
   3. Download progress and disk-usage impact are transparently shown before and during the transfer; user can revert to the bundled seed at any time.
 **Plans**: 8 plans, 7 waves
 Plans:
-- [ ] 09-01-PLAN.md — Wave 0 test stubs (7 files)
+- [x] 09-01-PLAN.md — Wave 0 test stubs (7 files)
 - [ ] 09-02-PLAN.md — Package installs (background_downloader, crypto, storage_space) + domain contracts (ReferencePackStatus/Schedule, ReferencePackManifest, IReferencePackRepository) + ChecksumVerifier + DiskSpaceChecker
 - [ ] 09-03-PLAN.md — ReferencePackApiClient + ReferencePackExtractor (atomic swap) + FoodCatalogDao.countProducts + DownloadManager (background_downloader wrapper)
 - [ ] 09-04-PLAN.md — DeltaApplier (products_fts resync) + ReferencePackRepository + DI wiring
@@ -248,7 +248,7 @@ Plans:
 | 6. Onboarding, Legal & Pre-Submission | 9/10 | In Progress|  |
 | 7. Keycloak Auth + Account Deletion | 8/8 | Complete   | 2026-08-09 |
 | 8. Encrypted Account Backup (contingent) | 0/0 | Not started | - |
-| 9. Reference Data Delivery (Full OFF Pack) | 0/0 | Not started | - |
+| 9. Reference Data Delivery (Full OFF Pack) | 1/8 | In Progress|  |
 | 10. Post-Launch Enhancements (v1.1+) | 0/0 | Not started | - |
 
 ---
