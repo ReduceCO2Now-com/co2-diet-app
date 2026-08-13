@@ -218,7 +218,7 @@ Plans:
 Plans:
 - [x] 09-01-PLAN.md — Wave 0 test stubs (7 files)
 - [x] 09-02-PLAN.md — Package installs (background_downloader, crypto, storage_space) + domain contracts (ReferencePackStatus/Schedule, ReferencePackManifest, IReferencePackRepository) + ChecksumVerifier + DiskSpaceChecker
-- [ ] 09-03-PLAN.md — ReferencePackApiClient + ReferencePackExtractor (atomic swap) + FoodCatalogDao.countProducts + DownloadManager (background_downloader wrapper)
+- [x] 09-03-PLAN.md — ReferencePackApiClient + ReferencePackExtractor (atomic swap) + FoodCatalogDao.countProducts + DownloadManager (background_downloader wrapper)
 - [ ] 09-04-PLAN.md — DeltaApplier (products_fts resync) + ReferencePackRepository + DI wiring
 - [ ] 09-05-PLAN.md — ReferencePackNotifier + Settings row + dedicated ReferenceDataScreen + router wiring
 - [ ] 09-06-PLAN.md — ReferencePackScheduleNotifier + app.dart foreground scheduled-check wiring
@@ -248,7 +248,7 @@ Plans:
 | 6. Onboarding, Legal & Pre-Submission | 9/10 | In Progress|  |
 | 7. Keycloak Auth + Account Deletion | 8/8 | Complete   | 2026-08-09 |
 | 8. Encrypted Account Backup (contingent) | 0/0 | Not started | - |
-| 9. Reference Data Delivery (Full OFF Pack) | 3/8 | In Progress|  |
+| 9. Reference Data Delivery (Full OFF Pack) | 4/8 | In Progress|  |
 | 10. Post-Launch Enhancements (v1.1+) | 0/0 | Not started | - |
 
 ---
