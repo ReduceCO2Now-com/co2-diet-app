@@ -222,7 +222,7 @@ Plans:
 - [ ] 09-04-PLAN.md — DeltaApplier (products_fts resync) + ReferencePackRepository + DI wiring
 - [ ] 09-05-PLAN.md — ReferencePackNotifier + Settings row + dedicated ReferenceDataScreen + router wiring
 - [ ] 09-06-PLAN.md — ReferencePackScheduleNotifier + app.dart foreground scheduled-check wiring
-- [ ] 09-07-PLAN.md — Manifest/delta contract doc + tools/build_reference_pack_release.py (build-side pipeline)
+- [x] 09-07-PLAN.md — Manifest/delta contract doc + tools/build_reference_pack_release.py (build-side pipeline)
 - [ ] 09-08-PLAN.md — Local Range-test-server + real-device verification (resumable download, live atomic swap)
 
 ### Phase 10: Post-Launch Enhancements (v1.1+ Placeholder)
@@ -248,7 +248,7 @@ Plans:
 | 6. Onboarding, Legal & Pre-Submission | 9/10 | In Progress|  |
 | 7. Keycloak Auth + Account Deletion | 8/8 | Complete   | 2026-08-09 |
 | 8. Encrypted Account Backup (contingent) | 0/0 | Not started | - |
-| 9. Reference Data Delivery (Full OFF Pack) | 1/8 | In Progress|  |
+| 9. Reference Data Delivery (Full OFF Pack) | 2/8 | In Progress|  |
 | 10. Post-Launch Enhancements (v1.1+) | 0/0 | Not started | - |
 
 ---

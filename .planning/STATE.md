@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-08-13T11:43:54.654Z"
+last_updated: "2026-08-13T11:57:42.352Z"
 progress:
   total_phases: 10
   completed_phases: 7
@@ -35,8 +35,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 09-reference-data-delivery-full-off-pack — **IN PROGRESS** (1/8 plans executed). Phase 7 (Keycloak Auth + Account Deletion) is COMPLETE — 8/8 plans. Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS. Phase 8 (Encrypted Account Backup) remains parked pending Tomris's backend decision.
-- **Plan:** 09-01 (Wave 0 test stubs: 7 skipped stub files covering manifest fetch/parse, version comparison, disk preflight, checksum verification, Settings row, dedicated download/revert screen, scheduled lifecycle check, delta-apply FTS sync) — COMPLETE.
+- **Phase:** 09-reference-data-delivery-full-off-pack — **IN PROGRESS** (2/8 plans executed). Phase 7 (Keycloak Auth + Account Deletion) is COMPLETE — 8/8 plans. Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS. Phase 8 (Encrypted Account Backup) remains parked pending Tomris's backend decision.
+- **Plan:** 09-07 (Manifest/delta contract spec: `docs/data-contracts/reference-pack-manifest.md`, plus `tools/build_reference_pack_release.py` build-side release/delta-generation script + `tools/README.md` usage docs — Wave 1, zero dependency on/overlap with the Flutter client plans 09-01–09-06) — COMPLETE.
 - **Status:** Executing Phase 9
 - **Progress:** [███████░░░] 70% (7/10 phases)
 - **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files. Phase 7's requirement set (AUTH-01, AUTH-02, AUTH-03, AUTH-05, AUTH-06, AUTH-10, PRIV-05) is now fully delivered and reachable end-to-end.
@@ -157,9 +157,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-08-13T11:43:54.643Z
-**Stopped at:** Phase 9 Plan 01 (Wave 0 test stubs) executed and committed
-**Next action:** Continue Phase 9 execution — run `/gsd:execute-phase 9` again (or the orchestrator's next-plan step) to proceed to Plan 09-02 (package installs + DiskSpaceChecker + ChecksumVerifier implementation, turning two of this plan's stubs green).
+**Last session:** 2026-08-13T11:56:31.612Z
+**Stopped at:** Phase 9 Plan 07 (Manifest/delta contract spec + tools/build_reference_pack_release.py) executed and committed
+**Next action:** Continue Phase 9 execution — run `/gsd:execute-phase 9` again (or the orchestrator's next-plan step) to proceed to Plan 09-02 (package installs + DiskSpaceChecker + ChecksumVerifier implementation, turning two of Plan 09-01's stubs green). Plan 09-07 had zero dependency on/overlap with 09-02.
 **Suggested next command:** `/gsd:execute-phase 9` (continues from Plan 09-02; Phase 8 stays parked until Tomris's backend decision resolves: `/gsd:discuss-phase 8` once it does)
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
@@ -344,6 +344,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 07-08]: Phase 7 (Keycloak Auth + Account Deletion) is fully COMPLETE -- 8/8 plans, all AUTH-01/02/03/05/06/10 + PRIV-05 requirements delivered and reachable end-to-end, full flutter test suite green (473 tests), privacy blocklist check passing with flutter_appauth/flutter_secure_storage installed
 - [Phase 09-01]: reference_pack_delta_apply_test.dart uses testWidgets wrapped in a skipped group() (not markTestSkipped()-in-body) per this plan's explicit spec, matching this project's testWidgets-based integration_test convention
 - [Phase 09-01]: flutter test cannot combine integration_test/ files with unit/widget test files in a single invocation -- plan's combined <verify> commands split into separate invocations; the integration stub is verified via flutter analyze only since this local environment's Xcode/codesign setup cannot build any integration_test target (pre-existing, confirmed against an already-passing existing integration test)
+- [Phase 09-07]: pack_size_bytes/pack_sha256 describe the gzip-compressed full-pack artifact only, never the decompressed size -- client derives a decompressed estimate via a documented ~3.17x compression-ratio constant measured from this repo's own assets/off_reference.sqlite vs .sqlite.gz
+- [Phase 09-07]: Delta artifact ships uncompressed as a plain SQLite file (no gzip step), unlike the full pack -- small enough that compression isn't worth the added complexity
+- [Phase 09-07]: products_delta uses the full 11-column products schema (including primary_category_tag), matching tools/ingest_off.py's actual DDL, not the 10-column illustrative subset from 09-RESEARCH.md's Code Examples
+- [Phase 09-07]: tools/build_reference_pack_release.py diffs deltas entirely in SQL (ATTACH old/cur + NOT EXISTS + NULL-safe IS equality), not by loading rows into Python -- scales to a real multi-million-row full OFF dump, not just the bundled starter-seed sample
 
 ## Performance Metrics
 
@@ -408,3 +412,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 07-keycloak-auth-account-mode-sync P07 | ~15min | 2 tasks | 5 files |
 | Phase 07-keycloak-auth-account-mode-sync P08 | ~15min | 2 tasks | 7 files |
 | Phase 09 P01 | ~20min | 3 tasks | 8 files |
+| Phase 09 P07 | 8min | 2 tasks | 3 files |
