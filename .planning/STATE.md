@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-08-13T12:24:13.791Z"
+last_updated: "2026-08-14T07:50:41.860Z"
 progress:
   total_phases: 10
   completed_phases: 7
@@ -35,8 +35,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 09-reference-data-delivery-full-off-pack — **IN PROGRESS** (4/8 plans executed). Phase 7 (Keycloak Auth + Account Deletion) is COMPLETE — 8/8 plans. Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS. Phase 8 (Encrypted Account Backup) remains parked pending Tomris's backend decision.
-- **Plan:** 09-03 (ReferencePackApiClient + ReferencePackExtractor (live DETACH/gzip-decompress/ATTACH swap, real-fixture tested) + DownloadManager (background_downloader wrapper) + FoodCatalogDao.countProducts — Wave 3, depends on 09-02) — COMPLETE.
+- **Phase:** 09-reference-data-delivery-full-off-pack — **IN PROGRESS** (5/8 plans executed). Phase 7 (Keycloak Auth + Account Deletion) is COMPLETE — 8/8 plans. Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS. Phase 8 (Encrypted Account Backup) remains parked pending Tomris's backend decision.
+- **Plan:** 09-04 (DeltaApplier (real FTS5-sync integration test) + ReferencePackRepository (full-pack AND delta preflight->manifest->download->verify->swap/apply orchestration, checksum-gated) + reference_pack_providers.dart DI wiring — Wave 4, depends on 09-02/09-03) — COMPLETE.
 - **Status:** Executing Phase 9
 - **Progress:** [███████░░░] 70% (7/10 phases)
 - **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files. Phase 7's requirement set (AUTH-01, AUTH-02, AUTH-03, AUTH-05, AUTH-06, AUTH-10, PRIV-05) is now fully delivered and reachable end-to-end.
@@ -157,10 +157,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-08-13T20:22:01+08:00
-**Stopped at:** Phase 9 Plan 03 (ReferencePackApiClient + ReferencePackExtractor (live DETACH/gzip-decompress/ATTACH swap, real-fixture tested) + DownloadManager (background_downloader wrapper) + FoodCatalogDao.countProducts) executed and committed
-**Next action:** Continue Phase 9 execution — run `/gsd:execute-phase 9` again (or the orchestrator's next-plan step) to proceed to Plan 09-04 (Wave 4, depends on 09-02/09-03), which builds DeltaApplier and ReferencePackRepository to compose every Plan 09-02/09-03 primitive into the preflight → manifest → download → verify → swap sequence.
-**Suggested next command:** `/gsd:execute-phase 9` (continues from Plan 09-04; Phase 8 stays parked until Tomris's backend decision resolves: `/gsd:discuss-phase 8` once it does)
+**Last session:** 2026-08-14T00:00:00+00:00
+**Stopped at:** Phase 9 Plan 04 (DeltaApplier + ReferencePackRepository (full-pack AND delta orchestration, checksum-gated) + reference_pack_providers.dart DI wiring) executed and committed -- both tasks complete, `reference_pack_repository_test.dart` green with zero skips (19 tests)
+**Next action:** Continue Phase 9 execution — run `/gsd:execute-phase 9` again (or the orchestrator's next-plan step) to proceed to Plan 09-05 (UI layer), which consumes `referencePackRepositoryProvider` (`IReferencePackRepository`) to build the Reference Data settings screen.
+**Suggested next command:** `/gsd:execute-phase 9` (continues from Plan 09-05; Phase 8 stays parked until Tomris's backend decision resolves: `/gsd:discuss-phase 8` once it does)
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
@@ -353,6 +353,11 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 09-03]: ReferencePackExtractor takes a constructor-injectable DocumentsDirectoryPath seam (mirrors DiskSpaceChecker's FreeBytesQuery) so its dedicated real-fixture test exercises real DETACH/decompress/ATTACH SQL without mocking the path_provider platform channel
 - [Phase 09-03]: DownloadManager.enqueueFullPack/enqueueDelta take a version string, not a raw filename -- sanitizedFilename() derives the on-disk name internally, matching the threat model (T-09-03-01) over the plan's terser signature prose
 - [Phase 09-03]: ReferencePackDownloadStatus mirrors background_downloader 9.5.8's real TaskStatus enum 1:1 (8 values: enqueued/running/paused/complete/notFound/failed/canceled/waitingToRetry), verified against the installed package's actual source rather than the plan prose's 6-value list
+- [Phase 09-04]: DeltaApplier's ATTACH/DETACH run outside the write transaction (real SQLite refuses DETACH while a still-open transaction has touched that attached database) -- only the INSERT OR REPLACE + tombstone DELETE are wrapped in db.transaction()
+- [Phase 09-04]: ReferencePackRepository.checkDiskSpace() computes a documented 3.5x conservative gzip-ratio constant for the decompressed-size estimate (provenance: this repo's own bundled seed measures ~3.17x) -- never reuses manifest.packSizeBytes for both DiskSpaceChecker.hasEnoughSpace parameters
+- [Phase 09-04]: DownloadManager.activeTaskId() added (not in Plan 09-03's original API) so ReferencePackRepository.cancelDownload/resumeDownload have a concrete task ID to act on
+- [Phase 09-04]: ReferencePackRepository tracks in-flight download kind (_InFlightDownload) internally so DownloadManager's single shared updates stream never routes a full-pack completion through DeltaApplier.apply or a delta completion through ReferencePackExtractor.swapIn
+- [Phase 09-04]: revertToSeed() leaves a documented TODO seam for Plan 09-06's schedule-reset-to-manual call -- ReferencePackScheduleNotifier doesn't exist yet at this wave
 
 ## Performance Metrics
 
@@ -420,3 +425,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 09 P07 | 8min | 2 tasks | 3 files |
 | Phase 09 P02 | 10min | 2 tasks | 12 files |
 | Phase 09 P03 | ~12min | 2 tasks | 7 files |
+| Phase 09-reference-data-delivery-full-off-pack P04 | ~55min | 2 tasks | 9 files |
