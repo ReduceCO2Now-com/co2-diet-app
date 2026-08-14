@@ -86,7 +86,7 @@ final class AuthNotifierProvider
   }
 }
 
-String _$authNotifierHash() => r'552761175d28fb3b949fba363df61c6b80cac61c';
+String _$authNotifierHash() => r'7266c3cc2eadb59d524bd460de1344d3514218dd';
 
 /// The single source of truth for "is the user logged in."
 ///

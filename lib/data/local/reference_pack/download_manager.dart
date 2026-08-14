@@ -268,4 +268,20 @@ class DownloadManager {
     final tasks = await FileDownloader().allTasks(group: taskGroup);
     return tasks.isNotEmpty;
   }
+
+  /// Returns the task ID of the (single) currently active task in
+  /// [taskGroup], or `null` when none exists.
+  ///
+  /// Added for Plan 09-04's `ReferencePackRepository.cancelDownload`/
+  /// `resumeDownload`, which the `IReferencePackRepository` contract
+  /// declares with no task-ID parameter of their own -- `cancel`/`resume`
+  /// need a concrete task ID to act on, and every reference-pack download
+  /// (full or delta) is enqueued alone under [referencePackTaskGroup],
+  /// serialized by `ReferencePackRepository`'s own in-flight-kind tracking
+  /// (T-09-04-05), so there is at most one active task per group at any
+  /// time.
+  Future<String?> activeTaskId(String taskGroup) async {
+    final tasks = await FileDownloader().allTasks(group: taskGroup);
+    return tasks.isEmpty ? null : tasks.first.taskId;
+  }
 }

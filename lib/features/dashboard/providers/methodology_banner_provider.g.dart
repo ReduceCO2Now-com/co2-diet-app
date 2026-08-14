@@ -12,7 +12,7 @@ part of 'methodology_banner_provider.dart';
 /// foods) was estimated under an older methodology version than
 /// [currentCo2MethodologyVersion].
 ///
-/// Whole-table scans via [AppDatabase]'s DAOs directly (not a dedicated
+/// Whole-table scans via `AppDatabase`'s DAOs directly (not a dedicated
 /// repository method) -- mirrors `BackupExportService`'s established
 /// precedent for cross-table reads that don't belong in any single
 /// per-feature repository interface.
@@ -25,7 +25,7 @@ final hasStaleMethodologyEntriesProvider =
 /// foods) was estimated under an older methodology version than
 /// [currentCo2MethodologyVersion].
 ///
-/// Whole-table scans via [AppDatabase]'s DAOs directly (not a dedicated
+/// Whole-table scans via `AppDatabase`'s DAOs directly (not a dedicated
 /// repository method) -- mirrors `BackupExportService`'s established
 /// precedent for cross-table reads that don't belong in any single
 /// per-feature repository interface.
@@ -37,7 +37,7 @@ final class HasStaleMethodologyEntriesProvider
   /// foods) was estimated under an older methodology version than
   /// [currentCo2MethodologyVersion].
   ///
-  /// Whole-table scans via [AppDatabase]'s DAOs directly (not a dedicated
+  /// Whole-table scans via `AppDatabase`'s DAOs directly (not a dedicated
   /// repository method) -- mirrors `BackupExportService`'s established
   /// precedent for cross-table reads that don't belong in any single
   /// per-feature repository interface.
@@ -155,21 +155,21 @@ abstract class _$MethodologyBannerDismissalNotifier extends $Notifier<String?> {
   }
 }
 
-/// The single composed value [Co2MethodologyBanner] needs: `true` only
+/// The single composed value `Co2MethodologyBanner` needs: `true` only
 /// when stale entries exist AND the current methodology version hasn't
 /// already been dismissed.
 
 @ProviderFor(showMethodologyBanner)
 final showMethodologyBannerProvider = ShowMethodologyBannerProvider._();
 
-/// The single composed value [Co2MethodologyBanner] needs: `true` only
+/// The single composed value `Co2MethodologyBanner` needs: `true` only
 /// when stale entries exist AND the current methodology version hasn't
 /// already been dismissed.
 
 final class ShowMethodologyBannerProvider
     extends $FunctionalProvider<AsyncValue<bool>, bool, FutureOr<bool>>
     with $FutureModifier<bool>, $FutureProvider<bool> {
-  /// The single composed value [Co2MethodologyBanner] needs: `true` only
+  /// The single composed value `Co2MethodologyBanner` needs: `true` only
   /// when stale entries exist AND the current methodology version hasn't
   /// already been dismissed.
   ShowMethodologyBannerProvider._()
@@ -198,4 +198,4 @@ final class ShowMethodologyBannerProvider
 }
 
 String _$showMethodologyBannerHash() =>
-    r'1aa743a35d4141b9b7bdf49c112538b99b699210';
+    r'fe41f83d98ffc948572814ee16eec7744aeafb53';
