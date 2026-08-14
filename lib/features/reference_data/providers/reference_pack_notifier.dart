@@ -3,18 +3,33 @@
 // (ReferenceDataScreen) both read from and mutate through. Every mutation
 // delegates to `referencePackRepositoryProvider` (Plan 09-04's
 // `IReferencePackRepository`) -- this file never touches
-// background_downloader/http/storage_space directly. The one exception is
+// background_downloader/http/storage_space directly. Two narrow exceptions:
 // `isOnWifi()`, which talks to connectivity_plus directly since it's a
-// UI-facing "should I prompt the user" decision, not a data-layer concern
-// (see doc comment below).
+// UI-facing "should I prompt the user" decision, not a data-layer concern;
+// and `installedSizeBytes()`, which reads the installed pack file's size
+// directly off disk since neither `ReferencePackStatus.ReferencePackFull`
+// (Plan 09-02, locked) nor `IReferencePackRepository` (Plan 09-04, locked)
+// expose an installed-byte-count -- both doc comments below explain why.
+
+import 'dart:io';
 
 import 'package:co2diet/core/di/reference_pack_providers.dart';
 import 'package:co2diet/domain/entities/reference_pack_manifest.dart';
 import 'package:co2diet/domain/entities/reference_pack_status.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'reference_pack_notifier.g.dart';
+
+/// Filename of the installed pack database on disk -- mirrors
+/// `ReferencePackExtractor`'s private `_installedFileName` constant
+/// (`data/local/reference_pack/reference_pack_extractor.dart`), duplicated
+/// here (rather than imported, since it's a private implementation detail
+/// of that class) because this is the one presentation-layer read of the
+/// installed file's raw size, not a repeat of the swap-in logic itself.
+const _installedPackFileName = 'off_reference.sqlite';
 
 /// Live stream of [ReferencePackStatus] transitions, composed by
 /// [ReferencePackNotifier] rather than duplicated inline -- keeps
@@ -26,6 +41,18 @@ part 'reference_pack_notifier.g.dart';
 @riverpod
 Stream<ReferencePackStatus> referencePackStatusStream(Ref ref) {
   return ref.watch(referencePackRepositoryProvider).watchStatus();
+}
+
+/// The installed pack database's on-disk size in bytes, recomputed
+/// whenever [referencePackProvider]'s status changes (e.g. a
+/// download completes or a revert finishes) -- the reactive counterpart to
+/// [ReferencePackNotifier.installedSizeBytes], so `ReferenceDataRow`/
+/// `ReferenceDataScreen` can `ref.watch` it directly instead of managing
+/// their own `FutureBuilder`/local state.
+@riverpod
+Future<int> referencePackInstalledSizeBytes(Ref ref) async {
+  ref.watch(referencePackProvider);
+  return ref.read(referencePackProvider.notifier).installedSizeBytes();
 }
 
 /// AsyncNotifier presentation-layer wrapper around
@@ -60,11 +87,58 @@ class ReferencePackNotifier extends _$ReferencePackNotifier {
     return ref.read(referencePackRepositoryProvider).checkDiskSpace(manifest);
   }
 
+  /// The device's current free disk space, in bytes -- read directly from
+  /// [diskSpaceCheckerProvider] (Plan 09-04's already-public DI provider)
+  /// rather than the repository, purely for rendering `09-CONTEXT.md`'s
+  /// locked "Not enough storage — need ~NMB, only MMB free" blocking
+  /// message's second number; [hasEnoughDiskSpace] above remains the sole
+  /// go/no-go decision.
+  Future<int> freeDiskSpaceBytes() {
+    return ref.read(diskSpaceCheckerProvider).freeBytes();
+  }
+
+  /// Approximate bytes required to download+install [manifest] -- mirrors
+  /// `ReferencePackRepository.checkDiskSpace`'s internal `(compressed +
+  /// decompressed) * 1.15` estimate, duplicated here only to render the
+  /// locked disk-space message's first number (the real go/no-go decision
+  /// is [hasEnoughDiskSpace], not this display-only estimate); that
+  /// calculation is a private implementation detail of the repository, not
+  /// part of `IReferencePackRepository`'s public contract.
+  int estimatedRequiredDiskSpaceBytes(ReferencePackManifest manifest) {
+    const decompressionRatioEstimate = 3.5;
+    final decompressed = (manifest.packSizeBytes * decompressionRatioEstimate)
+        .round();
+    return ((manifest.packSizeBytes + decompressed) * 1.15).round();
+  }
+
   /// `SELECT COUNT(*) FROM products` against whichever pack is currently
   /// installed -- the "local" side of the product-count comparison
   /// `ReferenceDataScreen` renders.
   Future<int> localProductCount() {
     return ref.read(referencePackRepositoryProvider).localProductCount();
+  }
+
+  /// The installed pack database's on-disk size in bytes -- used to render
+  /// the exact `09-CONTEXT.md`-locked "Full catalog installed — N MB"
+  /// shape (Settings row subtitle, `ReferenceDataScreen`'s Full-state body,
+  /// and the revert confirmation dialog's interpolated size) from a real
+  /// measured size, never a hardcoded number. Returns `0` when the file
+  /// doesn't exist yet.
+  ///
+  /// Reads `dart:io`/`path_provider` directly rather than going through
+  /// [referencePackRepositoryProvider] -- neither
+  /// `ReferencePackStatus.ReferencePackFull` nor
+  /// `IReferencePackRepository` (both Plan 09-02/09-04, locked) expose an
+  /// installed-byte-count, and the installed file always lives at the same
+  /// well-known `getApplicationDocumentsDirectory()/off_reference.sqlite`
+  /// path regardless of whether the starter seed or the full pack is
+  /// currently swapped in (`first_launch_extractor.dart`/
+  /// `ReferencePackExtractor`'s shared swap-in convention).
+  Future<int> installedSizeBytes() async {
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File(p.join(dir.path, _installedPackFileName));
+    if (!file.existsSync()) return 0;
+    return file.length();
   }
 
   /// `true` when the device currently reports a Wi-Fi connection.

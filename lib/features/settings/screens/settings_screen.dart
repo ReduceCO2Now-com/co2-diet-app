@@ -2,6 +2,7 @@ import 'package:co2diet/core/theme/spacing_tokens.dart';
 import 'package:co2diet/features/auth/providers/realm_discovery_provider.dart';
 import 'package:co2diet/features/notifications/widgets/meal_reminder_settings_section.dart';
 import 'package:co2diet/features/settings/widgets/account_section.dart';
+import 'package:co2diet/features/settings/widgets/reference_data_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -69,6 +70,7 @@ class SettingsScreen extends ConsumerWidget {
             subtitle: const Text('Export, backup, and restore your data'),
             onTap: () => context.push('/backup-restore'),
           ),
+          const ReferenceDataRow(),
           const Divider(height: 1),
           const Padding(
             padding: EdgeInsets.fromLTRB(

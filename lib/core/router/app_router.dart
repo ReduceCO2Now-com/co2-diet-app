@@ -21,6 +21,7 @@ import 'package:co2diet/features/onboarding/screens/onboarding_carousel_screen.d
 import 'package:co2diet/features/onboarding/screens/splash_screen.dart';
 import 'package:co2diet/features/onboarding/screens/welcome_screen.dart';
 import 'package:co2diet/features/profile/screens/profile_screen.dart';
+import 'package:co2diet/features/reference_data/screens/reference_data_screen.dart';
 import 'package:co2diet/features/settings/screens/settings_screen.dart';
 import 'package:co2diet/features/weight/screens/weight_screen.dart';
 import 'package:collection/collection.dart';
@@ -269,6 +270,10 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: '/backup-restore',
         builder: (context, state) => const BackupRestoreScreen(),
+      ),
+      GoRoute(
+        path: '/reference-data',
+        builder: (context, state) => const ReferenceDataScreen(),
       ),
       GoRoute(
         path: '/custom-food-stub',
