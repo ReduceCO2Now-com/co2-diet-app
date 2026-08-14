@@ -6,7 +6,9 @@ plugins {
 
 android {
     namespace = "com.reduceco2now.co2diet"
-    compileSdk = flutter.compileSdkVersion
+    // flutter_secure_storage requires compileSdk 37; flutter.compileSdkVersion
+    // resolves to 36 on this Flutter version (3.44.6), so it's pinned explicitly.
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
