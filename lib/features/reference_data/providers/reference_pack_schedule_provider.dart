@@ -86,10 +86,12 @@ class ReferencePackScheduleNotifier extends _$ReferencePackScheduleNotifier {
 
   /// Persists [schedule] and updates state synchronously.
   Future<void> setSchedule(ReferencePackSchedule schedule) async {
-    await ref.read(sharedPreferencesProvider).setString(
-      _scheduleKey,
-      schedule.name,
-    );
+    await ref
+        .read(sharedPreferencesProvider)
+        .setString(
+          _scheduleKey,
+          schedule.name,
+        );
     state = (schedule: schedule, lastCheckedAt: state.lastCheckedAt);
   }
 
@@ -99,10 +101,12 @@ class ReferencePackScheduleNotifier extends _$ReferencePackScheduleNotifier {
   /// completed check for throttling purposes).
   Future<void> recordCheckedNow() async {
     final now = DateTime.now();
-    await ref.read(sharedPreferencesProvider).setString(
-      _lastCheckedAtKey,
-      now.toIso8601String(),
-    );
+    await ref
+        .read(sharedPreferencesProvider)
+        .setString(
+          _lastCheckedAtKey,
+          now.toIso8601String(),
+        );
     state = (schedule: state.schedule, lastCheckedAt: now);
   }
 

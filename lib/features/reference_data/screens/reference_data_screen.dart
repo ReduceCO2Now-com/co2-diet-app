@@ -10,6 +10,7 @@ import 'package:co2diet/core/theme/text_tokens.dart';
 import 'package:co2diet/domain/entities/reference_pack_manifest.dart';
 import 'package:co2diet/domain/entities/reference_pack_status.dart';
 import 'package:co2diet/features/reference_data/providers/reference_pack_notifier.dart';
+import 'package:co2diet/features/reference_data/providers/reference_pack_schedule_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -70,11 +71,10 @@ class _ReferenceDataScreenState extends ConsumerState<ReferenceDataScreen> {
       final hasSpace = await notifier.hasEnoughDiskSpace(manifest);
       if (!hasSpace) {
         final neededMb =
-            (notifier.estimatedRequiredDiskSpaceBytes(manifest) /
-                    (1024 * 1024))
+            (notifier.estimatedRequiredDiskSpaceBytes(manifest) / (1024 * 1024))
                 .round();
-        final freeMb =
-            (await notifier.freeDiskSpaceBytes() / (1024 * 1024)).round();
+        final freeMb = (await notifier.freeDiskSpaceBytes() / (1024 * 1024))
+            .round();
         if (mounted) {
           setState(() {
             _blockingMessage =
@@ -161,6 +161,9 @@ class _ReferenceDataScreenState extends ConsumerState<ReferenceDataScreen> {
     );
     if (confirmed ?? false) {
       await ref.read(referencePackProvider.notifier).revertToSeed();
+      // 09-CONTEXT.md: reverting to the starter pack always resets the
+      // delta-refresh schedule back to Manual.
+      await ref.read(referencePackScheduleProvider.notifier).resetToManual();
     }
   }
 
@@ -324,6 +327,7 @@ class _ReferenceDataScreenState extends ConsumerState<ReferenceDataScreen> {
         final installedVersion = status is ReferencePackFull
             ? status.installedVersion
             : null;
+        final scheduleState = ref.watch(referencePackScheduleProvider);
 
         return ListView(
           padding: const EdgeInsets.all(AppSpacing.containerMargin),
@@ -336,6 +340,39 @@ class _ReferenceDataScreenState extends ConsumerState<ReferenceDataScreen> {
             const SizedBox(height: AppSpacing.lg),
             _buildProductCountComparison(),
             const SizedBox(height: AppSpacing.lg),
+
+            // ── Automatic Refresh ─────────────────────────────────────
+            // Only shown once the full catalog is installed -- scheduling
+            // a refresh only makes sense once there's something installed
+            // to refresh (09-CONTEXT.md's Delta Refresh section only ever
+            // discusses refreshing the already-downloaded full catalog).
+            const Text('Automatic Refresh', style: AppTextTheme.titleMd),
+            const SizedBox(height: AppSpacing.stackGap),
+            SegmentedButton<ReferencePackSchedule>(
+              segments: const [
+                ButtonSegment(
+                  value: ReferencePackSchedule.manual,
+                  label: Text('Manual'),
+                ),
+                ButtonSegment(
+                  value: ReferencePackSchedule.weekly,
+                  label: Text('Weekly'),
+                ),
+                ButtonSegment(
+                  value: ReferencePackSchedule.monthly,
+                  label: Text('Monthly'),
+                ),
+              ],
+              selected: {scheduleState.schedule},
+              onSelectionChanged: (selected) => unawaited(
+                ref
+                    .read(referencePackScheduleProvider.notifier)
+                    .setSchedule(selected.first),
+              ),
+              showSelectedIcon: false,
+            ),
+            const SizedBox(height: AppSpacing.lg),
+
             TextButton(
               onPressed: downloading
                   ? null

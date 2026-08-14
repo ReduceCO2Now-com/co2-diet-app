@@ -14,6 +14,8 @@
 import 'dart:io';
 
 import 'package:co2diet/core/di/reference_pack_providers.dart';
+import 'package:co2diet/data/repositories/reference_pack_repository.dart'
+    show isReferencePackUpdateAvailable;
 import 'package:co2diet/domain/entities/reference_pack_manifest.dart';
 import 'package:co2diet/domain/entities/reference_pack_status.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -195,5 +197,55 @@ class ReferencePackNotifier extends _$ReferencePackNotifier {
       throw StateError('Cannot revert while a download is in progress');
     }
     await repo.revertToSeed();
+  }
+
+  /// Checks the CDN manifest for a newer version and, if one exists,
+  /// either surfaces an "Update available — connect to Wi-Fi" status (off
+  /// Wi-Fi) or starts the delta download directly (on Wi-Fi, no per-refresh
+  /// confirmation dialog).
+  ///
+  /// Called exclusively from `Co2DietApp`'s `AppLifecycleState.resumed`
+  /// observer (Plan 09-06) once `ReferencePackScheduleNotifier`'s
+  /// weekly/monthly interval has elapsed -- never from a manual user tap
+  /// (`ReferenceDataScreen`'s Download button always calls
+  /// [checkForUpdate] + [startFullDownload] directly, never this method or
+  /// a delta download). This is the one call site in the whole feature
+  /// that starts a delta download.
+  ///
+  /// Never surfaces a Dashboard-level banner or notification on completion
+  /// (`09-CONTEXT.md`: explicitly rejected, unlike the Phase 7 CO2
+  /// methodology banner) -- the Settings row's live-updating subtitle
+  /// (Plan 09-05) is this feature's only visibility. Swallows network/
+  /// manifest failures silently -- this is a best-effort background check
+  /// triggered from a fire-and-forget lifecycle callback, not a
+  /// user-initiated action with visible error feedback.
+  Future<void> checkForUpdateIfDue() async {
+    try {
+      final manifest = await checkForUpdate();
+      final repo = ref.read(referencePackRepositoryProvider);
+      final installed = await repo.installedVersion();
+      if (!isReferencePackUpdateAvailable(manifest.currentVersion, installed)) {
+        return;
+      }
+
+      final onWifi = await isOnWifi();
+      state = AsyncData(
+        ReferencePackUpdateAvailable(
+          currentVersion: installed ?? '',
+          newVersion: manifest.currentVersion,
+          waitingForWifi: !onWifi,
+        ),
+      );
+
+      // Only the actual multi-MB delta payload waits for Wi-Fi
+      // (`09-CONTEXT.md`) -- the manifest check above always runs
+      // regardless of connection type.
+      if (onWifi) {
+        await repo.startDeltaDownload(allowCellular: false);
+      }
+    } on Exception {
+      // Best-effort background check -- never crash the fire-and-forget
+      // lifecycle callback that invoked this.
+    }
   }
 }

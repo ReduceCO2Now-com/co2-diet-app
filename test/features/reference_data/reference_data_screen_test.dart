@@ -13,11 +13,13 @@
 
 import 'package:co2diet/domain/entities/reference_pack_manifest.dart';
 import 'package:co2diet/domain/entities/reference_pack_status.dart';
+import 'package:co2diet/features/onboarding/providers/onboarding_gate_provider.dart';
 import 'package:co2diet/features/reference_data/providers/reference_pack_notifier.dart';
 import 'package:co2diet/features/reference_data/screens/reference_data_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 ReferencePackManifest _buildManifest({
   String currentVersion = 'v3',
@@ -110,9 +112,19 @@ class _FakeReferencePackNotifier extends ReferencePackNotifier {
   }
 }
 
-Widget _wrap(_FakeReferencePackNotifier fakeNotifier) {
+// The `_buildFull()` state now also watches `referencePackScheduleProvider`
+// (Plan 09-06's Automatic Refresh SegmentedButton), which reads
+// `sharedPreferencesProvider` -- must be overridden or the default throws
+// `UnimplementedError` (same requirement as `test/widget_test.dart`'s
+// existing `Co2DietApp` smoke test).
+Future<Widget> _wrap(_FakeReferencePackNotifier fakeNotifier) async {
+  SharedPreferences.setMockInitialValues({});
+  final prefs = await SharedPreferences.getInstance();
   return ProviderScope(
-    overrides: [referencePackProvider.overrideWith(() => fakeNotifier)],
+    overrides: [
+      referencePackProvider.overrideWith(() => fakeNotifier),
+      sharedPreferencesProvider.overrideWithValue(prefs),
+    ],
     child: const MaterialApp(home: ReferenceDataScreen()),
   );
 }
@@ -124,7 +136,7 @@ void main() {
       'counts during an active download',
       (tester) async {
         await tester.pumpWidget(
-          _wrap(
+          await _wrap(
             _FakeReferencePackNotifier(
               const ReferencePackDownloading(
                 bytesDownloaded: 340 * 1024 * 1024,
@@ -153,7 +165,7 @@ void main() {
             bytesTotal: 200 * 1024 * 1024,
           ),
         );
-        await tester.pumpWidget(_wrap(fake));
+        await tester.pumpWidget(await _wrap(fake));
         await tester.pumpAndSettle();
 
         expect(
@@ -172,7 +184,7 @@ void main() {
       'the Cancel button is not visible outside the downloading state',
       (tester) async {
         await tester.pumpWidget(
-          _wrap(_FakeReferencePackNotifier(const ReferencePackSeed())),
+          await _wrap(_FakeReferencePackNotifier(const ReferencePackSeed())),
         );
         await tester.pumpAndSettle();
 
@@ -185,7 +197,7 @@ void main() {
       'catalog) using concrete numbers, not vague language',
       (tester) async {
         await tester.pumpWidget(
-          _wrap(
+          await _wrap(
             _FakeReferencePackNotifier(const ReferencePackSeed()),
           ),
         );
@@ -209,7 +221,7 @@ void main() {
           hasEnoughDiskSpaceResult: false,
           freeDiskSpaceBytesResult: 200 * 1024 * 1024,
         );
-        await tester.pumpWidget(_wrap(fake));
+        await tester.pumpWidget(await _wrap(fake));
         await tester.pumpAndSettle();
 
         await tester.tap(find.widgetWithText(FilledButton, 'Download'));
@@ -232,7 +244,7 @@ void main() {
           const ReferencePackSeed(),
           isOnWifiResult: false,
         );
-        await tester.pumpWidget(_wrap(fake));
+        await tester.pumpWidget(await _wrap(fake));
         await tester.pumpAndSettle();
 
         // Open, then cancel -- no download starts.
@@ -264,7 +276,7 @@ void main() {
       'in progress',
       (tester) async {
         await tester.pumpWidget(
-          _wrap(
+          await _wrap(
             _FakeReferencePackNotifier(
               const ReferencePackDownloading(
                 bytesDownloaded: 100 * 1024 * 1024,
@@ -292,7 +304,7 @@ void main() {
           ),
           installedSizeBytesResult: 650 * 1024 * 1024,
         );
-        await tester.pumpWidget(_wrap(fake));
+        await tester.pumpWidget(await _wrap(fake));
         await tester.pumpAndSettle();
 
         // Open, then cancel.
