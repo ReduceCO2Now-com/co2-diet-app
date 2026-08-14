@@ -52,9 +52,14 @@ part 'app_database.g.dart';
 ///   [BackupMetadataTable]    — single-row auto-backup config + last-backup
 ///                              audit (PRIV-02/PRIV-03)
 ///
-/// schemaVersion: 4 (Phase 5 adds Co2SettingsTable, WeightEntryTable,
+/// schemaVersion: 5 (Phase 5 adds Co2SettingsTable, WeightEntryTable,
 /// WeightSettingsTable, NotificationPrefsTable, BackupMetadataTable, plus
-/// three nullable nutrient-snapshot columns on MealEntryTable).
+/// three nullable nutrient-snapshot columns on MealEntryTable. schemaVersion
+/// 4->5 retroactively adds co2_methodology_version to UserFoodTable and
+/// co2_methodology_version_snapshot to MealEntryTable — both were added to
+/// the Dart schema in commit d7ac765 without a corresponding migration step,
+/// so any device whose local DB was created between the schemaVersion-3
+/// migration landing and that gap-fix commit is permanently missing them).
 ///
 /// FK enforcement is enabled via PRAGMA foreign_keys = ON in [migration]
 /// beforeOpen callback. ATTACH DATABASE for off_reference.sqlite is executed
@@ -114,7 +119,7 @@ class AppDatabase extends _$AppDatabase {
   final String? offRefPath;
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration =>

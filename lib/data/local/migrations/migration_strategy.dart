@@ -14,7 +14,13 @@ import 'package:drift/drift.dart';
 ///   FavoriteTable, and UserFoodTable (Phase 4). schemaVersion 3→4 adds
 ///   three nullable nutrient-snapshot columns to MealEntryTable plus
 ///   Co2SettingsTable, WeightEntryTable, WeightSettingsTable,
-///   NotificationPrefsTable, and BackupMetadataTable (Phase 5).
+///   NotificationPrefsTable, and BackupMetadataTable (Phase 5). schemaVersion
+///   4→5 retroactively adds co2_methodology_version to UserFoodTable and
+///   co2_methodology_version_snapshot to MealEntryTable — a gap-fix commit
+///   (d7ac765) added both columns to the Dart schema after the 2→3 step had
+///   already shipped, without ever adding a migration for them; any device
+///   that created these tables before that commit landed is missing the
+///   columns until this step runs.
 /// beforeOpen: enables FK enforcement, then ATTACHes off_reference.sqlite
 ///   when [offRefPath] is non-null.
 ///
@@ -78,6 +84,41 @@ MigrationStrategy buildMigrationStrategy(
         await m.createTable(db.notificationPrefsTable);
         await m.createTable(db.backupMetadataTable);
       }
+
+      // schemaVersion 4 → 5: retroactively add co2_methodology_version to
+      // UserFoodTable and co2_methodology_version_snapshot to MealEntryTable.
+      // Both were added to the Dart schema in commit d7ac765 WITHOUT a
+      // migration step or schemaVersion bump — so whether a given device's
+      // on-disk table already has the column depends on the exact moment it
+      // first upgraded relative to that commit, not on any stored version
+      // number. `from < 5` alone would double-add the column (and crash with
+      // "duplicate column name") for any device that already has it, either
+      // because the `from < 3` block above just created the table fresh
+      // using the current Dart class, or because it upgraded through
+      // schemaVersion 3 after d7ac765 landed but before this fix shipped.
+      // Checking actual column presence via pragma_table_info is the only
+      // way to make this step correct for every device regardless of
+      // history.
+      if (from < 5) {
+        await _addColumnIfMissing(
+          db,
+          tableName: 'user_food_table',
+          columnName: 'co2_methodology_version',
+          addColumn: () => m.addColumn(
+            db.userFoodTable,
+            db.userFoodTable.co2MethodologyVersion,
+          ),
+        );
+        await _addColumnIfMissing(
+          db,
+          tableName: 'meal_entry_table',
+          columnName: 'co2_methodology_version_snapshot',
+          addColumn: () => m.addColumn(
+            db.mealEntryTable,
+            db.mealEntryTable.co2MethodologyVersionSnapshot,
+          ),
+        );
+      }
     },
     beforeOpen: (_) async {
       // SQLite disables foreign key enforcement by default.
@@ -106,4 +147,30 @@ MigrationStrategy buildMigrationStrategy(
       }
     },
   );
+}
+
+/// Runs [addColumn] only if [columnName] does not already exist on
+/// [tableName], checked via `pragma_table_info` (mirrors this file's
+/// existing `pragma_database_list` idempotency-check pattern for ATTACH).
+///
+/// Needed because the co2_methodology_version(_snapshot) columns were added
+/// to the Dart schema without a schemaVersion bump (commit d7ac765) — so a
+/// device's stored `from` version alone cannot tell us whether the column is
+/// already present, and Drift's `addColumn` is not idempotent (throws
+/// "duplicate column name" if it already exists).
+Future<void> _addColumnIfMissing(
+  GeneratedDatabase db, {
+  required String tableName,
+  required String columnName,
+  required Future<void> Function() addColumn,
+}) async {
+  final existing = await db
+      .customSelect(
+        "SELECT 1 FROM pragma_table_info('$tableName') WHERE name = ?",
+        variables: [Variable.withString(columnName)],
+      )
+      .getSingleOrNull();
+  if (existing == null) {
+    await addColumn();
+  }
 }
