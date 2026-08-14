@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: executing
-last_updated: "2026-08-14T08:11:22.327Z"
+last_updated: "2026-08-14T09:15:00.000Z"
 progress:
   total_phases: 10
   completed_phases: 7
@@ -35,8 +35,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 09-reference-data-delivery-full-off-pack — **IN PROGRESS** (6/8 plans executed). Phase 7 (Keycloak Auth + Account Deletion) is COMPLETE — 8/8 plans. Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS. Phase 8 (Encrypted Account Backup) remains parked pending Tomris's backend decision.
-- **Plan:** 09-05 (ReferencePackNotifier presentation layer + ReferenceDataRow (Settings entry point) + ReferenceDataScreen (download/progress/cancel/revert), wired into SettingsScreen + app_router.dart at /reference-data — Wave 5, depends on 09-04) — COMPLETE.
+- **Phase:** 09-reference-data-delivery-full-off-pack — **IN PROGRESS** (7/8 plans executed). Phase 7 (Keycloak Auth + Account Deletion) is COMPLETE — 8/8 plans. Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS. Phase 8 (Encrypted Account Backup) remains parked pending Tomris's backend decision.
+- **Plan:** 09-06 (ReferencePackScheduleNotifier + Co2DietApp foreground AppLifecycleState.resumed weekly/monthly delta-refresh check + ReferenceDataScreen Automatic Refresh control + revert-resets-schedule — Wave 6, depends on 09-05) — COMPLETE. Remaining: 09-08 (Wave 7, depends on 09-06+09-07, autonomous: false — real-device verification checkpoint plan).
 - **Status:** Executing Phase 9
 - **Progress:** [███████░░░] 70% (7/10 phases)
 - **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files. Phase 7's requirement set (AUTH-01, AUTH-02, AUTH-03, AUTH-05, AUTH-06, AUTH-10, PRIV-05) is now fully delivered and reachable end-to-end.
@@ -157,10 +157,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-08-14T08:11:22+00:00
-**Stopped at:** Phase 9 Plan 05 (ReferencePackNotifier + ReferenceDataRow + ReferenceDataScreen) executed and committed -- all 3 tasks complete, `reference_data_row_test.dart` (5 tests) and `reference_data_screen_test.dart` (8 tests) both green with zero skips, full project `flutter test` suite green (528 passed)
-**Next action:** Continue Phase 9 execution — run `/gsd:execute-phase 9` again (or the orchestrator's next-plan step) to proceed to Plan 09-06 (automatic weekly/monthly delta-refresh scheduling), which drives `referencePackProvider`/`IReferencePackRepository` from an app-resume throttle.
-**Suggested next command:** `/gsd:execute-phase 9` (continues from Plan 09-06; Phase 8 stays parked until Tomris's backend decision resolves: `/gsd:discuss-phase 8` once it does)
+**Last session:** 2026-08-14T09:15:00+00:00
+**Stopped at:** Phase 9 Plan 06 (ReferencePackScheduleNotifier + Co2DietApp foreground weekly/monthly delta-refresh check + ReferenceDataScreen Automatic Refresh control) executed and committed -- both tasks complete, `app_lifecycle_reference_pack_test.dart` (12 tests) green with zero skips, full project `flutter test` suite green (540 passed)
+**Next action:** Continue Phase 9 execution — run `/gsd:execute-phase 9` again (or the orchestrator's next-plan step) to proceed to Plan 09-08 (Local Range-test-server + real-device verification: resumable download, live atomic swap -- the phase's final plan, `autonomous: false`, depends on 09-06+09-07).
+**Suggested next command:** `/gsd:execute-phase 9` (continues from Plan 09-08, the last plan in the phase; Phase 8 stays parked until Tomris's backend decision resolves: `/gsd:discuss-phase 8` once it does)
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
@@ -363,6 +363,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 09-05]: installedSizeBytes()/referencePackInstalledSizeBytesProvider added to ReferencePackNotifier -- neither ReferencePackStatus.ReferencePackFull (Plan 09-02) nor IReferencePackRepository (Plan 09-04) expose an installed-byte-count, but the locked "Full catalog installed — N MB" copy needs one computed from the real on-disk off_reference.sqlite file
 - [Phase 09-05]: freeDiskSpaceBytes()/estimatedRequiredDiskSpaceBytes() added to ReferencePackNotifier for the disk-space blocking message's two numbers -- hasEnoughDiskSpace() (the real gating decision) only returns a bool
 - [Phase 09-05]: Revert-disabled-during-download implemented structurally (ReferenceDataScreen's top-level switch on ReferencePackStatus renders an entirely different body for Downloading vs. Full, so Revert is structurally absent, not just visually disabled) rather than via a separate boolean flag, per 09-RESEARCH.md Pitfall 5
+- [Phase 09-06]: Co2DietApp's didChangeAppLifecycleState calls the pre-existing weigh-in reminder logic and the new reference-pack schedule check as two independent sibling statements (weigh-in logic extracted into _rearmWeighInReminderIfNeeded()) rather than sequential code in one method body -- the weigh-in block's own early `return` (e.g. weightProvider still loading) was found, via this plan's own widget tests, to silently skip any code written after it in the same method
+- [Phase 09-06]: checkForUpdateIfDue() is the sole call site across the whole feature that ever starts a delta download -- ReferenceDataScreen's manual Download button always calls startFullDownload(), never startDeltaDownload(), so the automatic-refresh method never needs to branch on "did this call originate from the scheduled path"
+- [Phase 09-06]: ReferencePackScheduleState is a Dart record typedef ({schedule, lastCheckedAt}), not a class -- avoids equality/copyWith boilerplate for a 2-field read-mostly value
+- [Phase 09-06]: A bare ProviderContainer.read(someProvider.future) with no active container.listen(...) does not keep a non-keepAlive stream-backed dependency alive long enough for its first event to be delivered in tests -- the autoDispose scheduler can win the race and dispose it mid-flight (extends the [Phase 02-07] ProviderContainer.listen-over-bare-read precedent to stream providers)
 
 ## Performance Metrics
 
@@ -432,3 +436,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 09 P03 | ~12min | 2 tasks | 7 files |
 | Phase 09-reference-data-delivery-full-off-pack P04 | ~55min | 2 tasks | 9 files |
 | Phase 09-reference-data-delivery-full-off-pack P05 | ~55min | 3 tasks | 9 files |
+| Phase 09-reference-data-delivery-full-off-pack P06 | ~70min | 2 tasks | 7 files |
