@@ -247,12 +247,22 @@ class DownloadManager {
     }
   }
 
-  /// Resumes the task with [taskId].
-  Future<void> resume(String taskId) async {
+  /// Resumes the task with [taskId], returning whether the native plugin
+  /// actually had resume data to continue from.
+  ///
+  /// `FileDownloader.resume` only succeeds when the plugin persisted resume
+  /// data for this task (a `paused` task, or one interrupted with partial
+  /// bytes already on disk) -- it returns `false` for a task that reached
+  /// `TaskStatus.failed` with no bytes ever downloaded (e.g. a
+  /// connection-refused error), since there is nothing to resume from.
+  /// Callers must fall back to re-enqueuing a fresh download in that case
+  /// (`ReferencePackRepository.resumeDownload`).
+  Future<bool> resume(String taskId) async {
     final task = await FileDownloader().taskForId(taskId);
     if (task is DownloadTask) {
-      await FileDownloader().resume(task);
+      return FileDownloader().resume(task);
     }
+    return false;
   }
 
   /// Returns `true` when any task in [taskGroup] is enqueued, running, or

@@ -54,9 +54,12 @@ abstract interface class IReferencePackRepository {
   /// Cancels the in-progress download, discarding any partial file.
   Future<void> cancelDownload();
 
-  /// Resumes a previously-interrupted, resumable download
-  /// (`09-CONTEXT.md`'s "resume from where they left off" decision) —
-  /// only valid when the current status is
+  /// Resumes a previously-interrupted download from where it left off
+  /// (`09-CONTEXT.md`'s "resume from where they left off" decision) when
+  /// native resume data exists, or re-enqueues the same request from
+  /// scratch when it doesn't (e.g. a connection-level failure like
+  /// "Connection refused" before any bytes arrived — there is nothing to
+  /// resume from in that case). Only valid when the current status is
   /// `ReferencePackFailed(canResume: true)`.
   Future<void> resumeDownload();
 

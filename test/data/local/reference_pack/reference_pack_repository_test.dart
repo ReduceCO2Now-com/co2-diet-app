@@ -637,6 +637,176 @@ void main() {
     );
   });
 
+  group('resumeDownload', () {
+    test(
+      'resumes the active native task and does not re-enqueue when '
+      'DownloadManager.resume finds resume data (paused/interrupted task '
+      'with partial bytes)',
+      () async {
+        when(
+          () => mockDownloadManager.activeTaskId(referencePackTaskGroup),
+        ).thenAnswer((_) async => 'task-1');
+        when(
+          () => mockDownloadManager.resume('task-1'),
+        ).thenAnswer((_) async => true);
+
+        await repository.resumeDownload();
+
+        verify(() => mockDownloadManager.resume('task-1')).called(1);
+        verifyNever(
+          () => mockDownloadManager.enqueueFullPack(
+            url: any(named: 'url'),
+            version: any(named: 'version'),
+            requiresWifi: any(named: 'requiresWifi'),
+          ),
+        );
+      },
+    );
+
+    test(
+      'falls back to re-enqueuing the original full-pack request from '
+      'scratch when DownloadManager.resume returns false -- the real '
+      'failure mode for a connection-level error (e.g. "Connection '
+      'refused") that failed before any bytes/resume-data existed',
+      () async {
+        final manifest = _buildManifest();
+        when(
+          () => mockApiClient.fetchManifest(),
+        ).thenAnswer((_) async => manifest);
+        when(
+          () => mockDiskSpaceChecker.hasEnoughSpace(any(), any()),
+        ).thenAnswer((_) async => true);
+        await repository.startFullDownload(allowCellular: true);
+        // Isolates the assertions below to calls made by resumeDownload()
+        // itself -- startFullDownload above already called enqueueFullPack
+        // once to seed _inFlight, which verify() would otherwise count.
+        clearInteractions(mockDownloadManager);
+
+        when(
+          () => mockDownloadManager.activeTaskId(referencePackTaskGroup),
+        ).thenAnswer((_) async => 'task-1');
+        when(
+          () => mockDownloadManager.resume('task-1'),
+        ).thenAnswer((_) async => false);
+
+        await repository.resumeDownload();
+
+        verify(
+          () => mockDownloadManager.enqueueFullPack(
+            url: Uri.parse(
+              'https://cdn.example.com/off-pack/full_v2.sqlite.gz',
+            ),
+            version: 'v2',
+            // allowCellular: true from the original startFullDownload call
+            // above -- the fallback must reuse it, not silently default to
+            // Wi-Fi-only.
+            requiresWifi: false,
+          ),
+        ).called(1);
+      },
+    );
+
+    test(
+      'falls back to re-enqueuing from scratch when there is no active '
+      'native task at all (background_downloader excludes a terminal '
+      'TaskStatus.failed task from allTasks())',
+      () async {
+        final manifest = _buildManifest();
+        when(
+          () => mockApiClient.fetchManifest(),
+        ).thenAnswer((_) async => manifest);
+        when(
+          () => mockDiskSpaceChecker.hasEnoughSpace(any(), any()),
+        ).thenAnswer((_) async => true);
+        await repository.startFullDownload(allowCellular: false);
+        clearInteractions(mockDownloadManager);
+
+        when(
+          () => mockDownloadManager.activeTaskId(referencePackTaskGroup),
+        ).thenAnswer((_) async => null);
+
+        await repository.resumeDownload();
+
+        verifyNever(() => mockDownloadManager.resume(any()));
+        verify(
+          () => mockDownloadManager.enqueueFullPack(
+            url: Uri.parse(
+              'https://cdn.example.com/off-pack/full_v2.sqlite.gz',
+            ),
+            version: 'v2',
+            requiresWifi: true,
+          ),
+        ).called(1);
+      },
+    );
+
+    test(
+      'falls back to re-enqueuing the original delta request from scratch '
+      'when DownloadManager.resume returns false',
+      () async {
+        const deltaInfo = ReferencePackDeltaInfo(
+          url: 'https://cdn.example.com/off-pack/delta_v1_to_v2.sqlite',
+          sha256: 'delta-sha',
+          sizeBytes: 500,
+        );
+        final manifest = _buildManifest(deltaFrom: {'v1': deltaInfo});
+        when(
+          () => mockApiClient.fetchManifest(),
+        ).thenAnswer((_) async => manifest);
+        when(() => mockVersionStore.read()).thenAnswer((_) async => 'v1');
+        when(
+          () => mockDiskSpaceChecker.hasEnoughSpace(any(), any()),
+        ).thenAnswer((_) async => true);
+        await repository.startDeltaDownload(allowCellular: false);
+        clearInteractions(mockDownloadManager);
+
+        when(
+          () => mockDownloadManager.activeTaskId(referencePackTaskGroup),
+        ).thenAnswer((_) async => 'task-1');
+        when(
+          () => mockDownloadManager.resume('task-1'),
+        ).thenAnswer((_) async => false);
+
+        await repository.resumeDownload();
+
+        verify(
+          () => mockDownloadManager.enqueueDelta(
+            url: Uri.parse(
+              'https://cdn.example.com/off-pack/delta_v1_to_v2.sqlite',
+            ),
+            version: 'v2',
+            requiresWifi: true,
+          ),
+        ).called(1);
+      },
+    );
+
+    test('does nothing when there is no in-flight download to fall back to '
+        'and no active native task either', () async {
+      when(
+        () => mockDownloadManager.activeTaskId(referencePackTaskGroup),
+      ).thenAnswer((_) async => null);
+
+      await repository.resumeDownload();
+
+      verifyNever(() => mockDownloadManager.resume(any()));
+      verifyNever(
+        () => mockDownloadManager.enqueueFullPack(
+          url: any(named: 'url'),
+          version: any(named: 'version'),
+          requiresWifi: any(named: 'requiresWifi'),
+        ),
+      );
+      verifyNever(
+        () => mockDownloadManager.enqueueDelta(
+          url: any(named: 'url'),
+          version: any(named: 'version'),
+          requiresWifi: any(named: 'requiresWifi'),
+        ),
+      );
+    });
+  });
+
   group('version comparison', () {
     test(
       'an update is available when manifest.currentVersion differs from '

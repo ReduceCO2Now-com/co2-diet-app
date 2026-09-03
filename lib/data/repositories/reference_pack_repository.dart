@@ -96,12 +96,19 @@ class _InFlightDownload {
   const _InFlightDownload({
     required this.kind,
     required this.manifest,
+    required this.requiresWifi,
     this.deltaInfo,
   });
 
   final _DownloadKind kind;
   final ReferencePackManifest manifest;
   final ReferencePackDeltaInfo? deltaInfo;
+
+  /// The original request's `requiresWifi` value -- kept so
+  /// [ReferencePackRepository.resumeDownload]'s from-scratch fallback
+  /// re-enqueues with the same Wi-Fi-only/cellular-allowed choice the user
+  /// made when they started this download, not a silently-defaulted one.
+  final bool requiresWifi;
 }
 
 /// The full preflight -> manifest -> download -> verify -> swap
@@ -230,6 +237,7 @@ class ReferencePackRepository implements IReferencePackRepository {
     _inFlight = _InFlightDownload(
       kind: _DownloadKind.full,
       manifest: manifest,
+      requiresWifi: !allowCellular,
     );
     await downloadManager.enqueueFullPack(
       url: Uri.parse(manifest.packUrl),
@@ -258,6 +266,7 @@ class ReferencePackRepository implements IReferencePackRepository {
       kind: _DownloadKind.delta,
       manifest: manifest,
       deltaInfo: deltaInfo,
+      requiresWifi: !allowCellular,
     );
     await downloadManager.enqueueDelta(
       url: Uri.parse(deltaInfo.url),
@@ -396,7 +405,32 @@ class ReferencePackRepository implements IReferencePackRepository {
   Future<void> resumeDownload() async {
     final taskId = await downloadManager.activeTaskId(referencePackTaskGroup);
     if (taskId != null) {
-      await downloadManager.resume(taskId);
+      final resumed = await downloadManager.resume(taskId);
+      if (resumed) return;
+    }
+    // Either there was no active native task, or DownloadManager.resume
+    // returned false -- both mean there is no resume data to continue
+    // from. This is the real (not hypothetical) failure mode behind a
+    // connection-level error (e.g. "Connection refused" before any bytes
+    // arrived): the task reaches TaskStatus.failed with nothing to resume,
+    // as distinct from a paused/interrupted task that still has partial
+    // bytes and native resume data. Re-enqueue the original request from
+    // scratch using the in-flight manifest _mapProgressToStatus's `failed`
+    // case deliberately keeps around for exactly this fallback.
+    final inFlight = _inFlight;
+    if (inFlight == null) return;
+    if (inFlight.kind == _DownloadKind.delta) {
+      await downloadManager.enqueueDelta(
+        url: Uri.parse(inFlight.deltaInfo!.url),
+        version: inFlight.manifest.currentVersion,
+        requiresWifi: inFlight.requiresWifi,
+      );
+    } else {
+      await downloadManager.enqueueFullPack(
+        url: Uri.parse(inFlight.manifest.packUrl),
+        version: inFlight.manifest.currentVersion,
+        requiresWifi: inFlight.requiresWifi,
+      );
     }
   }
 
