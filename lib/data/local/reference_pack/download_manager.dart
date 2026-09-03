@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:background_downloader/background_downloader.dart';
+import 'package:flutter/foundation.dart' show debugPrint, kReleaseMode;
 
 /// The task group every reference-pack download (full pack and delta alike)
 /// is enqueued under -- the single group `hasActiveTask` queries for the
@@ -168,6 +169,7 @@ class DownloadManager {
     required String filename,
     required bool requiresWifi,
   }) async {
+    await _ensureTlsBypassConfiguredForRealDeviceCheckpoint();
     // baseDirectory defaults to BaseDirectory.applicationDocuments and
     // retries defaults to 0 -- both left at their defaults rather than
     // passed explicitly (avoid_redundant_argument_values), but retries: 0
@@ -294,4 +296,47 @@ class DownloadManager {
     final tasks = await FileDownloader().allTasks(group: taskGroup);
     return tasks.isEmpty ? null : tasks.first.taskId;
   }
+}
+
+/// Guards [_ensureTlsBypassConfiguredForRealDeviceCheckpoint] so it only
+/// calls `FileDownloader().configure` once per process, not before every
+/// enqueue.
+bool _tlsBypassConfigured = false;
+
+/// TEMPORARY 09-08-PLAN.md real-device-checkpoint override: bypasses TLS
+/// certificate validation for background_downloader's native HTTPS
+/// downloader only. Required because `tool/dev/range_test_server.dart`'s
+/// self-signed certificate was rejected with "CertPathValidatorException:
+/// Trust anchor for certification path not found" on the real Android 14
+/// device used for this plan's checkpoints, even after exhausting every
+/// app/OS-level Network Security Config avenue: a
+/// `res/xml/network_security_config.xml` `debug-overrides` block trusting
+/// `src="user"` (confirmed correctly compiled into the installed APK via
+/// `aapt2 dump xmltree`), the certificate confirmed correctly installed
+/// under Settings' User certificates, and Auto Blocker/Secure Wi-Fi both
+/// confirmed off. background_downloader's native `HttpURLConnection`-based
+/// downloader evidently does not fully defer to the platform's per-app
+/// trust config on this device/OS combination, for reasons unresolved
+/// after this session's investigation.
+///
+/// `FileDownloader().configure` itself throws `ArgumentError` if this is
+/// enabled under `kReleaseMode` -- this function additionally no-ops under
+/// `kReleaseMode` rather than letting that throw propagate, so an
+/// accidental release-mode call fails safe instead of crashing. MUST be
+/// reverted (delete this function, the guard flag above, and the call
+/// site in [DownloadManager._enqueue]) before this plan closes or any
+/// further commit lands -- mirrors `ReferencePackConfig.manifestUrl`'s
+/// temporary-override precedent.
+Future<void> _ensureTlsBypassConfiguredForRealDeviceCheckpoint() async {
+  if (_tlsBypassConfigured || kReleaseMode) return;
+  await FileDownloader().configure(
+    globalConfig: [(Config.bypassTLSCertificateValidation, true)],
+  );
+  debugPrint(
+    'DownloadManager: TLS certificate validation bypassed for '
+    'background_downloader (TEMPORARY 09-08 real-device-checkpoint '
+    'override -- see _ensureTlsBypassConfiguredForRealDeviceCheckpoint '
+    'doc comment)',
+  );
+  _tlsBypassConfigured = true;
 }

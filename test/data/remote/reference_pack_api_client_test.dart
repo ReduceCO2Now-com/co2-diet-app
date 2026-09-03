@@ -2,11 +2,13 @@
 // stub). Uses the same `_MockHttpClient extends Mock implements http.Client`
 // pattern as test/features/auth/providers/auth_provider_test.dart.
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:co2diet/data/remote/reference_pack_api_client.dart';
 import 'package:co2diet/data/repositories/food_catalog_repository.dart'
     show NetworkException;
+import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
@@ -85,6 +87,35 @@ void main() {
         throwsA(isA<NetworkException>()),
       );
     });
+
+    test(
+      'a request that never responds throws NetworkException after 15s '
+      'rather than hanging indefinitely (T-09-08-diagnostic: a stale or '
+      'unreachable manifestUrl looked like an indefinite hang with no '
+      'error before this fix)',
+      () {
+        fakeAsync((async) {
+          when(() => mockClient.get(Uri.parse(manifestUrl))).thenAnswer(
+            (_) => Future<http.Response>.delayed(
+              const Duration(seconds: 20),
+              () => http.Response(jsonEncode(_validManifestJson()), 200),
+            ),
+          );
+
+          Object? caughtError;
+          unawaited(
+            apiClient.fetchManifest().then(
+              (_) {},
+              onError: (Object e) => caughtError = e,
+            ),
+          );
+
+          async.elapse(const Duration(seconds: 16));
+
+          expect(caughtError, isA<NetworkException>());
+        });
+      },
+    );
 
     test('a 500 response throws NetworkException', () async {
       when(

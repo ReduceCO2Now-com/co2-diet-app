@@ -205,6 +205,10 @@ dev_dependencies:
   # The 'dart run drift_dev schema dump' CLI is broken with drift 2.34.2
   # (drift3_preview API mismatch). Use tool/generate_schema_v1.dart instead.
   drift_dev: 2.34.0
+  # fake_async 1.3.3 — was already a transitive dep of flutter_test; declared
+  # directly so reference_pack_api_client_test.dart can virtually advance
+  # past fetchManifest's 15s timeout without a real 15-second test delay.
+  fake_async: 1.3.3
   flutter_test:
     sdk: flutter
   # freezed 3.2.6-dev.1 used (not 3.2.5 stable) — 3.2.5 requires analyzer >=9 <11

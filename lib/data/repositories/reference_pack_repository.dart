@@ -13,6 +13,7 @@ import 'package:co2diet/data/remote/reference_pack_api_client.dart';
 import 'package:co2diet/domain/entities/reference_pack_manifest.dart';
 import 'package:co2diet/domain/entities/reference_pack_status.dart';
 import 'package:co2diet/domain/repositories/i_reference_pack_repository.dart';
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -228,9 +229,13 @@ class ReferencePackRepository implements IReferencePackRepository {
 
   @override
   Future<void> startFullDownload({required bool allowCellular}) async {
+    debugPrint('ReferencePackRepository.startFullDownload: fetching manifest');
     final manifest = await fetchManifest();
     final hasSpace = await checkDiskSpace(manifest);
     if (!hasSpace) {
+      debugPrint(
+        'ReferencePackRepository.startFullDownload: insufficient disk space',
+      );
       throw const InsufficientDiskSpaceException();
     }
 
@@ -238,6 +243,10 @@ class ReferencePackRepository implements IReferencePackRepository {
       kind: _DownloadKind.full,
       manifest: manifest,
       requiresWifi: !allowCellular,
+    );
+    debugPrint(
+      'ReferencePackRepository.startFullDownload: enqueuing '
+      '${manifest.packUrl} (version ${manifest.currentVersion})',
     );
     await downloadManager.enqueueFullPack(
       url: Uri.parse(manifest.packUrl),
@@ -406,7 +415,15 @@ class ReferencePackRepository implements IReferencePackRepository {
     final taskId = await downloadManager.activeTaskId(referencePackTaskGroup);
     if (taskId != null) {
       final resumed = await downloadManager.resume(taskId);
+      debugPrint(
+        'ReferencePackRepository.resumeDownload: native resume for '
+        'task $taskId -> ${resumed ? "succeeded" : "no resume data"}',
+      );
       if (resumed) return;
+    } else {
+      debugPrint(
+        'ReferencePackRepository.resumeDownload: no active native task',
+      );
     }
     // Either there was no active native task, or DownloadManager.resume
     // returned false -- both mean there is no resume data to continue
@@ -418,7 +435,18 @@ class ReferencePackRepository implements IReferencePackRepository {
     // scratch using the in-flight manifest _mapProgressToStatus's `failed`
     // case deliberately keeps around for exactly this fallback.
     final inFlight = _inFlight;
-    if (inFlight == null) return;
+    if (inFlight == null) {
+      debugPrint(
+        'ReferencePackRepository.resumeDownload: no in-flight download to '
+        'fall back to -- nothing to do',
+      );
+      return;
+    }
+    debugPrint(
+      'ReferencePackRepository.resumeDownload: re-enqueuing '
+      '${inFlight.kind.name} download from scratch '
+      '(version ${inFlight.manifest.currentVersion})',
+    );
     if (inFlight.kind == _DownloadKind.delta) {
       await downloadManager.enqueueDelta(
         url: Uri.parse(inFlight.deltaInfo!.url),

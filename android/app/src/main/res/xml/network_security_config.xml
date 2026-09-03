@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  DEBUG-BUILD-ONLY: debug-overrides is only honored when the app is
+  android:debuggable="true" (every Flutter debug build; never a release
+  build regardless of this file's presence). Release builds trust only
+  the system CA store, exactly as if this file didn't exist.
+
+  Added for Plan 09-08's real-device checkpoints. background_downloader's
+  native OkHttp-based downloader (unlike Dart's own package:http, which
+  does its own TLS validation) uses Android's platform trust manager,
+  which does NOT trust user-installed CA certificates by default on API
+  24+. Without this override, tool/dev/range_test_server.dart's
+  self-signed HTTPS certificate is rejected with
+  "CertPathValidatorException: Trust anchor for certification path not
+  found" even after installing and trusting it via Settings, since the
+  app itself never opted in to considering the user CA store at all.
+-->
+<network-security-config>
+    <debug-overrides>
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="user" />
+        </trust-anchors>
+    </debug-overrides>
+</network-security-config>
