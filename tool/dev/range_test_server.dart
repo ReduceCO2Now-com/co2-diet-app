@@ -107,11 +107,17 @@ Future<void> main(List<String> arguments) async {
     ..useCertificateChain(cert.certPath)
     ..usePrivateKey(cert.keyPath);
 
-  final httpServer = await HttpServer.bind(InternetAddress.anyIPv4, httpPort);
-  final httpsServer = await HttpServer.bindSecure(
-    InternetAddress.anyIPv4,
-    httpsPort,
-    securityContext,
+  final httpServer = await _bindWithRetry(
+    () => HttpServer.bind(InternetAddress.anyIPv4, httpPort),
+    port: httpPort,
+  );
+  final httpsServer = await _bindWithRetry(
+    () => HttpServer.bindSecure(
+      InternetAddress.anyIPv4,
+      httpsPort,
+      securityContext,
+    ),
+    port: httpsPort,
   );
 
   final httpsPackUrl = 'https://$canonicalHost:$httpsPort/$fileName';
@@ -428,3 +434,39 @@ Future<_SelfSignedCert> _generateSelfSignedCert({
 
 bool _looksLikeIp(String host) =>
     RegExp(r'^\d+\.\d+\.\d+\.\d+$').hasMatch(host);
+
+/// Retries [bind] up to 5 times (300ms apart) when it fails with "address
+/// already in use" -- absorbs the brief window where the OS has not yet
+/// fully released a just-killed prior instance's listening socket, which
+/// otherwise surfaces as an immediate, confusing fatal error even though
+/// nothing is genuinely still holding the port (this is a dev-loop
+/// annoyance specific to rapid Ctrl+C-then-rerun cycles, not something
+/// `lsof`/`netstat` will ever show since there is no live occupier once
+/// the retry succeeds). Any other [SocketException], or the same failure
+/// on the final attempt, is rethrown unchanged so a genuinely-occupied
+/// port still fails loudly and immediately.
+Future<T> _bindWithRetry<T>(
+  Future<T> Function() bind, {
+  required int port,
+  int maxAttempts = 5,
+  Duration delay = const Duration(milliseconds: 300),
+}) async {
+  for (var attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await bind();
+    } on SocketException catch (e) {
+      final inUse = (e.osError?.message ?? e.message).toLowerCase().contains(
+        'address already in use',
+      );
+      if (!inUse || attempt == maxAttempts) rethrow;
+      stderr.writeln(
+        'range_test_server: port $port still in use, retrying '
+        '($attempt/$maxAttempts)...',
+      );
+      await Future<void>.delayed(delay);
+    }
+  }
+  // Unreachable: the loop above always either returns or rethrows on the
+  // final attempt.
+  throw StateError('unreachable');
+}
