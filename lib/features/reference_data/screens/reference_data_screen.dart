@@ -41,7 +41,22 @@ class _ReferenceDataScreenState extends ConsumerState<ReferenceDataScreen> {
 
   Future<void> _loadComparisonCounts() async {
     final notifier = ref.read(referencePackProvider.notifier);
-    final local = await notifier.localProductCount();
+    int? local;
+    try {
+      local = await notifier.localProductCount();
+    } on Exception {
+      // A download/revert swap transiently DETACHes off_ref mid-operation
+      // (ReferencePackExtractor's own documented caller-responsibility risk
+      // -- it performs no internal locking of its own) -- if this screen's
+      // initState() query lands in that window, SqliteException ("no such
+      // table: off_ref.products") is expected, not a bug (T-09-08-
+      // diagnostic). Treated exactly like the network failure below: omit
+      // this one read rather than crashing with an unhandled exception --
+      // watchStatus()'s next emission (the swap completing) drives the
+      // status-based UI to the correct state regardless, this is only the
+      // one-time initState() snapshot.
+      local = null;
+    }
     ReferencePackManifest? manifest;
     try {
       manifest = await notifier.checkForUpdate();

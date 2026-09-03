@@ -14,6 +14,8 @@
 import 'dart:io';
 
 import 'package:archive/archive_io.dart';
+import 'package:co2diet/core/assets/first_launch_extractor.dart'
+    show offReferenceVersionMarkerFilename;
 import 'package:co2diet/data/local/app_database.dart';
 import 'package:co2diet/data/local/reference_pack/reference_pack_extractor.dart';
 import 'package:co2diet/data/local/reference_pack/reference_pack_version_store.dart';
@@ -73,7 +75,9 @@ void main() {
   late String installedPath;
 
   setUp(() async {
-    tempDir = await Directory.systemTemp.createTemp('reference_pack_extractor_');
+    tempDir = await Directory.systemTemp.createTemp(
+      'reference_pack_extractor_',
+    );
     installedPath = p.join(tempDir.path, 'off_reference.sqlite');
     versionStore = _FakeVersionStore();
     extractor = ReferencePackExtractor(
@@ -133,12 +137,69 @@ void main() {
         expect(versionStore.writtenVersion, 'vTEST');
       },
     );
+
+    test(
+      "deletes first_launch_extractor.dart's off_reference.version marker "
+      'when it exists -- without this, ensureOffReferenceDb() would keep '
+      'reporting the full pack it just installed as "still the valid '
+      'bundled seed" forever after, and a future revertToSeed() would '
+      'delete-then-ATTACH the same now-nonexistent path, silently getting '
+      'an empty database (T-09-08-diagnostic)',
+      () async {
+        _buildFixtureDb(installedPath, marker: 'OLD_INSTALLED');
+        final versionMarkerFile = File(
+          p.join(tempDir.path, offReferenceVersionMarkerFilename),
+        )..writeAsStringSync('03-02-AGRIBALYSE-3.1.1');
+
+        db = AppDatabase(NativeDatabase.memory());
+        await db.customStatement(
+          "ATTACH DATABASE '$installedPath' AS off_ref",
+        );
+
+        final newFixturePath = p.join(tempDir.path, 'new_fixture.sqlite');
+        _buildFixtureDb(newFixturePath, marker: 'NEW_FULL_PACK');
+        final gzPath = p.join(tempDir.path, 'full_vTEST.sqlite.gz');
+        _gzipCompress(newFixturePath, gzPath);
+
+        await extractor.swapIn(
+          db,
+          File(gzPath),
+          newVersion: 'vTEST',
+        );
+
+        expect(versionMarkerFile.existsSync(), isFalse);
+      },
+    );
+
+    test(
+      'does not throw when no off_reference.version marker exists (e.g. '
+      'this is not the first swapIn call this app install has ever made)',
+      () async {
+        _buildFixtureDb(installedPath, marker: 'OLD_INSTALLED');
+
+        db = AppDatabase(NativeDatabase.memory());
+        await db.customStatement(
+          "ATTACH DATABASE '$installedPath' AS off_ref",
+        );
+
+        final newFixturePath = p.join(tempDir.path, 'new_fixture.sqlite');
+        _buildFixtureDb(newFixturePath, marker: 'NEW_FULL_PACK');
+        final gzPath = p.join(tempDir.path, 'full_vTEST.sqlite.gz');
+        _gzipCompress(newFixturePath, gzPath);
+
+        await expectLater(
+          extractor.swapIn(db, File(gzPath), newVersion: 'vTEST'),
+          completes,
+        );
+      },
+    );
   });
 
   group('ReferencePackExtractor.revertToSeed', () {
     test(
-      're-attaches the bundled seed fixture, deletes the previously '
-      'installed full-pack file, and clears the version marker',
+      'copies the bundled seed into the fixed installed path, re-attaches '
+      'it there, leaves the original bundledSeedPath file untouched, and '
+      'clears the version marker',
       () async {
         // Simulate a previously-swapped-in full pack sitting at the fixed
         // installed path.
@@ -159,11 +220,41 @@ void main() {
             .getSingle();
         expect(row.read<String>('marker'), 'BUNDLED_SEED');
 
-        // The previously-downloaded full-pack file is deleted; the bundled
-        // seed itself is untouched (revertToSeed never writes to its path).
-        expect(File(installedPath).existsSync(), isFalse);
+        // off_ref now lives at the same fixed installedPath swapIn() always
+        // uses -- not at bundledSeedPath directly -- so a bundledSeedPath
+        // that happens to equal installedPath (always true in production)
+        // is never deleted before its bytes are read (T-09-08-diagnostic).
+        expect(File(installedPath).existsSync(), isTrue);
         expect(File(bundledSeedPath).existsSync(), isTrue);
 
+        expect(versionStore.cleared, isTrue);
+      },
+    );
+
+    test(
+      'does not corrupt off_ref to an empty database when bundledSeedPath '
+      'is the exact same file as installedPath -- the real production '
+      "case (first_launch_extractor.dart's ensureOffReferenceDb() and "
+      "this class's own installedPath both resolve to the identical "
+      'getApplicationDocumentsDirectory()/off_reference.sqlite path) that '
+      'reproduced live on a real device: every revert after a real '
+      'full-pack install silently left off_ref attached to a fresh, '
+      'empty SQLite database (T-09-08-diagnostic)',
+      () async {
+        _buildFixtureDb(installedPath, marker: 'PREVIOUSLY_INSTALLED_FULL');
+
+        db = AppDatabase(NativeDatabase.memory());
+        await db.customStatement(
+          "ATTACH DATABASE '$installedPath' AS off_ref",
+        );
+
+        // bundledSeedPath IS installedPath -- the production scenario.
+        await extractor.revertToSeed(db, bundledSeedPath: installedPath);
+
+        final row = await db
+            .customSelect('SELECT marker FROM off_ref.meta')
+            .getSingle();
+        expect(row.read<String>('marker'), 'PREVIOUSLY_INSTALLED_FULL');
         expect(versionStore.cleared, isTrue);
       },
     );

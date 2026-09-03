@@ -1,10 +1,37 @@
 import 'dart:io';
 
 import 'package:archive/archive_io.dart';
+import 'package:co2diet/core/assets/first_launch_extractor.dart'
+    show offReferenceVersionMarkerFilename;
 import 'package:co2diet/data/local/app_database.dart';
 import 'package:co2diet/data/local/reference_pack/reference_pack_version_store.dart';
+import 'package:flutter/foundation.dart' show compute;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+
+/// Decompresses the gzip file at [paths]'s first path to its second path.
+///
+/// A top-level function (not a method) so [compute] can run it on a
+/// background isolate: `GZipDecoder.decodeStream` (`archive` 3.6.1) is a
+/// synchronous, `void`-returning call with no yield points of its own, so
+/// running it on the main isolate blocks the Flutter UI thread for the
+/// call's entire duration -- confirmed on a real device to ANR
+/// ("Input dispatching timed out", ~13s unresponsive) decompressing even
+/// this plan's ~40MB-compressed/~123MB-decompressed smoketest fixture; a
+/// real 300-800MB pack (per `ChecksumVerifier`'s doc comment) would be far
+/// worse (T-09-08-diagnostic).
+Future<void> _decompressGzipFile(
+  (String inputPath, String outputPath) paths,
+) async {
+  final input = InputFileStream(paths.$1);
+  final output = OutputFileStream(paths.$2);
+  try {
+    GZipDecoder().decodeStream(input, output);
+  } finally {
+    await input.close();
+    await output.close();
+  }
+}
 
 /// Resolves the app documents directory's absolute path.
 ///
@@ -70,11 +97,16 @@ class ReferencePackExtractor {
   ///
   /// Runs, in order:
   /// 1. `DETACH DATABASE off_ref`
-  /// 2. Streams-decompresses [downloadedGzFile] via [GZipDecoder]'s
-  ///    file-to-file streaming API ([InputFileStream]/[OutputFileStream] --
-  ///    never [GZipDecoder.decodeBytes], which would fully buffer a
-  ///    300-800MB compressed / 1-2GB decompressed payload in memory) to a
-  ///    temp file alongside the installed `off_reference.sqlite`.
+  /// 2. Streams-decompresses [downloadedGzFile] via [_decompressGzipFile]
+  ///    on a background isolate ([compute]) -- [GZipDecoder.decodeStream]
+  ///    is synchronous with no yield points, so running it on the calling
+  ///    isolate blocks the Flutter UI thread for the entire decompression;
+  ///    confirmed on a real device to ANR even this plan's ~40MB-compressed
+  ///    smoketest fixture (T-09-08-diagnostic). Still file-to-file
+  ///    streaming ([InputFileStream]/[OutputFileStream] -- never
+  ///    [GZipDecoder.decodeBytes], which would fully buffer a 300-800MB
+  ///    compressed / 1-2GB decompressed payload in memory) to a temp file
+  ///    alongside the installed `off_reference.sqlite`.
   /// 3. Deletes the currently-installed `off_reference.sqlite` and renames
   ///    the decompressed temp file into its place -- the same fixed
   ///    `getApplicationDocumentsDirectory()/off_reference.sqlite` path
@@ -95,14 +127,7 @@ class ReferencePackExtractor {
 
     await db.customStatement('DETACH DATABASE off_ref');
 
-    final input = InputFileStream(downloadedGzFile.path);
-    final output = OutputFileStream(tempPath);
-    try {
-      GZipDecoder().decodeStream(input, output);
-    } finally {
-      await input.close();
-      await output.close();
-    }
+    await compute(_decompressGzipFile, (downloadedGzFile.path, tempPath));
 
     final installedFile = File(installedPath);
     if (installedFile.existsSync()) {
@@ -114,6 +139,26 @@ class ReferencePackExtractor {
       await downloadedGzFile.delete();
     }
 
+    // Invalidate first_launch_extractor.dart's ensureOffReferenceDb() cache
+    // marker -- it lives next to the exact off_reference.sqlite path this
+    // method just overwrote with the full pack, and without deleting it,
+    // ensureOffReferenceDb would keep reporting "still the valid bundled
+    // seed" forever after, since its cache check only ever looks at this
+    // marker's content, never the actual file's. A future revertToSeed()
+    // resolving "the bundled seed path" via ensureOffReferenceDb() would
+    // then wrongly get this full pack's own path back, delete it, and
+    // ATTACH a now-nonexistent path -- which SQLite silently satisfies by
+    // creating a fresh, empty database (T-09-08-diagnostic).
+    final versionMarker = File(
+      p.join(
+        await _documentsDirectoryPath(),
+        offReferenceVersionMarkerFilename,
+      ),
+    );
+    if (versionMarker.existsSync()) {
+      await versionMarker.delete();
+    }
+
     await db.customStatement("ATTACH DATABASE '$installedPath' AS off_ref");
 
     await _versionStore.write(newVersion);
@@ -123,24 +168,40 @@ class ReferencePackExtractor {
   /// starter seed at [bundledSeedPath] -- the reverse of [swapIn].
   ///
   /// Runs, in order:
-  /// 1. `DETACH DATABASE off_ref`
-  /// 2. Deletes the currently-installed full-pack file at the same fixed
-  ///    `getApplicationDocumentsDirectory()/off_reference.sqlite` path
-  ///    [swapIn] renamed the decompressed download into -- reclaiming disk
-  ///    space per `09-CONTEXT.md`'s locked revert behavior ("does not keep
-  ///    the full pack around 'just in case'").
-  /// 3. `ATTACH DATABASE '<bundledSeedPath>' AS off_ref` -- [bundledSeedPath]
-  ///    is the same path `first_launch_extractor.dart`'s
-  ///    `ensureOffReferenceDb()` already resolved and decompressed at
-  ///    startup, passed in by the caller rather than re-derived here, since
-  ///    the bundled seed is already a plain, uncompressed `.sqlite` file
-  ///    with no decompression step needed on revert.
-  /// 4. Clears the version marker via [ReferencePackVersionStore.clear].
+  /// 1. Copies [bundledSeedPath]'s bytes to a staging path *before*
+  ///    touching `installedPath` -- [bundledSeedPath] and `installedPath`
+  ///    are the exact same file in production (both resolve to
+  ///    `getApplicationDocumentsDirectory()/off_reference.sqlite`:
+  ///    `first_launch_extractor.dart`'s `ensureOffReferenceDb()` writes the
+  ///    bundled seed there, and [swapIn] overwrites the same path with a
+  ///    downloaded full pack). Deleting `installedPath` before reading
+  ///    [bundledSeedPath] -- what this method used to do -- deletes the
+  ///    seed's only copy before ATTACH ever reads it, since they're the
+  ///    same file: ATTACH then silently gets a fresh, empty SQLite
+  ///    database at the just-deleted path instead (T-09-08-diagnostic --
+  ///    reproduced live: every revert after a real full-pack install
+  ///    silently corrupted the installed file to 0 bytes).
+  /// 2. `DETACH DATABASE off_ref`
+  /// 3. Deletes the currently-installed full-pack file at the fixed
+  ///    `off_reference.sqlite` path [swapIn] renamed the decompressed
+  ///    download into -- reclaiming disk space per `09-CONTEXT.md`'s
+  ///    locked revert behavior ("does not keep the full pack around 'just
+  ///    in case'").
+  /// 4. Renames the staged copy from step 1 into that same fixed path --
+  ///    mirrors [swapIn]'s own "off_ref always lives at the one canonical
+  ///    `installedPath`" invariant, so [bundledSeedPath] itself (when it is
+  ///    genuinely a separate file, e.g. in tests) is only ever read from,
+  ///    never deleted.
+  /// 5. `ATTACH DATABASE '<installedPath>' AS off_ref`.
+  /// 6. Clears the version marker via [ReferencePackVersionStore.clear].
   Future<void> revertToSeed(
     AppDatabase db, {
     required String bundledSeedPath,
   }) async {
     final installedPath = await _installedPath();
+    final stagingPath = '$installedPath.seed_staging';
+
+    await File(bundledSeedPath).copy(stagingPath);
 
     await db.customStatement('DETACH DATABASE off_ref');
 
@@ -148,8 +209,9 @@ class ReferencePackExtractor {
     if (installedFile.existsSync()) {
       await installedFile.delete();
     }
+    await File(stagingPath).rename(installedPath);
 
-    await db.customStatement("ATTACH DATABASE '$bundledSeedPath' AS off_ref");
+    await db.customStatement("ATTACH DATABASE '$installedPath' AS off_ref");
 
     await _versionStore.clear();
   }

@@ -13,6 +13,21 @@ import 'package:path_provider/path_provider.dart';
 /// changes the schema or replaces CO₂ data.
 const _offRefVersion = '03-02-AGRIBALYSE-3.1.1';
 
+/// Filename of the version-stamp file [ensureOffReferenceDb] uses to decide
+/// whether the on-disk `off_reference.sqlite` still matches the bundled
+/// asset, or needs re-extracting.
+///
+/// Exported so `ReferencePackExtractor.swapIn` (Plan 09-03) can delete it
+/// when installing a downloaded full pack -- `swapIn` overwrites the exact
+/// same `off_reference.sqlite` path this file's caching check reads,
+/// without invalidating this marker, [ensureOffReferenceDb] would
+/// wrongly report "still the valid bundled seed" forever after, even
+/// though the file underneath is now the full pack. That silent-cache-
+/// poisoning bug is exactly what made `ReferencePackRepository.
+/// revertToSeed` attach an empty database (T-09-08-diagnostic, found via
+/// Plan 09-08's real-device checkpoints).
+const offReferenceVersionMarkerFilename = 'off_reference.version';
+
 /// Decompresses the bundled `assets/off_reference.sqlite.gz` asset to the
 /// app documents directory, re-extracting if the bundled version changed.
 ///
@@ -29,7 +44,9 @@ const _offRefVersion = '03-02-AGRIBALYSE-3.1.1';
 Future<String> ensureOffReferenceDb() async {
   final docsDir = await getApplicationDocumentsDirectory();
   final dbFile = File(p.join(docsDir.path, 'off_reference.sqlite'));
-  final versionFile = File(p.join(docsDir.path, 'off_reference.version'));
+  final versionFile = File(
+    p.join(docsDir.path, offReferenceVersionMarkerFilename),
+  );
 
   // Re-use existing file only when the on-disk version matches the bundled
   // version. Mismatched or absent version → delete and re-extract.

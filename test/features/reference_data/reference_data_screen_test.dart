@@ -47,6 +47,7 @@ class _FakeReferencePackNotifier extends ReferencePackNotifier {
     this.freeDiskSpaceBytesResult = 1000 * 1024 * 1024,
     this.isOnWifiResult = true,
     this.installedSizeBytesResult = 0,
+    this.throwOnLocalProductCount = false,
   }) : manifestResult = manifest ?? _buildManifest();
 
   final ReferencePackStatus _status;
@@ -57,6 +58,13 @@ class _FakeReferencePackNotifier extends ReferencePackNotifier {
   final int localProductCountResult = 50000;
   bool isOnWifiResult;
   int installedSizeBytesResult;
+
+  /// Simulates `FoodCatalogDao.countProducts()` hitting the real
+  /// `SqliteException("no such table: off_ref.products")` race a
+  /// concurrent download/revert swap can transiently cause
+  /// (`ReferencePackExtractor`'s own documented caller-responsibility risk
+  /// -- T-09-08-diagnostic).
+  final bool throwOnLocalProductCount;
 
   int startFullDownloadCallCount = 0;
   bool? lastAllowCellular;
@@ -82,7 +90,12 @@ class _FakeReferencePackNotifier extends ReferencePackNotifier {
       estimatedRequiredDiskSpaceBytesResult;
 
   @override
-  Future<int> localProductCount() async => localProductCountResult;
+  Future<int> localProductCount() async {
+    if (throwOnLocalProductCount) {
+      throw Exception('no such table: off_ref.products');
+    }
+    return localProductCountResult;
+  }
 
   @override
   Future<bool> isOnWifi() async => isOnWifiResult;
@@ -208,6 +221,31 @@ void main() {
           find.text('2.5M products (full catalog)'),
           findsOneWidget,
         );
+      },
+    );
+
+    testWidgets(
+      'renders without an unhandled exception when localProductCount() '
+      'throws (a concurrent swap transiently DETACHing off_ref, '
+      'T-09-08-diagnostic) -- the local count is simply omitted, the '
+      'remote comparison still renders normally',
+      (tester) async {
+        await tester.pumpWidget(
+          await _wrap(
+            _FakeReferencePackNotifier(
+              const ReferencePackSeed(),
+              throwOnLocalProductCount: true,
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.textContaining('products (starter pack)'), findsNothing);
+        expect(
+          find.text('2.5M products (full catalog)'),
+          findsOneWidget,
+        );
+        expect(tester.takeException(), isNull);
       },
     );
 
