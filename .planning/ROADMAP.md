@@ -204,13 +204,14 @@ Plans:
 
 ### Phase 06.1: Reorder onboarding: Carousel before Profile Setup (INSERTED)
 
-**Goal:** [Urgent work - to be planned]
-**Requirements**: TBD
+**Goal:** Reorder the shipped onboarding flow from Splash → Welcome → Legal Consent → Profile Setup → Carousel → Dashboard to Splash → Welcome → Legal Consent → Carousel → Profile Setup → Dashboard, relocating the onboarding-completion trigger to Profile Setup's exit — explaining the app's purpose before asking for personal data, while preserving Phase 6's 06-10 bottom-nav-hide bug fix.
+**Requirements**: None — context-driven scope (no REQUIREMENTS.md IDs assigned; see `06.1-CONTEXT.md`)
 **Depends on:** Phase 6
-**Plans:** 0 plans
+**Plans:** 2 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 06.1 to break down)
+- [ ] 06.1-01-PLAN.md — Relocate onboarding-completion trigger: Carousel becomes a pure pass-through to /profile (relabeled "Set Up Profile"), Profile Setup's forward button becomes the terminal "Go to Dashboard" trigger; comment-only updates to app_router.dart/onboarding_gate_provider.dart; new Carousel widget test + updated onboarding_gate_test.dart (Wave 0 gaps closed)
+- [ ] 06.1-02-PLAN.md — Manual flow-level re-verification checkpoint (redirect guard, bottom-nav-hide, screen-reader read-order across the new sequence)
 
 ### Phase 7: Keycloak Auth + Account Deletion
 
@@ -226,7 +227,6 @@ Plans:
   5. A local-only CO₂ methodology-update mechanism ships: on launch, entries whose stored `co2MethodologyVersion(Snapshot)` predates the current app-binary constant trigger a non-intrusive, dismissible Dashboard banner — zero backend dependency; the actual version constant is not bumped this phase.
 
 **Plans**: 8 plans
-Plans:
 
 - [x] 07-01-PLAN.md — Wave 0 test stubs (5 files)
 - [x] 07-02-PLAN.md — Package installs (flutter_appauth, flutter_secure_storage) + native redirect-scheme wiring + AuthState/KeycloakConfig/BackendConfig/auth_providers.dart
@@ -326,6 +326,8 @@ Plans:
 **LEG-05 (CO₂ methodology publicly documented):** Assigned to Phase 3 where the CO₂ factor table + confidence bands + transparency link land together.
 
 **AUTH-08 / AUTH-09 / ONBD-03 resolution (2026-08-12):** Originally bundled into Phase 7, then split into Phase 8 on 2026-08-08. A re-scan of the `CO2Diet_Backend` reference repo confirmed the backend's "Sync" module will never do bidirectional user-data sync — settled architecture, not an open question, regardless of the backend's separate still-open encrypted-backup decision. Resolved as: **AUTH-08** is satisfied by Phase 7's existing zero-data-movement design (marked Complete in REQUIREMENTS.md, no further work needed). **AUTH-09** is narrowed to only the encrypted-blob-backup case and stays with the renamed Phase 8, contingent on Tomris. **ONBD-03** is moved to `## v2 Requirements` in REQUIREMENTS.md — its premise (a real choice to weigh against Local Mode) doesn't exist without that backup shipping. See `.planning/phases/07-keycloak-auth-account-mode-sync/07-CONTEXT.md` for the original split rationale.
+
+**Phase 06.1 (2026-09-04, INSERTED after Phase 6):** Carries no REQUIREMENTS.md IDs — it is a deliberate UX reconsideration of an already-shipped, already-verified flow (flagged as a deferred todo during Phase 6's 06-10 real-device verification), not a new requirement. `06.1-CONTEXT.md` is the authoritative scope definition; its plans cite pseudo-requirement tags (`CTX-TRIGGER`, `CTX-COPY`, `CTX-ROUTE-GUARD`, `CTX-VERIFY`) traceable to that document's locked decisions instead of REQUIREMENTS.md IDs.
 
 ---
 
