@@ -38,6 +38,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   /// zero-analytics principle.
   double? _lastConfirmedUnsafeKcal;
 
+  Future<void> _finishOnboarding() async {
+    await ref.read(onboardingGateProvider.notifier).completeOnboarding();
+    if (mounted) context.go('/dashboard');
+  }
+
   @override
   Widget build(BuildContext context) {
     final profileAsync = ref.watch(profileProvider);
@@ -126,16 +131,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),
-              // Onboarding-only "Continue" button (ONBD-01/05) — absent
-              // once onboarding is complete, restoring this screen's
-              // exact prior-phase behavior.
+              // Onboarding-only "Go to Dashboard" button (ONBD-01/05) —
+              // the terminal action of the onboarding flow: persists
+              // completion, then navigates to the Dashboard. Absent once
+              // onboarding is complete, restoring this screen's exact
+              // prior-phase behavior. Per 06.1-CONTEXT.md's "Skip
+              // Affordance" decision, this button already functions as
+              // the skip path since every profile field is optional and
+              // auto-saves — no separate "Skip for now" link is added.
               if (!hasOnboarded) ...[
                 const SizedBox(height: AppSpacing.md),
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
-                    onPressed: () => context.go('/onboarding-carousel'),
-                    child: const Text('Continue'),
+                    onPressed: _finishOnboarding,
+                    child: const Text('Go to Dashboard'),
                   ),
                 ),
               ],
