@@ -164,6 +164,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 **Next action:** Phase 9 has no remaining plans. Neither Phase 8 nor Phase 10 is ready for blind execution: Phase 8 (Encrypted Account Backup) stays parked pending Tomris's backend decision; Phase 10 (Post-Launch Enhancements) is an unplanned v1.1+ placeholder with `Plans: TBD`. This is a routing decision point, not an automatic continuation.
 **Suggested next command:** `/gsd:discuss-phase 8` once Tomris's backend decision resolves, or `/gsd:discuss-phase 10` once there is real post-launch/store-review signal to prioritize v1.1 scope. No `/gsd:execute-phase` command is actionable right now without one of those decisions first.
 
+**2026-09-04 addendum:** Milestone summary for v1.1 generated at `.planning/reports/MILESTONE_SUMMARY-v1.1.md` (commit `f72b41d`) — onboarding-ready overview of all 9 completed phases, requirements coverage (89/93), key decisions, and tech debt/deferred items.
+
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
 **Do not skip Phase 1 sync-safe schema work.** The HLC / tombstone / dirty / consent columns cannot be retrofitted later without data loss. This is the single highest-priority architectural constraint in the project.
