@@ -70,17 +70,21 @@ final rootNavigatorKey = GlobalKey<NavigatorState>();
 /// Bottom navigation shell that wraps the three main branches.
 ///
 /// `/profile` is reachable both as the onboarding flow's Profile Setup
-/// step (before the Carousel/`completeOnboarding()` has ever run) and as
-/// the shell's normal Profile tab post-onboarding -- both share this same
-/// [AppShell] wrapper. Found via 06-10 manual real-device verification:
-/// the bottom nav bar rendered unconditionally, so a pre-onboarding user
-/// on Profile Setup could tap "Dashboard"/"Settings" directly, bypassing
-/// the mandatory Carousel step entirely (skipping the only call site that
-/// invokes `completeOnboarding()`) -- the top-level redirect guard then
-/// correctly bounced them to `/splash` since onboarding was never actually
+/// step (before Profile Setup's "Go to Dashboard" button has ever called
+/// `completeOnboarding()`) and as the shell's normal Profile tab
+/// post-onboarding -- both share this same [AppShell] wrapper. Found via
+/// 06-10 manual real-device verification: the bottom nav bar rendered
+/// unconditionally, so a pre-onboarding user on Profile Setup could tap
+/// "Dashboard"/"Settings" directly, bypassing the mandatory onboarding
+/// flow entirely (skipping the only call site that invokes
+/// `completeOnboarding()`) -- the top-level redirect guard then correctly
+/// bounced them to `/splash` since onboarding was never actually
 /// completed, which read as an unexplained "loop" rather than the
 /// guard doing its job. Hiding the bar until [onboardingGateProvider] is
-/// true removes the shortcut instead of trying to explain around it.
+/// true removes the shortcut instead of trying to explain around it -- and
+/// remains correct regardless of which pre-onboarding screen owns the
+/// trigger, since this gate is generic to [onboardingGateProvider], not
+/// tied to a specific screen.
 class AppShell extends ConsumerWidget {
   /// Creates [AppShell] with the given [StatefulNavigationShell].
   const AppShell({required this.shell, super.key});
