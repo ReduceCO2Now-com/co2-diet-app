@@ -207,10 +207,10 @@ Plans:
 **Goal:** Reorder the shipped onboarding flow from Splash → Welcome → Legal Consent → Profile Setup → Carousel → Dashboard to Splash → Welcome → Legal Consent → Carousel → Profile Setup → Dashboard, relocating the onboarding-completion trigger to Profile Setup's exit — explaining the app's purpose before asking for personal data, while preserving Phase 6's 06-10 bottom-nav-hide bug fix.
 **Requirements**: None — context-driven scope (no REQUIREMENTS.md IDs assigned; see `06.1-CONTEXT.md`)
 **Depends on:** Phase 6
-**Plans:** 2 plans
+**Plans:** 1/2 plans executed
 
 Plans:
-- [ ] 06.1-01-PLAN.md — Relocate onboarding-completion trigger: Carousel becomes a pure pass-through to /profile (relabeled "Set Up Profile"), Profile Setup's forward button becomes the terminal "Go to Dashboard" trigger; comment-only updates to app_router.dart/onboarding_gate_provider.dart; new Carousel widget test + updated onboarding_gate_test.dart (Wave 0 gaps closed)
+- [x] 06.1-01-PLAN.md — Relocate onboarding-completion trigger: Carousel becomes a pure pass-through to /profile (relabeled "Set Up Profile"), Profile Setup's forward button becomes the terminal "Go to Dashboard" trigger; comment-only updates to app_router.dart/onboarding_gate_provider.dart; new Carousel widget test + updated onboarding_gate_test.dart (Wave 0 gaps closed)
 - [ ] 06.1-02-PLAN.md — Manual flow-level re-verification checkpoint (redirect guard, bottom-nav-hide, screen-reader read-order across the new sequence)
 
 ### Phase 7: Keycloak Auth + Account Deletion

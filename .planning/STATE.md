@@ -3,8 +3,7 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: completed
-stopped_at: Phase 06.1 context gathered
-last_updated: "2026-09-04T07:57:03.492Z"
+last_updated: "2026-09-04T08:23:58.473Z"
 progress:
   total_phases: 11
   completed_phases: 8
@@ -35,11 +34,11 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Current Position
 
-- **Milestone:** v1 launch
-- **Phase:** 09-reference-data-delivery-full-off-pack — **COMPLETE** (8/8 plans, both real-device checkpoints approved on a Samsung Galaxy Tab S7 FE / Android 14). Phase 7 (Keycloak Auth + Account Deletion) is COMPLETE — 8/8 plans. Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS. Phase 8 (Encrypted Account Backup) remains parked pending Tomris's backend decision. Phase 10 (Post-Launch Enhancements) is a v1.1+ placeholder with no v1 requirements and `Plans: TBD` — not yet actionable.
-- **Plan:** 09-08 (Local Range-test-server + real-device verification: resumable download mechanics + live atomic swap-while-querying — Wave 7, depends on 09-06+09-07, autonomous: false) — COMPLETE. Phase 9 has no remaining plans.
-- **Status:** Phase 9 complete. Next-phase routing is a decision point, not an automatic continuation: Phase 8 stays parked until Tomris's backend decision resolves (`/gsd:discuss-phase 8`), and Phase 10 is an unplanned v1.1+ placeholder (`/gsd:discuss-phase 10` once there's real post-launch signal to prioritize). Neither should be planned blind.
-- **Progress:** [███████░░░] 70% (7/10 phases — Phase 9 now genuinely complete; the 8/10 in this file's own YAML frontmatter progress counter is a pre-existing counting quirk unrelated to this closure and not corrected here, out of this task's scope)
+- **Milestone:** v1 launch (v1.1 inserted phase 06.1 now in progress)
+- **Phase:** 06.1-reorder-onboarding-carousel-before-profile-setup — Plan 01/2 COMPLETE (Carousel-before-Profile-Setup completion-trigger relocation). Plan 06.1-02 remains. Phase 09-reference-data-delivery-full-off-pack — **COMPLETE** (8/8 plans, both real-device checkpoints approved on a Samsung Galaxy Tab S7 FE / Android 14). Phase 7 (Keycloak Auth + Account Deletion) is COMPLETE — 8/8 plans. Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS. Phase 8 (Encrypted Account Backup) remains parked pending Tomris's backend decision. Phase 10 (Post-Launch Enhancements) is a v1.1+ placeholder with no v1 requirements and `Plans: TBD` — not yet actionable.
+- **Plan:** 06.1-01 (Relocate onboarding-completion trigger from Carousel to Profile Setup — Wave 1, autonomous: true) — COMPLETE, see `06.1-01-SUMMARY.md`. Next: 06.1-02.
+- **Status:** Plan 06.1-01 complete; Phase 06.1 has one remaining plan (06.1-02). Phase 9 complete, no remaining plans. Next-phase routing for Phase 8/Phase 10 is a decision point, not an automatic continuation: Phase 8 stays parked until Tomris's backend decision resolves (`/gsd:discuss-phase 8`), and Phase 10 is an unplanned v1.1+ placeholder (`/gsd:discuss-phase 10` once there's real post-launch signal to prioritize). Neither should be planned blind.
+- **Progress:** [███████░░░] 70% (7/10 phases — Phase 9 now genuinely complete; the 8/10 in this file's own YAML frontmatter progress counter is a pre-existing counting quirk unrelated to this closure and not corrected here, out of this task's scope. Note: Plan 06.1-01 is now complete — `state update-progress`'s milestone-scoped phase scan returned 0/0 for this decimal-numbered inserted phase, an SDK quirk with this project's `06.1-*` phase directory naming; not applied here to avoid corrupting the existing accurate count.)
 - **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files. Phase 7's requirement set (AUTH-01, AUTH-02, AUTH-03, AUTH-05, AUTH-06, AUTH-10, PRIV-05) is now fully delivered and reachable end-to-end. Phase 9 has no v1 requirements attached (v1.0.x enrichment kept in-roadmap for continuity per ROADMAP.md).
 
 ```
@@ -161,9 +160,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-09-04T07:57:03.470Z
-**Stopped at:** Phase 06.1 context gathered
-**Next action:** Phase 9 has no remaining plans. Neither Phase 8 nor Phase 10 is ready for blind execution: Phase 8 (Encrypted Account Backup) stays parked pending Tomris's backend decision; Phase 10 (Post-Launch Enhancements) is an unplanned v1.1+ placeholder with `Plans: TBD`. This is a routing decision point, not an automatic continuation.
+**Last session:** 2026-09-04T08:23:58.457Z
+**Stopped at:** Completed 06.1-01-PLAN.md
+**Next action:** Execute Plan 06.1-02 (remaining plan in Phase 06.1). Separately, Phase 9 has no remaining plans, and neither Phase 8 nor Phase 10 is ready for blind execution: Phase 8 (Encrypted Account Backup) stays parked pending Tomris's backend decision; Phase 10 (Post-Launch Enhancements) is an unplanned v1.1+ placeholder with `Plans: TBD`. Those two remain a routing decision point, not an automatic continuation.
 **Suggested next command:** `/gsd:discuss-phase 8` once Tomris's backend decision resolves, or `/gsd:discuss-phase 10` once there is real post-launch/store-review signal to prioritize v1.1 scope. No `/gsd:execute-phase` command is actionable right now without one of those decisions first.
 
 **2026-09-04 addendum:** Milestone summary for v1.1 generated at `.planning/reports/MILESTONE_SUMMARY-v1.1.md` (commit `f72b41d`) — onboarding-ready overview of all 9 completed phases, requirements coverage (89/93), key decisions, and tech debt/deferred items.
@@ -375,6 +374,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 09-06]: A bare ProviderContainer.read(someProvider.future) with no active container.listen(...) does not keep a non-keepAlive stream-backed dependency alive long enough for its first event to be delivered in tests -- the autoDispose scheduler can win the race and dispose it mid-flight (extends the [Phase 02-07] ProviderContainer.listen-over-bare-read precedent to stream providers)
 - [Phase 09-08]: Real-device testing (Samsung Galaxy Tab S7 FE, Android 14) found 5 genuine defects invisible to every mocked/isolated automated test in Plans 09-01 through 09-06: Android build broken by a third-party library's stale compileSdk; DownloadManager.resume() silently no-opping when a connection failure left no native resume data; a test-server bind race on transient address-in-use; background_downloader rejecting a self-signed dev-TLS cert plus fetchManifest() hanging forever on a dead manifestUrl; and a gzip-decompression ANR on a real ~123MB payload paired with revertToSeed() corrupting the installed database (bundledSeedPath and the installed-pack path are the same on-disk file in production, not independent files as the original delete-then-ATTACH logic assumed) -- all fixed and committed (7ea3e84, 105070c, 9851ed5, 21b1af8, 01ea2c6), full detail in 09-08-SUMMARY.md
 - [Phase 09-08]: Real CDN integration is explicitly out of Phase 9's scope per 09-CONTEXT.md/09-RESEARCH.md -- both real-device checkpoints verified against a local throwaway Range-capable dev server (tool/dev/range_test_server.dart), not a production endpoint; logged as a Pre-Launch Blocker, not a Phase 9 completion blocker
+- [Phase ?]: [Phase 06.1-01]: completeOnboarding() trigger moved from Carousel exit buttons to Profile Setup's forward button; Carousel converted to plain StatefulWidget (no longer reads Riverpod)
 
 ## Performance Metrics
 
@@ -446,3 +446,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 09-reference-data-delivery-full-off-pack P05 | ~55min | 3 tasks | 9 files |
 | Phase 09-reference-data-delivery-full-off-pack P06 | ~70min | 2 tasks | 7 files |
 | Phase 09-reference-data-delivery-full-off-pack P08 | ~10hr (real-device session, incl. 5 live bug fixes) | 3 tasks | 1 file created + fixes across 7 |
+| Phase 06.1 P01 | 20min | 3 tasks | 5 files |
