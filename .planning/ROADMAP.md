@@ -202,6 +202,16 @@ Plans:
 
 **UI hint**: yes
 
+### Phase 06.1: Reorder onboarding: Carousel before Profile Setup (INSERTED)
+
+**Goal:** [Urgent work - to be planned]
+**Requirements**: TBD
+**Depends on:** Phase 6
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd:plan-phase 06.1 to break down)
+
 ### Phase 7: Keycloak Auth + Account Deletion
 
 **Goal**: Add Account Mode's authentication surface as a pure, self-contained enhancement — Keycloak OIDC login (email/password, Apple, Google), logout, password reset, GDPR account deletion, and a local-only CO₂ methodology-update announcement — with zero data movement, so Local Mode users are completely unaffected and nothing here depends on a backend sync/data-ownership model that doesn't exist yet.

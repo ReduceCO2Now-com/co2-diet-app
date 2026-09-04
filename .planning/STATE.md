@@ -81,6 +81,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 - **2026-08-08:** Phase 7 ("Keycloak Auth + Account Mode + Sync") split into two phases after a backend repo scan (`CO2Diet_Backend`, cloned as reference material) found the backend's actual architecture avoids owning bidirectional user data. Phase 7 is now "Keycloak Auth + Account Deletion" (AUTH-01–06, AUTH-10, PRIV-05 — login, logout, password reset, GDPR account deletion, local-only CO2 methodology announcement; zero data movement). A new Phase 8 "User Data Sync Engine" (INSERTED) carries AUTH-08, AUTH-09, ONBD-03 (Local→Account upgrade, outbox/HLC/LWW sync, Mode Choice screen), depending on a resolved backend data-ownership agreement with Tomris. Former Phase 8 (Reference Data Delivery) → Phase 9; former Phase 9 (Post-Launch Enhancements) → Phase 10. Total phase count: 9 → 10. See `.planning/phases/07-keycloak-auth-account-mode-sync/07-CONTEXT.md`.
 
+- **2026-09-04:** Phase 06.1 "Reorder onboarding: Carousel before Profile Setup" (INSERTED) after Phase 6, from a deferred todo raised during 06-10's real-device verification. Currently-shipped/locked flow (Splash → Welcome → Legal Consent → Profile Setup → Onboarding Carousel → Dashboard, `06-CONTEXT.md:26`) is confirmed working exactly as spec'd — this is a deliberate UX reconsideration, not a bug: explaining the app's purpose before asking for personal data may read better. Not planned yet. See `.planning/todos/pending/2026-08-05-reconsider-onboarding-flow-order-carousel-before-profile-setup.md` and `.planning/phases/06.1-reorder-onboarding-carousel-before-profile-setup/`.
+
 ### Key Decisions Locked
 
 - **Local DB:** Drift (SQLite) — Hive rejected (unmaintained, no FTS5, brittle migrations). Sync-safe schema mandatory from v1.
