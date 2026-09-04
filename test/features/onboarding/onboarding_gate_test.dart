@@ -183,6 +183,25 @@ void main() {
     );
 
     testWidgets(
+      'the bottom navigation bar is hidden on /onboarding-carousel before '
+      'onboarding completes',
+      (tester) async {
+        final container = await pumpApp(
+          tester,
+          hasCompletedOnboarding: false,
+        );
+
+        container.read(appRouterProvider).go('/onboarding-carousel');
+        await tester.pumpAndSettle();
+
+        expect(find.text('Skip intro'), findsOneWidget);
+        expect(find.byType(NavigationBar), findsNothing);
+
+        await tester.pump(const Duration(seconds: 3));
+      },
+    );
+
+    testWidgets(
       'the bottom navigation bar is visible on /profile once onboarding '
       'has completed',
       (tester) async {
@@ -234,7 +253,7 @@ void main() {
     );
 
     testWidgets(
-      'calling completeOnboarding() mid-session (as the Carousel does) '
+      'calling completeOnboarding() mid-session (as Profile Setup does) '
       'then navigating to /dashboard produces no redirect back to /splash '
       '(regression: 06-10 manual verification reported this exact loop '
       'on real Android hardware)',
@@ -244,11 +263,12 @@ void main() {
           hasCompletedOnboarding: false,
         );
 
-        // Mirrors OnboardingCarouselScreen._finishOnboarding(): call the
-        // notifier live (not seeded via SharedPreferences.setMockInitialValues
-        // at app start, which every other "completed" test in this file
-        // does) -- this is the one path that actually flips the provider
-        // mid-session, exactly like a real device.
+        // Mirrors ProfileScreen's "Go to Dashboard" button handler: call
+        // the notifier live (not seeded via
+        // SharedPreferences.setMockInitialValues at app start, which every
+        // other "completed" test in this file does) -- this is the one
+        // path that actually flips the provider mid-session, exactly like
+        // a real device.
         await container
             .read(onboardingGateProvider.notifier)
             .completeOnboarding();
@@ -310,6 +330,46 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('My Profile'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'tapping "Go to Dashboard" on /profile before onboarding completes '
+      'triggers completion and navigates to Dashboard',
+      (tester) async {
+        final container = await pumpApp(
+          tester,
+          hasCompletedOnboarding: false,
+        );
+
+        container.read(appRouterProvider).go('/profile');
+        await tester.pumpAndSettle();
+
+        final goToDashboardButton = find.widgetWithText(
+          FilledButton,
+          'Go to Dashboard',
+        );
+        await tester.ensureVisible(goToDashboardButton);
+        await tester.pumpAndSettle();
+        await tester.tap(goToDashboardButton);
+        await tester.pumpAndSettle();
+
+        expect(
+          find.descendant(
+            of: find.byType(AppBar),
+            matching: find.text('Dashboard'),
+          ),
+          findsOneWidget,
+        );
+
+        final prefs = container.read(sharedPreferencesProvider);
+        expect(prefs.getBool('hasCompletedOnboarding'), isTrue);
+
+        // Flush the still-pending 2s Splash timer (Splash was the
+        // router's initial location before this test navigated away)
+        // before teardown so the "Timer still pending" test-framework
+        // invariant doesn't trip.
+        await tester.pump(const Duration(seconds: 3));
       },
     );
   });
