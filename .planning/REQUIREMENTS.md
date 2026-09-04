@@ -152,12 +152,15 @@ Requirements for initial release. Each maps to a roadmap phase.
 Deferred to post-v1. Not in current roadmap.
 
 ### Auth
+
 - **AUTH-V2-01**: Passkey support (Flutter ecosystem not mature as of Jan 2026 — reassess for v1.1)
 
 ### Onboarding
+
 - **ONBD-03**: Account / Local Mode choice screen shows two equal-weight cards — no "Recommended" badge on either (design intent; audit against live-build bias before launch). Moved from v1 (2026-08-12): its premise requires Account Mode to offer a real, comparable benefit against Local Mode, which doesn't exist unless Phase 8 (Encrypted Account Backup, contingent on Tomris) ever ships. Revisit if/when that happens.
 
 ### Food & Logging
+
 - **LOG-V2-01**: Recipe builder and saved recipes
 - **LOG-V2-02**: Meal planning (weekly plan, grocery list generation)
 - **LOG-V2-03**: Barcode scanning of nutrition label field via camera + AI parsing
@@ -165,26 +168,31 @@ Deferred to post-v1. Not in current roadmap.
 - **LOG-V2-05**: Voice input for food logging
 
 ### Insights & CO₂
+
 - **CO2-V2-01**: AI-based CO₂ estimation for unknown products (no database match)
 - **INS-V2-01**: AI coach / conversational assistant for meal ideas, healthy swaps, diet planning
 - **INS-V2-02**: 30-day and annual insights and summaries
 
 ### Integrations
+
 - **INT-V2-01**: Apple Health integration
 - **INT-V2-02**: Google Fit integration
 - **INT-V2-03**: Wearable / smart scale integration
 
 ### Social & Community
+
 - **SOC-V2-01**: Community food database contributions (user submissions with moderation)
 - **SOC-V2-02**: Community recipes and shared meal ideas
 - **SOC-V2-03**: Challenges (opt-in, non-shame-based)
 
 ### Platform
+
 - **PLAT-V2-01**: Web app
 - **PLAT-V2-02**: Multiple language support (English-only for v1)
 - **PLAT-V2-03**: Family accounts
 
 ### Nutrition
+
 - **NUTR-V2-01**: Advanced micronutrient tracking (vitamins, minerals)
 - **NUTR-V2-02**: Hydration tracking
 
@@ -310,6 +318,7 @@ Every v1 requirement is mapped to exactly one roadmap phase. See `.planning/ROAD
 | ACC-05 | Phase 6 | Complete |
 
 **Coverage:**
+
 - v1 requirements: 93 total
 - Mapped to phases: 93
 - Unmapped: 0 ✓

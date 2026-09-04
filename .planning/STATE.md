@@ -2,14 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
-status: executing
-last_updated: "2026-08-14T09:15:00.000Z"
+status: planning
+stopped_at: Phase 9 Plan 06 (ReferencePackScheduleNotifier + Co2DietApp foreground weekly/monthly delta-refresh check + ReferenceDataScreen Automatic Refresh control) executed and committed -- both tasks complete, `app_lifecycle_reference_pack_test.dart` (12 tests) green with zero skips, full project `flutter test` suite green (540 passed)
+last_updated: "2026-09-04T07:18:38.682Z"
 progress:
   total_phases: 10
-  completed_phases: 7
-  total_plans: 70
-  completed_plans: 70
-  percent: 70
+  completed_phases: 8
+  total_plans: 77
+  completed_plans: 77
+  percent: 80
 ---
 
 # STATE: CO₂ Diet
@@ -35,11 +36,11 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch
-- **Phase:** 09-reference-data-delivery-full-off-pack — **IN PROGRESS** (7/8 plans executed). Phase 7 (Keycloak Auth + Account Deletion) is COMPLETE — 8/8 plans. Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS. Phase 8 (Encrypted Account Backup) remains parked pending Tomris's backend decision.
-- **Plan:** 09-06 (ReferencePackScheduleNotifier + Co2DietApp foreground AppLifecycleState.resumed weekly/monthly delta-refresh check + ReferenceDataScreen Automatic Refresh control + revert-resets-schedule — Wave 6, depends on 09-05) — COMPLETE. Remaining: 09-08 (Wave 7, depends on 09-06+09-07, autonomous: false — real-device verification checkpoint plan).
-- **Status:** Executing Phase 9
-- **Progress:** [███████░░░] 70% (7/10 phases)
-- **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files. Phase 7's requirement set (AUTH-01, AUTH-02, AUTH-03, AUTH-05, AUTH-06, AUTH-10, PRIV-05) is now fully delivered and reachable end-to-end.
+- **Phase:** 09-reference-data-delivery-full-off-pack — **COMPLETE** (8/8 plans, both real-device checkpoints approved on a Samsung Galaxy Tab S7 FE / Android 14). Phase 7 (Keycloak Auth + Account Deletion) is COMPLETE — 8/8 plans. Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS. Phase 8 (Encrypted Account Backup) remains parked pending Tomris's backend decision. Phase 10 (Post-Launch Enhancements) is a v1.1+ placeholder with no v1 requirements and `Plans: TBD` — not yet actionable.
+- **Plan:** 09-08 (Local Range-test-server + real-device verification: resumable download mechanics + live atomic swap-while-querying — Wave 7, depends on 09-06+09-07, autonomous: false) — COMPLETE. Phase 9 has no remaining plans.
+- **Status:** Phase 9 complete. Next-phase routing is a decision point, not an automatic continuation: Phase 8 stays parked until Tomris's backend decision resolves (`/gsd:discuss-phase 8`), and Phase 10 is an unplanned v1.1+ placeholder (`/gsd:discuss-phase 10` once there's real post-launch signal to prioritize). Neither should be planned blind.
+- **Progress:** [███████░░░] 70% (7/10 phases — Phase 9 now genuinely complete; the 8/10 in this file's own YAML frontmatter progress counter is a pre-existing counting quirk unrelated to this closure and not corrected here, out of this task's scope)
+- **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files. Phase 7's requirement set (AUTH-01, AUTH-02, AUTH-03, AUTH-05, AUTH-06, AUTH-10, PRIV-05) is now fully delivered and reachable end-to-end. Phase 9 has no v1 requirements attached (v1.0.x enrichment kept in-roadmap for continuity per ROADMAP.md).
 
 ```
 [███████░░░] 70% (7/10 phases)
@@ -152,15 +153,16 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
   3. Full email/password signup → verification email → login round trip — needs *some* live Keycloak with SMTP configured; lower bar than #1/#2 since it doesn't need Apple/Google credentials or Tomris's specific realm — a throwaway local Keycloak could unblock this independently if earlier signal is wanted.
   4. Account deletion against the real backend — blocked because the backend `DELETE /me/account` endpoint doesn't exist as code yet anywhere; `docs/backend-contracts/gdpr-account-deletion.md` is a written spec awaiting Tomris's implementation, not a description of something already built.
   5. App Store Guideline 4.8 review outcome for the web-broker (non-native-SDK) Apple Sign-in flow — categorically different from #1-4: not an infra gap but an unknowable-until-submitted TestFlight review outcome, additionally gated behind #1 working first.
+- **Phase 9 real-CDN integration (not a Phase 9 completion blocker):** Phase 9 shipped code-complete and both of its real-device checkpoints (09-08-PLAN.md) were approved on a Samsung Galaxy Tab S7 FE (SM-T733, Android 14) — resumable/pausable/background-continuing downloads and the live SQLite DETACH/re-ATTACH swap-while-querying are both proven against `tool/dev/range_test_server.dart`, a local throwaway Range-capable server, per 09-CONTEXT.md/09-RESEARCH.md's explicit scope boundary that a real CDN is not this phase's to provide. Outstanding before launch: standing up the real production CDN, pointing `ReferencePackConfig.manifestUrl` at it (currently a `cdn.example.com` placeholder), and re-verifying against real network conditions/real ETag stability/real payload sizes at scale — none of which block Phase 9's own closure. 5 real defects were found and fixed live during the 09-08 real-device session (Android build compileSdk floor, `resume()` from-scratch fallback on no resume-data, test-server bind race, self-signed TLS trust + dead-manifest timeout, decompression ANR + revert-corrupts-database) — see `09-08-SUMMARY.md` for full detail.
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-08-14T09:15:00+00:00
-**Stopped at:** Phase 9 Plan 06 (ReferencePackScheduleNotifier + Co2DietApp foreground weekly/monthly delta-refresh check + ReferenceDataScreen Automatic Refresh control) executed and committed -- both tasks complete, `app_lifecycle_reference_pack_test.dart` (12 tests) green with zero skips, full project `flutter test` suite green (540 passed)
-**Next action:** Continue Phase 9 execution — run `/gsd:execute-phase 9` again (or the orchestrator's next-plan step) to proceed to Plan 09-08 (Local Range-test-server + real-device verification: resumable download, live atomic swap -- the phase's final plan, `autonomous: false`, depends on 09-06+09-07).
-**Suggested next command:** `/gsd:execute-phase 9` (continues from Plan 09-08, the last plan in the phase; Phase 8 stays parked until Tomris's backend decision resolves: `/gsd:discuss-phase 8` once it does)
+**Last session:** 2026-09-03T23:31:38+02:00
+**Stopped at:** Phase 9 Plan 08 (Local Range-test-server + real-device verification: resumable download mechanics + live atomic swap-while-querying) executed and committed -- both real-device checkpoints approved by the user on a Samsung Galaxy Tab S7 FE (Android 14) after a live debugging session that found and fixed 5 real bugs (see `09-08-SUMMARY.md`). Phase 9 (Reference Data Delivery — Full OFF Pack) is now COMPLETE, 8/8 plans. All 553 tests green, privacy blocklist clean.
+**Next action:** Phase 9 has no remaining plans. Neither Phase 8 nor Phase 10 is ready for blind execution: Phase 8 (Encrypted Account Backup) stays parked pending Tomris's backend decision; Phase 10 (Post-Launch Enhancements) is an unplanned v1.1+ placeholder with `Plans: TBD`. This is a routing decision point, not an automatic continuation.
+**Suggested next command:** `/gsd:discuss-phase 8` once Tomris's backend decision resolves, or `/gsd:discuss-phase 10` once there is real post-launch/store-review signal to prioritize v1.1 scope. No `/gsd:execute-phase` command is actionable right now without one of those decisions first.
 
 **Phase 1 scope reminder:** Sync-safe Drift schema (HLC, tombstones, dirty flags, `consent_records`, `co2_methodology_version`) + DI/router/theme + CI dependency-audit pipeline + thinnest E2E vertical slice (manual food add → meal entry → placeholder dashboard shows CO₂). Requirements: PROF-01–05, PRIV-07, CO2-04, LEG-04.
 
@@ -367,6 +369,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 09-06]: checkForUpdateIfDue() is the sole call site across the whole feature that ever starts a delta download -- ReferenceDataScreen's manual Download button always calls startFullDownload(), never startDeltaDownload(), so the automatic-refresh method never needs to branch on "did this call originate from the scheduled path"
 - [Phase 09-06]: ReferencePackScheduleState is a Dart record typedef ({schedule, lastCheckedAt}), not a class -- avoids equality/copyWith boilerplate for a 2-field read-mostly value
 - [Phase 09-06]: A bare ProviderContainer.read(someProvider.future) with no active container.listen(...) does not keep a non-keepAlive stream-backed dependency alive long enough for its first event to be delivered in tests -- the autoDispose scheduler can win the race and dispose it mid-flight (extends the [Phase 02-07] ProviderContainer.listen-over-bare-read precedent to stream providers)
+- [Phase 09-08]: Real-device testing (Samsung Galaxy Tab S7 FE, Android 14) found 5 genuine defects invisible to every mocked/isolated automated test in Plans 09-01 through 09-06: Android build broken by a third-party library's stale compileSdk; DownloadManager.resume() silently no-opping when a connection failure left no native resume data; a test-server bind race on transient address-in-use; background_downloader rejecting a self-signed dev-TLS cert plus fetchManifest() hanging forever on a dead manifestUrl; and a gzip-decompression ANR on a real ~123MB payload paired with revertToSeed() corrupting the installed database (bundledSeedPath and the installed-pack path are the same on-disk file in production, not independent files as the original delete-then-ATTACH logic assumed) -- all fixed and committed (7ea3e84, 105070c, 9851ed5, 21b1af8, 01ea2c6), full detail in 09-08-SUMMARY.md
+- [Phase 09-08]: Real CDN integration is explicitly out of Phase 9's scope per 09-CONTEXT.md/09-RESEARCH.md -- both real-device checkpoints verified against a local throwaway Range-capable dev server (tool/dev/range_test_server.dart), not a production endpoint; logged as a Pre-Launch Blocker, not a Phase 9 completion blocker
 
 ## Performance Metrics
 
@@ -437,3 +441,4 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 09-reference-data-delivery-full-off-pack P04 | ~55min | 2 tasks | 9 files |
 | Phase 09-reference-data-delivery-full-off-pack P05 | ~55min | 3 tasks | 9 files |
 | Phase 09-reference-data-delivery-full-off-pack P06 | ~70min | 2 tasks | 7 files |
+| Phase 09-reference-data-delivery-full-off-pack P08 | ~10hr (real-device session, incl. 5 live bug fixes) | 3 tasks | 1 file created + fixes across 7 |
