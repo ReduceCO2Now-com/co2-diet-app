@@ -1,9 +1,7 @@
 import 'package:co2diet/core/theme/color_tokens.dart';
 import 'package:co2diet/core/theme/spacing_tokens.dart';
 import 'package:co2diet/core/theme/text_tokens.dart';
-import 'package:co2diet/features/onboarding/providers/onboarding_gate_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class _CarouselSlide {
@@ -45,23 +43,25 @@ const _slides = [
   ),
 ];
 
-/// Final onboarding screen ("How CO₂ Diet Works") — a 3-slide swipeable
-/// carousel shown after Profile Setup, before the Dashboard.
+/// Onboarding screen ("How CO₂ Diet Works") — a 3-slide swipeable
+/// carousel shown between Legal Consent and Profile Setup.
 ///
-/// Both exit paths ("Skip intro" and "Go to Dashboard") persist
-/// [OnboardingGateNotifier.completeOnboarding] before navigating, so an
+/// A pure pass-through: neither exit path ("Skip intro" or the last-slide
+/// button) calls `OnboardingGateNotifier.completeOnboarding()` — both simply
+/// navigate to `/profile`. Profile Setup's forward button is the terminal
+/// action that persists onboarding completion (see `ProfileScreen`), so an
 /// app restart never re-shows onboarding (ONBD-05).
-class OnboardingCarouselScreen extends ConsumerStatefulWidget {
+class OnboardingCarouselScreen extends StatefulWidget {
   /// Creates [OnboardingCarouselScreen].
   const OnboardingCarouselScreen({super.key});
 
   @override
-  ConsumerState<OnboardingCarouselScreen> createState() =>
+  State<OnboardingCarouselScreen> createState() =>
       _OnboardingCarouselScreenState();
 }
 
 class _OnboardingCarouselScreenState
-    extends ConsumerState<OnboardingCarouselScreen> {
+    extends State<OnboardingCarouselScreen> {
   final _controller = PageController();
   int _page = 0;
 
@@ -71,9 +71,8 @@ class _OnboardingCarouselScreenState
     super.dispose();
   }
 
-  Future<void> _finishOnboarding() async {
-    await ref.read(onboardingGateProvider.notifier).completeOnboarding();
-    if (mounted) context.go('/dashboard');
+  void _goToProfile() {
+    context.go('/profile');
   }
 
   @override
@@ -93,7 +92,7 @@ class _OnboardingCarouselScreenState
                   horizontal: AppSpacing.sm,
                 ),
                 child: TextButton(
-                  onPressed: _finishOnboarding,
+                  onPressed: _goToProfile,
                   child: const Text('Skip intro'),
                 ),
               ),
@@ -162,8 +161,8 @@ class _OnboardingCarouselScreenState
                 height: isLastSlide ? null : 0,
                 child: isLastSlide
                     ? FilledButton(
-                        onPressed: _finishOnboarding,
-                        child: const Text('Go to Dashboard'),
+                        onPressed: _goToProfile,
+                        child: const Text('Set Up Profile'),
                       )
                     : null,
               ),
