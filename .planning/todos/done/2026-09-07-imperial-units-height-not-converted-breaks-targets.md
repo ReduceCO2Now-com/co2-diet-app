@@ -1,4 +1,6 @@
 ---
+resolved: 2026-09-07
+resolved_in: bd159bc
 created: 2026-09-07T23:35:00Z
 title: Imperial units — height not converted, every calculated target is wrong
 area: domain
@@ -79,3 +81,47 @@ still reproduces with a realistic target.
 No fix attempted. No failing test written yet — a unit test over the
 conversion boundary (metric in → imperial display → metric out, round-trip)
 would be the natural first step and would fail today.
+
+---
+
+## Resolved — 2026-09-07 (bd159bc)
+
+**Root cause.** `TextFormField.initialValue` is only read when the field's
+`State` is first created. `_WeightField` returned a bare `TextFormField` in
+both the metric and imperial branches, at the same position in the tree, so
+flipping the units toggle let Flutter reuse the same `State`: the controller
+kept its old text while the suffix changed from `kg` to `lb` underneath it. The
+displayed number was then read as the new unit and converted *up* into
+canonical storage.
+
+`_HeightField` escaped this only by accident — its metric branch is a
+`TextFormField` and its imperial branch is a `Row`, so the element type differs
+and `State` cannot be reused. Any refactor aligning the two branches would have
+reintroduced it silently.
+
+**Fix.** Both fields are now explicitly keyed by unit system
+(`ValueKey('weight-metric')` etc.), so a unit change always recreates the
+`State` and re-reads `initialValue` from the canonical stored value. The doc
+comments explain that the keys are load-bearing, so they don't get "tidied
+away" later.
+
+**Tests.** `test/features/profile/profile_form_unit_switch_test.dart` — four
+cases covering both conversion directions and asserting a toggle round trip
+leaves the canonical values untouched. Two of the four failed before the fix.
+
+**Device verification** (SM-T733, Android 14):
+
+| | before | after |
+|---|---|---|
+| stored | 4754.88 cm / 28.12 kg | 156.0 cm / 62.0 kg |
+| imperial view | 156 ft / 62.0 lb | 5 ft 1 in / 136.7 lb |
+| Calories target | 10000 kcal (clamped from 40855) | 1800 kcal |
+| Protein / Carbs / Fat | 750 / 1125 / 278 g | 135 / 202 / 50 g |
+
+The corrupted row on the test device was repaired by re-entering the values,
+and a metric→imperial→metric round trip then left storage unchanged.
+
+**Not covered by this fix:** rows already written with bad values elsewhere.
+No migration was written — the corruption requires an interactive unit switch,
+so it is likely confined to devices where someone did that. If a repair is ever
+needed, an implausible-height sanity check on load would be the cheapest route.

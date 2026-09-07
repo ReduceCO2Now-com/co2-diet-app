@@ -3,6 +3,7 @@ created: 2026-09-07T23:35:00Z
 title: TargetDisplayCard Row overflows on wide values
 area: ui
 severity: low
+status: no-longer-reproducing-after-bd159bc
 files:
   - lib/features/profile/widgets/target_display_card.dart:66
 ---
@@ -72,3 +73,25 @@ A widget test pumping `TargetDisplayCard` with a deliberately wide value
 guard the fix. The project has an established ACC-02 overflow-test pattern —
 see `legal_consent_screen_test.dart` and
 `connectivity_choice_screen_test.dart`.
+
+---
+
+## Update — 2026-09-07, after the units fix (bd159bc)
+
+**No longer reproduces.** In the device run following the units fix and the
+data repair, the overflow fired exactly once — at log line 107, before the
+repair, while the value was still the clamped `10000` — and not once in the
+~630 log lines afterwards. The Calories card now reads `1800 kcal` and renders
+without the banner.
+
+That confirms the suspicion recorded above: the overflow was a *symptom* of the
+units bug, not an independent defect.
+
+**Keeping this open anyway, at low priority.** The card is still undefended: it
+survives today only because the value happens to fit. A `Row` with
+`MainAxisSize.min` and an unconstrained `Text` can still throw during layout if
+a value is wider than expected — a five-digit target is legitimately reachable
+via the manual override dialog, which accepts any number the user types.
+
+Reduced scope now: wrap the `Text` in `Flexible`, and add the widget test
+described above. No longer urgent, no longer blocking anything.
