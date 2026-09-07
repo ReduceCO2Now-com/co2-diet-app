@@ -10,6 +10,7 @@ import 'package:co2diet/features/onboarding/providers/onboarding_gate_provider.d
 import 'package:co2diet/features/profile/providers/profile_notifier.dart';
 import 'package:co2diet/features/profile/widgets/profile_form.dart';
 import 'package:co2diet/features/profile/widgets/target_display_card.dart';
+import 'package:co2diet/features/profile/widgets/target_override_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -109,9 +110,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 profile: profile,
                 onChanged: (updated) {
                   unawaited(
-                    ref
-                        .read(profileProvider.notifier)
-                        .saveProfile(updated),
+                    ref.read(profileProvider.notifier).saveProfile(updated),
                   );
                 },
               ),
@@ -173,74 +172,64 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         currentValue = targets?.fatGTarget;
     }
 
-    final controller = TextEditingController(
-      text: currentValue?.toStringAsFixed(0) ?? '',
-    );
-
-    await showDialog<void>(
+    // The dialog owns its TextEditingController (see [TargetOverrideDialog]).
+    // It previously lived here and was disposed on the line after this await —
+    // which fires as soon as the route is popped, while the dialog's exit
+    // transition is still running. The still-mounted TextFormField then rebuilt
+    // against a disposed controller, throwing "A TextEditingController was used
+    // after being disposed" and cascading into the `_dependents.isEmpty`
+    // framework assertion that crashed the app. Real-device root cause found
+    // 2026-09-07; see .planning/debug/profile-daily-targets-crash.md.
+    final result = await showDialog<TargetOverrideResult>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Set custom target'),
-        content: TextFormField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          autofocus: true,
-          decoration: const InputDecoration(labelText: 'Value'),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(dialogContext).pop();
-              // Reset to calculated — clear override flag and value
-              unawaited(
-                ref.read(profileProvider.notifier).updateField(
-                      (p) => p.copyWith(
-                        targets: _clearOverride(p.targets, fieldName),
-                      ),
-                    ),
-              );
-            },
-            child: const Text('Reset to calculated'),
-          ),
-          FilledButton(
-            onPressed: () async {
-              final entered = double.tryParse(controller.text);
-              if (entered == null) {
-                Navigator.of(dialogContext).pop();
-                return;
-              }
-
-              final isUnsafeKcalTarget =
-                  fieldName == 'kcalTarget' &&
-                  EdSafetyNetChecker.calorieTargetIsUnsafe(entered) &&
-                  entered != _lastConfirmedUnsafeKcal;
-
-              if (isUnsafeKcalTarget) {
-                Navigator.of(dialogContext).pop();
-                final confirmed = await showEdSafetyNetDialog(
-                  context,
-                  type: EdSafetyNetTriggerType.calorieTarget,
-                );
-                if (!mounted || !confirmed) return;
-                _lastConfirmedUnsafeKcal = entered;
-              } else {
-                Navigator.of(dialogContext).pop();
-              }
-
-              unawaited(
-                ref.read(profileProvider.notifier).updateField(
-                      (p) => p.copyWith(
-                        targets: _applyOverride(p.targets, fieldName, entered),
-                      ),
-                    ),
-              );
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
+      builder: (dialogContext) =>
+          TargetOverrideDialog(initialValue: currentValue),
     );
-    controller.dispose();
+
+    if (!mounted || result == null) return;
+
+    if (result.isReset) {
+      unawaited(
+        ref
+            .read(profileProvider.notifier)
+            .updateField(
+              (p) => p.copyWith(
+                targets: _clearOverride(p.targets, fieldName),
+              ),
+            ),
+      );
+      return;
+    }
+
+    final entered = result.value;
+    if (entered == null) return;
+
+    // The ED safety net runs here rather than inside the dialog's own button
+    // callback, so a second dialog is never pushed from within the first one's
+    // handler while that route is being torn down.
+    final isUnsafeKcalTarget =
+        fieldName == 'kcalTarget' &&
+        EdSafetyNetChecker.calorieTargetIsUnsafe(entered) &&
+        entered != _lastConfirmedUnsafeKcal;
+
+    if (isUnsafeKcalTarget) {
+      final confirmed = await showEdSafetyNetDialog(
+        context,
+        type: EdSafetyNetTriggerType.calorieTarget,
+      );
+      if (!mounted || !confirmed) return;
+      _lastConfirmedUnsafeKcal = entered;
+    }
+
+    unawaited(
+      ref
+          .read(profileProvider.notifier)
+          .updateField(
+            (p) => p.copyWith(
+              targets: _applyOverride(p.targets, fieldName, entered),
+            ),
+          ),
+    );
   }
 
   CalcTargets _applyOverride(

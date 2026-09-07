@@ -1,34 +1,54 @@
 ---
 status: resolved
-resolved: not-reproducible-on-current-main
+resolved: root-cause-found-and-fixed
 deferred: false
 trigger: "profile-daily-targets-crash: Flutter app (co2diet, real device) crashes with a framework assertion every time the user taps a card in the Daily Targets section of the Profile screen (lib/features/profile/screens/profile_screen.dart)."
 created: 2026-07-29T00:00:00Z
-updated: 2026-09-07T23:35:00Z
+updated: 2026-09-08T00:05:00Z
 ---
 
 ## Current Focus
 
-status_note: RESOLVED 2026-09-07 — no longer reproducible. Re-tested on the
-original device (Samsung SM-T733, Android 14) against current main. All four
-Daily Targets cards open the override dialog normally. No further action; this
-session is closed.
+status_note: RESOLVED 2026-09-08 — ROOT CAUSE FOUND AND FIXED. An earlier
+entry today closed this as "not reproducible"; that was WRONG and is corrected
+below.
 
-outcome: The bug was real and is now gone, but it was never directly fixed —
-no change was ever made against a confirmed root cause. It stopped reproducing
-as a side effect of correctness work done for other reasons, most plausibly
-06-10's `keepAlive: true` conversion of `sharedPreferencesProvider` /
-`OnboardingGateNotifier` and the wider audit of autoDispose providers read via
-bare `ref.read`, combined with c6697a3's gating of the locale-detection
-auto-save loop. The `_dependents.isEmpty` assertion class is consistent with an
-element being torn down out of band, which an autoDispose provider disposing
-mid-`await` can produce — so the fix and the symptom are plausibly related, but
-this is an inference from disappearance, not a demonstrated causal chain.
+root_cause: `ProfileScreen._showOverrideDialog` created the dialog's
+`TextEditingController` itself and disposed it on the line immediately after
+`await showDialog(...)`. That await completes when the route is **popped**, not
+when it is **gone** — so the controller was destroyed while the dialog's exit
+transition was still running and its `TextFormField` was still rebuilding. The
+device log, captured 2026-09-07:
 
-caveat: Because the root cause was never identified, this cannot be called
-"fixed" with confidence — only "not reproducible under the conditions that
-previously reproduced it 100% of the time." If it returns, reopen this file
-rather than starting fresh: the three eliminated hypotheses below still hold.
+    A TextEditingController was used after being disposed.
+      The relevant error-causing widget was: TextFormField
+      profile_screen.dart:184:18
+    #4  _AnimatedState.didUpdateWidget (transitions.dart:119:25)
+    ...
+    Another exception: '_dependents.isEmpty': is not true
+    Another exception: Tried to build dirty widget in the wrong build scope.
+
+The `_dependents.isEmpty` assertion every prior session chased is SECOND-ORDER
+cascade, not the fault. That is why reading framework source around
+`InheritedElement.debugDeactivated` and hunting GlobalKey reparenting led
+nowhere — the primary exception was never captured, only the noisier one that
+followed it.
+
+why_it_took_four_sessions: The reproduction step recorded in this file was
+"tap ANY Daily Targets card", which is where the crash APPEARS to originate.
+But opening the dialog is harmless. The trigger is **completing** it — tapping
+Save or Reset, which pops the route and lets the caller's `dispose()` run while
+the exit animation is still going. Every prior reproduction attempt, and the
+first verification pass on 2026-09-07, only opened the dialog and dismissed it
+with the back button. The bug was reachable in a plain `flutter_test` widget
+test the whole time; it was never real-device-only.
+
+correction_note: On 2026-09-07 this file was briefly marked "not reproducible"
+after a device pass that tapped all four cards and saw no crash. That pass
+never tapped Save. A conclusion of "cannot reproduce" is only as good as the
+actions the reproduction attempt actually performed — that is the durable
+lesson here, and it is why the reproduction steps below now name the trigger
+explicitly.
 
 
 ## Symptoms
@@ -36,7 +56,7 @@ rather than starting fresh: the three eliminated hypotheses below still hold.
 expected: Tapping a Daily Targets card (Calories / Protein / Carbs / Fat) opens the "Set custom target" override AlertDialog without crashing.
 actual: The app crashes. Captured error so far is only the one-line Flutter framework assertion message: `assert(_dependents.isEmpty)` failing inside `InheritedElement.debugDeactivated()` (framework.dart, around line 6268 in this project's Flutter 3.44.6 SDK at /opt/homebrew/share/flutter/packages/flutter/lib/src/widgets/framework.dart). That assertion fires when an `InheritedElement` is deactivated while it still has dependent Elements registered — i.e. something in the tree is being torn down/reparented out of the normal top-down deactivation order while a descendant still depends on it. No fuller stack trace has been captured yet.
 errors: "`assert(_dependents.isEmpty)` framework assertion (see above). Full frame list above/below this line has NOT yet been captured."
-reproduction: On a real device, open Profile screen, tap ANY card in the Daily Targets grid (Calories/Protein/Carbs/Fat). Crashes on EVERY tap, unconditionally, regardless of whether height/weight/target data has been entered yet (both empty-state and filled-value cards crash identically — this rules out any theory specific to the empty-state `MissingTargetDash`/`Tooltip` path).
+reproduction: Open Profile, tap any Daily Targets card, **then tap Save or Reset to calculated** and let the dialog animate out. Opening and dismissing the dialog does NOT crash — completing it does. Reproducible in `flutter_test`, not device-only (see 2026-09-08 evidence). Crashes on EVERY tap, unconditionally, regardless of whether height/weight/target data has been entered yet (both empty-state and filled-value cards crash identically — this rules out any theory specific to the empty-state `MissingTargetDash`/`Tooltip` path).
 started: Found during real-device manual UAT pass for Phase 5.
 
 ## Eliminated
@@ -86,16 +106,36 @@ started: Found during real-device manual UAT pass for Phase 5.
   found: Two unrelated live defects, both filed separately as todos: (1) `A RenderFlex overflowed by 5.6 pixels on the right` at `target_display_card.dart:66`, thrown during layout on Profile render — before any tap, so unrelated to the dialog; (2) an Imperial-units display/conversion fault showing "Height: 156 ft", which drives `[TargetCalculator] WARN: rawKcal=40855.68718 clamped to [500.0, 10000.0]` at startup.
   implication: The overflow is very likely a downstream symptom of the units fault — the clamped 10000 kcal target is a five-digit string in a `Row` with `MainAxisSize.min` and no `Flexible`. Worth fixing the units fault first and re-checking whether the overflow persists.
 
+- timestamp: 2026-09-08T00:01:00Z
+  checked: Fix verified on the original device (Samsung SM-T733, Android 14). Profile -> Daily Targets -> Calories -> entered 99999 -> tapped **Save** — the exact action that crashed the app 20 minutes earlier on the previous build.
+  found: No crash. App process survived (pid unchanged). Zero occurrences of `EXCEPTION CAUGHT`, `Another exception`, `_dependents`, or `used after being disposed` in the console from the moment the test began.
+  implication: FIXED. The dialog now owns its `TextEditingController` in a `StatefulWidget` (`lib/features/profile/widgets/target_override_dialog.dart`), so disposal happens in `State.dispose()` — after the route's exit transition, not when the route is merely popped.
+
+- timestamp: 2026-09-08T00:02:00Z
+  checked: Whether the pre-fix pattern is catchable in `flutter_test`. Wrote a temporary test replicating the old caller-owned-controller code exactly, tapped Save, and pumped 12 frames of 20ms through the exit transition.
+  found: It FAILS with `A TextEditingController was used after being disposed` in under a second, with no device involved.
+  implication: The "real-device-only" conclusion recorded in this file across three sessions was wrong. The bug was always reproducible in a widget test — every attempt simply opened the dialog and dismissed it instead of completing it. The distinguishing action was Save/Reset, not the hardware.
+
+- timestamp: 2026-09-08T00:03:00Z
+  checked: Whether the override actually persists after the crash was removed (`SELECT kcal_target, kcal_is_overridden FROM user_profile_table` after saving 99999).
+  found: `kcal_target` empty, `kcal_is_overridden` 0. `DriftProfileRepository.saveProfile` builds its companion without any of the target columns, and `_rowToProfile` does not read them back, though the columns exist in the schema.
+  implication: A SECOND, pre-existing bug the crash was masking — manual target overrides (PROF-05) have never persisted. Out of scope for this session; filed as its own todo.
+
 ## Resolution
 
-root_cause: NEVER IDENTIFIED. Four hypotheses were eliminated with evidence — (A) locale-detection auto-save loop, (B) Tooltip/showDialog conflict, (C) root-navigator vs. branch-navigator dialog insertion, and (D) real IME keyboard-inset animation racing the dialog's route insertion, which was the last standing theory and was eliminated on real hardware on 2026-09-07 by observing the inset animation occur without the crash.
+root_cause: FOUND 2026-09-08. `ProfileScreen._showOverrideDialog` created the dialog's `TextEditingController` and disposed it on the line after `await showDialog(...)`. That await completes when the route is popped, not when it is gone, so the controller was destroyed while the dialog's exit transition was still running and its `TextFormField` was still rebuilding — `A TextEditingController was used after being disposed`, cascading into `'_dependents.isEmpty': is not true` and `Tried to build dirty widget in the wrong build scope`.
 
-fix: NONE APPLIED DIRECTLY. The crash stopped reproducing as a side effect of unrelated correctness work — most plausibly 06-10's autoDispose-to-keepAlive provider audit plus c6697a3's gating of the locale-detection loop. This is an inference from the symptom disappearing, not a demonstrated causal chain, and the file records it as such.
+why_earlier_sessions_missed_it: Two reasons, both worth carrying forward. (1) The primary exception was never captured — only the noisier `_dependents.isEmpty` cascade that followed it — so three sessions investigated a second-order symptom, which is what sent the search toward `InheritedElement.debugDeactivated` and GlobalKey reparenting. (2) The recorded reproduction step, "tap ANY Daily Targets card", named the wrong action. Opening the dialog is harmless; **completing** it is the trigger. Every reproduction attempt opened and dismissed.
 
-verification: Re-tested 2026-09-07 on the original device (Samsung SM-T733, Android 14) against main at 05548f1. All four Daily Targets cards open the override dialog normally; process survives; no assertion of any kind in console or logcat. Previously this reproduced on 100% of taps.
+fix: The dialog is now `TargetOverrideDialog`, a `StatefulWidget` in `lib/features/profile/widgets/` that owns its controller and disposes it in `State.dispose()`, which Flutter calls once the element is genuinely unmounted. The ED safety-net check also moved out of the dialog's own button callback into the caller, so a second dialog is never pushed from inside the first one's handler mid-teardown.
 
-status: CLOSED as not-reproducible. Reopen this file rather than starting a new session if it returns — the four eliminated hypotheses remain eliminated and are worth not re-testing.
+verification: Device (SM-T733, Android 14): the exact crashing action — Calories card, 99999, Save — completes cleanly with zero exceptions. Tests: `test/features/profile/target_override_dialog_disposal_test.dart`, four cases covering Save, Reset, dismissal and reopening, each pumping the exit transition frame by frame rather than relying on `pumpAndSettle`. The test method was validated by temporarily restoring the old pattern and confirming it fails.
 
-files_changed: []
-files_added_this_session:
-  - test/features/profile/profile_screen_full_app_crash_test.dart (reproduction attempt from the July session; never reproduced the crash. Retained as a regression harness — it now passes for the right reason rather than the wrong one, but note it passed even while the bug was live, so it is not evidence of the fix.)
+follow_up: Removing the crash exposed a second, pre-existing bug — target overrides do not persist at all, because `DriftProfileRepository.saveProfile` never writes the target columns. Filed separately; PROF-05 should not be considered met until that is fixed.
+
+files_changed:
+  - lib/features/profile/screens/profile_screen.dart (dialog extracted; ED check moved out of the dialog callback)
+files_added:
+  - lib/features/profile/widgets/target_override_dialog.dart
+  - test/features/profile/target_override_dialog_disposal_test.dart
+note_on_older_harnesses: `profile_screen_crash_test.dart` and `profile_screen_full_app_crash_test.dart` both passed while the bug was live, because neither completed the dialog. They are not evidence of anything and should not be treated as regression cover for this crash.
