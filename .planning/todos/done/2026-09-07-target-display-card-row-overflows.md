@@ -1,9 +1,11 @@
 ---
+resolved: 2026-09-07
+resolved_in: e1f0fd7
 created: 2026-09-07T23:35:00Z
 title: TargetDisplayCard Row overflows on wide values
 area: ui
 severity: low
-status: no-longer-reproducing-after-bd159bc
+status: fixed
 files:
   - lib/features/profile/widgets/target_display_card.dart:66
 ---
@@ -95,3 +97,39 @@ via the manual override dialog, which accepts any number the user types.
 
 Reduced scope now: wrap the `Text` in `Flexible`, and add the widget test
 described above. No longer urgent, no longer blocking anything.
+
+---
+
+## Resolved — 2026-09-07 (e1f0fd7)
+
+Closed properly rather than left as "unprovoked". The card is now defended, not
+merely un-triggered.
+
+**Fix.** The value sits in `Flexible` + `FittedBox(fit: BoxFit.scaleDown)`.
+Deliberately not `TextOverflow.ellipsis`: a truncated "1000…" reads as a
+different, plausible target, and for a number the user acts on, smaller-but-
+correct beats truncated-but-legible. `scaleDown` never enlarges, so ordinary
+values render unchanged.
+
+**Two things the tests surfaced that this todo did not anticipate:**
+
+1. **The empty state had the same weakness.** `MissingTargetDash` sat outside
+   the wrapper, so the null branch still overflowed — vertically, at the ACC-02
+   1.6x ceiling, because the card's height is pinned by the grid's
+   `childAspectRatio`. The value branch had escaped that only because
+   `FittedBox` happens to shrink height as well as width. Both branches now
+   share one wrapper.
+2. **Bounding width was not enough.** The `Row`'s `Flexible` constrains width,
+   but at large text scales it is the `Column` that runs out of room, so the row
+   is `Flexible` there too.
+
+**Tests.** `test/features/profile/target_display_card_overflow_test.dart` —
+eight cases at the production 160px grid constraint: realistic, five-digit and
+extreme values, with and without the override pencil, at 1x and the 1.6x
+ceiling, plus the empty state, plus an assertion that the full number is still
+present rather than truncated. All eight failed before the fix.
+
+Note the harness is *harsher* than production: `flutter_test` substitutes a
+fixed-width fallback font, so text measures wider there than Plus Jakarta Sans
+does on device. That is why even a realistic 1800 kcal failed initially — the
+guard is stricter than reality, which is the right direction for this.
