@@ -159,3 +159,35 @@ it, including one that replays the actual keystroke sequence
 tests going green. Both fixes in this todo were verified as correct by tests
 that were asking the wrong question — the first about whether columns persist,
 the second about whether they persist under realistic input timing.
+
+---
+
+## Device confirmation of the second fix — 2026-09-08 00:47
+
+Ran the sequence that previously wiped the override, on the Samsung SM-T733:
+set Calories to 2200, then edited weight from 150 lb to 140 lb.
+
+| | result |
+|---|---|
+| `kcal_target` | **2200.0** — survived |
+| `kcal_is_overridden` | **1** — survived |
+| `weight_kg` | 63.50288 (140 lb, correct conversion) |
+| UI | **2200 kcal with the override pencil**; Protein/Carbs/Fat recalculated to 137 / 205 / 51 |
+
+Both fixes are now hardware-verified.
+
+### Minor observation, not a defect
+
+The *stored* non-overridden targets go stale. After the edit above the row held
+`protein_g_target = 71.52` while the UI correctly showed 137 g — the form's
+per-keystroke auto-save persisted targets computed from a mid-edit state, and
+nothing rewrites them once the value settles.
+
+Harmless as the code stands: `ProfileNotifier.build()` recomputes targets on
+every load, and `TargetCalculator.derive` reads a stored value only for fields
+whose override flag is set. Non-overridden stored figures are never read.
+
+Worth tidying if anyone ever adds a path that trusts the stored targets
+directly — the cheapest fix would be to persist only overridden values and
+leave the rest null, making "stored" and "user-set" the same thing. Not doing
+it now: it would change what the columns mean, for no behavioural gain.
