@@ -102,7 +102,7 @@ A user must be able to log a meal in under 10 seconds — everything else is sec
 - **Design:** Lydia, Ilke, Neetha, Dilosi — 16 screens specced and exported from Stitch; DESIGN.md contains full token set
 - **Live build exists:** 15 of 16 screens have Stitch exports (code.html + screen.png); some have confirmed behavior that supersedes written spec (e.g. Recent = individual items, not combo)
 - **Package name:** `com.reduceco2now.co2diet`
-- **Local storage:** Hive (to be finalized during architecture phase)
+- **Local storage:** Drift over SQLite with FTS5 (decided in Phase 1; supersedes the earlier Hive note — relational fit for the sync-safe schema and full-text food search)
 - **Target audience:** Primary persona: female, mother, 30s (UX team flagged as too narrow — expansion to 3 personas is an open discussion)
 - **Data source:** Open Food Facts (primary API), USDA FoodData Central (secondary); custom CO₂ enrichment layer
 
@@ -123,7 +123,7 @@ A user must be able to log a meal in under 10 seconds — everything else is sec
 | Flutter over React Native | Single codebase, UI consistency, offline performance, strong ecosystem | — Pending validation |
 | Spring Boot + PostgreSQL + Keycloak (not Firebase) | Self-hostable, open source, relational fit for CO₂/catalog data, flat cost | — Pending validation |
 | Offline-first architecture | Speed + privacy — core value requires no network dependency for daily use | — Pending validation |
-| Hive for local storage | Flutter-native, offline-capable, no SQL overhead for local reads | — To be confirmed in architecture phase |
+| ~~Hive~~ → Drift/SQLite for local storage | Sync-safe schema needs relational integrity and FTS5 powers sub-second food search; Hive could not provide either | ✓ Superseded in Phase 1 |
 | Barcode scanning as P0 | Resolved during GSD init — too central to omit from launch | ✓ Confirmed |
 | Recent = individual items only | Confirmed via live build; supersedes earlier combo-entry spec draft | ✓ Confirmed |
 | CO₂ profile factors in CO₂ Settings (not Profile) | Keeps onboarding Profile Setup lightweight; CO₂ factors optional/advanced | ✓ Confirmed |

@@ -223,7 +223,7 @@ Plans:
 - [x] 06-07-PLAN.md — Legal Consent screen (4 mandatory + 1 optional checkbox)
 - [x] 06-08-PLAN.md — Legal Hub + Consent History screen
 - [x] 06-09-PLAN.md — Final integration: router wiring, onboarding redirect gate, Settings entry point, ACC-02 text-scale clamp
-- [ ] 06-10-PLAN.md — Accessibility & pre-launch manual verification (dark mode/color-blind/tap-target, screen-reader pass, SAM test + tone audit)
+- [x] 06-10-PLAN.md — Accessibility & pre-launch manual verification (dark mode/color-blind/tap-target, screen-reader pass, SAM test + tone audit)
 
 **UI hint**: yes
 
@@ -322,9 +322,9 @@ Plans:
 | 1. Foundations & Sync-Safe Schema | 7/7 | Complete   | 2026-07-17 |
 | 2. Food Catalog Ingest & Search | 7/7 | Complete   | 2026-07-20 |
 | 3. Barcode Scanning & CO₂ Factor Table | 5/5 | Complete   | 2026-07-22 |
-| 4. Meal Logging Core | 12/13 | In Progress|  |
+| 4. Meal Logging Core | 13/13 | Complete   | 2026-07-27 |
 | 5. Full Local App (Local Mode Shippable) | 19/19 | Complete    | 2026-07-28 |
-| 6. Onboarding, Legal & Pre-Submission | 9/10 | In Progress|  |
+| 6. Onboarding, Legal & Pre-Submission | 10/10 | Code complete; awaiting 06.1-02 device pass |  |
 | 7. Keycloak Auth + Account Deletion | 8/8 | Complete   | 2026-08-09 |
 | 8. Encrypted Account Backup (contingent) | 0/0 | Not started | - |
 | 9. Reference Data Delivery (Full OFF Pack) | 8/8 | Complete    | 2026-09-04 |
