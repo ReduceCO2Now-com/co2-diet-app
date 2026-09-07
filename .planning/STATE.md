@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
-status: completed
+status: planning
 stopped_at: Completed 06.1-02-PLAN.md (Phase 06.1 now complete, 2/2 plans)
-last_updated: "2026-09-07T20:55:12.159Z"
+last_updated: "2026-09-07T20:59:12.390Z"
 progress:
   total_phases: 11
   completed_phases: 9
@@ -38,7 +38,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - **Milestone:** v1 launch (v1.1 inserted phase 06.1 — now COMPLETE, 2/2 plans)
 - **Phase:** 06.1-reorder-onboarding-carousel-before-profile-setup — **COMPLETE** (2/2 plans: 06.1-01 relocated the completion trigger; 06.1-02's real-device flow-level re-verification checkpoint approved — all 9 manual steps pass). Phase 09-reference-data-delivery-full-off-pack — **COMPLETE** (8/8 plans, both real-device checkpoints approved on a Samsung Galaxy Tab S7 FE / Android 14). Phase 7 (Keycloak Auth + Account Deletion) is COMPLETE — 8/8 plans. Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS. Phase 8 (Encrypted Account Backup) remains parked pending Tomris's backend decision. Phase 10 (Post-Launch Enhancements) is a v1.1+ placeholder with no v1 requirements and `Plans: TBD` — not yet actionable.
 - **Plan:** 06.1-02 (Flow-level re-verification checkpoint — Wave 2, depends_on 06.1-01, autonomous: false) — COMPLETE, see `06.1-02-SUMMARY.md`. Phase 06.1 has no remaining plans.
-- **Status:** Phase 06.1 fully complete (both plans done, checkpoint approved). Phase 9 complete, no remaining plans. Next-phase routing for Phase 8/Phase 10 is a decision point, not an automatic continuation: Phase 8 stays parked until Tomris's backend decision resolves (`/gsd:discuss-phase 8`), and Phase 10 is an unplanned v1.1+ placeholder (`/gsd:discuss-phase 10` once there's real post-launch signal to prioritize). Neither should be planned blind.
+- **Status:** Ready to plan
 - **Progress:** [██████████] 100%
 - **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files. Phase 7's requirement set (AUTH-01, AUTH-02, AUTH-03, AUTH-05, AUTH-06, AUTH-10, PRIV-05) is now fully delivered and reachable end-to-end. Phase 9 has no v1 requirements attached (v1.0.x enrichment kept in-roadmap for continuity per ROADMAP.md).
 
