@@ -1,4 +1,6 @@
 ---
+resolved: 2026-09-07
+resolved_by: Phase 06.1
 created: 2026-08-05T08:39:12.833Z
 title: Reconsider onboarding flow order — Carousel before Profile Setup
 area: ui
@@ -40,3 +42,25 @@ TBD — if revisited, this is a real flow-order change requiring:
   still make sense with Carousel running first
 - Re-verifying the bottom-nav-hiding fix (06-10, AppShell) still applies
   correctly regardless of which pre-onboarding screen comes first
+
+---
+
+## Resolved — Phase 06.1 (2026-09-07)
+
+Actioned as its own decimal phase rather than an ad-hoc change, since the flow
+it altered was shipped and verified working. The order is now:
+
+    Splash → Welcome → Legal Consent → Connectivity Choice → Carousel
+    → Profile Setup → Dashboard
+
+The Carousel became a pure pass-through (both exit paths, "Skip intro" and the
+last-slide button, navigate to `/profile` without completing onboarding), and
+Profile Setup's "Go to Dashboard" became the sole `completeOnboarding()` call
+site. Verified on real device: 8/8 must-haves, all nine manual steps passed.
+
+One thing the phase found that this todo did not anticipate: the reorder had
+been implemented but never wired up. Legal Consent navigated straight to
+`/profile`, so `/onboarding-carousel` was unreachable from anywhere in the app
+and the intended order was not actually in effect. Fixed in 7ea47aa.
+
+See `.planning/phases/06.1-reorder-onboarding-carousel-before-profile-setup/`.
