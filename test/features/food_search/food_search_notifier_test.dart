@@ -17,13 +17,18 @@ import 'dart:async';
 import 'package:co2diet/core/di/app_providers.dart';
 import 'package:co2diet/data/repositories/food_catalog_repository.dart';
 import 'package:co2diet/domain/entities/food_item.dart';
+import 'package:co2diet/domain/entities/network_mode.dart';
 import 'package:co2diet/domain/repositories/i_food_catalog_repository.dart';
 import 'package:co2diet/features/food_search/providers/food_search_notifier.dart';
 import 'package:co2diet/features/food_search/providers/food_search_state.dart';
+import 'package:co2diet/features/onboarding/providers/onboarding_gate_provider.dart';
+import 'package:co2diet/features/settings/providers/network_mode_notifier.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 // ---------------------------------------------------------------------------
 // Mocks
@@ -68,10 +73,22 @@ void _clearConnectivityMock() {
 
 /// Builds a [ProviderContainer] with [IFoodCatalogRepository] overridden to
 /// the given mock instance. Registered for automatic disposal at test end.
-ProviderContainer _makeContainer(_MockFoodCatalogRepository mockRepo) {
+/// The app-wide SharedPreferences instance, re-created for each test in
+/// `setUp` so one test's connectivity choice cannot leak into the next.
+late SharedPreferences _prefs;
+
+ProviderContainer _makeContainer(
+  _MockFoodCatalogRepository mockRepo, {
+  NetworkMode networkMode = NetworkMode.onlineAllowed,
+}) {
+  // The notifier consults the user's connectivity choice before attempting
+  // the API fallback (decision 0001), so these tests must state it. Default
+  // is onlineAllowed, preserving every pre-existing expectation.
+  unawaited(_prefs.setString(kNetworkModeKey, networkMode.name));
   final container = ProviderContainer(
     overrides: [
       foodCatalogRepositoryProvider.overrideWithValue(mockRepo),
+      sharedPreferencesProvider.overrideWithValue(_prefs),
     ],
   );
   addTearDown(container.dispose);
@@ -138,7 +155,9 @@ void main() {
 
   late _MockFoodCatalogRepository mockRepo;
 
-  setUp(() {
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    _prefs = await SharedPreferences.getInstance();
     mockRepo = _MockFoodCatalogRepository();
     // Default mock: connectivity returns wifi (online).
     _mockConnectivity('wifi');
@@ -220,5 +239,43 @@ void main() {
       },
       skip: true,
     );
+  });
+
+  group('connectivity choice (decision 0001)', () {
+    test('offlineOnly: no local results emits OfflineNoResults and the API '
+        'is never called', () async {
+      when(() => mockRepo.searchLocal('banana')).thenAnswer((_) async => []);
+      final container = _makeContainer(
+        mockRepo,
+        networkMode: NetworkMode.offlineOnly,
+      );
+      await _waitForData(container);
+
+      container.read(foodSearchProvider.notifier).onQuerySubmitted('banana');
+
+      // Reuses the device-offline state deliberately: to the user the outcome
+      // is identical, so a second empty state saying the same thing would be
+      // noise rather than clarity.
+      await _waitForState<FoodSearchOfflineNoResults>(container);
+      verifyNever(() => mockRepo.searchAndCache(any()));
+    });
+
+    test('offlineOnly still returns local results when there are any',
+        () async {
+      const banana = FoodItem(productName: 'Banane', brand: 'Chiquita');
+      when(() => mockRepo.searchLocal('banana'))
+          .thenAnswer((_) async => [banana]);
+      final container = _makeContainer(
+        mockRepo,
+        networkMode: NetworkMode.offlineOnly,
+      );
+      await _waitForData(container);
+
+      container.read(foodSearchProvider.notifier).onQuerySubmitted('banana');
+
+      final result = await _waitForState<FoodSearchResults>(container);
+      expect(result.items, hasLength(1));
+      verifyNever(() => mockRepo.searchAndCache(any()));
+    });
   });
 }

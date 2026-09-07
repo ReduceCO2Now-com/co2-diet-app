@@ -17,6 +17,7 @@ import 'package:co2diet/core/assets/first_launch_extractor.dart';
 import 'package:co2diet/data/local/app_database.dart';
 import 'package:co2diet/data/remote/off_api_client.dart';
 import 'package:co2diet/data/repositories/food_catalog_repository.dart';
+import 'package:co2diet/domain/services/network_policy.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -42,7 +43,11 @@ void main() {
     }
 
     db = AppDatabase.connect(offRefPath: offRefPath);
-    repo = FoodCatalogRepository(db!.foodCatalogDao, OffApiClient());
+    repo = FoodCatalogRepository(
+      db!.foodCatalogDao,
+      OffApiClient(),
+      const _AlwaysOnlinePolicy(),
+    );
 
     // Diagnostic: confirm ATTACH succeeded and products_fts has data.
     // Output appears in `flutter test ... --verbose` and `adb logcat`.
@@ -202,4 +207,13 @@ void main() {
       );
     },
   );
+}
+
+/// The benchmark measures the online path deliberately, so it opts in
+/// regardless of the user-facing preference.
+class _AlwaysOnlinePolicy implements NetworkPolicy {
+  const _AlwaysOnlinePolicy();
+
+  @override
+  bool get allowsRemoteLookups => true;
 }

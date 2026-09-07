@@ -10,6 +10,7 @@ import 'package:co2diet/data/remote/off_api_client.dart';
 import 'package:co2diet/data/repositories/food_catalog_repository.dart';
 import 'package:co2diet/domain/repositories/i_food_catalog_repository.dart';
 import 'package:co2diet/domain/services/improvement_opportunity_finder.dart';
+import 'package:co2diet/features/settings/providers/network_mode_notifier.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_providers.g.dart';
@@ -57,6 +58,7 @@ IFoodCatalogRepository foodCatalogRepository(Ref ref) {
   return FoodCatalogRepository(
     ref.watch(foodCatalogDaoProvider),
     ref.watch(offApiClientProvider),
+    ref.watch(networkPolicyProvider),
   );
 }
 

@@ -180,11 +180,36 @@ Plans:
 **Requirements**: ONBD-01, ONBD-02, ONBD-03, ONBD-04, ONBD-05, LEGAL-01, LEGAL-02, LEGAL-03, LEGAL-04, LEG-01, LEG-02, LEG-03, ACC-01, ACC-02, ACC-03, ACC-04, ACC-05, NFR-01, NFR-02, NFR-03, NFR-04, NFR-07, PRIV-06
 **Success Criteria** (what must be TRUE):
 
-  1. Onboarding flow works end-to-end: Splash (2–3s auto-advance) → Welcome (equal-weight "Get Started" / "Use Without Account" CTAs) → Legal Consent → Mode Choice (two equal-weight cards, no "Recommended" badge, audited against live-build bias) → Profile Setup (all fields optional, auto-saves, no blocking validation, mode-adaptive footer) → 3–4 slide Carousel (swipeable, "Skip intro", sticky "Go to Dashboard") → Dashboard.
+  1. Onboarding flow works end-to-end: Splash (2–3s auto-advance) → Welcome (equal-weight "Get Started" / "Use Without Account" CTAs) → Legal Consent → ~~Mode Choice (two equal-weight cards, no "Recommended" badge, audited against live-build bias)~~ **[DEFERRED — see note below]** → Profile Setup (all fields optional, auto-saves, no blocking validation, mode-adaptive footer) → 3–4 slide Carousel (swipeable, "Skip intro", sticky "Go to Dashboard") → Dashboard.
   2. Legal Consent screen presents 4 mandatory separate checkboxes (Terms / Privacy / not-medical-advice / user-responsibility) with a 5th optional "I confirm I am 16 or older" checkbox; "Accept and Continue" stays disabled until all 4 mandatory are checked; no pre-checked boxes; View Terms / Privacy / Disclaimer accessible from the screen; each consent event is written to `consent_records` with UTC timestamp + app version + policy version and is never deletable except on full account deletion.
   3. Legal Hub is reachable within 2 taps from any screen and contains full-document screens for Terms, Privacy Policy, Health Disclaimer, and Impressum (with legal entity, address, contact email, responsible person, and TMG §5 / MStV §18 disclosures); Health Disclaimer is also linked from the Legal Consent screen; user can exercise GDPR rights (access, rectify, portability, consent withdrawal) from the hub.
   4. ED safety nets: the app refuses daily calorie targets below 1,200 kcal or goals implying BMI below 17.5 without surfacing a warning and a professional resource / helpline link; app uses no "diagnose / treat / cure / medical" language anywhere.
   5. Accessibility audit passes: system dark mode supported on iOS and Android; text scales with Dynamic Type / font size without layout breakage; all interactive elements have VoiceOver / TalkBack labels with key flows verified by a screen-reader pass; all charts and indicators are color-blind friendly (never red/green alone); all tap targets are ≥ 44×44 pt; tone/copy validated non-judgmental and non-preachy; SAM (Self-Assessment Manikin) test conducted and app confirmed to feel calm, supportive, and non-stressful; PrivacyInfo.xcprivacy present, Play Data Safety form drafted.
+
+> **Amendment (2026-09-07) — Mode Choice resolved as a connectivity choice.**
+> Criterion 1 originally required an Account-vs-Local "Mode Choice" screen. A
+> review of the backend (`CO2Diet_Backend@origin/main`) established that the
+> catalog endpoints are `permitAll()` and the backend stores no user data — so
+> an account grants no additional capability, and the original screen offered a
+> choice with no observable consequence. ONBD-03 is therefore split: the
+> **connectivity choice** (offline-only vs. online catalog allowed) belongs
+> here in onboarding and has no backend dependency; **account sign-in** already
+> shipped in Phase 7 and lives in Settings, with the Local→Account data
+> migration remaining in Phase 8. Full reasoning:
+> `docs/decisions/0001-connectivity-choice-not-account-mode.md`.
+>
+> Delivered 2026-09-07: `NetworkMode` preference, enforcement in
+> `FoodCatalogRepository` and `FoodSearchNotifier`, Settings row, the
+> onboarding Connectivity Choice screen, and 19 tests.
+>
+> **Defect found and fixed while wiring it:** nothing navigated to
+> `/onboarding-carousel`. Plan 06.1-01 made the Carousel a pass-through to
+> `/profile` and moved the completion trigger, but never changed Legal
+> Consent to route *into* the Carousel — it went straight to `/profile`,
+> leaving the screen unreachable and the intended 06.1 order not actually in
+> effect. No widget test caught it because none asserted on route sequence.
+> The flow is now Legal Consent → Connectivity Choice → Carousel → Profile
+> Setup → Dashboard, and `06.1-02`'s device checklist covers it.
 
 **Plans**: 10 plans
 Plans:
@@ -278,7 +303,7 @@ Plans:
 
 ### Phase 10: Post-Launch Enhancements (v1.1+ Placeholder)
 
-**Goal**: Track deferred v1.1+ scope (water tracking, CO₂ profile modifier UI polish, advanced insights, wearable / Apple Health / Google Fit integration, recipes, passkeys, ONBD-03's Mode Choice screen) as a durable slot in the roadmap — no v1 requirements land here.
+**Goal**: Track deferred v1.1+ scope (water tracking, CO₂ profile modifier UI polish, advanced insights, wearable / Apple Health / Google Fit integration, recipes, passkeys) as a durable slot in the roadmap — no v1 requirements land here.
 **Depends on**: Phase 7 shipped and live-user feedback collected. Phase 8 is contingent and may never ship — not a hard dependency.
 **Requirements**: (none in v1; placeholder for v1.1 promotions from `## v2 Requirements` in REQUIREMENTS.md)
 **Success Criteria** (what must be TRUE):

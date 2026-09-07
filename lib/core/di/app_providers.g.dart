@@ -223,7 +223,7 @@ final class FoodCatalogRepositoryProvider
 }
 
 String _$foodCatalogRepositoryHash() =>
-    r'1aa1b2d661ec9c3b52a32a97ae3dd8fa7a31166f';
+    r'c307a1a16c0e13fb716f2d5b94b5d9b36a1f740f';
 
 /// Provides the [ImprovementOpportunityFinder] (CO2-06) for the Data
 /// Analysis screen's Improvement Opportunities section.

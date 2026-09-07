@@ -12,6 +12,7 @@ import 'package:co2diet/core/di/auth_providers.dart';
 import 'package:co2diet/core/di/notification_providers.dart';
 import 'package:co2diet/domain/entities/notification_prefs.dart';
 import 'package:co2diet/domain/repositories/i_notification_prefs_repository.dart';
+import 'package:co2diet/features/onboarding/providers/onboarding_gate_provider.dart';
 import 'package:co2diet/features/settings/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,6 +20,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class _MockNotificationPrefsRepository extends Mock
     implements INotificationPrefsRepository {}
@@ -66,6 +68,11 @@ void main() {
       mockPrefsRepo.getPrefs,
     ).thenAnswer((_) async => const NotificationPrefs());
 
+    // ConnectivityModeRow (decision 0001) reads the connectivity choice
+    // out of SharedPreferences, so the app-wide instance must be provided.
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+
     final mockHttpClient = _MockHttpClient();
     when(
       () => mockHttpClient.get(any()),
@@ -78,6 +85,7 @@ void main() {
             mockPrefsRepo,
           ),
           authHttpClientProvider.overrideWithValue(mockHttpClient),
+          sharedPreferencesProvider.overrideWithValue(prefs),
         ],
         child: _wrap(const SettingsScreen()),
       ),

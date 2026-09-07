@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:co2diet/core/di/app_providers.dart';
 import 'package:co2diet/data/repositories/food_catalog_repository.dart';
 import 'package:co2diet/features/food_search/providers/food_search_state.dart';
+import 'package:co2diet/features/settings/providers/network_mode_notifier.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -97,7 +98,14 @@ class FoodSearchNotifier extends _$FoodSearchNotifier {
     // 2. Offline check — connectivity_plus 7.x returns
     //    List<ConnectivityResult>; empty list = no connectivity (T-02-05-03).
     final connectivity = await Connectivity().checkConnectivity();
-    if (connectivity.isEmpty ||
+    // The user's connectivity choice is honoured here alongside the device's
+    // actual state: "offline only" means no request is attempted at all
+    // (decision 0001). Reusing FoodSearchOfflineNoResults is deliberate —
+    // from the user's point of view the outcome is identical, and it avoids
+    // inventing a second empty state that says the same thing.
+    final remoteAllowed = ref.read(networkModeProvider).allowsRemoteLookups;
+    if (!remoteAllowed ||
+        connectivity.isEmpty ||
         connectivity.contains(ConnectivityResult.none)) {
       state = const AsyncData(FoodSearchOfflineNoResults());
       return;

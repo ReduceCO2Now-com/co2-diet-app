@@ -17,6 +17,7 @@ import 'package:co2diet/features/legal/screens/legal_hub_screen.dart';
 import 'package:co2diet/features/my_foods/screens/custom_food_form_screen.dart';
 import 'package:co2diet/features/my_foods/screens/my_foods_screen.dart';
 import 'package:co2diet/features/onboarding/providers/onboarding_gate_provider.dart';
+import 'package:co2diet/features/onboarding/screens/connectivity_choice_screen.dart';
 import 'package:co2diet/features/onboarding/screens/onboarding_carousel_screen.dart';
 import 'package:co2diet/features/onboarding/screens/splash_screen.dart';
 import 'package:co2diet/features/onboarding/screens/welcome_screen.dart';
@@ -157,6 +158,7 @@ GoRouter appRouter(Ref ref) {
         '/splash',
         '/welcome',
         '/legal-consent',
+        '/connectivity-choice',
         '/onboarding-carousel',
       ];
       // '/legal-hub' covers '/legal-hub', '/legal-hub/document', and
@@ -203,6 +205,10 @@ GoRouter appRouter(Ref ref) {
       GoRoute(
         path: '/legal-consent',
         builder: (context, state) => const LegalConsentScreen(),
+      ),
+      GoRoute(
+        path: '/connectivity-choice',
+        builder: (context, state) => const ConnectivityChoiceScreen(),
       ),
       GoRoute(
         path: '/onboarding-carousel',

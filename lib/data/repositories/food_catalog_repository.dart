@@ -5,6 +5,7 @@ import 'package:co2diet/data/local/daos/food_catalog_dao.dart';
 import 'package:co2diet/data/remote/off_api_client.dart';
 import 'package:co2diet/domain/entities/food_item.dart';
 import 'package:co2diet/domain/repositories/i_food_catalog_repository.dart';
+import 'package:co2diet/domain/services/network_policy.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
@@ -52,10 +53,14 @@ final class NetworkException implements Exception {
 /// — user-supplied product names are never interpolated into SQL strings.
 final class FoodCatalogRepository implements IFoodCatalogRepository {
   /// Creates a [FoodCatalogRepository] backed by the given DAO and API client.
-  const FoodCatalogRepository(this._dao, this._apiClient);
+  const FoodCatalogRepository(this._dao, this._apiClient, this._networkPolicy);
 
   final FoodCatalogDao _dao;
   final OffApiClient _apiClient;
+
+  /// The user's connectivity choice. Consulted on every remote path so a
+  /// mid-session change in Settings applies to the next lookup.
+  final NetworkPolicy _networkPolicy;
 
   static const _uuid = Uuid();
 
@@ -76,6 +81,11 @@ final class FoodCatalogRepository implements IFoodCatalogRepository {
     // always populated per `UserFood.isValid`'s required-field guard, so
     // this gate passes through unchanged for overrides.
     if (local != null && local.calories100g != null) return local;
+
+    // The user's own choice is checked before the device's: someone who
+    // selected "offline only" must produce no outbound request at all, not
+    // merely fail gracefully once one is attempted (decision 0001).
+    if (!_networkPolicy.allowsRemoteLookups) return local;
 
     // Connectivity check before attempting Step 3 (API fallback).
     final connectivity = await Connectivity().checkConnectivity();
@@ -158,6 +168,11 @@ final class FoodCatalogRepository implements IFoodCatalogRepository {
 
   @override
   Future<List<FoodItem>> searchAndCache(String query) async {
+    // Defence in depth: FoodSearchNotifier already refuses to reach this
+    // method in offline-only mode, but a future caller must not be able to
+    // route around the user's choice by calling the repository directly.
+    if (!_networkPolicy.allowsRemoteLookups) return const [];
+
     late List<FoodItem> items;
 
     // T-02-04-04: catch network errors and rethrow as typed NetworkException.

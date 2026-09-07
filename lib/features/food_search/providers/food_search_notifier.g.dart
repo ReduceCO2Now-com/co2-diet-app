@@ -103,7 +103,7 @@ final class FoodSearchNotifierProvider
 }
 
 String _$foodSearchNotifierHash() =>
-    r'f44f6560c06538f9ca3194429083714bbb4b63d1';
+    r'72677251d7e0b582cd5a286b539909aab66bc444';
 
 /// Riverpod AsyncNotifier that drives the food search UI.
 ///

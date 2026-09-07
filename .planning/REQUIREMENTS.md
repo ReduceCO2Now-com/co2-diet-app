@@ -13,6 +13,7 @@ Requirements for initial release. Each maps to a roadmap phase.
 
 - [x] **ONBD-01**: App displays Splash screen (2–3 second load, centered logo + tagline, auto-advances to Welcome)
 - [x] **ONBD-02**: Welcome screen shows equal-weight "Get Started" and "Use Without Account" CTAs (no hierarchy bias between paths)
+- [x] **ONBD-03a**: Connectivity choice — the user controls whether the app may make outbound requests for food data (offline-only vs. online catalog allowed). Neither option requires an account and neither transmits personal data; both are fully functional, so the two are presented with equal weight and no recommendation. Replaces ONBD-03 for v1 (2026-09-07) — see `docs/decisions/0001-connectivity-choice-not-account-mode.md`. Delivered 2026-09-07: preference, enforcement, Settings row and the onboarding screen.
 - [x] **ONBD-04**: Profile Setup screen: age, gender, height, weight, activity level, dietary preference; all fields optional; auto-saves; no blocking validation; footer adapts to mode (local: "stored only on this device" / account: "synced securely")
 - [x] **ONBD-05**: Onboarding Carousel: 3–4 slides explaining how CO₂ scoring works; swipeable; "Skip intro" link jumps to Dashboard; "Go to Dashboard" sticky button on last slide
 
@@ -157,7 +158,7 @@ Deferred to post-v1. Not in current roadmap.
 
 ### Onboarding
 
-- **ONBD-03**: Account / Local Mode choice screen shows two equal-weight cards — no "Recommended" badge on either (design intent; audit against live-build bias before launch). Moved from v1 (2026-08-12): its premise requires Account Mode to offer a real, comparable benefit against Local Mode, which doesn't exist unless Phase 8 (Encrypted Account Backup, contingent on Tomris) ever ships. Revisit if/when that happens.
+- **ONBD-03** *(superseded 2026-09-07 — see ONBD-03a)*: Account / Local Mode choice screen shows two equal-weight cards — no "Recommended" badge on either. Moved from v1 (2026-08-12): its premise requires Account Mode to offer a real, comparable benefit against Local Mode, which doesn't exist unless Phase 8 (Encrypted Account Backup, contingent on Tomris) ever ships. **That reasoning still holds and this requirement stays in v2** — but it identified the wrong axis. The backend's catalog endpoints are public and it stores no user data, so *account* was never the meaningful choice; *network use* is. Replaced for v1 by ONBD-03a below.
 
 ### Food & Logging
 
