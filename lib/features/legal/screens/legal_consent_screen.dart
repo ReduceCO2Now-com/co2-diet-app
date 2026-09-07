@@ -63,7 +63,11 @@ class _LegalConsentScreenState extends ConsumerState<LegalConsentScreen> {
       await ref
           .read(consentProvider.notifier)
           .acceptConsent(consentsGiven: consentsGiven);
-      if (mounted) context.go('/profile');
+      // Onboarding order (Plan 06.1 + ONBD-03a):
+      //   Legal Consent -> Connectivity Choice -> Carousel -> Profile Setup
+      // Previously jumped straight to '/profile', which left
+      // '/onboarding-carousel' unreachable from anywhere in the app.
+      if (mounted) context.go('/connectivity-choice');
     } finally {
       if (mounted) setState(() => _isAccepting = false);
     }

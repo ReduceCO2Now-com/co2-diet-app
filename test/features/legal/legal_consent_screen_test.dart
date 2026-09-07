@@ -54,6 +54,13 @@ void main() {
             body: Text('doc:${state.uri.queryParameters['doc']}'),
           ),
         ),
+        // Legal Consent now hands off to the connectivity choice
+        // (ONBD-03a), which then leads to the Carousel and Profile Setup.
+        GoRoute(
+          path: '/connectivity-choice',
+          builder: (context, state) =>
+              const Scaffold(body: Text('Connectivity Choice')),
+        ),
         GoRoute(
           path: '/profile',
           builder: (context, state) =>
@@ -223,7 +230,9 @@ void main() {
         expect(consentsGiven.length, 5);
         expect(consentsGiven, contains('age_16_plus'));
 
-        expect(find.text('Profile Setup'), findsOneWidget);
+        // Next step is the connectivity choice (ONBD-03a), not Profile
+        // Setup — accepting consent no longer jumps past the Carousel.
+        expect(find.text('Connectivity Choice'), findsOneWidget);
       },
     );
 
