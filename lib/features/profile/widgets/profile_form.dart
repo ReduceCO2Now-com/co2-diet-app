@@ -277,6 +277,15 @@ class _UnitsToggle extends StatelessWidget {
 ///
 /// Metric: single cm field.
 /// Imperial: two fields (feet + inches) that combine to cm for storage.
+///
+/// Both branches carry a `ValueKey` naming their unit system. This is load-
+/// bearing, not decoration: `TextFormField.initialValue` is only read when the
+/// field's `State` is first created. Without a differing key, flipping the
+/// units toggle rebuilds the same `TextFormField` at the same tree position,
+/// Flutter reuses the existing `State`, and the controller keeps the OLD
+/// number while the suffix changes underneath it — so a value entered as
+/// metric is silently re-read as imperial. See `_WeightField`, where exactly
+/// that happened in production.
 class _HeightField extends StatelessWidget {
   const _HeightField({
     required this.units,
@@ -297,6 +306,7 @@ class _HeightField extends StatelessWidget {
           totalInches != null ? (totalInches % 12).round() : null;
 
       return Row(
+        key: const ValueKey('height-imperial'),
         children: [
           Expanded(
             child: TextFormField(
@@ -343,6 +353,7 @@ class _HeightField extends StatelessWidget {
 
     // Metric
     return TextFormField(
+      key: const ValueKey('height-metric'),
       initialValue: heightCm?.toStringAsFixed(0) ?? '',
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       decoration: const InputDecoration(
@@ -376,6 +387,7 @@ class _WeightField extends StatelessWidget {
     if (units == 'imperial') {
       final weightLb = weightKg != null ? weightKg! / 0.453592 : null;
       return TextFormField(
+        key: const ValueKey('weight-imperial'),
         initialValue: weightLb?.toStringAsFixed(1) ?? '',
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
         decoration: const InputDecoration(
@@ -391,6 +403,7 @@ class _WeightField extends StatelessWidget {
 
     // Metric
     return TextFormField(
+      key: const ValueKey('weight-metric'),
       initialValue: weightKg?.toStringAsFixed(1) ?? '',
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       decoration: const InputDecoration(
