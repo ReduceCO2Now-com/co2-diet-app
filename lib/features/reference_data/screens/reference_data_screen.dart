@@ -111,6 +111,18 @@ class _ReferenceDataScreenState extends ConsumerState<ReferenceDataScreen> {
       if (useCellular ?? false) {
         await notifier.startFullDownload(allowCellular: true);
       }
+    } on Exception {
+      // Manifest fetch / disk-space probe / download start can all throw on
+      // network failure (see the offline handling in _loadComparisonCounts
+      // above) -- without this, the exception was unhandled and the button
+      // silently reset with no feedback (T-09-08-diagnostic).
+      if (mounted) {
+        setState(() {
+          _blockingMessage =
+              "Couldn't reach the download server — check your connection "
+              'and try again.';
+        });
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }

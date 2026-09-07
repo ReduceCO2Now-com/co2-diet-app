@@ -1,5 +1,6 @@
 import 'package:co2diet/data/local/app_database.dart';
 import 'package:co2diet/data/local/daos/user_profile_dao.dart';
+import 'package:co2diet/domain/entities/calc_targets.dart';
 import 'package:co2diet/domain/entities/user_profile.dart';
 import 'package:co2diet/domain/repositories/i_profile_repository.dart';
 import 'package:drift/drift.dart';
@@ -45,6 +46,23 @@ final class DriftProfileRepository implements IProfileRepository {
       co2MethodologyVersion: Value(profile.co2MethodologyVersion),
       localeTag: Value(profile.localeTag),
       updatedAt: Value(DateTime.now()),
+      // Targets and their override flags (PROF-05 / D-06). These columns
+      // existed in the schema from Phase 1 and TargetCalculator.derive already
+      // honoured the flags, but this companion never wrote them and
+      // _rowToProfile never read them back — so `existingTargets` was always
+      // null and every manual override was recalculated away on the next
+      // build(). The crash on the override dialog masked it until 2026-09-08.
+      kcalTarget: Value(profile.targets?.kcalTarget),
+      proteinGTarget: Value(profile.targets?.proteinGTarget),
+      carbsGTarget: Value(profile.targets?.carbsGTarget),
+      fatGTarget: Value(profile.targets?.fatGTarget),
+      co2GTarget: Value(profile.targets?.co2GTarget),
+      kcalIsOverridden: Value(profile.targets?.kcalIsOverridden ?? false),
+      proteinIsOverridden: Value(
+        profile.targets?.proteinIsOverridden ?? false,
+      ),
+      carbsIsOverridden: Value(profile.targets?.carbsIsOverridden ?? false),
+      fatIsOverridden: Value(profile.targets?.fatIsOverridden ?? false),
       // HLC Phase-1 placeholders — Phase 7 replaces with full HLC clock.
       hlcMillis: Value(BigInt.from(DateTime.now().millisecondsSinceEpoch)),
       hlcCounter: const Value(0),
@@ -63,12 +81,26 @@ final class DriftProfileRepository implements IProfileRepository {
   /// Maps a `UserProfileRow` to a [UserProfile] domain entity.
   ///
   /// Returns `null` when `row` is `null` (no profile saved yet).
-  /// Does NOT compute `CalcTargets` — that is the responsibility of
-  /// `ProfileNotifier` in the presentation layer.
+  ///
+  /// Does NOT *compute* `CalcTargets` — that stays with `ProfileNotifier`,
+  /// which calls `TargetCalculator.derive`. It does carry the *stored* targets
+  /// through, because derive() needs them as `existingTargets` to know which
+  /// fields the user has overridden and must not recalculate (D-06).
   UserProfile? _rowToProfile(UserProfileRow? row) {
     if (row == null) return null;
 
     return UserProfile(
+      targets: CalcTargets(
+        kcalTarget: row.kcalTarget,
+        proteinGTarget: row.proteinGTarget,
+        carbsGTarget: row.carbsGTarget,
+        fatGTarget: row.fatGTarget,
+        co2GTarget: row.co2GTarget,
+        kcalIsOverridden: row.kcalIsOverridden,
+        proteinIsOverridden: row.proteinIsOverridden,
+        carbsIsOverridden: row.carbsIsOverridden,
+        fatIsOverridden: row.fatIsOverridden,
+      ),
       id: row.id,
       age: row.age,
       gender: row.gender,

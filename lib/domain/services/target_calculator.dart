@@ -86,9 +86,36 @@ class TargetCalculator {
       activityLevel: activityEnum,
     );
 
-    // 4. Return all-null CalcTargets when TDEE cannot be computed.
+    // 4. TDEE cannot be computed (a required input is missing).
+    //
+    // Calculated values are dropped — showing a figure derived from a body the
+    // profile no longer describes would be false precision (D-07). But a
+    // manual override is the USER's data, not a derived value, and survives
+    // (D-06: "when an override is active the value must be preserved even if
+    // other profile fields change").
+    //
+    // This is not an edge case. ProfileForm auto-saves on every keystroke, so
+    // the weight field is legitimately empty mid-edit on every single character
+    // typed. Returning a blank CalcTargets here meant one keystroke computed a
+    // blank, the next keystroke persisted it, and the user's override was gone
+    // — reproduced on device 2026-09-08 by editing weight after setting a
+    // 2200 kcal target.
     if (rawKcal == null) {
-      return const CalcTargets();
+      final existing = existingTargets;
+      if (existing == null) return const CalcTargets();
+      return CalcTargets(
+        kcalTarget: existing.kcalIsOverridden ? existing.kcalTarget : null,
+        proteinGTarget: existing.proteinIsOverridden
+            ? existing.proteinGTarget
+            : null,
+        carbsGTarget: existing.carbsIsOverridden ? existing.carbsGTarget : null,
+        fatGTarget: existing.fatIsOverridden ? existing.fatGTarget : null,
+        co2GTarget: existing.co2GTarget,
+        kcalIsOverridden: existing.kcalIsOverridden,
+        proteinIsOverridden: existing.proteinIsOverridden,
+        carbsIsOverridden: existing.carbsIsOverridden,
+        fatIsOverridden: existing.fatIsOverridden,
+      );
     }
 
     // 5. Clamp TDEE to physiologically safe bounds (T-03-01).
