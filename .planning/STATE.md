@@ -3,13 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: completed
-last_updated: "2026-09-04T08:23:58.473Z"
+stopped_at: Completed 06.1-02-PLAN.md (Phase 06.1 now complete, 2/2 plans)
+last_updated: "2026-09-07T20:55:12.159Z"
 progress:
   total_phases: 11
-  completed_phases: 8
-  total_plans: 77
-  completed_plans: 77
-  percent: 70
+  completed_phases: 9
+  total_plans: 79
+  completed_plans: 79
+  percent: 100
 ---
 
 # STATE: CO₂ Diet
@@ -34,11 +35,11 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Current Position
 
-- **Milestone:** v1 launch (v1.1 inserted phase 06.1 now in progress)
-- **Phase:** 06.1-reorder-onboarding-carousel-before-profile-setup — Plan 01/2 COMPLETE (Carousel-before-Profile-Setup completion-trigger relocation). Plan 06.1-02 remains. Phase 09-reference-data-delivery-full-off-pack — **COMPLETE** (8/8 plans, both real-device checkpoints approved on a Samsung Galaxy Tab S7 FE / Android 14). Phase 7 (Keycloak Auth + Account Deletion) is COMPLETE — 8/8 plans. Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS. Phase 8 (Encrypted Account Backup) remains parked pending Tomris's backend decision. Phase 10 (Post-Launch Enhancements) is a v1.1+ placeholder with no v1 requirements and `Plans: TBD` — not yet actionable.
-- **Plan:** 06.1-01 (Relocate onboarding-completion trigger from Carousel to Profile Setup — Wave 1, autonomous: true) — COMPLETE, see `06.1-01-SUMMARY.md`. Next: 06.1-02.
-- **Status:** Plan 06.1-01 complete; Phase 06.1 has one remaining plan (06.1-02). Phase 9 complete, no remaining plans. Next-phase routing for Phase 8/Phase 10 is a decision point, not an automatic continuation: Phase 8 stays parked until Tomris's backend decision resolves (`/gsd:discuss-phase 8`), and Phase 10 is an unplanned v1.1+ placeholder (`/gsd:discuss-phase 10` once there's real post-launch signal to prioritize). Neither should be planned blind.
-- **Progress:** [███████░░░] 70% (7/10 phases — Phase 9 now genuinely complete; the 8/10 in this file's own YAML frontmatter progress counter is a pre-existing counting quirk unrelated to this closure and not corrected here, out of this task's scope. Note: Plan 06.1-01 is now complete — `state update-progress`'s milestone-scoped phase scan returned 0/0 for this decimal-numbered inserted phase, an SDK quirk with this project's `06.1-*` phase directory naming; not applied here to avoid corrupting the existing accurate count.)
+- **Milestone:** v1 launch (v1.1 inserted phase 06.1 — now COMPLETE, 2/2 plans)
+- **Phase:** 06.1-reorder-onboarding-carousel-before-profile-setup — **COMPLETE** (2/2 plans: 06.1-01 relocated the completion trigger; 06.1-02's real-device flow-level re-verification checkpoint approved — all 9 manual steps pass). Phase 09-reference-data-delivery-full-off-pack — **COMPLETE** (8/8 plans, both real-device checkpoints approved on a Samsung Galaxy Tab S7 FE / Android 14). Phase 7 (Keycloak Auth + Account Deletion) is COMPLETE — 8/8 plans. Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS. Phase 8 (Encrypted Account Backup) remains parked pending Tomris's backend decision. Phase 10 (Post-Launch Enhancements) is a v1.1+ placeholder with no v1 requirements and `Plans: TBD` — not yet actionable.
+- **Plan:** 06.1-02 (Flow-level re-verification checkpoint — Wave 2, depends_on 06.1-01, autonomous: false) — COMPLETE, see `06.1-02-SUMMARY.md`. Phase 06.1 has no remaining plans.
+- **Status:** Phase 06.1 fully complete (both plans done, checkpoint approved). Phase 9 complete, no remaining plans. Next-phase routing for Phase 8/Phase 10 is a decision point, not an automatic continuation: Phase 8 stays parked until Tomris's backend decision resolves (`/gsd:discuss-phase 8`), and Phase 10 is an unplanned v1.1+ placeholder (`/gsd:discuss-phase 10` once there's real post-launch signal to prioritize). Neither should be planned blind.
+- **Progress:** [██████████] 100%
 - **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files. Phase 7's requirement set (AUTH-01, AUTH-02, AUTH-03, AUTH-05, AUTH-06, AUTH-10, PRIV-05) is now fully delivered and reachable end-to-end. Phase 9 has no v1 requirements attached (v1.0.x enrichment kept in-roadmap for continuity per ROADMAP.md).
 
 ```
@@ -81,6 +82,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - **2026-08-08:** Phase 7 ("Keycloak Auth + Account Mode + Sync") split into two phases after a backend repo scan (`CO2Diet_Backend`, cloned as reference material) found the backend's actual architecture avoids owning bidirectional user data. Phase 7 is now "Keycloak Auth + Account Deletion" (AUTH-01–06, AUTH-10, PRIV-05 — login, logout, password reset, GDPR account deletion, local-only CO2 methodology announcement; zero data movement). A new Phase 8 "User Data Sync Engine" (INSERTED) carries AUTH-08, AUTH-09, ONBD-03 (Local→Account upgrade, outbox/HLC/LWW sync, Mode Choice screen), depending on a resolved backend data-ownership agreement with Tomris. Former Phase 8 (Reference Data Delivery) → Phase 9; former Phase 9 (Post-Launch Enhancements) → Phase 10. Total phase count: 9 → 10. See `.planning/phases/07-keycloak-auth-account-mode-sync/07-CONTEXT.md`.
 
 - **2026-09-04:** Phase 06.1 "Reorder onboarding: Carousel before Profile Setup" (INSERTED) after Phase 6, from a deferred todo raised during 06-10's real-device verification. Currently-shipped/locked flow (Splash → Welcome → Legal Consent → Profile Setup → Onboarding Carousel → Dashboard, `06-CONTEXT.md:26`) is confirmed working exactly as spec'd — this is a deliberate UX reconsideration, not a bug: explaining the app's purpose before asking for personal data may read better. Not planned yet. See `.planning/todos/pending/2026-08-05-reconsider-onboarding-flow-order-carousel-before-profile-setup.md` and `.planning/phases/06.1-reorder-onboarding-carousel-before-profile-setup/`.
+- **2026-09-07:** Phase 06.1 CLOSED — 2/2 plans complete. 06.1-01 relocated the completion trigger; 06.1-02's device checkpoint (redirect guard, bottom-nav-hide, screen-reader order, restart persistence) approved after prep fixed a real orphaned-Carousel routing bug and corrected the device checklist against actual shipped source. See `06.1-02-SUMMARY.md`.
 
 ### Key Decisions Locked
 
@@ -160,9 +162,9 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-09-04T08:23:58.457Z
-**Stopped at:** Completed 06.1-01-PLAN.md
-**Next action:** Execute Plan 06.1-02 (remaining plan in Phase 06.1). Separately, Phase 9 has no remaining plans, and neither Phase 8 nor Phase 10 is ready for blind execution: Phase 8 (Encrypted Account Backup) stays parked pending Tomris's backend decision; Phase 10 (Post-Launch Enhancements) is an unplanned v1.1+ placeholder with `Plans: TBD`. Those two remain a routing decision point, not an automatic continuation.
+**Last session:** 2026-09-07T20:53:00.815Z
+**Stopped at:** Completed 06.1-02-PLAN.md (Phase 06.1 now complete, 2/2 plans)
+**Next action:** Phase 06.1 is now fully complete (both plans done, 06.1-02's device checkpoint approved) — no remaining plans in this phase. Phase 9 also has no remaining plans. Neither Phase 8 nor Phase 10 is ready for blind execution: Phase 8 (Encrypted Account Backup) stays parked pending Tomris's backend decision; Phase 10 (Post-Launch Enhancements) is an unplanned v1.1+ placeholder with `Plans: TBD`. Those two remain a routing decision point, not an automatic continuation. Separately, an uncommitted ONBD-03a "Connectivity Choice" feature (code + tests + ADR + REQUIREMENTS/ROADMAP amendments) was found sitting in the working tree during this closure, unrelated to and predating this session's 06.1-02 work — deliberately left uncommitted and untouched (stashed aside during this closure's file edits, then restored) for separate review/commit, not folded into 06.1-02's commits.
 **Suggested next command:** `/gsd:discuss-phase 8` once Tomris's backend decision resolves, or `/gsd:discuss-phase 10` once there is real post-launch/store-review signal to prioritize v1.1 scope. No `/gsd:execute-phase` command is actionable right now without one of those decisions first.
 
 **2026-09-04 addendum:** Milestone summary for v1.1 generated at `.planning/reports/MILESTONE_SUMMARY-v1.1.md` (commit `f72b41d`) — onboarding-ready overview of all 9 completed phases, requirements coverage (89/93), key decisions, and tech debt/deferred items.
@@ -375,6 +377,8 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 09-08]: Real-device testing (Samsung Galaxy Tab S7 FE, Android 14) found 5 genuine defects invisible to every mocked/isolated automated test in Plans 09-01 through 09-06: Android build broken by a third-party library's stale compileSdk; DownloadManager.resume() silently no-opping when a connection failure left no native resume data; a test-server bind race on transient address-in-use; background_downloader rejecting a self-signed dev-TLS cert plus fetchManifest() hanging forever on a dead manifestUrl; and a gzip-decompression ANR on a real ~123MB payload paired with revertToSeed() corrupting the installed database (bundledSeedPath and the installed-pack path are the same on-disk file in production, not independent files as the original delete-then-ATTACH logic assumed) -- all fixed and committed (7ea3e84, 105070c, 9851ed5, 21b1af8, 01ea2c6), full detail in 09-08-SUMMARY.md
 - [Phase 09-08]: Real CDN integration is explicitly out of Phase 9's scope per 09-CONTEXT.md/09-RESEARCH.md -- both real-device checkpoints verified against a local throwaway Range-capable dev server (tool/dev/range_test_server.dart), not a production endpoint; logged as a Pre-Launch Blocker, not a Phase 9 completion blocker
 - [Phase ?]: [Phase 06.1-01]: completeOnboarding() trigger moved from Carousel exit buttons to Profile Setup's forward button; Carousel converted to plain StatefulWidget (no longer reads Riverpod)
+- [Phase 06.1-02]: Prep work ahead of the device checkpoint found and fixed a real orphaned-Carousel bug: Legal Consent's `_onAccept` routed straight to `/profile`, never to the Carousel, leaving Plan 06.1-01's reorder unreachable in the shipped build despite all its widget tests passing (no test asserted on route sequence). Fixed to route to `/connectivity-choice` (the screen preceding the Carousel in the now-current flow). A device verification run sheet (`06.1-02-CHECKLIST.md`) was authored/corrected against actual shipped source (not plan prose) before the checkpoint was run — corrections included Splash's actual fixed 2s delay (not the roadmap's 2-3s range) and Welcome's actual single "Continue" CTA (not the equal-weight Get-Started/Use-Without-Account pair the original spec described, deferred to Phase 7 since Account Mode didn't exist yet at the time). The checklist's on-device run (Parts A/B/C, all steps) was executed by the user and approved.
+- [Phase 06.1]: [Phase 06.1-02] Device verification checkpoint approved (Parts A/B/C all pass) — redirect guard, bottom-nav-hide, screen-reader read order, and restart persistence all confirmed on-device across the reordered Carousel-before-Profile-Setup flow
 
 ## Performance Metrics
 
@@ -447,3 +451,5 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 09-reference-data-delivery-full-off-pack P06 | ~70min | 2 tasks | 7 files |
 | Phase 09-reference-data-delivery-full-off-pack P08 | ~10hr (real-device session, incl. 5 live bug fixes) | 3 tasks | 1 file created + fixes across 7 |
 | Phase 06.1 P01 | 20min | 3 tasks | 5 files |
+| Phase 06.1 P02 | ~5min (checkpoint closure; on-device verification itself run separately by user) | 1 tasks | 1 files |
+
