@@ -49,3 +49,8 @@ app.*.map.json
 tools/data/
 assets/off_reference_sample.sqlite
 assets/off_reference.sqlite
+
+# CO2-V2-01 spike artifacts (generated, see tool/spikes/co2_category_inference/README.md)
+tool/spikes/co2_category_inference/model.json
+tool/spikes/co2_category_inference/holdout.json
+tool/spikes/**/.dart_tool/
