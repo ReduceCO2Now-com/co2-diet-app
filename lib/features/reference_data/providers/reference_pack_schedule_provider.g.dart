@@ -11,7 +11,7 @@ part of 'reference_pack_schedule_provider.dart';
 /// Persists and exposes the delta-refresh schedule + last-checked
 /// timestamp.
 ///
-/// keepAlive: true -- mirrors [MethodologyBannerDismissalNotifier]'s
+/// keepAlive: true -- mirrors `MethodologyBannerDismissalNotifier`'s
 /// established rationale: [setSchedule]/[recordCheckedNow]/[resetToManual]
 /// are all called from widget callbacks (a `SegmentedButton` selection, a
 /// revert-confirmation dialog, `Co2DietApp`'s lifecycle observer) that may
@@ -23,7 +23,7 @@ final referencePackScheduleProvider = ReferencePackScheduleNotifierProvider._();
 /// Persists and exposes the delta-refresh schedule + last-checked
 /// timestamp.
 ///
-/// keepAlive: true -- mirrors [MethodologyBannerDismissalNotifier]'s
+/// keepAlive: true -- mirrors `MethodologyBannerDismissalNotifier`'s
 /// established rationale: [setSchedule]/[recordCheckedNow]/[resetToManual]
 /// are all called from widget callbacks (a `SegmentedButton` selection, a
 /// revert-confirmation dialog, `Co2DietApp`'s lifecycle observer) that may
@@ -37,7 +37,7 @@ final class ReferencePackScheduleNotifierProvider
   /// Persists and exposes the delta-refresh schedule + last-checked
   /// timestamp.
   ///
-  /// keepAlive: true -- mirrors [MethodologyBannerDismissalNotifier]'s
+  /// keepAlive: true -- mirrors `MethodologyBannerDismissalNotifier`'s
   /// established rationale: [setSchedule]/[recordCheckedNow]/[resetToManual]
   /// are all called from widget callbacks (a `SegmentedButton` selection, a
   /// revert-confirmation dialog, `Co2DietApp`'s lifecycle observer) that may
@@ -75,7 +75,7 @@ String _$referencePackScheduleNotifierHash() =>
 /// Persists and exposes the delta-refresh schedule + last-checked
 /// timestamp.
 ///
-/// keepAlive: true -- mirrors [MethodologyBannerDismissalNotifier]'s
+/// keepAlive: true -- mirrors `MethodologyBannerDismissalNotifier`'s
 /// established rationale: [setSchedule]/[recordCheckedNow]/[resetToManual]
 /// are all called from widget callbacks (a `SegmentedButton` selection, a
 /// revert-confirmation dialog, `Co2DietApp`'s lifecycle observer) that may

@@ -181,7 +181,7 @@ final class ReferencePackNotifierProvider
 }
 
 String _$referencePackNotifierHash() =>
-    r'beb4bb11b15b3b6eebadf19847c7c03a55a88ed5';
+    r'd8e440c57a73f9f0adf895c9819564c02c241901';
 
 /// AsyncNotifier presentation-layer wrapper around
 /// [referencePackRepositoryProvider] -- the single Riverpod surface the
