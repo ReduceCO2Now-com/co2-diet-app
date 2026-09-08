@@ -22,7 +22,7 @@
 - [x] **Phase 5: Nutrition, CO₂ Estimator, Dashboard, Insights, Weight, Notifications, Export/Backup** — full local app; CO₂ Estimator + Transparency + Improvement Opportunities; Insights (7d/30d); Weight tracking; local notifications; Export (CSV/Excel/JSON); Backup/Restore. **Local Mode shippable here.** (completed 2026-07-28)
 - [x] **Phase 6: Onboarding, Legal Consent, Legal Hub, ED Safety Nets, Accessibility & Pre-Submission** — Splash → Welcome → Legal Consent → Connectivity Choice → Carousel → Profile Setup; timestamped consent records; Legal Hub (Terms/Privacy/Disclaimer/Impressum); ED safety nets; PrivacyManifest/Data Safety; a11y audit; equal-weight connectivity-choice audit; SAM test (completed 2026-09-07)
 - [x] **Phase 7: Keycloak Auth + Account Deletion** — flutter_appauth OIDC/PKCE login (email/password, Apple, Google), logout, password reset, GDPR account deletion, local-only CO₂ methodology-update announcement. No data movement — Local→Account upgrade and sync are Phase 8. (completed 2026-08-09)
-- [ ] **Phase 8: Encrypted Account Backup (contingent on Tomris)** — automatic, account-gated push/pull of an opaque client-encrypted backup blob to the backend; no bidirectional sync, no HLC, no conflict resolution needed. **Zero actionable content until Tomris resolves the backend's open encrypted-blob-vs-user-cloud-export decision** (currently leaning against it). (RENAMED AND NARROWED 2026-08-12 — see Phase Details section)
+- [ ] **Phase 8: Encrypted Account Backup (client-first)** — on-device encryption of the backup archive, a written backend contract proposal, and a flag-gated push/pull client. **RESCOPED 2026-09-08** from "contingent on Tomris" to what is buildable without a backend, since that decision has not moved and left the phase unverifiable by construction. Server-side push/pull carried forward. (See Phase Details section.)
 - [x] **Phase 9: Reference Data Delivery (Full OFF Pack)** — on-demand ~300–800MB OFF pack via CDN, delta refresh, live methodology-version announcement flow (completed 2026-09-04)
 - [ ] **Phase 10: Post-Launch Enhancements (deferred)** — v1.1+ scope placeholder (water tracking, CO₂ profile modifiers UI polish, advanced insights, wearable/Health integration) — no v1 requirements land here; kept in roadmap for continuity
 
@@ -264,18 +264,28 @@ Plans:
 
 **UI hint**: yes
 
-### Phase 8: Encrypted Account Backup (contingent on Tomris)
+### Phase 8: Encrypted Account Backup (client-first)
 
-**Goal**: If and only if Tomris's backend resolves its still-open "encrypted blob vs. pure user-cloud export" decision toward encrypted blob storage, deliver automatic, account-gated backup/restore of local data to the backend as an opaque, client-encrypted blob the server cannot read — distinct from and additional to Phase 5's manual export/share, which remains the only backup mechanism otherwise. (RENAMED AND NARROWED 2026-08-12 — originally "User Data Sync Engine," a bidirectional outbox/HLC/LWW sync of user data. A re-scan of the `CO2Diet_Backend` reference repo confirmed the backend's "Sync" module is permanently scoped to catalog/CO₂ reference data only and will never do bidirectional user-data sync, regardless of how the encrypted-backup decision resolves — this is settled architecture, not an open question. See `.planning/phases/07-keycloak-auth-account-mode-sync/07-CONTEXT.md` for the original split rationale.)
-**Depends on**: Phase 7; requires Tomris to resolve the backend's open "encrypted blob vs. pure user-cloud export" decision (`docs/backend-architecture.md` §13 in the backend reference repo) toward encrypted blob storage. **The documented design currently leans against this** ("leans user-cloud, which lets us drop the `backup/` module entirely") — this phase has zero actionable content until/unless that changes and should not be planned blind.
-**Requirements**: AUTH-09 (narrowed 2026-08-12 — see REQUIREMENTS.md)
+**Goal**: Deliver everything on the client side of the backup boundary that does not require a backend, and specify the backend half in writing. Concretely: encrypt the backup archive on-device so it is opaque before it leaves, publish a contract proposal for the push/pull API, and implement the client against that proposal behind a flag defaulted off.
+
+**RESCOPED 2026-09-08.** This phase previously read "if and only if Tomris's backend resolves its still-open encrypted-blob vs. user-cloud-export decision" and carried success criteria requiring a live server. That decision has not moved since 2026-08-12 and the documented design still leans against it, so the phase was unplannable and unverifiable by construction — permanently blocked on someone else's decision. The alternative considered was cancelling it outright as superseded by Phase 5's PRIV-01/02/03/04, which already deliver the user-facing outcome by a user-held route; that was considered and not taken. Rescoping to what is actually buildable lets the phase complete and be verified on its own terms. See `08-CONTEXT.md` for both positions.
+
+(Previously RENAMED AND NARROWED 2026-08-12 — originally "User Data Sync Engine," a bidirectional outbox/HLC/LWW sync of user data. A re-scan of the `CO2Diet_Backend` reference repo confirmed the backend's "Sync" module is permanently scoped to catalog/CO₂ reference data only and will never do bidirectional user-data sync, regardless of how the encrypted-backup decision resolves — settled architecture, not an open question.)
+
+**Depends on**: Phase 5 (the archive this encrypts) and Phase 7 (Account Mode gating). **No longer depends on Tomris's decision** — that decision now determines only whether the carried-forward criteria below are ever met, not whether this phase can proceed.
+**Requirements**: AUTH-09 (partially — see carried-forward note)
 **Success Criteria** (what must be TRUE):
 
-  1. A logged-in Account Mode user can push an opaque, client-side-encrypted backup of their local data to the backend, and pull it down on another device — the backend never has access to readable meals/weight/profile data at any point.
-  2. Backup push/pull is automatic and account-gated, distinct from Phase 5's manual export/share (which remains available and unchanged for any user who doesn't want cloud backup).
-  3. No conflict-resolution or merge logic is needed or built — the blob is opaque and unreadable server-side, so there is no bidirectional sync, no HLC, no outbox, no LWW. This is a simple push/pull, not a sync engine.
+  1. The backup archive can be encrypted on-device such that its contents are unreadable without the user's key, verified by an encrypt→restore round trip and by a wrong-key attempt failing safely rather than corrupting data.
+  2. Phase 5's plaintext export remains available and unchanged — encryption is an additional option, not a replacement, since inspecting one's own exported data is a legitimate GDPR-portability use (PRIV-01).
+  3. Restore detects an encrypted archive and prompts for the key, rather than failing with a parse error.
+  4. A written backend contract for push/pull exists in `docs/backend-contracts/`, marked `[ASSUMED]` in the established convention, stating explicitly what the backend is *not* asked to do (no decryption, inspection, merge, or per-field access).
+  5. Client push/pull is implemented against that proposed contract, account-gated, behind a feature flag defaulted **off**, with request shape asserted against a mock. **This criterion is explicitly not end-to-end verifiable** — no server exists to push to — and that limitation must be recorded in the phase summary rather than discovered later.
+  6. No conflict-resolution or merge logic is built. The blob is opaque, so there is no bidirectional sync, no HLC, no outbox, no LWW.
 
-**Plans**: TBD — do not plan until Tomris's backend decision resolves
+**Carried forward (not achievable in this phase):** AUTH-09's "restore it on another device" and the original criteria requiring automatic server-side push/pull remain unmet until a backend exists. If Tomris's decision resolves toward encrypted blob storage, they become a small follow-up phase against an already-built client rather than a phase from scratch. If it resolves toward user-cloud export, criteria 1–3 remain valuable on their own and 4–5 become documentation of a road not taken.
+
+**Plans**: 3 (see `08-CONTEXT.md` — encryption, contract, flagged client)
 **UI hint**: yes
 
 ### Phase 9: Reference Data Delivery (Full OFF Pack)
@@ -326,7 +336,7 @@ Plans:
 | 5. Full Local App (Local Mode Shippable) | 19/19 | Complete    | 2026-07-28 |
 | 6. Onboarding, Legal & Pre-Submission | 10/10 | Complete   | 2026-09-07 |
 | 7. Keycloak Auth + Account Deletion | 8/8 | Complete   | 2026-08-09 |
-| 8. Encrypted Account Backup (contingent) | 0/0 | Not started | - |
+| 8. Encrypted Account Backup (client-first) | 0/3 | Planning | - |
 | 9. Reference Data Delivery (Full OFF Pack) | 8/8 | Complete    | 2026-09-04 |
 | 10. Post-Launch Enhancements (v1.1+) | 0/0 | Not started | - |
 
