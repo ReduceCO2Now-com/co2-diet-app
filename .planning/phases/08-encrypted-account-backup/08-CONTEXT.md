@@ -68,11 +68,28 @@ happens to the rest.
   it in a spreadsheet is a legitimate, GDPR-relevant use (PRIV-01 portability).
 - Restore must detect an encrypted archive and prompt accordingly, rather than
   failing with a parse error.
-- **Open for planning:** key derivation. Options include a user-supplied
-  passphrase, a key derived from the Keycloak identity, or a device-held key in
-  `flutter_secure_storage` (already a dependency, Phase 7). Each has a different
-  recovery story, and the wrong one makes the backup unrecoverable on a lost
-  device. This needs a decision before implementation, not during it.
+- **Key derivation — narrowed 2026-09-08, read this before planning.**
+  AUTH-09 requires the user can "restore it on another device". That clause is
+  load-bearing and eliminates one option outright:
+
+  | Option | Verdict |
+  |---|---|
+  | Device-held key in `flutter_secure_storage` | **Ruled out.** A key held on device A cannot decrypt on device B. Fails the cross-device half of AUTH-09 by construction — do not plan around it. |
+  | Derived from the Keycloak identity | **Viable but weakens the guarantee.** The same organisation runs Keycloak and the backend, so in principle it could derive the key too. That turns "the server cannot read it" from a property into a promise. Acceptable only as an explicit, documented trade — not a default. |
+  | User-supplied passphrase | **The only option that cleanly satisfies both halves** — opaque to the server, and portable to any device the user logs in from. |
+
+  **The passphrase carries a hard consequence that must be designed for, not
+  discovered:** if the user forgets it, the backup is permanently unrecoverable.
+  There is no reset, by design — the server holds bytes it cannot read, so it
+  cannot help. Planning must decide where and how that is communicated. It has
+  to be said *before* the user creates their first encrypted backup, in plain
+  language, not buried in a help screen afterwards.
+
+  This also interacts with PRIV-03's automatic backups: if scheduled backups are
+  encrypted with a passphrase the user set months earlier and has since
+  forgotten, the automatic backup is worthless at exactly the moment it matters.
+  Planning should decide whether encryption applies to automatic backups at all,
+  or only to explicit user-initiated ones.
 - `crypto` (^3.0.7) is already a dependency from Phase 9; check whether it
   covers the required primitives before adding anything new. Any new package
   goes through the blocklist and legitimacy checks in CONTRIBUTING.md.
@@ -143,8 +160,10 @@ discovered later.
 - `lib/features/backup/` — screens, notifier and the danger-zone section from
   Phase 5. Restore already has a preview-and-confirm flow to hook into.
 - `lib/domain/services/backend_config.dart` — the single `[ASSUMED]` base URL.
-- `flutter_secure_storage` (Phase 7) — already holds the OIDC refresh token, and
-  is the natural home for a device-held key if that is the chosen approach.
+- `flutter_secure_storage` (Phase 7) — holds the OIDC refresh token. Note it is
+  **not** a candidate for the encryption key (see the key-derivation table
+  above), though it may still be the right place to cache a passphrase-derived
+  key for the current session so the user is not re-prompted per operation.
 - `docs/backend-contracts/gdpr-account-deletion.md` — the template for `08-02`.
 
 ### Established patterns
