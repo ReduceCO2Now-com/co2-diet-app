@@ -14,7 +14,9 @@ an Account Mode user's backend account. **Every field below is `[ASSUMED -- not 
 with Tomris]`** — this is a concrete written proposal for review, not a description of an
 already-agreed contract. Per `07-RESEARCH.md` Open Question #1, this doc exists specifically so
 Tomris has something concrete to confirm, adjust, or reject, rather than the client silently
-guessing at runtime.
+guessing at runtime. (Phase 8 added a second, related proposal —
+`docs/backend-contracts/encrypted-backup-blob.md` — covering an optional encrypted backup blob;
+see Open Question 5 below for how the two interact.)
 
 ## Legal requirements driving this contract
 
@@ -93,3 +95,8 @@ this and shows an inline error, keeping the user signed in.
    doesn't care, but worth confirming for API-doc completeness.)
 4. What does a `401`/`403` actually mean here in practice — expired/revoked token, or something
    else? Should the client attempt a token refresh before treating it as a hard failure?
+5. A new proposed contract, `docs/backend-contracts/encrypted-backup-blob.md` (Phase 8), covers
+   an encrypted account backup blob (`POST`/`GET /api/v1/backup`) that — if ever accepted and
+   implemented — would be additional backend-held personal data tied to the same account. If
+   that contract is accepted, account deletion (`DELETE {baseUrl}/me/account`, this document)
+   must delete that blob in the same operation as everything else, not leave it orphaned.
