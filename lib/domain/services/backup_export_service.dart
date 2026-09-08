@@ -514,7 +514,7 @@ class BackupExportService {
     final cipherParams = encryption['cipher'] as Map<String, dynamic>;
     final salt = base64Decode(kdf['saltBase64'] as String);
     final nonce = base64Decode(cipherParams['nonceBase64'] as String);
-    final key = _cipher.deriveKey(
+    final key = await _cipher.deriveKey(
       passphrase,
       Uint8List.fromList(salt),
       memoryKiB: kdf['memoryKiB'] as int,
@@ -542,7 +542,7 @@ class BackupExportService {
 
     final Uint8List innerBytes;
     try {
-      innerBytes = _cipher.decrypt(
+      innerBytes = await _cipher.decrypt(
         ciphertext: Uint8List.fromList(ciphertext),
         key: key,
         nonce: Uint8List.fromList(nonce),
@@ -605,7 +605,7 @@ class BackupExportService {
     final plainBytes = await plainZip.readAsBytes();
     final salt = _cipher.randomBytes(16);
     final nonce = _cipher.randomBytes(12);
-    final key = _cipher.deriveKey(passphrase, salt);
+    final key = await _cipher.deriveKey(passphrase, salt);
 
     final manifest = <String, dynamic>{
       'formatVersion': 2,
@@ -632,7 +632,7 @@ class BackupExportService {
     // and used as AEAD associated data (08-RESEARCH.md Pattern 2).
     final manifestBytes = Uint8List.fromList(utf8.encode(jsonEncode(manifest)));
 
-    final sealed = _cipher.encrypt(
+    final sealed = await _cipher.encrypt(
       plaintext: plainBytes,
       key: key,
       nonce: nonce,

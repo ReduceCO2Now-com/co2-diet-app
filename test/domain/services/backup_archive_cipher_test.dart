@@ -18,6 +18,13 @@
 // at 19 MiB is ~150ms/derivation -- keep full-KDF test count small"). One
 // test uses the real OWASP profile to catch a parameter-plumbing
 // regression without paying the full cost repeatedly.
+//
+// deriveKey/encrypt/decrypt all run their PointyCastle work on a
+// background isolate via compute() (device-benchmark checkpoint follow-up,
+// 08-01) -- every call below is now awaited, but the round-trip/tamper/
+// wrong-key assertions themselves are unchanged: compute() is transparent
+// to these outcomes, it only moves where the work runs, not what it
+// produces.
 
 import 'dart:typed_data';
 
@@ -36,16 +43,16 @@ void main() {
     test(
       'is deterministic: same passphrase+salt produces an identical '
       '32-byte key across two calls',
-      () {
+      () async {
         final salt = Uint8List.fromList(List.generate(16, (i) => i));
 
-        final key1 = cipher.deriveKey(
+        final key1 = await cipher.deriveKey(
           'correct horse battery staple',
           salt,
           memoryKiB: 8,
           iterations: 1,
         );
-        final key2 = cipher.deriveKey(
+        final key2 = await cipher.deriveKey(
           'correct horse battery staple',
           salt,
           memoryKiB: 8,
@@ -59,17 +66,17 @@ void main() {
 
     test(
       'the same passphrase with a different salt produces a different key',
-      () {
+      () async {
         final saltA = Uint8List.fromList(List.generate(16, (i) => i));
         final saltB = Uint8List.fromList(List.generate(16, (i) => i + 1));
 
-        final keyA = cipher.deriveKey(
+        final keyA = await cipher.deriveKey(
           'same passphrase',
           saltA,
           memoryKiB: 8,
           iterations: 1,
         );
-        final keyB = cipher.deriveKey(
+        final keyB = await cipher.deriveKey(
           'same passphrase',
           saltB,
           memoryKiB: 8,
@@ -84,9 +91,9 @@ void main() {
       'at the real OWASP profile (19456 KiB / t=2 / p=1) still derives a '
       'valid 32-byte key -- catches a parameter-plumbing regression '
       'without paying the full KDF cost in every other test',
-      () {
+      () async {
         final salt = Uint8List.fromList(List.generate(16, (i) => i));
-        final key = cipher.deriveKey('a real passphrase, at cost', salt);
+        final key = await cipher.deriveKey('a real passphrase, at cost', salt);
         expect(key, hasLength(32));
       },
     );
@@ -97,8 +104,8 @@ void main() {
     late Uint8List nonce;
     late Uint8List associatedData;
 
-    setUp(() {
-      key = cipher.deriveKey(
+    setUp(() async {
+      key = await cipher.deriveKey(
         'test passphrase',
         Uint8List.fromList(List.generate(16, (i) => i)),
         memoryKiB: 8,
@@ -111,18 +118,18 @@ void main() {
     test(
       'encrypt() then decrypt() with the same key/nonce/associatedData '
       'recovers the original plaintext bytes exactly',
-      () {
+      () async {
         final plaintext = Uint8List.fromList(
           List.generate(500, (i) => i % 256),
         );
 
-        final ciphertext = cipher.encrypt(
+        final ciphertext = await cipher.encrypt(
           plaintext: plaintext,
           key: key,
           nonce: nonce,
           associatedData: associatedData,
         );
-        final decrypted = cipher.decrypt(
+        final decrypted = await cipher.decrypt(
           ciphertext: ciphertext,
           key: key,
           nonce: nonce,
@@ -138,10 +145,10 @@ void main() {
       'tag is actually appended, guarding the exact PointyCastle '
       'ChaCha20-Poly1305 trap (08-RESEARCH.md Pitfall 2) by asserting on '
       "AES-GCM's own output shape",
-      () {
+      () async {
         final plaintext = Uint8List.fromList(List.generate(42, (i) => i));
 
-        final ciphertext = cipher.encrypt(
+        final ciphertext = await cipher.encrypt(
           plaintext: plaintext,
           key: key,
           nonce: nonce,
@@ -152,39 +159,42 @@ void main() {
       },
     );
 
-    test('decrypt() with a wrong key throws InvalidCipherTextException', () {
-      final plaintext = Uint8List.fromList(List.generate(50, (i) => i));
-      final ciphertext = cipher.encrypt(
-        plaintext: plaintext,
-        key: key,
-        nonce: nonce,
-        associatedData: associatedData,
-      );
-
-      final wrongKey = cipher.deriveKey(
-        'a different passphrase entirely',
-        Uint8List.fromList(List.generate(16, (i) => i)),
-        memoryKiB: 8,
-        iterations: 1,
-      );
-
-      expect(
-        () => cipher.decrypt(
-          ciphertext: ciphertext,
-          key: wrongKey,
+    test(
+      'decrypt() with a wrong key throws InvalidCipherTextException',
+      () async {
+        final plaintext = Uint8List.fromList(List.generate(50, (i) => i));
+        final ciphertext = await cipher.encrypt(
+          plaintext: plaintext,
+          key: key,
           nonce: nonce,
           associatedData: associatedData,
-        ),
-        throwsA(isA<InvalidCipherTextException>()),
-      );
-    });
+        );
+
+        final wrongKey = await cipher.deriveKey(
+          'a different passphrase entirely',
+          Uint8List.fromList(List.generate(16, (i) => i)),
+          memoryKiB: 8,
+          iterations: 1,
+        );
+
+        await expectLater(
+          cipher.decrypt(
+            ciphertext: ciphertext,
+            key: wrongKey,
+            nonce: nonce,
+            associatedData: associatedData,
+          ),
+          throwsA(isA<InvalidCipherTextException>()),
+        );
+      },
+    );
 
     test(
       'decrypt() with a tampered ciphertext byte throws '
       'InvalidCipherTextException',
-      () {
+      () async {
         final plaintext = Uint8List.fromList(List.generate(50, (i) => i));
-        final ciphertext = cipher.encrypt(
+        final ciphertext = await cipher.encrypt(
           plaintext: plaintext,
           key: key,
           nonce: nonce,
@@ -194,8 +204,8 @@ void main() {
         final tampered = Uint8List.fromList(ciphertext);
         tampered[0] = tampered[0] ^ 0xFF;
 
-        expect(
-          () => cipher.decrypt(
+        await expectLater(
+          cipher.decrypt(
             ciphertext: tampered,
             key: key,
             nonce: nonce,
@@ -209,9 +219,9 @@ void main() {
     test(
       'decrypt() with a tampered final tag byte throws '
       'InvalidCipherTextException',
-      () {
+      () async {
         final plaintext = Uint8List.fromList(List.generate(50, (i) => i));
-        final ciphertext = cipher.encrypt(
+        final ciphertext = await cipher.encrypt(
           plaintext: plaintext,
           key: key,
           nonce: nonce,
@@ -221,8 +231,8 @@ void main() {
         final tampered = Uint8List.fromList(ciphertext);
         tampered[tampered.length - 1] = tampered[tampered.length - 1] ^ 0xFF;
 
-        expect(
-          () => cipher.decrypt(
+        await expectLater(
+          cipher.decrypt(
             ciphertext: tampered,
             key: key,
             nonce: nonce,
@@ -237,9 +247,9 @@ void main() {
       'decrypt() with different associatedData than was used to encrypt '
       'throws InvalidCipherTextException -- proves the manifest is bound, '
       'not just the payload',
-      () {
+      () async {
         final plaintext = Uint8List.fromList(List.generate(50, (i) => i));
-        final ciphertext = cipher.encrypt(
+        final ciphertext = await cipher.encrypt(
           plaintext: plaintext,
           key: key,
           nonce: nonce,
@@ -250,8 +260,8 @@ void main() {
           'a-different-manifest'.codeUnits,
         );
 
-        expect(
-          () => cipher.decrypt(
+        await expectLater(
+          cipher.decrypt(
             ciphertext: ciphertext,
             key: key,
             nonce: nonce,
@@ -283,7 +293,7 @@ void main() {
     test(
       'each with its own freshly-generated salt/nonce, produce different '
       'derived keys, different nonces, and different ciphertext',
-      () {
+      () async {
         final plaintext = Uint8List.fromList(
           List.generate(200, (i) => i % 256),
         );
@@ -291,14 +301,14 @@ void main() {
 
         final saltA = cipher.randomBytes(16);
         final nonceA = cipher.randomBytes(12);
-        final keyA = cipher.deriveKey(
+        final keyA = await cipher.deriveKey(
           passphrase,
           saltA,
           memoryKiB: 8,
           iterations: 1,
         );
         final aadA = Uint8List.fromList('manifest-A'.codeUnits);
-        final ciphertextA = cipher.encrypt(
+        final ciphertextA = await cipher.encrypt(
           plaintext: plaintext,
           key: keyA,
           nonce: nonceA,
@@ -307,14 +317,14 @@ void main() {
 
         final saltB = cipher.randomBytes(16);
         final nonceB = cipher.randomBytes(12);
-        final keyB = cipher.deriveKey(
+        final keyB = await cipher.deriveKey(
           passphrase,
           saltB,
           memoryKiB: 8,
           iterations: 1,
         );
         final aadB = Uint8List.fromList('manifest-B'.codeUnits);
-        final ciphertextB = cipher.encrypt(
+        final ciphertextB = await cipher.encrypt(
           plaintext: plaintext,
           key: keyB,
           nonce: nonceB,
