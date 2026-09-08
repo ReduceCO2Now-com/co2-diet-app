@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: planning
-stopped_at: Completed 08-01-PLAN.md (device benchmark checkpoint resolved via compute())
-last_updated: "2026-09-08T20:19:38.380Z"
+stopped_at: Completed 08-02-PLAN.md
+last_updated: "2026-09-08T20:25:41.438Z"
 progress:
   total_phases: 11
   completed_phases: 9
   total_plans: 82
-  completed_plans: 80
-  percent: 98
+  completed_plans: 81
+  percent: 99
 ---
 
 # STATE: CO₂ Diet
@@ -36,10 +36,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch (v1.1 inserted phase 06.1 — now COMPLETE, 2/2 plans)
-- **Phase:** 06.1-reorder-onboarding-carousel-before-profile-setup — **COMPLETE** (2/2 plans: 06.1-01 relocated the completion trigger; 06.1-02's real-device flow-level re-verification checkpoint approved — all 9 manual steps pass). Phase 09-reference-data-delivery-full-off-pack — **COMPLETE** (8/8 plans, both real-device checkpoints approved on a Samsung Galaxy Tab S7 FE / Android 14). Phase 7 (Keycloak Auth + Account Deletion) is COMPLETE — 8/8 plans. Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS. Phase 8 (Encrypted Account Backup) is IN PROGRESS — 08-01 (client-side archive encryption, independent of the backend) COMPLETE, 1/3 plans; 08-02 (backend contract spec) and 08-03 (client push/pull behind a flag) remain, per 08-CONTEXT.md's locked ordering. Phase 10 (Post-Launch Enhancements) is a v1.1+ placeholder with no v1 requirements and `Plans: TBD` — not yet actionable.
-- **Plan:** 08-01 (Client-side encryption of the backup archive — Wave 1, depends_on none, autonomous: false) — COMPLETE, see `08-01-SUMMARY.md`. Device-benchmark checkpoint (Task 3) was not approved as measured; fixed by routing `BackupArchiveCipher.deriveKey/encrypt/decrypt` through `compute()`, re-measured on the same real device, then approved.
-- **Status:** Ready to plan (08-02)
-- **Progress:** [██████████] 98%
+- **Phase:** 06.1-reorder-onboarding-carousel-before-profile-setup — **COMPLETE** (2/2 plans: 06.1-01 relocated the completion trigger; 06.1-02's real-device flow-level re-verification checkpoint approved — all 9 manual steps pass). Phase 09-reference-data-delivery-full-off-pack — **COMPLETE** (8/8 plans, both real-device checkpoints approved on a Samsung Galaxy Tab S7 FE / Android 14). Phase 7 (Keycloak Auth + Account Deletion) is COMPLETE — 8/8 plans. Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS. Phase 8 (Encrypted Account Backup) is IN PROGRESS — 08-01 (client-side archive encryption, independent of the backend) COMPLETE and 08-02 (backend contract specification) COMPLETE, 2/3 plans; 08-03 (client push/pull behind a flag) remains, per 08-CONTEXT.md's locked ordering. Phase 10 (Post-Launch Enhancements) is a v1.1+ placeholder with no v1 requirements and `Plans: TBD` — not yet actionable.
+- **Plan:** 08-02 (Backend contract specification for the encrypted backup blob — Wave 2, depends_on 08-01, autonomous: true) — COMPLETE, see `08-02-SUMMARY.md`. `docs/backend-contracts/encrypted-backup-blob.md` written as a full `[ASSUMED]` proposal for `POST/GET /api/v1/backup`, matching `gdpr-account-deletion.md`'s template shape exactly; that document gained a reciprocal cross-reference (new Open Question 5) stating account deletion must also delete the backup blob if the new contract is ever accepted. Re-fetched the `CO2Diet_Backend-reference` clone's `origin/main` immediately before writing (per 08-RESEARCH.md's own instruction) — confirmed unchanged at `d551d0b` since 08-RESEARCH.md's last verified check, so no backend module has appeared since.
+- **Status:** Ready to plan (08-03)
+- **Progress:** [██████████] 99%
 - **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files. Phase 7's requirement set (AUTH-01, AUTH-02, AUTH-03, AUTH-05, AUTH-06, AUTH-10, PRIV-05) is now fully delivered and reachable end-to-end. Phase 9 has no v1 requirements attached (v1.0.x enrichment kept in-roadmap for continuity per ROADMAP.md).
 
 ```
@@ -163,10 +163,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 
 ## Session Continuity
 
-**Last session:** 2026-09-08T20:19:38.377Z
-**Stopped at:** Completed 08-01-PLAN.md (device benchmark checkpoint resolved via compute())
-**Next action:** Phase 06.1 and Phase 9 remain fully complete, no remaining plans. Phase 8 (Encrypted Account Backup) is now IN PROGRESS: 08-01 (client-side archive encryption, AUTH-09's opaque-blob property) is complete and independently verified — round trip, tamper, wrong-key, and a real-device benchmark (SM T733, Android 14) all pass; the device-benchmark checkpoint's original concern (916ms/711ms blocking the UI isolate) was fixed by routing `BackupArchiveCipher`'s Argon2id derivation + AES-256-GCM cipher work through `compute()`, then re-measured (896ms/805ms — wall-clock materially unchanged, as expected, but no longer on the UI isolate) and approved. 08-02 (backend contract specification, a document for Tomris to confirm/reject) and 08-03 (client push/pull behind an off-by-default flag) remain, per `08-CONTEXT.md`'s locked ordering — 08-02 does not depend on Tomris's backend existing yet, only on her reviewing the proposed contract. Phase 10 (Post-Launch Enhancements) remains an unplanned v1.1+ placeholder with `Plans: TBD`, not yet actionable. Separately, an uncommitted ONBD-03a "Connectivity Choice" feature (code + tests + ADR + REQUIREMENTS/ROADMAP amendments) was found sitting in the working tree during the 06.1 closure, unrelated to and predating that session's work — still deliberately left uncommitted and untouched, for separate review/commit.
-**Suggested next command:** `/gsd:execute-phase 8` to continue with `08-02` (backend contract specification), or `/gsd:discuss-phase 10` once there is real post-launch/store-review signal to prioritize v1.1 scope.
+**Last session:** 2026-09-08T20:24:37.094Z
+**Stopped at:** Completed 08-02-PLAN.md
+**Next action:** Phase 06.1 and Phase 9 remain fully complete, no remaining plans. Phase 8 (Encrypted Account Backup) is now IN PROGRESS: 08-01 (client-side archive encryption, AUTH-09's opaque-blob property) is complete and independently verified — round trip, tamper, wrong-key, and a real-device benchmark (SM T733, Android 14) all pass; the device-benchmark checkpoint's original concern (916ms/711ms blocking the UI isolate) was fixed by routing `BackupArchiveCipher`'s Argon2id derivation + AES-256-GCM cipher work through `compute()`, then re-measured (896ms/805ms — wall-clock materially unchanged, as expected, but no longer on the UI isolate) and approved. 08-02 (backend contract specification) is also now complete: `docs/backend-contracts/encrypted-backup-blob.md` proposes `POST/GET /api/v1/backup` in `gdpr-account-deletion.md`'s established `[ASSUMED]` template shape, adopting the backend's own already-documented paths/module description verbatim, with a GDPR retention/deletion section cross-referencing `gdpr-account-deletion.md` (which itself gained a reciprocal Open Question 5) and 5 open questions for Tomris. Verification for 08-02 is Tomris's review, not a runnable assertion — stated honestly per `08-VALIDATION.md`. 08-03 (client push/pull behind an off-by-default flag) remains, per `08-CONTEXT.md`'s locked ordering — it depends only on 08-02's document existing to build against, not on Tomris's review outcome; the flag stays off regardless. Phase 10 (Post-Launch Enhancements) remains an unplanned v1.1+ placeholder with `Plans: TBD`, not yet actionable. Separately, an uncommitted ONBD-03a "Connectivity Choice" feature (code + tests + ADR + REQUIREMENTS/ROADMAP amendments) was found sitting in the working tree during the 06.1 closure, unrelated to and predating that session's work — still deliberately left uncommitted and untouched, for separate review/commit.
+**Suggested next command:** `/gsd:execute-phase 8` to continue with `08-03` (client push/pull behind a flag), or `/gsd:discuss-phase 10` once there is real post-launch/store-review signal to prioritize v1.1 scope.
 
 **2026-09-04 addendum:** Milestone summary for v1.1 generated at `.planning/reports/MILESTONE_SUMMARY-v1.1.md` (commit `f72b41d`) — onboarding-ready overview of all 9 completed phases, requirements coverage (89/93), key decisions, and tech debt/deferred items.
 
@@ -381,6 +381,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase 06.1-02]: Prep work ahead of the device checkpoint found and fixed a real orphaned-Carousel bug: Legal Consent's `_onAccept` routed straight to `/profile`, never to the Carousel, leaving Plan 06.1-01's reorder unreachable in the shipped build despite all its widget tests passing (no test asserted on route sequence). Fixed to route to `/connectivity-choice` (the screen preceding the Carousel in the now-current flow). A device verification run sheet (`06.1-02-CHECKLIST.md`) was authored/corrected against actual shipped source (not plan prose) before the checkpoint was run — corrections included Splash's actual fixed 2s delay (not the roadmap's 2-3s range) and Welcome's actual single "Continue" CTA (not the equal-weight Get-Started/Use-Without-Account pair the original spec described, deferred to Phase 7 since Account Mode didn't exist yet at the time). The checklist's on-device run (Parts A/B/C, all steps) was executed by the user and approved.
 - [Phase 06.1]: [Phase 06.1-02] Device verification checkpoint approved (Parts A/B/C all pass) — redirect guard, bottom-nav-hide, screen-reader read order, and restart persistence all confirmed on-device across the reordered Carousel-before-Profile-Setup flow
 - [Phase 08-01]: BackupArchiveCipher.deriveKey/encrypt/decrypt run via compute() on a background isolate (device benchmark showed ~900ms Argon2id blocks the calling isolate); PointyCastle objects never cross the isolate boundary, only primitives
+- [Phase 08]: 08-02: docs/backend-contracts/encrypted-backup-blob.md written as full [ASSUMED] proposal for POST/GET /api/v1/backup, matching gdpr-account-deletion.md's template; reciprocal cross-reference added to gdpr-account-deletion.md's Open Questions (deletion must also remove the backup blob if accepted)
 
 ## Performance Metrics
 
@@ -455,4 +456,5 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 06.1 P01 | 20min | 3 tasks | 5 files |
 | Phase 06.1 P02 | ~5min (checkpoint closure; on-device verification itself run separately by user) | 1 tasks | 1 files |
 | Phase 08 P01 | 55min | 3 tasks | 11 files |
+| Phase 08 P02 | 10min | 2 tasks | 2 files |
 
