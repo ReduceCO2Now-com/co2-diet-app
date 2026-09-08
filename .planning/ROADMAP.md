@@ -288,7 +288,7 @@ Plans:
 **Plans**: 3 plans
 Plans:
 
-- [ ] 08-01-PLAN.md — Client-side encryption of the backup archive (Argon2id + AES-256-GCM, passphrase UI, formatVersion 2)
+- [x] 08-01-PLAN.md — Client-side encryption of the backup archive (Argon2id + AES-256-GCM, passphrase UI, formatVersion 2) (completed 2026-09-08, see `08-01-SUMMARY.md`)
 - [ ] 08-02-PLAN.md — Backend contract proposal: docs/backend-contracts/encrypted-backup-blob.md
 - [ ] 08-03-PLAN.md — Client push/pull against the proposed contract, behind a feature flag defaulted off
 

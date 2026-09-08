@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: milestone
 status: planning
-stopped_at: Completed 06.1-02-PLAN.md (Phase 06.1 now complete, 2/2 plans)
-last_updated: "2026-09-07T20:59:12.390Z"
+stopped_at: Completed 08-01-PLAN.md (device benchmark checkpoint resolved via compute())
+last_updated: "2026-09-08T20:19:38.380Z"
 progress:
   total_phases: 11
   completed_phases: 9
-  total_plans: 79
-  completed_plans: 79
-  percent: 100
+  total_plans: 82
+  completed_plans: 80
+  percent: 98
 ---
 
 # STATE: CO₂ Diet
@@ -36,10 +36,10 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 ## Current Position
 
 - **Milestone:** v1 launch (v1.1 inserted phase 06.1 — now COMPLETE, 2/2 plans)
-- **Phase:** 06.1-reorder-onboarding-carousel-before-profile-setup — **COMPLETE** (2/2 plans: 06.1-01 relocated the completion trigger; 06.1-02's real-device flow-level re-verification checkpoint approved — all 9 manual steps pass). Phase 09-reference-data-delivery-full-off-pack — **COMPLETE** (8/8 plans, both real-device checkpoints approved on a Samsung Galaxy Tab S7 FE / Android 14). Phase 7 (Keycloak Auth + Account Deletion) is COMPLETE — 8/8 plans. Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS. Phase 8 (Encrypted Account Backup) remains parked pending Tomris's backend decision. Phase 10 (Post-Launch Enhancements) is a v1.1+ placeholder with no v1 requirements and `Plans: TBD` — not yet actionable.
-- **Plan:** 06.1-02 (Flow-level re-verification checkpoint — Wave 2, depends_on 06.1-01, autonomous: false) — COMPLETE, see `06.1-02-SUMMARY.md`. Phase 06.1 has no remaining plans.
-- **Status:** Ready to plan
-- **Progress:** [██████████] 100%
+- **Phase:** 06.1-reorder-onboarding-carousel-before-profile-setup — **COMPLETE** (2/2 plans: 06.1-01 relocated the completion trigger; 06.1-02's real-device flow-level re-verification checkpoint approved — all 9 manual steps pass). Phase 09-reference-data-delivery-full-off-pack — **COMPLETE** (8/8 plans, both real-device checkpoints approved on a Samsung Galaxy Tab S7 FE / Android 14). Phase 7 (Keycloak Auth + Account Deletion) is COMPLETE — 8/8 plans. Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS. Phase 8 (Encrypted Account Backup) is IN PROGRESS — 08-01 (client-side archive encryption, independent of the backend) COMPLETE, 1/3 plans; 08-02 (backend contract spec) and 08-03 (client push/pull behind a flag) remain, per 08-CONTEXT.md's locked ordering. Phase 10 (Post-Launch Enhancements) is a v1.1+ placeholder with no v1 requirements and `Plans: TBD` — not yet actionable.
+- **Plan:** 08-01 (Client-side encryption of the backup archive — Wave 1, depends_on none, autonomous: false) — COMPLETE, see `08-01-SUMMARY.md`. Device-benchmark checkpoint (Task 3) was not approved as measured; fixed by routing `BackupArchiveCipher.deriveKey/encrypt/decrypt` through `compute()`, re-measured on the same real device, then approved.
+- **Status:** Ready to plan (08-02)
+- **Progress:** [██████████] 98%
 - **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files. Phase 7's requirement set (AUTH-01, AUTH-02, AUTH-03, AUTH-05, AUTH-06, AUTH-10, PRIV-05) is now fully delivered and reachable end-to-end. Phase 9 has no v1 requirements attached (v1.0.x enrichment kept in-roadmap for continuity per ROADMAP.md).
 
 ```
@@ -157,15 +157,16 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
   4. Account deletion against the real backend — blocked because the backend `DELETE /me/account` endpoint doesn't exist as code yet anywhere; `docs/backend-contracts/gdpr-account-deletion.md` is a written spec awaiting Tomris's implementation, not a description of something already built.
   5. App Store Guideline 4.8 review outcome for the web-broker (non-native-SDK) Apple Sign-in flow — categorically different from #1-4: not an infra gap but an unknowable-until-submitted TestFlight review outcome, additionally gated behind #1 working first.
 - **Phase 9 real-CDN integration (not a Phase 9 completion blocker):** Phase 9 shipped code-complete and both of its real-device checkpoints (09-08-PLAN.md) were approved on a Samsung Galaxy Tab S7 FE (SM-T733, Android 14) — resumable/pausable/background-continuing downloads and the live SQLite DETACH/re-ATTACH swap-while-querying are both proven against `tool/dev/range_test_server.dart`, a local throwaway Range-capable server, per 09-CONTEXT.md/09-RESEARCH.md's explicit scope boundary that a real CDN is not this phase's to provide. Outstanding before launch: standing up the real production CDN, pointing `ReferencePackConfig.manifestUrl` at it (currently a `cdn.example.com` placeholder), and re-verifying against real network conditions/real ETag stability/real payload sizes at scale — none of which block Phase 9's own closure. 5 real defects were found and fixed live during the 09-08 real-device session (Android build compileSdk floor, `resume()` from-scratch fallback on no resume-data, test-server bind race, self-signed TLS trust + dead-manifest timeout, decompression ANR + revert-corrupts-database) — see `09-08-SUMMARY.md` for full detail.
+- **iOS export-compliance self-classification (not a Phase 8 completion blocker):** Plan 08-01 added `ITSAppUsesNonExemptEncryption=true` to `ios/Runner/Info.plist` — the app now ships its own AES-256-GCM implementation (Argon2id-derived key, for encrypted backups) rather than relying solely on OS-provided HTTPS, so the previous implicit export-compliance exemption no longer applies. Per Apple's guidance this may trigger an annual US BIS self-classification report (ERN) filing obligation and an App Store Connect French-distribution question. This is an administrative/legal call for Ali, not a code change (08-RESEARCH.md Pitfall 8) — surfaced here the same way NFR-03's SAM test is tracked, resolve before App Store submission.
 
 ---
 
 ## Session Continuity
 
-**Last session:** 2026-09-07T20:53:00.815Z
-**Stopped at:** Completed 06.1-02-PLAN.md (Phase 06.1 now complete, 2/2 plans)
-**Next action:** Phase 06.1 is now fully complete (both plans done, 06.1-02's device checkpoint approved) — no remaining plans in this phase. Phase 9 also has no remaining plans. Neither Phase 8 nor Phase 10 is ready for blind execution: Phase 8 (Encrypted Account Backup) stays parked pending Tomris's backend decision; Phase 10 (Post-Launch Enhancements) is an unplanned v1.1+ placeholder with `Plans: TBD`. Those two remain a routing decision point, not an automatic continuation. Separately, an uncommitted ONBD-03a "Connectivity Choice" feature (code + tests + ADR + REQUIREMENTS/ROADMAP amendments) was found sitting in the working tree during this closure, unrelated to and predating this session's 06.1-02 work — deliberately left uncommitted and untouched (stashed aside during this closure's file edits, then restored) for separate review/commit, not folded into 06.1-02's commits.
-**Suggested next command:** `/gsd:discuss-phase 8` once Tomris's backend decision resolves, or `/gsd:discuss-phase 10` once there is real post-launch/store-review signal to prioritize v1.1 scope. No `/gsd:execute-phase` command is actionable right now without one of those decisions first.
+**Last session:** 2026-09-08T20:19:38.377Z
+**Stopped at:** Completed 08-01-PLAN.md (device benchmark checkpoint resolved via compute())
+**Next action:** Phase 06.1 and Phase 9 remain fully complete, no remaining plans. Phase 8 (Encrypted Account Backup) is now IN PROGRESS: 08-01 (client-side archive encryption, AUTH-09's opaque-blob property) is complete and independently verified — round trip, tamper, wrong-key, and a real-device benchmark (SM T733, Android 14) all pass; the device-benchmark checkpoint's original concern (916ms/711ms blocking the UI isolate) was fixed by routing `BackupArchiveCipher`'s Argon2id derivation + AES-256-GCM cipher work through `compute()`, then re-measured (896ms/805ms — wall-clock materially unchanged, as expected, but no longer on the UI isolate) and approved. 08-02 (backend contract specification, a document for Tomris to confirm/reject) and 08-03 (client push/pull behind an off-by-default flag) remain, per `08-CONTEXT.md`'s locked ordering — 08-02 does not depend on Tomris's backend existing yet, only on her reviewing the proposed contract. Phase 10 (Post-Launch Enhancements) remains an unplanned v1.1+ placeholder with `Plans: TBD`, not yet actionable. Separately, an uncommitted ONBD-03a "Connectivity Choice" feature (code + tests + ADR + REQUIREMENTS/ROADMAP amendments) was found sitting in the working tree during the 06.1 closure, unrelated to and predating that session's work — still deliberately left uncommitted and untouched, for separate review/commit.
+**Suggested next command:** `/gsd:execute-phase 8` to continue with `08-02` (backend contract specification), or `/gsd:discuss-phase 10` once there is real post-launch/store-review signal to prioritize v1.1 scope.
 
 **2026-09-04 addendum:** Milestone summary for v1.1 generated at `.planning/reports/MILESTONE_SUMMARY-v1.1.md` (commit `f72b41d`) — onboarding-ready overview of all 9 completed phases, requirements coverage (89/93), key decisions, and tech debt/deferred items.
 
@@ -379,6 +380,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - [Phase ?]: [Phase 06.1-01]: completeOnboarding() trigger moved from Carousel exit buttons to Profile Setup's forward button; Carousel converted to plain StatefulWidget (no longer reads Riverpod)
 - [Phase 06.1-02]: Prep work ahead of the device checkpoint found and fixed a real orphaned-Carousel bug: Legal Consent's `_onAccept` routed straight to `/profile`, never to the Carousel, leaving Plan 06.1-01's reorder unreachable in the shipped build despite all its widget tests passing (no test asserted on route sequence). Fixed to route to `/connectivity-choice` (the screen preceding the Carousel in the now-current flow). A device verification run sheet (`06.1-02-CHECKLIST.md`) was authored/corrected against actual shipped source (not plan prose) before the checkpoint was run — corrections included Splash's actual fixed 2s delay (not the roadmap's 2-3s range) and Welcome's actual single "Continue" CTA (not the equal-weight Get-Started/Use-Without-Account pair the original spec described, deferred to Phase 7 since Account Mode didn't exist yet at the time). The checklist's on-device run (Parts A/B/C, all steps) was executed by the user and approved.
 - [Phase 06.1]: [Phase 06.1-02] Device verification checkpoint approved (Parts A/B/C all pass) — redirect guard, bottom-nav-hide, screen-reader read order, and restart persistence all confirmed on-device across the reordered Carousel-before-Profile-Setup flow
+- [Phase 08-01]: BackupArchiveCipher.deriveKey/encrypt/decrypt run via compute() on a background isolate (device benchmark showed ~900ms Argon2id blocks the calling isolate); PointyCastle objects never cross the isolate boundary, only primitives
 
 ## Performance Metrics
 
@@ -452,4 +454,5 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 | Phase 09-reference-data-delivery-full-off-pack P08 | ~10hr (real-device session, incl. 5 live bug fixes) | 3 tasks | 1 file created + fixes across 7 |
 | Phase 06.1 P01 | 20min | 3 tasks | 5 files |
 | Phase 06.1 P02 | ~5min (checkpoint closure; on-device verification itself run separately by user) | 1 tasks | 1 files |
+| Phase 08 P01 | 55min | 3 tasks | 11 files |
 
