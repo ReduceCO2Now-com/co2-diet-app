@@ -256,3 +256,218 @@ final class FilePickerProvider
 }
 
 String _$filePickerHash() => r'3fd6168648cd9f82b56e26ebb71ba85581878153';
+
+/// Provides the [BackupApiClient] used by `BackupSyncNotifier` (Plan
+/// 08-03) to push/pull the encrypted backup blob. Reuses the shared
+/// `authHttpClientProvider` client (mirrors `AuthNotifier.deleteAccount`'s
+/// convention) rather than constructing a second `http.Client`.
+///
+/// keepAlive: true — mirrors every other DAO/repository/client provider's
+/// full-session lifetime in this file.
+
+@ProviderFor(backupApiClient)
+final backupApiClientProvider = BackupApiClientProvider._();
+
+/// Provides the [BackupApiClient] used by `BackupSyncNotifier` (Plan
+/// 08-03) to push/pull the encrypted backup blob. Reuses the shared
+/// `authHttpClientProvider` client (mirrors `AuthNotifier.deleteAccount`'s
+/// convention) rather than constructing a second `http.Client`.
+///
+/// keepAlive: true — mirrors every other DAO/repository/client provider's
+/// full-session lifetime in this file.
+
+final class BackupApiClientProvider
+    extends
+        $FunctionalProvider<BackupApiClient, BackupApiClient, BackupApiClient>
+    with $Provider<BackupApiClient> {
+  /// Provides the [BackupApiClient] used by `BackupSyncNotifier` (Plan
+  /// 08-03) to push/pull the encrypted backup blob. Reuses the shared
+  /// `authHttpClientProvider` client (mirrors `AuthNotifier.deleteAccount`'s
+  /// convention) rather than constructing a second `http.Client`.
+  ///
+  /// keepAlive: true — mirrors every other DAO/repository/client provider's
+  /// full-session lifetime in this file.
+  BackupApiClientProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'backupApiClientProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$backupApiClientHash();
+
+  @$internal
+  @override
+  $ProviderElement<BackupApiClient> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  BackupApiClient create(Ref ref) {
+    return backupApiClient(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(BackupApiClient value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<BackupApiClient>(value),
+    );
+  }
+}
+
+String _$backupApiClientHash() => r'cfb05de50354550485e3ea0352847aa003a35a1a';
+
+/// A thin, non-keepAlive indirection over [BackupSyncConfig.enabled].
+///
+/// This indirection exists solely so widget tests can override cloud-backup
+/// UI visibility with `ProviderScope(overrides:
+/// [backupSyncEnabledProvider.overrideWithValue(true)])` without editing
+/// the compile-time constant — production code never overrides it, so the
+/// shipped default stays `false` regardless of this provider's existence.
+
+@ProviderFor(backupSyncEnabled)
+final backupSyncEnabledProvider = BackupSyncEnabledProvider._();
+
+/// A thin, non-keepAlive indirection over [BackupSyncConfig.enabled].
+///
+/// This indirection exists solely so widget tests can override cloud-backup
+/// UI visibility with `ProviderScope(overrides:
+/// [backupSyncEnabledProvider.overrideWithValue(true)])` without editing
+/// the compile-time constant — production code never overrides it, so the
+/// shipped default stays `false` regardless of this provider's existence.
+
+final class BackupSyncEnabledProvider
+    extends $FunctionalProvider<bool, bool, bool>
+    with $Provider<bool> {
+  /// A thin, non-keepAlive indirection over [BackupSyncConfig.enabled].
+  ///
+  /// This indirection exists solely so widget tests can override cloud-backup
+  /// UI visibility with `ProviderScope(overrides:
+  /// [backupSyncEnabledProvider.overrideWithValue(true)])` without editing
+  /// the compile-time constant — production code never overrides it, so the
+  /// shipped default stays `false` regardless of this provider's existence.
+  BackupSyncEnabledProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'backupSyncEnabledProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$backupSyncEnabledHash();
+
+  @$internal
+  @override
+  $ProviderElement<bool> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  bool create(Ref ref) {
+    return backupSyncEnabled(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(bool value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<bool>(value),
+    );
+  }
+}
+
+String _$backupSyncEnabledHash() => r'5a1b58068c65c3e9f366f50bfcc920f66596cce3';
+
+/// A seam over `path_provider`'s top-level `getTemporaryDirectory`
+/// function, used by `BackupSyncNotifier.pullBackup` to write a pulled
+/// backup blob to a temp file before restoring it.
+///
+/// `getTemporaryDirectory` is a top-level function, not a class method --
+/// mocktail cannot mock top-level functions directly, and calling it
+/// directly in a unit test throws before `TestWidgetsFlutterBinding` sets
+/// up a platform-channel binding (mirrors `filePickerProvider`'s exact
+/// problem/solution shape). Overriding this provider in tests
+/// (`backupTempDirGetterProvider.overrideWithValue(() async =>
+/// Directory.systemTemp)`) lets `pullBackup` be tested without a real
+/// platform channel.
+
+@ProviderFor(backupTempDirGetter)
+final backupTempDirGetterProvider = BackupTempDirGetterProvider._();
+
+/// A seam over `path_provider`'s top-level `getTemporaryDirectory`
+/// function, used by `BackupSyncNotifier.pullBackup` to write a pulled
+/// backup blob to a temp file before restoring it.
+///
+/// `getTemporaryDirectory` is a top-level function, not a class method --
+/// mocktail cannot mock top-level functions directly, and calling it
+/// directly in a unit test throws before `TestWidgetsFlutterBinding` sets
+/// up a platform-channel binding (mirrors `filePickerProvider`'s exact
+/// problem/solution shape). Overriding this provider in tests
+/// (`backupTempDirGetterProvider.overrideWithValue(() async =>
+/// Directory.systemTemp)`) lets `pullBackup` be tested without a real
+/// platform channel.
+
+final class BackupTempDirGetterProvider
+    extends
+        $FunctionalProvider<
+          Future<Directory> Function(),
+          Future<Directory> Function(),
+          Future<Directory> Function()
+        >
+    with $Provider<Future<Directory> Function()> {
+  /// A seam over `path_provider`'s top-level `getTemporaryDirectory`
+  /// function, used by `BackupSyncNotifier.pullBackup` to write a pulled
+  /// backup blob to a temp file before restoring it.
+  ///
+  /// `getTemporaryDirectory` is a top-level function, not a class method --
+  /// mocktail cannot mock top-level functions directly, and calling it
+  /// directly in a unit test throws before `TestWidgetsFlutterBinding` sets
+  /// up a platform-channel binding (mirrors `filePickerProvider`'s exact
+  /// problem/solution shape). Overriding this provider in tests
+  /// (`backupTempDirGetterProvider.overrideWithValue(() async =>
+  /// Directory.systemTemp)`) lets `pullBackup` be tested without a real
+  /// platform channel.
+  BackupTempDirGetterProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'backupTempDirGetterProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$backupTempDirGetterHash();
+
+  @$internal
+  @override
+  $ProviderElement<Future<Directory> Function()> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  Future<Directory> Function() create(Ref ref) {
+    return backupTempDirGetter(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Future<Directory> Function() value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Future<Directory> Function()>(value),
+    );
+  }
+}
+
+String _$backupTempDirGetterHash() =>
+    r'e10e00b65cfa3b0ebf8164dd1a47a3af66f8591b';

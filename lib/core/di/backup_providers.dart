@@ -4,10 +4,16 @@
 // Kept in a separate file (mirrors co2_settings_providers.dart) to keep
 // providers.dart focused on core infrastructure (AppDatabase, profile).
 
+import 'dart:io';
+
+import 'package:co2diet/core/di/auth_providers.dart';
 import 'package:co2diet/core/di/providers.dart';
 import 'package:co2diet/data/local/daos/backup_metadata_dao.dart';
+import 'package:co2diet/data/remote/backup_api_client.dart';
 import 'package:co2diet/data/repositories/backup_metadata_repository.dart';
+import 'package:co2diet/domain/services/backend_config.dart';
 import 'package:co2diet/domain/services/backup_export_service.dart';
+import 'package:co2diet/domain/services/backup_sync_config.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -68,3 +74,44 @@ FilePickerFn filePicker(Ref ref) => openFile;
 /// used by [filePickerProvider].
 typedef FilePickerFn =
     Future<XFile?> Function({List<XTypeGroup> acceptedTypeGroups});
+
+/// Provides the [BackupApiClient] used by `BackupSyncNotifier` (Plan
+/// 08-03) to push/pull the encrypted backup blob. Reuses the shared
+/// `authHttpClientProvider` client (mirrors `AuthNotifier.deleteAccount`'s
+/// convention) rather than constructing a second `http.Client`.
+///
+/// keepAlive: true — mirrors every other DAO/repository/client provider's
+/// full-session lifetime in this file.
+@Riverpod(keepAlive: true)
+BackupApiClient backupApiClient(Ref ref) {
+  return BackupApiClient(
+    ref.watch(authHttpClientProvider),
+    baseUrl: BackendConfig.baseUrl,
+  );
+}
+
+/// A thin, non-keepAlive indirection over [BackupSyncConfig.enabled].
+///
+/// This indirection exists solely so widget tests can override cloud-backup
+/// UI visibility with `ProviderScope(overrides:
+/// [backupSyncEnabledProvider.overrideWithValue(true)])` without editing
+/// the compile-time constant — production code never overrides it, so the
+/// shipped default stays `false` regardless of this provider's existence.
+@riverpod
+bool backupSyncEnabled(Ref ref) => BackupSyncConfig.enabled;
+
+/// A seam over `path_provider`'s top-level `getTemporaryDirectory`
+/// function, used by `BackupSyncNotifier.pullBackup` to write a pulled
+/// backup blob to a temp file before restoring it.
+///
+/// `getTemporaryDirectory` is a top-level function, not a class method --
+/// mocktail cannot mock top-level functions directly, and calling it
+/// directly in a unit test throws before `TestWidgetsFlutterBinding` sets
+/// up a platform-channel binding (mirrors `filePickerProvider`'s exact
+/// problem/solution shape). Overriding this provider in tests
+/// (`backupTempDirGetterProvider.overrideWithValue(() async =>
+/// Directory.systemTemp)`) lets `pullBackup` be tested without a real
+/// platform channel.
+@riverpod
+Future<Directory> Function() backupTempDirGetter(Ref ref) =>
+    getTemporaryDirectory;
