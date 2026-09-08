@@ -56,9 +56,13 @@ class BackupNotifier extends _$BackupNotifier {
   /// Writes a full-data backup zip, shares it via the OS share sheet, and
   /// refreshes the notifier's state so `lastBackupAt`/`lastBackupPath`
   /// reflect the new backup.
-  Future<void> createAndShareBackup() async {
+  ///
+  /// [passphrase] is `null` for a plain (formatVersion 1) backup, or the
+  /// user-supplied passphrase for a formatVersion 2 encrypted backup --
+  /// threaded straight to [BackupExportService.createBackup].
+  Future<void> createAndShareBackup({String? passphrase}) async {
     final service = await ref.read(backupExportServiceProvider.future);
-    final file = await service.createBackup();
+    final file = await service.createBackup(passphrase: passphrase);
     await SharePlus.instance.share(ShareParams(files: [XFile(file.path)]));
     ref.invalidateSelf();
   }
@@ -101,9 +105,15 @@ class BackupNotifier extends _$BackupNotifier {
   /// already shown [pickAndPreviewRestoreFile]'s preview and the user has
   /// explicitly confirmed. Re-runs `build()` afterward since a restore can
   /// change every table's data, not just backup metadata.
-  Future<void> applyRestore(File zip) async {
+  ///
+  /// [passphrase] is required when the preview reported
+  /// `RestorePreview.isEncrypted` -- threaded straight to
+  /// [BackupExportService.applyRestore], which throws
+  /// `WrongBackupPassphraseException` on a wrong passphrase without
+  /// clearing [pendingRestoreFile], so the caller can retry.
+  Future<void> applyRestore(File zip, {String? passphrase}) async {
     final service = await ref.read(backupExportServiceProvider.future);
-    await service.applyRestore(zip);
+    await service.applyRestore(zip, passphrase: passphrase);
     _pendingRestoreFile = null;
     ref.invalidateSelf();
   }

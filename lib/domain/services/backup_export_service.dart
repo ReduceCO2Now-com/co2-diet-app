@@ -11,11 +11,13 @@ import 'package:co2diet/data/local/daos/user_food_dao.dart';
 import 'package:co2diet/data/local/daos/user_profile_dao.dart';
 import 'package:co2diet/data/local/daos/weight_dao.dart';
 import 'package:co2diet/data/local/mixins/sync_safe_table.dart';
+import 'package:co2diet/domain/services/backup_archive_cipher.dart';
 import 'package:csv/csv.dart' hide excel;
 import 'package:drift/drift.dart' show Value, ValueSerializer;
 import 'package:excel/excel.dart' as xls;
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
+import 'package:pointycastle/export.dart' show InvalidCipherTextException;
 import 'package:uuid/uuid.dart';
 
 /// Every category of locally stored data that can be exported/backed up
@@ -96,6 +98,23 @@ class UnsupportedBackupFormatException implements Exception {
       '$formatVersion is not supported by this app version';
 }
 
+/// Thrown by [BackupExportService.applyRestore] when a formatVersion 2
+/// (encrypted) archive fails to decrypt.
+///
+/// An AEAD tag failure is one signal for several possible causes (wrong
+/// passphrase, or the file was corrupted/truncated in transit) and cannot
+/// distinguish between them (08-RESEARCH.md Pitfall 7) -- [toString] names
+/// both possibilities rather than claiming a certainty it doesn't have.
+/// Nothing is ever written to any DAO on this path: decryption happens
+/// strictly before [BackupExportService._applyRestoreFromArchive] is ever
+/// reached, so the existing all-or-nothing restore guarantee holds.
+class WrongBackupPassphraseException implements Exception {
+  @override
+  String toString() =>
+      'WrongBackupPassphraseException: the passphrase may be wrong, or '
+      'this backup file may be damaged';
+}
+
 /// Thrown when a zip cannot be parsed as a valid backup archive (missing
 /// or malformed `manifest.json`, or a manifest referencing a file that
 /// isn't actually present in the zip).
@@ -122,17 +141,36 @@ class RestorePreview {
     required this.formatVersion,
     required this.backupDate,
     required this.categoryRowCounts,
+    this.isEncrypted = false,
   });
 
-  /// The manifest's `formatVersion` value (currently always `1`).
+  /// A formatVersion 2 (encrypted) preview -- the manifest is readable
+  /// without a passphrase (it's plaintext), but its contents are opaque
+  /// until decrypted, so no [categoryRowCounts] are available yet.
+  factory RestorePreview.encrypted({DateTime? backupDate}) => RestorePreview(
+    formatVersion: 2,
+    backupDate: backupDate,
+    categoryRowCounts: const {},
+    isEncrypted: true,
+  );
+
+  /// The manifest's `formatVersion` value (`1` for plaintext, `2` for an
+  /// encrypted wrapper).
   final int formatVersion;
 
   /// When the backup was created, parsed from the manifest's `createdAt`
   /// field, or `null` if the manifest omitted it.
   final DateTime? backupDate;
 
-  /// How many rows each included [ExportCategory] contains.
+  /// How many rows each included [ExportCategory] contains. Always empty
+  /// for an encrypted ([isEncrypted]) preview -- the row counts live
+  /// inside the still-encrypted inner archive.
   final Map<ExportCategory, int> categoryRowCounts;
+
+  /// Whether this preview describes a formatVersion 2 encrypted archive
+  /// (a passphrase is required before [BackupExportService.applyRestore]
+  /// can proceed).
+  final bool isEncrypted;
 
   @override
   bool operator ==(Object other) =>
@@ -141,11 +179,12 @@ class RestorePreview {
           runtimeType == other.runtimeType &&
           formatVersion == other.formatVersion &&
           backupDate == other.backupDate &&
+          isEncrypted == other.isEncrypted &&
           mapEquals(categoryRowCounts, other.categoryRowCounts);
 
   @override
   int get hashCode =>
-      Object.hash(formatVersion, backupDate, Object.hashAll(
+      Object.hash(formatVersion, backupDate, isEncrypted, Object.hashAll(
         categoryRowCounts.entries.map((e) => Object.hash(e.key, e.value)),
       ));
 
@@ -153,6 +192,7 @@ class RestorePreview {
   String toString() => 'RestorePreview('
       'formatVersion: $formatVersion, '
       'backupDate: $backupDate, '
+      'isEncrypted: $isEncrypted, '
       'categoryRowCounts: $categoryRowCounts)';
 }
 
@@ -246,13 +286,23 @@ class BackupExportService {
 
   static const _uuid = Uuid();
   static const _serializer = _BackupValueSerializer();
+  static const _cipher = BackupArchiveCipher();
 
-  /// `manifest.json`'s `formatVersion` produced by this build. Locked at
-  /// `1` per 05-CONTEXT.md's Planning Addendum — a future encryption or
-  /// restructured backup format bumps this, and [previewRestore]/
-  /// [applyRestore] reject any other value with a clear typed exception
-  /// rather than silently misparsing an incompatible archive.
+  /// `manifest.json`'s `formatVersion` produced by plaintext
+  /// exports/backups (`createBackup(passphrase: null)`). Locked at `1` per
+  /// 05-CONTEXT.md's Planning Addendum — a future encryption or
+  /// restructured backup format uses a new version instead of bumping
+  /// this one, so every existing plaintext backup on a user's device
+  /// stays restorable forever (08-RESEARCH.md Pitfall 5). Do NOT change
+  /// this constant.
   static const currentFormatVersion = 1;
+
+  /// Every `formatVersion` this build can restore: `1` (plaintext,
+  /// unchanged since Phase 5) and `2` (the formatVersion-2 encrypted
+  /// wrapper added by 08-01). Any other value is rejected with
+  /// [UnsupportedBackupFormatException] before any DAO write
+  /// (08-RESEARCH.md Pattern 4).
+  static const supportedFormatVersions = {1, 2};
 
   /// Generates a single zip containing `manifest.json` plus one encoded
   /// file per requested `category` x `format` combination.
@@ -318,13 +368,26 @@ class BackupExportService {
   /// is a full-fidelity restore source, not a human-readable export) to
   /// the app documents directory, then records `lastBackupAt`/
   /// `lastBackupPath` via [backupMetadataDao].
-  Future<File> createBackup() async {
+  ///
+  /// If [passphrase] is `null` (the default), the resulting bytes are
+  /// byte-for-byte identical in shape to every backup this app has ever
+  /// produced — `formatVersion: 1`, plaintext. If [passphrase] is
+  /// non-null, the plaintext zip is wrapped as a formatVersion 2 encrypted
+  /// archive (08-RESEARCH.md Pattern 1): a fresh random salt/nonce are
+  /// generated, a key is derived via Argon2id, the plaintext zip's bytes
+  /// are AES-256-GCM encrypted with the manifest bound as associated data
+  /// (Pattern 2), and the result overwrites the same file path.
+  Future<File> createBackup({String? passphrase}) async {
     final zipFile = await exportData(
       categories: ExportCategory.values.toSet(),
       formats: const {ExportFormat.json},
       fileNamePrefix: 'co2diet_backup',
       includeInternalFields: true,
     );
+
+    if (passphrase != null) {
+      await _encryptInPlace(zipFile, passphrase);
+    }
 
     final existing = await backupMetadataDao.getMetadata();
     final id = existing?.id ?? _uuid.v7();
@@ -348,6 +411,12 @@ class BackupExportService {
 
   /// Parses [zip] and returns a summary of what it contains (categories,
   /// row counts, backup date, `formatVersion`) without writing anything.
+  ///
+  /// For a formatVersion 2 (encrypted) archive, only the plaintext
+  /// manifest's `createdAt` is read — **no passphrase is required** to
+  /// detect that an archive is encrypted (success criterion 3: "detect
+  /// and prompt, never a parse error"). `categoryRowCounts` is empty in
+  /// that case; the row counts live inside the still-encrypted payload.
   ///
   /// Throws [InvalidBackupArchiveException] if `manifest.json` is missing
   /// or malformed, or [UnsupportedBackupFormatException] if the
@@ -403,16 +472,97 @@ class BackupExportService {
 
   /// Restores every category referenced by [zip]'s manifest.
   ///
-  /// Every `ArchiveFile.name` in the zip is validated to resolve within
-  /// [documentsDir] (zip-slip guard, T-05-09-01) BEFORE any entry is
-  /// read or any database row is written — a single malicious/malformed
-  /// entry throws [ZipSlipException] and aborts the entire restore,
-  /// all-or-nothing. Only `format: 'json'` manifest entries are restored
-  /// (CSV/Excel are export-only formats; [createBackup] always writes
-  /// JSON-only zips).
-  Future<void> applyRestore(File zip) async {
+  /// For a formatVersion 1 (plaintext) archive, [passphrase] is ignored
+  /// and behavior is unchanged from before this plan. For a formatVersion
+  /// 2 (encrypted) archive, [passphrase] is required (an [ArgumentError]
+  /// is thrown if it's `null` — a caller bug, since the UI always prompts
+  /// first): the key is re-derived from the manifest's stored KDF
+  /// parameters, `payload.enc` is decrypted with the manifest's *raw
+  /// stored bytes* as associated data (never re-serialized —
+  /// 08-RESEARCH.md Pattern 2), and a wrong passphrase or damaged file
+  /// throws [WrongBackupPassphraseException] with **nothing written to
+  /// any DAO** — decryption happens strictly before the inner archive's
+  /// zip-slip validation and category restore are ever reached.
+  ///
+  /// Every `ArchiveFile.name` in the (decrypted, for v2) inner zip is
+  /// validated to resolve within [documentsDir] (zip-slip guard,
+  /// T-05-09-01) BEFORE any entry is read or any database row is written
+  /// — a single malicious/malformed entry throws [ZipSlipException] and
+  /// aborts the entire restore, all-or-nothing. Only `format: 'json'`
+  /// manifest entries are restored (CSV/Excel are export-only formats;
+  /// [createBackup] always writes JSON-only zips).
+  Future<void> applyRestore(File zip, {String? passphrase}) async {
     final archive = await _decodeZip(zip);
+    final manifest = _readManifest(archive);
+    // Fails fast on an unsupported formatVersion before any DAO write.
+    final preview = _restorePreviewFromManifest(manifest);
 
+    if (!preview.isEncrypted) {
+      await _applyRestoreFromArchive(archive);
+      return;
+    }
+
+    if (passphrase == null) {
+      throw ArgumentError(
+        'applyRestore requires a passphrase for a formatVersion 2 '
+        '(encrypted) archive',
+      );
+    }
+
+    final encryption = manifest['encryption'] as Map<String, dynamic>;
+    final kdf = encryption['kdf'] as Map<String, dynamic>;
+    final cipherParams = encryption['cipher'] as Map<String, dynamic>;
+    final salt = base64Decode(kdf['saltBase64'] as String);
+    final nonce = base64Decode(cipherParams['nonceBase64'] as String);
+    final key = _cipher.deriveKey(
+      passphrase,
+      Uint8List.fromList(salt),
+      memoryKiB: kdf['memoryKiB'] as int,
+      iterations: kdf['iterations'] as int,
+      parallelism: kdf['parallelism'] as int,
+    );
+
+    final payloadFile = archive.findFile(
+      encryption['payloadFile'] as String,
+    );
+    if (payloadFile == null) {
+      throw InvalidBackupArchiveException(
+        '${encryption['payloadFile']} referenced by manifest but missing '
+        'from archive',
+      );
+    }
+    final ciphertext = payloadFile.content as List<int>;
+
+    // The exact raw stored manifest.json bytes -- never re-jsonEncode the
+    // parsed map here (08-RESEARCH.md Pattern 2's one rule).
+    final manifestFile = archive.findFile('manifest.json')!;
+    final manifestBytes = manifestFile.content is String
+        ? utf8.encode(manifestFile.content as String)
+        : Uint8List.fromList(manifestFile.content as List<int>);
+
+    final Uint8List innerBytes;
+    try {
+      innerBytes = _cipher.decrypt(
+        ciphertext: Uint8List.fromList(ciphertext),
+        key: key,
+        nonce: Uint8List.fromList(nonce),
+        associatedData: manifestBytes,
+      );
+    } on InvalidCipherTextException {
+      throw WrongBackupPassphraseException();
+    }
+
+    final innerArchive = ZipDecoder().decodeBytes(innerBytes);
+    await _applyRestoreFromArchive(innerArchive);
+  }
+
+  /// The actual restore body, operating on an already-decoded (and, for a
+  /// formatVersion 2 archive, already-decrypted) [archive] whose inner
+  /// contents are always a formatVersion 1-shaped plaintext backup zip.
+  /// Shared by both the plaintext and the decrypted-encrypted restore
+  /// paths so zip-slip validation and every category's `fromJson` restore
+  /// logic is written and tested exactly once.
+  Future<void> _applyRestoreFromArchive(Archive archive) async {
     // Validate every entry's path before touching any of them.
     for (final entry in archive.files) {
       if (!_isPathSafe(entry.name, documentsDir)) {
@@ -421,9 +571,6 @@ class BackupExportService {
     }
 
     final manifest = _readManifest(archive);
-    // Fails fast on an unsupported formatVersion before any DAO write.
-    _restorePreviewFromManifest(manifest);
-
     final filesList = (manifest['files'] as List<dynamic>)
         .cast<Map<String, dynamic>>();
 
@@ -448,6 +595,63 @@ class BackupExportService {
       final rows = (decoded as List<dynamic>).cast<Map<String, dynamic>>();
       await _restoreCategory(category, rows);
     }
+  }
+
+  /// Wraps [plainZip]'s current bytes as a formatVersion 2 encrypted
+  /// archive (manifest.json + payload.enc) under [passphrase], overwriting
+  /// the same file path. Used by [createBackup] when a passphrase is
+  /// supplied.
+  Future<void> _encryptInPlace(File plainZip, String passphrase) async {
+    final plainBytes = await plainZip.readAsBytes();
+    final salt = _cipher.randomBytes(16);
+    final nonce = _cipher.randomBytes(12);
+    final key = _cipher.deriveKey(passphrase, salt);
+
+    final manifest = <String, dynamic>{
+      'formatVersion': 2,
+      'createdAt': DateTime.now().toIso8601String(),
+      'encryption': {
+        'scheme': 'argon2id-aes256gcm-v1',
+        'kdf': {
+          'algorithm': 'argon2id',
+          'version': 19,
+          'memoryKiB': kArgon2MemoryKiB,
+          'iterations': kArgon2Iterations,
+          'parallelism': kArgon2Parallelism,
+          'saltBase64': base64Encode(salt),
+        },
+        'cipher': {
+          'algorithm': 'AES-256-GCM',
+          'nonceBase64': base64Encode(nonce),
+          'tagBits': 128,
+        },
+        'payloadFile': 'payload.enc',
+      },
+    };
+    // Serialized once -- these exact bytes are both written into the zip
+    // and used as AEAD associated data (08-RESEARCH.md Pattern 2).
+    final manifestBytes = Uint8List.fromList(utf8.encode(jsonEncode(manifest)));
+
+    final sealed = _cipher.encrypt(
+      plaintext: plainBytes,
+      key: key,
+      nonce: nonce,
+      associatedData: manifestBytes,
+    );
+
+    final encoder = ZipFileEncoder()
+      ..create(plainZip.path)
+      ..addArchiveFile(
+        ArchiveFile(
+          'manifest.json',
+          manifestBytes.length,
+          manifestBytes,
+        ),
+      )
+      ..addArchiveFile(
+        ArchiveFile('payload.enc', sealed.length, sealed)..compress = false,
+      );
+    await encoder.close();
   }
 
   // ---------------------------------------------------------------------
@@ -649,7 +853,8 @@ class BackupExportService {
 
   RestorePreview _restorePreviewFromManifest(Map<String, dynamic> manifest) {
     final formatVersion = manifest['formatVersion'] as int?;
-    if (formatVersion != currentFormatVersion) {
+    if (formatVersion == null ||
+        !supportedFormatVersions.contains(formatVersion)) {
       throw UnsupportedBackupFormatException(formatVersion ?? -1);
     }
 
@@ -657,6 +862,10 @@ class BackupExportService {
     final backupDate = createdAtRaw == null
         ? null
         : DateTime.parse(createdAtRaw);
+
+    if (formatVersion == 2) {
+      return RestorePreview.encrypted(backupDate: backupDate);
+    }
 
     final filesList = (manifest['files'] as List<dynamic>)
         .cast<Map<String, dynamic>>();
@@ -670,8 +879,7 @@ class BackupExportService {
     }
 
     return RestorePreview(
-      // Safe: the guard above already threw for any other value.
-      formatVersion: currentFormatVersion,
+      formatVersion: formatVersion,
       backupDate: backupDate,
       categoryRowCounts: categoryRowCounts,
     );

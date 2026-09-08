@@ -22,7 +22,7 @@ const kArgon2Parallelism = 1;
 /// Deliberately has **no** imports of `drift`, `riverpod`, or
 /// `flutter/material.dart` — this mirrors `docs/ARCHITECTURE.md` §2's
 /// domain-layer rule and is what makes this class trivially unit-testable.
-/// [BackupExportService] is the layer that composes this with the existing
+/// `BackupExportService` is the layer that composes this with the existing
 /// zip/manifest machinery and maps [InvalidCipherTextException] to a
 /// domain-specific exception.
 ///
@@ -103,7 +103,7 @@ class BackupArchiveCipher {
   /// Throws [InvalidCipherTextException] (from `package:pointycastle/
   /// export.dart`), left to propagate uncaught, on a wrong key, a
   /// tampered ciphertext byte, a tampered tag byte, or [associatedData]
-  /// that doesn't match what [encrypt] was called with. [BackupExportService]
+  /// that doesn't match what [encrypt] was called with. `BackupExportService`
   /// (not this class) maps that into a domain-specific
   /// `WrongBackupPassphraseException`.
   Uint8List decrypt({

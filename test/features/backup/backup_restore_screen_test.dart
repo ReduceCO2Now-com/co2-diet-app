@@ -134,7 +134,7 @@ void main() {
         ).thenAnswer((_) async => _buildMetadataRow());
         final zipFile = File('backup.zip');
         when(
-          () => mockService.createBackup(),
+          () => mockService.createBackup(passphrase: any(named: 'passphrase')),
         ).thenAnswer((_) async => zipFile);
 
         final container = buildContainer();
@@ -143,8 +143,34 @@ void main() {
 
         await container.read(backupProvider.notifier).createAndShareBackup();
 
-        verify(() => mockService.createBackup()).called(1);
+        verify(() => mockService.createBackup(passphrase: null)).called(1);
         verify(() => mockSharePlatform.share(any())).called(1);
+      },
+    );
+
+    test(
+      'createAndShareBackup threads a non-null passphrase straight to '
+      'BackupExportService.createBackup',
+      () async {
+        when(
+          () => mockDao.getMetadata(),
+        ).thenAnswer((_) async => _buildMetadataRow());
+        final zipFile = File('backup.zip');
+        when(
+          () => mockService.createBackup(passphrase: any(named: 'passphrase')),
+        ).thenAnswer((_) async => zipFile);
+
+        final container = buildContainer();
+        addTearDown(container.dispose);
+        await container.read(backupProvider.future);
+
+        await container
+            .read(backupProvider.notifier)
+            .createAndShareBackup(passphrase: 'my passphrase');
+
+        verify(
+          () => mockService.createBackup(passphrase: 'my passphrase'),
+        ).called(1);
       },
     );
 
@@ -294,7 +320,12 @@ void main() {
         when(
           () => mockDao.getMetadata(),
         ).thenAnswer((_) async => _buildMetadataRow());
-        when(() => mockService.applyRestore(any())).thenAnswer((_) async {});
+        when(
+          () => mockService.applyRestore(
+            any(),
+            passphrase: any(named: 'passphrase'),
+          ),
+        ).thenAnswer((_) async {});
 
         final container = buildContainer();
         addTearDown(container.dispose);
@@ -303,7 +334,38 @@ void main() {
         final zip = File('restore.zip');
         await container.read(backupProvider.notifier).applyRestore(zip);
 
-        verify(() => mockService.applyRestore(zip)).called(1);
+        verify(
+          () => mockService.applyRestore(zip, passphrase: null),
+        ).called(1);
+      },
+    );
+
+    test(
+      'applyRestore threads a non-null passphrase straight to '
+      'BackupExportService.applyRestore',
+      () async {
+        when(
+          () => mockDao.getMetadata(),
+        ).thenAnswer((_) async => _buildMetadataRow());
+        when(
+          () => mockService.applyRestore(
+            any(),
+            passphrase: any(named: 'passphrase'),
+          ),
+        ).thenAnswer((_) async {});
+
+        final container = buildContainer();
+        addTearDown(container.dispose);
+        await container.read(backupProvider.future);
+
+        final zip = File('restore.zip');
+        await container
+            .read(backupProvider.notifier)
+            .applyRestore(zip, passphrase: 'correct passphrase');
+
+        verify(
+          () => mockService.applyRestore(zip, passphrase: 'correct passphrase'),
+        ).called(1);
       },
     );
 
@@ -491,7 +553,12 @@ void main() {
         when(
           () => mockService.previewRestore(any()),
         ).thenAnswer((_) async => preview);
-        when(() => mockService.applyRestore(any())).thenAnswer((_) async {});
+        when(
+          () => mockService.applyRestore(
+            any(),
+            passphrase: any(named: 'passphrase'),
+          ),
+        ).thenAnswer((_) async {});
 
         await tester.pumpWidget(
           buildTestable(
@@ -505,20 +572,31 @@ void main() {
         await tester.pumpAndSettle();
 
         // Restoring is not applied until "Confirm Restore" is tapped.
-        verifyNever(() => mockService.applyRestore(any()));
+        verifyNever(
+          () => mockService.applyRestore(
+            any(),
+            passphrase: any(named: 'passphrase'),
+          ),
+        );
 
         await tester.tap(find.text('Confirm Restore'));
         await tester.pumpAndSettle();
 
-        verify(() => mockService.applyRestore(any())).called(1);
+        verify(
+          () => mockService.applyRestore(
+            any(),
+            passphrase: any(named: 'passphrase'),
+          ),
+        ).called(1);
         // Preview clears once the restore has been applied.
         expect(find.text('Confirm Restore'), findsNothing);
       },
     );
 
     testWidgets(
-      'Privacy & Ownership statement discloses that shared '
-      'backups are not encrypted by the app',
+      'Privacy & Ownership statement discloses that shared backups are '
+      'not encrypted by default, AND acknowledges the new optional '
+      'passphrase-encrypted backup with its own unrecoverability caveat',
       (tester) async {
         setTallViewport(tester);
         await tester.pumpWidget(buildTestable());
@@ -530,6 +608,173 @@ void main() {
           ),
           findsOneWidget,
         );
+        expect(
+          find.textContaining(
+            'You can optionally encrypt a backup with a passphrase only '
+            'you know',
+          ),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets(
+      'Encrypt toggle opens the create-passphrase dialog, and the entered '
+      'passphrase is threaded through to createAndShareBackup',
+      (tester) async {
+        setTallViewport(tester);
+        when(
+          () => mockService.createBackup(passphrase: any(named: 'passphrase')),
+        ).thenAnswer((_) async => File('backup.zip'));
+
+        await tester.pumpWidget(buildTestable());
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('Encrypt this backup'));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('Create backup'));
+        await tester.pumpAndSettle();
+
+        // The create-passphrase dialog is now showing.
+        expect(find.text('Encrypt this backup'), findsWidgets);
+        expect(find.widgetWithText(TextField, 'Passphrase'), findsOneWidget);
+        expect(
+          find.widgetWithText(TextField, 'Confirm passphrase'),
+          findsOneWidget,
+        );
+
+        const passphrase = 'a passphrase over ten chars';
+        await tester.enterText(
+          find.widgetWithText(TextField, 'Passphrase'),
+          passphrase,
+        );
+        await tester.enterText(
+          find.widgetWithText(TextField, 'Confirm passphrase'),
+          passphrase,
+        );
+        await tester.pumpAndSettle();
+
+        // The Encrypt button stays disabled until the unrecoverability
+        // checkbox is also checked.
+        var encryptButton = tester.widget<FilledButton>(
+          find.widgetWithText(FilledButton, 'Encrypt'),
+        );
+        expect(encryptButton.onPressed, isNull);
+
+        await tester.tap(find.byType(Checkbox));
+        await tester.pumpAndSettle();
+
+        encryptButton = tester.widget<FilledButton>(
+          find.widgetWithText(FilledButton, 'Encrypt'),
+        );
+        expect(encryptButton.onPressed, isNotNull);
+
+        await tester.tap(find.widgetWithText(FilledButton, 'Encrypt'));
+        await tester.pumpAndSettle();
+
+        verify(
+          () => mockService.createBackup(passphrase: passphrase),
+        ).called(1);
+      },
+    );
+
+    testWidgets(
+      'an encrypted-preview-detected restore shows "This backup is '
+      'encrypted" and an "Enter passphrase" button instead of row counts',
+      (tester) async {
+        setTallViewport(tester);
+        final preview = RestorePreview.encrypted(backupDate: null);
+        when(
+          () => mockService.previewRestore(any()),
+        ).thenAnswer((_) async => preview);
+
+        await tester.pumpWidget(
+          buildTestable(
+            filePicker: ({acceptedTypeGroups = const <XTypeGroup>[]}) async =>
+                XFile('/fake/outside/backup_encrypted.zip'),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('Choose backup file'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('This backup is encrypted'), findsOneWidget);
+        expect(find.text('Enter passphrase'), findsOneWidget);
+        expect(find.text('This backup will restore:'), findsNothing);
+        expect(find.text('Confirm Restore'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'a wrong passphrase on restore re-opens the enter-passphrase prompt '
+      'with an inline retry error, without re-picking the file, and a '
+      'correct passphrase on retry succeeds',
+      (tester) async {
+        setTallViewport(tester);
+        final preview = RestorePreview.encrypted(backupDate: null);
+        when(
+          () => mockService.previewRestore(any()),
+        ).thenAnswer((_) async => preview);
+
+        var callCount = 0;
+        when(
+          () => mockService.applyRestore(
+            any(),
+            passphrase: any(named: 'passphrase'),
+          ),
+        ).thenAnswer((_) async {
+          callCount++;
+          if (callCount == 1) {
+            throw WrongBackupPassphraseException();
+          }
+        });
+
+        await tester.pumpWidget(
+          buildTestable(
+            filePicker: ({acceptedTypeGroups = const <XTypeGroup>[]}) async =>
+                XFile('/fake/outside/backup_encrypted.zip'),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('Choose backup file'));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('Enter passphrase'));
+        await tester.pumpAndSettle();
+
+        await tester.enterText(
+          find.widgetWithText(TextField, 'Passphrase'),
+          'wrong one',
+        );
+        await tester.pump();
+        await tester.tap(find.widgetWithText(FilledButton, 'Unlock'));
+        await tester.pumpAndSettle();
+
+        // The retry error is shown, and the enter-passphrase prompt is
+        // still open (or reopened) -- the file was never re-picked.
+        expect(
+          find.textContaining("That passphrase didn't work."),
+          findsOneWidget,
+        );
+
+        await tester.enterText(
+          find.widgetWithText(TextField, 'Passphrase'),
+          'the right one',
+        );
+        await tester.pump();
+        await tester.tap(find.widgetWithText(FilledButton, 'Unlock'));
+        await tester.pumpAndSettle();
+
+        expect(callCount, 2);
+        verify(
+          () => mockService.applyRestore(
+            any(),
+            passphrase: any(named: 'passphrase'),
+          ),
+        ).called(2);
       },
     );
   });

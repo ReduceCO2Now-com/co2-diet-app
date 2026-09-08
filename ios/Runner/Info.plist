@@ -51,6 +51,17 @@
 	</dict>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- AUTH-09 / 08-01: this app now ships its own AES-256-GCM encryption
+	     (BackupArchiveCipher) for optional passphrase-encrypted backups,
+	     rather than relying solely on OS-provided HTTPS. Per Apple's export-
+	     compliance guidance, an app implementing its own cryptography is not
+	     exempt by default. Answering true here surfaces the annual US BIS
+	     self-classification (ERN) filing question -- that is Ali's
+	     legal/administrative call, not a code decision (08-RESEARCH.md
+	     Pitfall 8). Flagged as an explicit pre-launch item; see
+	     08-01-SUMMARY.md. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<true/>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

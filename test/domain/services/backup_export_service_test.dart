@@ -485,6 +485,129 @@ void main() {
         expect(captured!.id.value, 'meta-1');
       },
     );
+
+    // -----------------------------------------------------------------
+    // Encrypted backups (AUTH-09 / 08-01)
+    // -----------------------------------------------------------------
+
+    test(
+      'createBackup() with no passphrase still produces formatVersion 1 '
+      'bytes identical in shape to before this plan -- plain zip, no '
+      'payload.enc, previewRestore reports isEncrypted: false',
+      () async {
+        when(
+          () => weightDao.getEntriesInRange(),
+        ).thenAnswer((_) async => [_buildWeightRow()]);
+
+        final zip = await service.createBackup();
+
+        final archive = ZipDecoder().decodeBytes(zip.readAsBytesSync());
+        final names = archive.files.map((f) => f.name).toSet();
+        expect(names, isNot(contains('payload.enc')));
+        expect(names, containsAll(['manifest.json', 'weightEntries.json']));
+
+        final manifest =
+            jsonDecode(_stringContent(archive, 'manifest.json'))
+                as Map<String, dynamic>;
+        expect(manifest['formatVersion'], 1);
+
+        final preview = await service.previewRestore(zip);
+        expect(preview.formatVersion, 1);
+        expect(preview.isEncrypted, isFalse);
+      },
+    );
+
+    test(
+      'createBackup(passphrase: ...) produces a formatVersion 2 encrypted '
+      'wrapper (manifest.json + payload.enc, no files/rowCount leak); '
+      'previewRestore detects it as encrypted WITHOUT needing the '
+      'passphrase; applyRestore with the correct passphrase recovers '
+      'every category correctly',
+      () async {
+        when(
+          () => weightDao.getEntriesInRange(),
+        ).thenAnswer((_) async => [_buildWeightRow()]);
+
+        final zip = await service.createBackup(
+          passphrase: 'correct horse battery staple',
+        );
+
+        final outerArchive = ZipDecoder().decodeBytes(zip.readAsBytesSync());
+        final names = outerArchive.files.map((f) => f.name).toSet();
+        expect(names, {'manifest.json', 'payload.enc'});
+        final manifest =
+            jsonDecode(_stringContent(outerArchive, 'manifest.json'))
+                as Map<String, dynamic>;
+        expect(manifest['formatVersion'], 2);
+        // Deliberately no per-category files/rowCount leak at the outer
+        // (still-encrypted) level -- 08-RESEARCH.md Pattern 1.
+        expect(manifest.containsKey('files'), isFalse);
+
+        // Detecting encryption never requires the passphrase.
+        final preview = await service.previewRestore(zip);
+        expect(preview.formatVersion, 2);
+        expect(preview.isEncrypted, isTrue);
+        expect(preview.categoryRowCounts, isEmpty);
+
+        clearInteractions(weightDao);
+        when(() => weightDao.restoreEntries(any())).thenAnswer((_) async {});
+
+        await service.applyRestore(
+          zip,
+          passphrase: 'correct horse battery staple',
+        );
+
+        final captured =
+            verify(() => weightDao.restoreEntries(captureAny())).captured
+                    .single
+                as List<WeightEntryRow>;
+        expect(captured, hasLength(1));
+        expect(captured.first.value, 70.5);
+      },
+    );
+
+    test(
+      'applyRestore with a wrong passphrase throws '
+      'WrongBackupPassphraseException and leaves every DAO untouched -- '
+      'never confused with a generic crash, never corrupts data',
+      () async {
+        when(
+          () => weightDao.getEntriesInRange(),
+        ).thenAnswer((_) async => [_buildWeightRow()]);
+
+        final zip = await service.createBackup(
+          passphrase: 'the correct passphrase',
+        );
+        clearInteractions(weightDao);
+        clearInteractions(userProfileDao);
+        clearInteractions(mealEntryDao);
+
+        await expectLater(
+          () => service.applyRestore(zip, passphrase: 'the wrong passphrase'),
+          throwsA(isA<WrongBackupPassphraseException>()),
+        );
+
+        verifyNever(() => weightDao.restoreEntries(any()));
+        verifyNever(() => userProfileDao.upsertProfile(any()));
+        verifyNever(() => mealEntryDao.restoreEntries(any()));
+      },
+    );
+
+    test(
+      'applyRestore on a formatVersion 2 archive with no passphrase '
+      'throws ArgumentError (a caller bug -- the UI always prompts first) '
+      'rather than silently proceeding',
+      () async {
+        final zip = await service.createBackup(
+          passphrase: 'some passphrase here',
+        );
+
+        await expectLater(
+          () => service.applyRestore(zip),
+          throwsA(isA<ArgumentError>()),
+        );
+      },
+    );
   });
 }
 

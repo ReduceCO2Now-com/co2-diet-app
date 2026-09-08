@@ -7,6 +7,7 @@ import 'package:co2diet/domain/entities/backup_metadata.dart';
 import 'package:co2diet/domain/services/backup_export_service.dart';
 import 'package:co2diet/features/backup/providers/backup_notifier.dart';
 import 'package:co2diet/features/backup/widgets/danger_zone_section.dart';
+import 'package:co2diet/features/backup/widgets/passphrase_prompt_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -32,12 +33,23 @@ const Map<ExportFormat, String> _formatLabels = {
 
 /// Exact Privacy & Ownership disclosure copy (RESEARCH.md Open Question 1,
 /// 05-CONTEXT.md Planning Addendum) -- shared backups/exports are not
-/// encrypted by this app.
+/// encrypted by this app by default. Updated by 08-01 (AUTH-09) to
+/// acknowledge the new optional passphrase-encrypted backup.
 const _privacyStatement =
     'Exports and backups are not encrypted by this app. Anyone with '
     'access to a shared file can read its contents — you are '
     'responsible for the security of wherever you send it (e.g. use a '
-    'private cloud folder, not a public share link).';
+    'private cloud folder, not a public share link). You can optionally '
+    'encrypt a backup with a passphrase only you know before sharing or '
+    'storing it — if you forget that passphrase, that specific backup '
+    "can't be recovered by you or by us.";
+
+/// Pitfall-7 retry copy: an AEAD tag failure cannot distinguish a wrong
+/// passphrase from a damaged file, so the message must not claim a
+/// certainty it doesn't have.
+const _wrongPassphraseErrorText =
+    "That passphrase didn't work. Either it's not the right one, or this "
+    'backup file is damaged.';
 
 /// The Backup & Restore screen (PRIV-01 through PRIV-04, PRIV-08, PRIV-09):
 /// Current Storage Status, Create Backup, Automatic Backups, Export Data,
@@ -96,6 +108,7 @@ class _BackupRestoreBodyState extends ConsumerState<_BackupRestoreBody> {
   final Set<ExportFormat> _exportFormats = {ExportFormat.csv};
   RestorePreview? _restorePreview;
   bool _busy = false;
+  bool _encryptBackup = false;
 
   @override
   void initState() {
@@ -110,9 +123,19 @@ class _BackupRestoreBodyState extends ConsumerState<_BackupRestoreBody> {
   }
 
   Future<void> _createBackup() async {
+    String? passphrase;
+    if (_encryptBackup) {
+      passphrase = await PassphrasePromptDialog.showCreate(context);
+      // Cancelled -- do nothing, leave the screen unchanged.
+      if (passphrase == null) return;
+      if (!mounted) return;
+    }
+
     setState(() => _busy = true);
     try {
-      await ref.read(backupProvider.notifier).createAndShareBackup();
+      await ref
+          .read(backupProvider.notifier)
+          .createAndShareBackup(passphrase: passphrase);
       await _loadStorageStatus();
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -160,6 +183,40 @@ class _BackupRestoreBodyState extends ConsumerState<_BackupRestoreBody> {
     }
   }
 
+  /// Restore path for a formatVersion 2 (encrypted) archive: prompts for a
+  /// passphrase, and on a [WrongBackupPassphraseException] re-opens the
+  /// prompt with the Pitfall-7 retry copy -- without clearing
+  /// [_restorePreview], so the user can retry without re-picking the file.
+  Future<void> _confirmEncryptedRestore() async {
+    final notifier = ref.read(backupProvider.notifier);
+    final zip = notifier.pendingRestoreFile;
+    if (zip == null) return;
+
+    String? errorText;
+    while (true) {
+      if (!mounted) return;
+      final passphrase = await PassphrasePromptDialog.showEnter(
+        context,
+        errorText: errorText,
+      );
+      // Cancelled -- leave the encrypted-preview state as-is.
+      if (passphrase == null) return;
+      if (!mounted) return;
+
+      setState(() => _busy = true);
+      try {
+        await notifier.applyRestore(zip, passphrase: passphrase);
+        await _loadStorageStatus();
+        if (mounted) setState(() => _restorePreview = null);
+        return;
+      } on WrongBackupPassphraseException {
+        errorText = _wrongPassphraseErrorText;
+      } finally {
+        if (mounted) setState(() => _busy = false);
+      }
+    }
+  }
+
   Future<void> _clearAllLocalData() async {
     final service = await ref.read(backupExportServiceProvider.future);
     await service.clearAllLocalData();
@@ -201,6 +258,13 @@ class _BackupRestoreBodyState extends ConsumerState<_BackupRestoreBody> {
               color: colorScheme.onSurfaceVariant,
             ),
           ),
+        const SizedBox(height: AppSpacing.stackGap),
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: const Text('Encrypt this backup'),
+          value: _encryptBackup,
+          onChanged: (value) => setState(() => _encryptBackup = value),
+        ),
         const SizedBox(height: AppSpacing.stackGap),
         SizedBox(
           width: double.infinity,
@@ -293,7 +357,27 @@ class _BackupRestoreBodyState extends ConsumerState<_BackupRestoreBody> {
             child: const Text('Choose backup file'),
           ),
         ),
-        if (_restorePreview != null) ...[
+        if (_restorePreview != null && _restorePreview!.isEncrypted) ...[
+          const SizedBox(height: AppSpacing.stackGap),
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.sm),
+            decoration: BoxDecoration(
+              color: colorScheme.surfaceContainer,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Text('This backup is encrypted'),
+          ),
+          const SizedBox(height: AppSpacing.stackGap),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: _busy
+                  ? null
+                  : () => unawaited(_confirmEncryptedRestore()),
+              child: const Text('Enter passphrase'),
+            ),
+          ),
+        ] else if (_restorePreview != null) ...[
           const SizedBox(height: AppSpacing.stackGap),
           Container(
             padding: const EdgeInsets.all(AppSpacing.sm),
