@@ -42,20 +42,20 @@ All crypto in `08-01` is pure Dart with no platform channels, so every `08-01` a
 
 | Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 08-01-xx | 01 | 1 | SC-1 (round trip, tag length) | unit | `flutter test test/domain/services/backup_archive_cipher_test.dart` | ❌ W0 | ⬜ pending |
-| 08-01-xx | 01 | 1 | SC-1 (tamper × 3, wrong key, randomness, KDF param round-trip) | unit | same | ❌ W0 | ⬜ pending |
-| 08-01-xx | 01 | 1 | SC-2 (plaintext export regression, formatVersion compat) | unit | `flutter test test/domain/services/backup_export_service_test.dart` | ✅ extend existing | ⬜ pending |
-| 08-01-xx | 01 | 1 | SC-3 (preview detects encrypted archive, passphrase prompt, wrong-passphrase inline error) | unit + widget | `flutter test test/domain/services/backup_export_service_test.dart test/features/backup/backup_restore_screen_test.dart` | ⚠️ partial | ⬜ pending |
-| 08-01-xx | 01 | 1 | Perf (archive size + encrypt/decrypt wall time on device) | integration | `flutter test integration_test/backup_encryption_benchmark_test.dart -d <device>` | ❌ W0 | ⬜ pending |
-| 08-02-xx | 02 | 2 | SC-4 (contract doc exists, `status: ASSUMED`, negative-scope section) | manual-only | — reviewed at `/gsd:verify-work` | n/a | ⬜ pending |
-| 08-03-xx | 03 | 3 | SC-5 (push/pull request shape, 404→null, non-2xx/timeout typed exceptions) | unit | `flutter test test/data/remote/backup_api_client_test.dart` | ❌ W0 | ⬜ pending |
-| 08-03-xx | 03 | 3 | SC-5 (sync section hidden while flag off / not in Account Mode) | widget | `flutter test test/features/backup/backup_restore_screen_test.dart` | ❌ W0 | ⬜ pending |
-| 08-03-xx | 03 | 3 | SC-6 (no HLC/outbox/merge/conflict code introduced) | manual-only | — negative-existence claim, diff review | n/a | ⬜ pending |
-| 08-01-xx | 01 | 1 | PRIV-07 (new dependency clears privacy blocklist, transitively) | unit | `flutter test test/ci/blocklist_test.dart` | ✅ exists, covers automatically | ⬜ pending |
+| 08-01-01 | 01 | 1 | SC-1 (round trip, tag length) | unit | `flutter test test/domain/services/backup_archive_cipher_test.dart` | ❌ W0 | ⬜ pending |
+| 08-01-01 | 01 | 1 | SC-1 (tamper × 3, wrong key, randomness, KDF param round-trip) | unit | same | ❌ W0 | ⬜ pending |
+| 08-01-02 | 01 | 1 | SC-2 (plaintext export regression, formatVersion compat) | unit | `flutter test test/domain/services/backup_export_service_test.dart` | ✅ extend existing | ⬜ pending |
+| 08-01-02 | 01 | 1 | SC-3 (preview detects encrypted archive, passphrase prompt, wrong-passphrase inline error) | unit + widget | `flutter test test/domain/services/backup_export_service_test.dart test/features/backup/backup_restore_screen_test.dart` | ⚠️ partial | ⬜ pending |
+| 08-01-03 | 01 | 1 | Perf (archive size + encrypt/decrypt wall time on device) | integration | `flutter test integration_test/backup_encryption_benchmark_test.dart -d <device>` | ❌ W0 | ⬜ pending |
+| 08-02-01 | 02 | 2 | SC-4 (contract doc exists, `status: ASSUMED`, negative-scope section) | manual-only | — reviewed at `/gsd:verify-work` | n/a | ⬜ pending |
+| 08-03-01 | 03 | 3 | SC-5 (push/pull request shape, 404→null, non-2xx/timeout typed exceptions) | unit | `flutter test test/data/remote/backup_api_client_test.dart` | ❌ W0 | ⬜ pending |
+| 08-03-03 | 03 | 3 | SC-5 (sync section hidden while flag off / not in Account Mode) | widget | `flutter test test/features/backup/backup_restore_screen_test.dart` | ❌ W0 | ⬜ pending |
+| 08-03-03 | 03 | 3 | SC-6 (no HLC/outbox/merge/conflict code introduced) | manual-only (grep-based structural check, see 08-03-03's automated verify) | — negative-existence claim | n/a | ⬜ pending |
+| 08-01-01 | 01 | 1 | PRIV-07 (new dependency clears privacy blocklist, transitively) | unit | `flutter test test/ci/blocklist_test.dart` | ✅ exists, covers automatically | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
-*Task IDs are placeholders (`xx`) — the planner assigns final numbering; this table's requirement/command mapping is what must carry through regardless of exact task numbering.*
+*Task ID key: 08-01-01 = Plan 08-01 Task 1 (BackupArchiveCipher); 08-01-02 = Plan 08-01 Task 2 (wire encryption through export/restore + screen); 08-01-03 = Plan 08-01's device-benchmark checkpoint (08-01 also has an unlisted Wave-0-preceding package-legitimacy checkpoint before Task 1, not independently verification-bearing). 08-02-01 = Plan 08-02 Task 1 (draft contract doc); 08-02-02 = Plan 08-02 Task 2 (cross-reference gdpr-account-deletion.md, not separately listed above -- no independent SC row). 08-03-01 = Plan 08-03 Task 1 (BackupSyncConfig + BackupApiClient); 08-03-02 = Plan 08-03 Task 2 (BackupSyncNotifier + DI, not separately listed above -- covered transitively by 08-03-03's widget tests); 08-03-03 = Plan 08-03 Task 3 (BackupSyncSection widget + screen wiring + SC-6 grep self-check).
 
 ---
 
@@ -76,7 +76,7 @@ All crypto in `08-01` is pure Dart with no platform channels, so every `08-01` a
 | Behavior | Requirement | Why Manual | Test Instructions |
 |----------|-------------|------------|-------------------|
 | Backend contract document review | SC-4 | A markdown proposal document has no runnable assertion — correctness is Tomris's review, not a test | Read `docs/backend-contracts/` doc against the `gdpr-account-deletion.md` template shape; confirm `status: ASSUMED` frontmatter and explicit negative-scope section present |
-| No sync/HLC/outbox/conflict code introduced | SC-6 | Negative-existence claim — nothing to assert against, only to confirm absent | Diff review of `08-03`'s changed files against the phase boundary in `08-CONTEXT.md` |
+| No sync/HLC/outbox/conflict code introduced | SC-6 | Negative-existence claim — resolved by an automated grep in Plan 08-03 Task 3 (08-03-03) rather than pure diff review, but flagged here since a grep can never fully substitute for human judgment on "nothing sync-shaped was introduced" | `! grep -rniE "outbox|hybridlogicalclock|hlcclock|conflictresolver|lastwritewins|mergeconflict"` across 08-03's new files (see 08-03-03's `<verify>`); spot-check the diff against the phase boundary in `08-CONTEXT.md` if in doubt |
 
 ---
 

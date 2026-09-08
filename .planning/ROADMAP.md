@@ -285,7 +285,13 @@ Plans:
 
 **Carried forward (not achievable in this phase):** AUTH-09's "restore it on another device" and the original criteria requiring automatic server-side push/pull remain unmet until a backend exists. If Tomris's decision resolves toward encrypted blob storage, they become a small follow-up phase against an already-built client rather than a phase from scratch. If it resolves toward user-cloud export, criteria 1–3 remain valuable on their own and 4–5 become documentation of a road not taken.
 
-**Plans**: 3 (see `08-CONTEXT.md` — encryption, contract, flagged client)
+**Plans**: 3 plans
+Plans:
+
+- [ ] 08-01-PLAN.md — Client-side encryption of the backup archive (Argon2id + AES-256-GCM, passphrase UI, formatVersion 2)
+- [ ] 08-02-PLAN.md — Backend contract proposal: docs/backend-contracts/encrypted-backup-blob.md
+- [ ] 08-03-PLAN.md — Client push/pull against the proposed contract, behind a feature flag defaulted off
+
 **UI hint**: yes
 
 ### Phase 9: Reference Data Delivery (Full OFF Pack)
