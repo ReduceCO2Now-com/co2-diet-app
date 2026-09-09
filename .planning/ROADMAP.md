@@ -22,7 +22,7 @@
 - [x] **Phase 5: Nutrition, CO₂ Estimator, Dashboard, Insights, Weight, Notifications, Export/Backup** — full local app; CO₂ Estimator + Transparency + Improvement Opportunities; Insights (7d/30d); Weight tracking; local notifications; Export (CSV/Excel/JSON); Backup/Restore. **Local Mode shippable here.** (completed 2026-07-28)
 - [x] **Phase 6: Onboarding, Legal Consent, Legal Hub, ED Safety Nets, Accessibility & Pre-Submission** — Splash → Welcome → Legal Consent → Connectivity Choice → Carousel → Profile Setup; timestamped consent records; Legal Hub (Terms/Privacy/Disclaimer/Impressum); ED safety nets; PrivacyManifest/Data Safety; a11y audit; equal-weight connectivity-choice audit; SAM test (completed 2026-09-07)
 - [x] **Phase 7: Keycloak Auth + Account Deletion** — flutter_appauth OIDC/PKCE login (email/password, Apple, Google), logout, password reset, GDPR account deletion, local-only CO₂ methodology-update announcement. No data movement — Local→Account upgrade and sync are Phase 8. (completed 2026-08-09)
-- [ ] **Phase 8: Encrypted Account Backup (client-first)** — on-device encryption of the backup archive, a written backend contract proposal, and a flag-gated push/pull client. **RESCOPED 2026-09-08** from "contingent on Tomris" to what is buildable without a backend, since that decision has not moved and left the phase unverifiable by construction. Server-side push/pull carried forward. (See Phase Details section.)
+- [x] **Phase 8: Encrypted Account Backup (client-first)** — on-device encryption of the backup archive, a written backend contract proposal, and a flag-gated push/pull client. **RESCOPED 2026-09-08** from "contingent on Tomris" to what is buildable without a backend, since that decision has not moved and left the phase unverifiable by construction. Server-side push/pull carried forward. (See Phase Details section.) (completed 2026-09-09)
 - [x] **Phase 9: Reference Data Delivery (Full OFF Pack)** — on-demand ~300–800MB OFF pack via CDN, delta refresh, live methodology-version announcement flow (completed 2026-09-04)
 - [ ] **Phase 10: Post-Launch Enhancements (deferred)** — v1.1+ scope placeholder (water tracking, CO₂ profile modifiers UI polish, advanced insights, wearable/Health integration) — no v1 requirements land here; kept in roadmap for continuity
 
@@ -285,12 +285,12 @@ Plans:
 
 **Carried forward (not achievable in this phase):** AUTH-09's "restore it on another device" and the original criteria requiring automatic server-side push/pull remain unmet until a backend exists. If Tomris's decision resolves toward encrypted blob storage, they become a small follow-up phase against an already-built client rather than a phase from scratch. If it resolves toward user-cloud export, criteria 1–3 remain valuable on their own and 4–5 become documentation of a road not taken.
 
-**Plans**: 2/3 plans executed
+**Plans**: 3/3 plans executed
 Plans:
 
 - [x] 08-01-PLAN.md — Client-side encryption of the backup archive (Argon2id + AES-256-GCM, passphrase UI, formatVersion 2) (completed 2026-09-08, see `08-01-SUMMARY.md`)
 - [x] 08-02-PLAN.md — Backend contract proposal: docs/backend-contracts/encrypted-backup-blob.md (completed 2026-09-08, see `08-02-SUMMARY.md`)
-- [ ] 08-03-PLAN.md — Client push/pull against the proposed contract, behind a feature flag defaulted off
+- [x] 08-03-PLAN.md — Client push/pull against the proposed contract, behind a feature flag defaulted off (completed 2026-09-09, see `08-03-SUMMARY.md`)
 
 **UI hint**: yes
 
@@ -342,7 +342,7 @@ Plans:
 | 5. Full Local App (Local Mode Shippable) | 19/19 | Complete    | 2026-07-28 |
 | 6. Onboarding, Legal & Pre-Submission | 10/10 | Complete   | 2026-09-07 |
 | 7. Keycloak Auth + Account Deletion | 8/8 | Complete   | 2026-08-09 |
-| 8. Encrypted Account Backup (client-first) | 2/3 | In Progress | - |
+| 8. Encrypted Account Backup (client-first) | 3/3 | Complete   | 2026-09-09 |
 | 9. Reference Data Delivery (Full OFF Pack) | 8/8 | Complete    | 2026-09-04 |
 | 10. Post-Launch Enhancements (v1.1+) | 0/0 | Not started | - |
 
