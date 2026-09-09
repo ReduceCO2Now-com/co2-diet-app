@@ -4,7 +4,7 @@ milestone: v1.1
 milestone_name: milestone
 status: planning
 stopped_at: Completed 08-03-PLAN.md (Phase 8 complete, 3/3 plans)
-last_updated: "2026-09-09T10:07:23.878Z"
+last_updated: "2026-09-09T10:11:41.256Z"
 progress:
   total_phases: 11
   completed_phases: 10
@@ -38,7 +38,7 @@ See: `.planning/PROJECT.md` (updated 2026-07-16)
 - **Milestone:** v1 launch (v1.1 inserted phase 06.1 — now COMPLETE, 2/2 plans)
 - **Phase:** 06.1-reorder-onboarding-carousel-before-profile-setup — **COMPLETE** (2/2 plans: 06.1-01 relocated the completion trigger; 06.1-02's real-device flow-level re-verification checkpoint approved — all 9 manual steps pass). Phase 09-reference-data-delivery-full-off-pack — **COMPLETE** (8/8 plans, both real-device checkpoints approved on a Samsung Galaxy Tab S7 FE / Android 14). Phase 7 (Keycloak Auth + Account Deletion) is COMPLETE — 8/8 plans. Phase 6 (onboarding/legal/consent/legal-hub/ED safety nets/accessibility/pre-submission) is COMPLETE — 10/10 plans, all 3 of 06-10's real-device checkpoints approved on both Android and iOS. Phase 8 (Encrypted Account Backup) is **COMPLETE** — 3/3 plans: 08-01 (client-side archive encryption) COMPLETE, 08-02 (backend contract specification) COMPLETE, 08-03 (client push/pull behind an off-by-default flag) COMPLETE. Phase 10 (Post-Launch Enhancements) is a v1.1+ placeholder with no v1 requirements and `Plans: TBD` — not yet actionable.
 - **Plan:** 08-03 (Client push/pull for encrypted backup behind an off-by-default flag — Wave 3, depends_on 08-01/08-02, autonomous: true) — COMPLETE, see `08-03-SUMMARY.md`. `BackupApiClient`/`BackupSyncNotifier`/`BackupSyncSection` implement push/pull against Plan 08-02's proposed `/api/v1/backup` contract, entirely behind `BackupSyncConfig.enabled = false` and gated to Account Mode. Not end-to-end verified against a real backend (none exists) — every assertion is against a mocked `http.Client`/fake notifier, stated honestly per 08-CONTEXT.md. AUTH-09 deliberately left NOT marked complete: the transport half is code-complete but flag-gated, with no real backend, no real cross-device restore, and no confirmation from Tomris yet.
-- **Status:** Phase 8 complete. Ready to plan next phase (Phase 10, once actionable) or await Tomris's review of the backup-blob contract.
+- **Status:** Ready to plan
 - **Progress:** [██████████] 100%
 - **v1 requirements:** Phase 5's requirement set (CO2-05/06, DASH-01 through DASH-08, WT-01 through WT-05, NOTIF-01/02/03, INS-01 through INS-04, PRIV-01 through PRIV-04/08/09, and the NUTR-01/CO2-03 carry-overs from earlier phases) is now fully delivered and reachable end-to-end — confirmed via the real-device UAT pass, not just automated tests. Full requirement-by-requirement detail lives in `ROADMAP.md`'s Phase 5 section and the phase's `*-SUMMARY.md` files. Phase 7's requirement set (AUTH-01, AUTH-02, AUTH-03, AUTH-05, AUTH-06, AUTH-10, PRIV-05) is now fully delivered and reachable end-to-end. Phase 9 has no v1 requirements attached (v1.0.x enrichment kept in-roadmap for continuity per ROADMAP.md).
 
