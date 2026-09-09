@@ -25,8 +25,11 @@ import 'package:co2diet/core/di/backup_providers.dart';
 import 'package:co2diet/data/local/app_database.dart';
 import 'package:co2diet/data/local/daos/backup_metadata_dao.dart';
 import 'package:co2diet/data/repositories/backup_metadata_repository.dart';
+import 'package:co2diet/domain/entities/auth_state.dart';
 import 'package:co2diet/domain/services/backup_export_service.dart';
+import 'package:co2diet/features/auth/providers/auth_provider.dart';
 import 'package:co2diet/features/backup/providers/backup_notifier.dart';
+import 'package:co2diet/features/backup/providers/backup_sync_notifier.dart';
 import 'package:co2diet/features/backup/screens/backup_restore_screen.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +46,40 @@ class _MockBackupExportService extends Mock implements BackupExportService {}
 class _MockSharePlatform extends Mock
     with MockPlatformInterfaceMixin
     implements SharePlatform {}
+
+/// A plain override provider carrying the desired [AuthState] into
+/// [_FakeAuthNotifier.build] -- `authProvider.overrideWith` needs a
+/// `Notifier` factory, not a raw value.
+final _authStateOverrideProvider = Provider<AuthState>(
+  (ref) => AuthState.unauthenticated(),
+);
+
+class _FakeAuthNotifier extends AuthNotifier {
+  @override
+  AuthState build() => ref.watch(_authStateOverrideProvider);
+}
+
+/// A fake [BackupSyncNotifier] whose `pushBackup`/`pullBackup` delegate to
+/// test-supplied callbacks -- `backupSyncProvider.overrideWith` needs a
+/// `Notifier` factory, and the real notifier's methods reach live DAOs/
+/// HTTP that widget tests must not touch.
+class _FakeBackupSyncNotifier extends BackupSyncNotifier {
+  _FakeBackupSyncNotifier({this.pushImpl, this.pullImpl});
+
+  final Future<void> Function(String passphrase)? pushImpl;
+  final Future<bool> Function(String passphrase)? pullImpl;
+
+  @override
+  void build() {}
+
+  @override
+  Future<void> pushBackup(String passphrase) =>
+      pushImpl?.call(passphrase) ?? Future<void>.value();
+
+  @override
+  Future<bool> pullBackup(String passphrase) =>
+      pullImpl?.call(passphrase) ?? Future<bool>.value(true);
+}
 
 BackupMetadataRow _buildMetadataRow({
   String id = 'meta-1',
@@ -419,7 +456,13 @@ void main() {
       );
     });
 
-    Widget buildTestable({FilePickerFn? filePicker}) {
+    Widget buildTestable({
+      FilePickerFn? filePicker,
+      bool? backupSyncEnabled,
+      AuthState? authState,
+      Future<void> Function(String passphrase)? pushImpl,
+      Future<bool> Function(String passphrase)? pullImpl,
+    }) {
       return ProviderScope(
         overrides: [
           backupMetadataRepositoryProvider.overrideWithValue(
@@ -430,6 +473,19 @@ void main() {
           ),
           if (filePicker != null)
             filePickerProvider.overrideWithValue(filePicker),
+          if (backupSyncEnabled != null)
+            backupSyncEnabledProvider.overrideWithValue(backupSyncEnabled),
+          if (authState != null) ...[
+            authProvider.overrideWith(_FakeAuthNotifier.new),
+            _authStateOverrideProvider.overrideWithValue(authState),
+          ],
+          if (pushImpl != null || pullImpl != null)
+            backupSyncProvider.overrideWith(
+              () => _FakeBackupSyncNotifier(
+                pushImpl: pushImpl,
+                pullImpl: pullImpl,
+              ),
+            ),
         ],
         child: const MaterialApp(home: BackupRestoreScreen()),
       );
@@ -777,5 +833,194 @@ void main() {
         ).called(2);
       },
     );
+
+    group('Cloud Backup (Beta) section (Plan 08-03)', () {
+      testWidgets(
+        'renders nothing when backupSyncEnabledProvider is left at its '
+        'real (shipped) default of false, regardless of auth state',
+        (tester) async {
+          setTallViewport(tester);
+
+          await tester.pumpWidget(
+            buildTestable(
+              authState: const AuthAuthenticated(
+                email: 'user@example.com',
+                accessToken: 'token-123',
+              ),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          expect(find.textContaining('Cloud Backup'), findsNothing);
+        },
+      );
+
+      testWidgets(
+        'renders nothing when the flag is overridden true but the user is '
+        'not in Account Mode',
+        (tester) async {
+          setTallViewport(tester);
+
+          await tester.pumpWidget(
+            buildTestable(
+              backupSyncEnabled: true,
+              authState: AuthState.unauthenticated(),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          expect(find.textContaining('Cloud Backup'), findsNothing);
+        },
+      );
+
+      testWidgets(
+        'renders and "Push to Cloud" triggers pushBackup with the entered '
+        'passphrase when both the flag and Account Mode are true',
+        (tester) async {
+          setTallViewport(tester);
+          String? capturedPassphrase;
+
+          await tester.pumpWidget(
+            buildTestable(
+              backupSyncEnabled: true,
+              authState: const AuthAuthenticated(
+                email: 'user@example.com',
+                accessToken: 'token-123',
+              ),
+              pushImpl: (passphrase) async {
+                capturedPassphrase = passphrase;
+              },
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          expect(find.text('Cloud Backup (Beta)'), findsOneWidget);
+          expect(find.widgetWithText(OutlinedButton, 'Push to Cloud'),
+              findsOneWidget);
+          expect(find.widgetWithText(OutlinedButton, 'Pull from Cloud'),
+              findsOneWidget);
+
+          await tester.tap(find.text('Push to Cloud'));
+          await tester.pumpAndSettle();
+
+          const passphrase = 'a passphrase over ten chars';
+          await tester.enterText(
+            find.widgetWithText(TextField, 'Passphrase'),
+            passphrase,
+          );
+          await tester.enterText(
+            find.widgetWithText(TextField, 'Confirm passphrase'),
+            passphrase,
+          );
+          await tester.pumpAndSettle();
+
+          await tester.tap(find.byType(Checkbox));
+          await tester.pumpAndSettle();
+
+          await tester.tap(find.widgetWithText(FilledButton, 'Encrypt'));
+          await tester.pumpAndSettle();
+
+          expect(capturedPassphrase, passphrase);
+          expect(
+            find.text('Backup pushed to the cloud.'),
+            findsOneWidget,
+          );
+        },
+      );
+
+      testWidgets(
+        '"Pull from Cloud" with a wrong passphrase re-opens the '
+        'enter-passphrase prompt with the same Pitfall-7 retry copy Plan '
+        '08-01 uses for local restore',
+        (tester) async {
+          setTallViewport(tester);
+          var callCount = 0;
+
+          await tester.pumpWidget(
+            buildTestable(
+              backupSyncEnabled: true,
+              authState: const AuthAuthenticated(
+                email: 'user@example.com',
+                accessToken: 'token-123',
+              ),
+              pullImpl: (passphrase) async {
+                callCount++;
+                if (callCount == 1) {
+                  throw WrongBackupPassphraseException();
+                }
+                return true;
+              },
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          await tester.tap(find.text('Pull from Cloud'));
+          await tester.pumpAndSettle();
+
+          await tester.enterText(
+            find.widgetWithText(TextField, 'Passphrase'),
+            'wrong one',
+          );
+          await tester.pump();
+          await tester.tap(find.widgetWithText(FilledButton, 'Unlock'));
+          await tester.pumpAndSettle();
+
+          expect(
+            find.textContaining("That passphrase didn't work."),
+            findsOneWidget,
+          );
+
+          await tester.enterText(
+            find.widgetWithText(TextField, 'Passphrase'),
+            'the right one',
+          );
+          await tester.pump();
+          await tester.tap(find.widgetWithText(FilledButton, 'Unlock'));
+          await tester.pumpAndSettle();
+
+          expect(callCount, 2);
+          expect(
+            find.text('Backup restored from the cloud.'),
+            findsOneWidget,
+          );
+        },
+      );
+
+      testWidgets(
+        '"Pull from Cloud" shows "no cloud backup found" (not an error) '
+        'when pullBackup returns false',
+        (tester) async {
+          setTallViewport(tester);
+
+          await tester.pumpWidget(
+            buildTestable(
+              backupSyncEnabled: true,
+              authState: const AuthAuthenticated(
+                email: 'user@example.com',
+                accessToken: 'token-123',
+              ),
+              pullImpl: (passphrase) async => false,
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          await tester.tap(find.text('Pull from Cloud'));
+          await tester.pumpAndSettle();
+
+          await tester.enterText(
+            find.widgetWithText(TextField, 'Passphrase'),
+            'some passphrase',
+          );
+          await tester.pump();
+          await tester.tap(find.widgetWithText(FilledButton, 'Unlock'));
+          await tester.pumpAndSettle();
+
+          expect(
+            find.text('No cloud backup found for this account yet.'),
+            findsOneWidget,
+          );
+        },
+      );
+    });
   });
 }

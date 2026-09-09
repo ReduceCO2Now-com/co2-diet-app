@@ -6,6 +6,7 @@ import 'package:co2diet/core/theme/text_tokens.dart';
 import 'package:co2diet/domain/entities/backup_metadata.dart';
 import 'package:co2diet/domain/services/backup_export_service.dart';
 import 'package:co2diet/features/backup/providers/backup_notifier.dart';
+import 'package:co2diet/features/backup/widgets/backup_sync_section.dart';
 import 'package:co2diet/features/backup/widgets/danger_zone_section.dart';
 import 'package:co2diet/features/backup/widgets/passphrase_prompt_dialog.dart';
 import 'package:flutter/material.dart';
@@ -408,6 +409,11 @@ class _BackupRestoreBodyState extends ConsumerState<_BackupRestoreBody> {
           ),
         ],
         const SizedBox(height: AppSpacing.lg),
+
+        // ── Cloud Backup (Beta) ──────────────────────────────────────
+        // Decides its own visibility (flag + Account Mode) -- embedded
+        // unconditionally, per Plan 08-03.
+        const BackupSyncSection(),
 
         // ── Privacy & Ownership ───────────────────────────────────────
         const Text('Privacy & Ownership', style: AppTextTheme.titleMd),
