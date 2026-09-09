@@ -154,7 +154,7 @@ Deferred to post-v1. Not in current roadmap.
 
 ### Auth
 
-- **AUTH-V2-01**: Passkey support (Flutter ecosystem not mature as of Jan 2026 — reassess for v1.1)
+- **AUTH-V2-01**: Passkey support. **Reassessed 2026-09-09** (Phase 10 SC-2 — see `docs/ai/AUTH-V2-01-PASSKEY-FEASIBILITY.md`): the Jan 2026 "Flutter ecosystem not mature" note asked the wrong question. Auth is browser-delegated OIDC, so the WebAuthn ceremony belongs to the browser and Keycloak — the client never touches it. Keycloak 26.4 ships passkeys natively with no browser-flow changes needed, so this is a realm-configuration item with **zero estimated Flutter effort**. Blocked not on ecosystem maturity but on infrastructure: passkeys are domain-bound and there is no deployed HTTPS domain, no hosted assetlinks/AASA, and no iOS entitlements file. Reclassified as backend/infrastructure workstream.
 
 ### Onboarding
 

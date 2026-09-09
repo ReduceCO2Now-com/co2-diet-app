@@ -325,7 +325,7 @@ Plans:
 **Success Criteria** (what must be TRUE):
 
   1. A prioritized v1.1 shortlist exists in `.planning/` derived from post-launch user feedback and store review signal.
-  2. Passkey feasibility (AUTH-V2-01) is re-evaluated against the current Flutter ecosystem before implementation is scheduled.
+  2. ~~Passkey feasibility (AUTH-V2-01) is re-evaluated against the current Flutter ecosystem before implementation is scheduled.~~ **MET 2026-09-09** — `docs/ai/AUTH-V2-01-PASSKEY-FEASIBILITY.md`. Outcome: zero Flutter effort required. The client is already passkey-compatible because auth is browser-delegated OIDC; Keycloak 26.4 ships passkeys with no browser-flow change. Reclassified as an infrastructure item, blocked on a deployed domain rather than on ecosystem maturity.
 
 **Plans**: TBD
 
@@ -344,7 +344,7 @@ Plans:
 | 7. Keycloak Auth + Account Deletion | 8/8 | Complete   | 2026-08-09 |
 | 8. Encrypted Account Backup (client-first) | 3/3 | Complete   | 2026-09-09 |
 | 9. Reference Data Delivery (Full OFF Pack) | 8/8 | Complete    | 2026-09-04 |
-| 10. Post-Launch Enhancements (v1.1+) | 0/0 | Not started | - |
+| 10. Post-Launch Enhancements (v1.1+) | 0/0 | SC-2 met; SC-1 awaits launch | - |
 
 ---
 
