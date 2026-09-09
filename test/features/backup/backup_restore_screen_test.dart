@@ -180,6 +180,10 @@ void main() {
 
         await container.read(backupProvider.notifier).createAndShareBackup();
 
+        // Explicit null despite matching the default: these assertions exist to
+        // prove the UNENCRYPTED path was taken. Leaving it implicit would still
+        // match, but would stop stating what is being asserted.
+        // ignore: avoid_redundant_argument_values
         verify(() => mockService.createBackup(passphrase: null)).called(1);
         verify(() => mockSharePlatform.share(any())).called(1);
       },
@@ -372,6 +376,10 @@ void main() {
         await container.read(backupProvider.notifier).applyRestore(zip);
 
         verify(
+          // Explicit null despite matching the default: proves the
+          // UNENCRYPTED path was taken. Implicit would still match, but
+          // would stop stating what is asserted.
+          // ignore: avoid_redundant_argument_values
           () => mockService.applyRestore(zip, passphrase: null),
         ).called(1);
       },
@@ -740,6 +748,10 @@ void main() {
       'encrypted" and an "Enter passphrase" button instead of row counts',
       (tester) async {
         setTallViewport(tester);
+        // Explicit null despite matching the default: these assertions exist to
+        // prove the UNENCRYPTED path was taken. Leaving it implicit would still
+        // match, but would stop stating what is being asserted.
+        // ignore: avoid_redundant_argument_values
         final preview = RestorePreview.encrypted(backupDate: null);
         when(
           () => mockService.previewRestore(any()),
@@ -769,6 +781,10 @@ void main() {
       'correct passphrase on retry succeeds',
       (tester) async {
         setTallViewport(tester);
+        // Explicit null despite matching the default: these assertions exist to
+        // prove the UNENCRYPTED path was taken. Leaving it implicit would still
+        // match, but would stop stating what is being asserted.
+        // ignore: avoid_redundant_argument_values
         final preview = RestorePreview.encrypted(backupDate: null);
         when(
           () => mockService.previewRestore(any()),
